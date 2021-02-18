@@ -1,0 +1,17 @@
+name: master
+channels:
+  - gurobi
+  - defaults
+  - conda-forge
+dependencies:
+  - gurobi
+  - numpy
+  - scipy
+  - networkx
+  - black
+  - matplotlib
+  - pandas
+  - openpyxl
+  - scikit-learn
+  - geopy
+  - shapely
