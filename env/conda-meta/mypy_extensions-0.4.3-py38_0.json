@@ -1,0 +1,95 @@
+{
+  "build": "py38_0",
+  "build_number": 0,
+  "channel": "https://repo.anaconda.com/pkgs/main/win-64",
+  "constrains": [],
+  "depends": [
+    "python >=3.8,<3.9.0a0"
+  ],
+  "extracted_package_dir": "C:\\Users\\lcfolkes\\Anaconda3\\pkgs\\mypy_extensions-0.4.3-py38_0",
+  "features": "",
+  "files": [
+    "Lib/site-packages/__pycache__/mypy_extensions.cpython-38.pyc",
+    "Lib/site-packages/mypy_extensions-0.4.3-py3.8.egg-info/PKG-INFO",
+    "Lib/site-packages/mypy_extensions-0.4.3-py3.8.egg-info/SOURCES.txt",
+    "Lib/site-packages/mypy_extensions-0.4.3-py3.8.egg-info/dependency_links.txt",
+    "Lib/site-packages/mypy_extensions-0.4.3-py3.8.egg-info/requires.txt",
+    "Lib/site-packages/mypy_extensions-0.4.3-py3.8.egg-info/top_level.txt",
+    "Lib/site-packages/mypy_extensions.py",
+    ".nonadmin"
+  ],
+  "fn": "mypy_extensions-0.4.3-py38_0.conda",
+  "legacy_bz2_md5": "daa42eecdba658bab20ffbce6cede28d",
+  "legacy_bz2_size": 9614,
+  "license": "MIT",
+  "license_family": "MIT",
+  "link": {
+    "source": "C:\\Users\\lcfolkes\\Anaconda3\\pkgs\\mypy_extensions-0.4.3-py38_0",
+    "type": 1
+  },
+  "md5": "abb0d374fd4582e0279eb40e92624b2c",
+  "name": "mypy_extensions",
+  "package_tarball_full_path": "C:\\Users\\lcfolkes\\Anaconda3\\pkgs\\mypy_extensions-0.4.3-py38_0.conda",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "Lib/site-packages/__pycache__/mypy_extensions.cpython-38.pyc",
+        "path_type": "hardlink",
+        "sha256": "77e019dbbbbb201708bf30a901cd071f06de4b9bc4083fdb0c61cb67e22d16e7",
+        "sha256_in_prefix": "77e019dbbbbb201708bf30a901cd071f06de4b9bc4083fdb0c61cb67e22d16e7",
+        "size_in_bytes": 5454
+      },
+      {
+        "_path": "Lib/site-packages/mypy_extensions-0.4.3-py3.8.egg-info/PKG-INFO",
+        "path_type": "hardlink",
+        "sha256": "c0dcd010b61655f5f7eb57093f9f17d2647020063e1f213753efb6f7161f46b8",
+        "sha256_in_prefix": "c0dcd010b61655f5f7eb57093f9f17d2647020063e1f213753efb6f7161f46b8",
+        "size_in_bytes": 1177
+      },
+      {
+        "_path": "Lib/site-packages/mypy_extensions-0.4.3-py3.8.egg-info/SOURCES.txt",
+        "path_type": "hardlink",
+        "sha256": "e9b90daac12a60ff0b5b529eab276261b58525a37a11f0c90c6bc325f324d457",
+        "sha256_in_prefix": "e9b90daac12a60ff0b5b529eab276261b58525a37a11f0c90c6bc325f324d457",
+        "size_in_bytes": 261
+      },
+      {
+        "_path": "Lib/site-packages/mypy_extensions-0.4.3-py3.8.egg-info/dependency_links.txt",
+        "path_type": "hardlink",
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "sha256_in_prefix": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "size_in_bytes": 1
+      },
+      {
+        "_path": "Lib/site-packages/mypy_extensions-0.4.3-py3.8.egg-info/requires.txt",
+        "path_type": "hardlink",
+        "sha256": "a7118160336b00481f6d3f61590efb048c89fed0717b3a9545ea01a155dd3666",
+        "sha256_in_prefix": "a7118160336b00481f6d3f61590efb048c89fed0717b3a9545ea01a155dd3666",
+        "size_in_bytes": 41
+      },
+      {
+        "_path": "Lib/site-packages/mypy_extensions-0.4.3-py3.8.egg-info/top_level.txt",
+        "path_type": "hardlink",
+        "sha256": "4e5967196a83a053212b24e25fda5ea05d550b5c269118082c775e6e7b9b11bf",
+        "sha256_in_prefix": "4e5967196a83a053212b24e25fda5ea05d550b5c269118082c775e6e7b9b11bf",
+        "size_in_bytes": 16
+      },
+      {
+        "_path": "Lib/site-packages/mypy_extensions.py",
+        "path_type": "hardlink",
+        "sha256": "ceec251d13ed0cf2efce842ff7e152af2a0b28090a683229bb5e3e8ecda01ce1",
+        "sha256_in_prefix": "ceec251d13ed0cf2efce842ff7e152af2a0b28090a683229bb5e3e8ecda01ce1",
+        "size_in_bytes": 5078
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "None",
+  "sha256": "e5fa2c49cd576ce1593d20bd5315b24068ee33faba4ada1d4eda3fda71fa8e50",
+  "size": 9845,
+  "subdir": "win-64",
+  "timestamp": 1582150084790,
+  "track_features": "",
+  "url": "https://repo.anaconda.com/pkgs/main/win-64/mypy_extensions-0.4.3-py38_0.conda",
+  "version": "0.4.3"
+}

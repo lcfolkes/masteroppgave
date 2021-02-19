@@ -1,5 +1,4 @@
 class ParkingNode:
-
     # change x_coordinate and y_coordinate to location dict?
     def __init__(self, x_coordinate, y_coordinate, parking_state,
                  charging_state, ideal_state, customer_reqests, car_returns):
