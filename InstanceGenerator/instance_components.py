@@ -28,8 +28,8 @@ class Employee:
         self.handling = handling
 
 class Car:
-    def __init__(self, start_time, parking_node, is_charging: bool):
-        self.start_time = start_time
+    def __init__(self, parking_node: ParkingNode, start_time: float, is_charging: bool):
         self.parking_node = parking_node
+        self.start_time = start_time
         self.destinations = []
         self.is_charging = is_charging
