@@ -1,8 +1,7 @@
 import yaml
 
-
-def read_config():
-    with open("instance_config.yaml", 'r') as stream:
+def read_config(config_name: str):
+    with open(config_name, 'r') as stream:
         try:
             print(yaml.safe_load(stream))
         except yaml.YAMLError as exc:
