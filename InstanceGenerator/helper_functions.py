@@ -7,4 +7,4 @@ def read_config(config_name: str):
         except yaml.YAMLError as exc:
             print(exc)
 
-read_config()
+read_config('world_constants_config.yaml')
