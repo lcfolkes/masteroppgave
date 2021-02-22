@@ -6,7 +6,6 @@ import time
 import copy
 from DataRetrieval import google_traffic_information_retriever as gI
 
-
 DISTANCESCALE = 3
 
 class World:
@@ -20,7 +19,7 @@ class World:
     # TIME CONSTANTS #
     HANDLING_TIME_PARKING = cf['time_constants']['handling_parking']
     HANDLING_TIME_CHARGING = cf['time_constants']['handling_charging']
-    PLANING_PERIOD = cf['time_constants']['planning_period']
+    PLANNING_PERIOD = cf['time_constants']['planning_period']
 
     # BOARD SIZE #
     OPERATING_AREA_SIZE = [cf['operating_area_grid']['y'], cf['operating_area_grid']['x']]
@@ -29,9 +28,14 @@ class World:
     CUSTOMER_REQUESTS = cf['node_demands']['customer_requests']
     CAR_RETURNS = cf['node_demands']['car_returns']
 
+    # NODE STATES
+    CHARGING_STATE = cf['node_states']['charging']
+    PARKING_STATE = cf['node_states']['parking']
+    IDEAL_STATE = cf['node_states']['ideal']
+
     # COORDINATE CONSTANTS
-    LOWERLEFT = (cf['board']['coordinates']['lower_left']['lat'], cf['board']['coordinates']['lower_left']['long'])
-    UPPERRIGHT = (cf['board']['coordinates']['upper_right']['lat'], cf['board']['coordinates']['upper_right']['long'])
+    LOWER_LEFT = (cf['board']['coordinates']['lower_left']['lat'], cf['board']['coordinates']['lower_left']['long'])
+    UPPER_RIGHT = (cf['board']['coordinates']['upper_right']['lat'], cf['board']['coordinates']['upper_right']['long'])
 
     def __init__(self):
 
@@ -60,9 +64,9 @@ class World:
         self.remove_coordinates = []
         self.bigM = []
 
-    def add_parking_dim(self, x_dim_parking, y_dim_parking):
-        self.x_dim_parking = x_dim_parking
-        self.y_dim_parking = y_dim_parking
+    def add_parking_dim(self, x_dim: int, y_dim: int):
+        self.x_dim_parking = x_dim
+        self.y_dim_parking = y_dim
 
     def add_nodes(self, node):
         self.nodes.append(node)
@@ -94,8 +98,8 @@ class World:
         car_returns_prob = [World.CAR_RETURNS[k] for k in World.CAR_RETURNS]
         for i in range(len(self.parking_nodes)):
             # np.random.seed(i)
-            self.parking_nodes[i].demand = np.random.choice(customer_requests, size=self.numScenarios, p=customer_requests_prob)
-            self.parking_nodes[i].deliveries = np.random.choice(car_returns, size=self.numScenarios, p=car_returns_prob)
+            self.parking_nodes[i].customer_requests = np.random.choice(customer_requests, size=self.numScenarios, p=customer_requests_prob)
+            self.parking_nodes[i].car_returns = np.random.choice(car_returns, size=self.numScenarios, p=car_returns_prob)
 
     def add_cords(self, coordinates: [(float, float)]):
         # cord (y,x)
@@ -104,30 +108,29 @@ class World:
     ## CALCULATE DISTANCE ##
 
     def calculate_distances(self):
-
-        maxDistance = math.sqrt(math.pow(self.parking_nodes[0].xCord - self.parking_nodes[len(self.parking_nodes) - 1].xCord, 2) + math.pow(
-            self.parking_nodes[0].yCord - self.parking_nodes[len(self.parking_nodes) - 1].yCord, 2))
-        scale = float(format((self.PLANING_PERIOD - 1) / (maxDistance * DISTANCESCALE), '.1f'))
+        maxDistance = math.sqrt(math.pow(self.parking_nodes[0].x_coordinate - self.parking_nodes[len(self.parking_nodes) - 1].x_coordinate, 2) + math.pow(
+            self.parking_nodes[0].y_coordinate - self.parking_nodes[len(self.parking_nodes) - 1].y_coordinate, 2))
+        scale = float(format((World.PLANNING_PERIOD - 1) / (maxDistance * DISTANCESCALE), '.1f'))
         for x in range(len(self.nodes)):
             for y in range(len(self.nodes)):
                 distance = math.pow(self.nodes[x].xCord - self.nodes[y].xCord, 2) + math.pow(
                     self.nodes[x].yCord - self.nodes[y].yCord, 2)
                 distanceSq = float(format(math.sqrt(distance) * scale, '.1f'))
-                distanceB = float(format(distanceSq * 2, '.1f'))
+                distance_public_bike = float(format(distanceSq * 2, '.1f'))
 
                 # Creating some distance between charging and parking nodes
                 if (int(distance) == 0 and x != y):
                     distanceSq = 1.0
-                    distanceB = 1.0
+                    distance_public_bike = 1.0
 
-                self.distancesC.append(distanceSq)
-                self.distancesB.append(distanceB)
+                self.distances_car.append(distanceSq)
+                self.distances_public_bike.append(distance_public_bike)
 
     def giveRealCoordinatesSpread(self):
-        stepX = (self.UPPERRIGHT[1] - self.LOWERLEFT[1]) / World.OPERATING_AREA_SIZE[1]
-        stepY = (self.UPPERRIGHT[0] - self.LOWERLEFT[0]) / World.OPERATING_AREA_SIZE[0]
-        startX = self.LOWERLEFT[1] + 0.5 * stepX
-        startY = self.UPPERRIGHT[0] - 0.5 * stepY
+        stepX = (self.UPPER_RIGHT[1] - self.LOWER_LEFT[1]) / World.OPERATING_AREA_SIZE[1]
+        stepY = (self.UPPER_RIGHT[0] - self.LOWER_LEFT[0]) / World.OPERATING_AREA_SIZE[0]
+        startX = self.LOWER_LEFT[1] + 0.5 * stepX
+        startY = self.UPPER_RIGHT[0] - 0.5 * stepY
 
         grid_cords = []
         # Generate coordinate for each of the 8x12 (y,x) nodes in operating area
@@ -162,10 +165,10 @@ class World:
 
     def calculateRealDistances(self, cords):
         if (len(cords) == 0):
-            step_x = (World.UPPERRIGHT[1] - World.LOWERLEFT[1]) / self.x_dim_parking
-            step_y = (World.UPPERRIGHT[0] - World.LOWERLEFT[0]) / self.y_dim_parking
-            start_x = World.LOWERLEFT[1] + 0.5 * step_x
-            start_y = World.UPPERRIGHT[0] - 0.5 * step_y
+            step_x = (World.UPPER_RIGHT[1] - World.LOWER_LEFT[1]) / self.x_dim_parking
+            step_y = (World.UPPER_RIGHT[0] - World.LOWER_LEFT[0]) / self.y_dim_parking
+            start_x = World.LOWER_LEFT[1] + 0.5 * step_x
+            start_y = World.UPPER_RIGHT[0] - 0.5 * step_y
             cords = []
             for i in range(self.y_dim_parking):
                 for j in range(self.x_dim_parking):
@@ -211,8 +214,8 @@ class World:
                 travelMatrixNotHandling.append(
                     float(format(min(travelMatrixBicycle[i][j], travelMatrixTransit[i][j]) / 60, '.1f')))
                 travelMatrixHandling.append(float(format(travelMatrixCar[i][j] / 60, '.1f')))
-        self.distancesC = travelMatrixHandling
-        self.distancesB = travelMatrixNotHandling
+        self.distances_car = travelMatrixHandling
+        self.distances_public_bike = travelMatrixNotHandling
 
     ## CALCULATE BIGM
     def calculateBigM(self):
@@ -222,9 +225,9 @@ class World:
                 for l in range(len(self.cars)):
                     for k in range(len(self.cars[l].destinations)):
                         for x in range(len(self.parking_nodes)):
-                            distances1 = self.distancesB[(len(self.nodes) * (self.cars[i].destinations[j] - 1)) + x]
-                            distances2 = self.distancesB[(len(self.nodes) * (self.cars[l].destinations[k] - 1)) + x]
-                            handlingTime2 = self.distancesC[
+                            distances1 = self.distances_public_bike[(len(self.nodes) * (self.cars[i].destinations[j] - 1)) + x]
+                            distances2 = self.distances_public_bike[(len(self.nodes) * (self.cars[l].destinations[k] - 1)) + x]
+                            handlingTime2 = self.distances_car[
                                 len(self.nodes) * (self.cars[l].parkingNode - 1) + self.cars[l].destinations[k] - 1]
                             diff = distances1 - (distances2 + handlingTime2)
                             if (diff > maxDiff):
@@ -260,8 +263,8 @@ class World:
         sum_parking_state = 0
         # net sum of Requests-Deliveries for each scenario
         for i in range(len(self.parking_nodes)):
-            sum_ideal_state += self.parking_nodes[i].iState
-            sum_parking_state += self.parking_nodes[i].pState + initialAdd[i]
+            sum_ideal_state += self.parking_nodes[i].ideal_state
+            sum_parking_state += self.parking_nodes[i].parking_state + initialAdd[i]
 
         # ideal state should be scaled to sum of available cars in the worst case
 
@@ -274,21 +277,19 @@ class World:
         sum_parking_state_after = 0
 
         for i in range(len(self.parking_nodes)):
-            # Scale pstate with rounded share of sum_parking_state
-            # Share of pstate = iptate/sum_parking_state
-            self.parking_nodes[i].pState = int(round(float(sum_ideal_state) * (float(self.parking_nodes[i].pState) / sum_parking_state)))
-            sum_parking_state_after += self.parking_nodes[i].pState
+            # Scale parking_state with rounded share of sum_parking_state
+            # Share of parking_state = iptate/sum_parking_state
+            self.parking_nodes[i].parking_state = int(round(float(sum_ideal_state) * (float(self.parking_nodes[i].parking_state) / sum_parking_state)))
+            sum_parking_state_after += self.parking_nodes[i].parking_state
 
         # Correct for errors due to rounding
         while (sum_parking_state_after != sum_ideal_state):
             if (sum_parking_state_after < sum_ideal_state):
                 r = random.randint(0, len(self.parking_nodes) - 1)
-                self.parking_nodes[r].pState += 1
+                self.parking_nodes[r].parking_state += 1
                 sum_parking_state_after += 1
             else:
                 r = random.randint(0, len(self.parking_nodes) - 1)
-                if (self.parking_nodes[r].pState - initialAdd[r] > 0):
-                    self.parking_nodes[r].pState -= 1
+                if (self.parking_nodes[r].parking_state - initialAdd[r] > 0):
+                    self.parking_nodes[r].parking_state -= 1
                     sum_parking_state_after -= 1
-
-

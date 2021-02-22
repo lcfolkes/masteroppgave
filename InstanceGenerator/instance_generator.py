@@ -1,15 +1,19 @@
 from InstanceGenerator.world import *
+from InstanceGenerator.helper_functions import *
 import copy
 
 
 # WORLD AND ENTITIES
 def initializeWorld(world: World):
-    createNodes(world)
-    createCNodes(world)
-    createEmployees(world)
+	cf = read_config('instance_config.yaml')
+	create_parking_nodes(world, cf['board']['parking_node_dim'])
+	create_charging_nodes(world, cf['charging_nodes']['num_charging'], cf['charging_nodes']['parking_nodes'],
+						  cf['charging_nodes']['capacities'], cf['charging_nodes']['max_capacities'])
+	create_employees(world, cf['employees']['num_employees'], cf['employees']['start_time'], cf['employees']['handling'])
 
 def buildWorld():
-    world = World()
+	SPREAD = True
+	world = World()
     initializeWorld(world)
     cords = []
     if (SPREAD):
