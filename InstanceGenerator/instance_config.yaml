@@ -1,0 +1,31 @@
+### CONSTANTS ####
+
+# NUMBER OF EXAMPLES TO CREATE #
+examples: 3
+
+# SCENARIOS
+num_scenarios: 3
+
+# TASKS
+tasks:
+  num_all: 4
+  num_first_stage: 1
+
+#BOARD SIZE - DONT CHANGE
+board:
+  parking_node_dim:
+    x: 3
+    y: 2
+
+#CHARGING NODES
+charging_nodes:
+  num_charging: 2 #vurder fjern
+  parking_nodes: [1, 2]
+  capacities: [2, 2]
+  max_capacities: [2, 2]
+
+#EMPLOYEES
+employees:
+  num_employees: 2
+  start_time: [0.0, 5.0]
+  handling: [0, 1]
