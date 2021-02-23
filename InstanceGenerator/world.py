@@ -88,7 +88,7 @@ class World:
         self.tasks = n
 
     def set_num_first_stage_tasks(self, n: int):
-        self.firstStageTasks = n
+        self.first_stage_tasks = n
 
     # customer requests in the second stage and
     # customer deliveries/car returns in the second stage

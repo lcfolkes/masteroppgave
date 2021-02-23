@@ -98,7 +98,7 @@ def run_model(model, stochastic=True, reset=False):
 					tt = model.TRAVEL_TIME[model.EMPLOYEE_START_LOCATION[k] - 1][model.CARMOVE_ORIGIN[x[0]] - 1]
 				else:
 					# Bike travel time between previous node and current node
-					tt = model.TRAVEL_TIME[model.destination_node[x[2]] - 1][model.CARMOVE_ORIGIN[x[0]] - 1]
+					tt = model.TRAVEL_TIME[destination_node[x[2]] - 1][model.CARMOVE_ORIGIN[x[0]] - 1]
 
 				# Start time of current task
 				t[x[2]] += tt
@@ -214,4 +214,3 @@ def main():
 
 
 main()
-# TODO: investigate why ideal state is not met in all scenarios, shouldnt our system be rigged for worst case scenario demand?
