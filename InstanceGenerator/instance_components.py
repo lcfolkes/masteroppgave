@@ -9,10 +9,10 @@ class ParkingNode:
         self.customer_requests = None
         self.car_returns = None
 
-    def set_customer_requests(self, value: int):
+    def set_customer_requests(self, value: [int]):
         self.customer_requests = value
 
-    def set_car_returns(self, value: int):
+    def set_car_returns(self, value: [int]):
         self.car_returns = value
 
 

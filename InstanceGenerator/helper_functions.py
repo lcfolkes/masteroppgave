@@ -1,138 +1,283 @@
 import yaml
-from InstanceGenerator.world import World
-from InstanceGenerator.instance_components import *
-import numpy as np
-import random
-
+import os
 
 def read_config(config_name: str):
     with open(config_name, 'r') as stream:
         try:
-            print(yaml.safe_load(stream))
+            return yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
 # read_config('world_constants_config.yaml')
 
+ ## FILE HANDLER ##
 
-## - CREATORS - ##
-# PNODES
-def create_parking_nodes(world: World, parking_dim: {str: int}):
-    charging_states = [s for s in World.CHARGING_STATE]
-    charging_state_probs = [World.CHARGING_STATE[s] for s in World.CHARGING_STATE]
-    parking_states = [s for s in World.CHARGING_STATE]
-    parking_state_probs = [World.PARKING_STATE[s] for s in World.PARKING_STATE]
-    ideal_states = [s for s in World.CHARGING_STATE]
-    ideal_state_probs = [World.IDEAL_STATE[s] for s in World.IDEAL_STATE]
-    x_dim = parking_dim['x']
-    y_dim = parking_dim['y']
+def write_to_file(world, instance_name: str):
+    test_dir = "../Gurobi/tests/{}nodes/".format(len(world.parking_nodes))
+    if not os.path.exists(test_dir):
+        os.makedirs(test_dir)
+    file_name = test_dir + str(instance_name) + "_a.txt" #+ "_a.txt"
+    if (os.path.exists(file_name)):
+        file_name = test_dir + str(instance_name) + "_b.txt"
+        if (os.path.exists(file_name)):
+            file_name = test_dir + str(instance_name) + "_c.txt"
+    print(file_name)
+    f = open(file_name, 'w')
+    string = "[INITIALIZE]\n"
 
-    for i in range(y_dim):
-        x_coordinate = i
-        for j in range(x_dim):
-            # np.random.seed(i+j)
-            # cState = int(np.random.choice([0,1], size=1, p=[0.75, 0.25]))
-            charging_state = int(np.random.choice(charging_states, size=1, p=charging_state_probs))
-            # np.random.seed(i + j)
-            parking_state = int(np.random.choice(parking_states, size=1, p=parking_state_probs))
-            # np.random.seed(i + j)
-            ideal_state = int(np.random.choice(ideal_states, size=1, p=ideal_state_probs))
+    # Number of scenarios
+    string += "num_scenarios: " + str(world.num_scenarios) + "\n"
+    # Number of parking nodes
+    string += "num_parking_nodes: " + str(len(world.parking_nodes)) + "\n"
+    # Number of charging nodes
+    string += "num_charging_nodes: " + str(len(world.charging_nodes)) + "\n"
+    # Number of employees
+    string += "num_employees: " + str(len(world.employees)) + "\n"
+    string += "\n"
+    # Grid
+    #string += "hNodes : " + str(world.YCORD) + "\n"
+    #string += "wNodes : " + str(world.XCORD) + "\n"
 
-            # np.random.seed(i + j)
-            # demand = np.random.choice(DEMAND, size=NUMSCENARIOS, p=DEMANDPROB) #customer requests in the second stage
-            # deliveries = np.random.choice(DELIVERIES, NUMSCENARIOS, p=DELIVERIESPROB) #customer deliveries in the second stage
-            y_coordinate = j
-            node = ParkingNode(x_coordinate, y_coordinate, parking_state, charging_state,
-                               ideal_state)  # , demand, deliveries)
-            world.add_nodes(node)
-            world.add_parking_nodes(node)
-    world.add_parking_dim(x_dim, y_dim)
+    # start node of employee
+    string += "start_node_employee: [ "
+    for i in range(len(world.employees)):
+        string += str(world.employees[i].start_node)
+        if (i < len(world.employees) - 1):
+            string += " "
+    string += " ] \n"
+    string += "\n"
+    # Available charging slots
+    string += "charging_slots_available: [ "
+    for i in range(len(world.charging_nodes)):
+        string += str(world.charging_nodes[i].capacity)
+        if (i < len(world.charging_nodes) - 1):
+            string += " "
+    string += " ] \n"
+    # Total number of charging slots (total capacity of charging node)
+    string += "total_number_of_charging_slots: [ "
+    for i in range(len(world.charging_nodes)):
+        string += str(world.charging_nodes[i].max_capacity)
+        if (i < len(world.charging_nodes) - 1):
+            string += " "
+    string += " ] \n"
+    string += "\n"
+    # reward for renting out car in second stage
+    string += "profit_rental : " + str(world.PROFIT_RENTAL) + "\n"
+    # cost of relocating vehicle
+    string += "cost_relocation : " + str(world.COST_RELOCATION) + "\n"
+    # cost of deviating from ideal state
+    string += "cost_deviation : " + str(world.COST_DEVIATION) + "\n"
+    string += "\n"
+    # car travel times between nodes
+    string += "travel_time_vehicle: [ "
+    for i in range(len(world.nodes)):
+        for j in range(len(world.nodes)):
+            string += str(world.distances_car[i*len(world.nodes) + j]) + " "
+        if(i < len(world.nodes) -1):
+            string += "\n"
+            string+= "\t" + "\t"
+    string+="]" + "\n"
+    string += "\n"
+    # bike travel times between nodes
+    string += "travel_time_bike: [ "
+    for i in range(len(world.nodes)):
+        for j in range(len(world.nodes)):
+            string += str(world.distances_public_bike[i * len(world.nodes) + j]) + " "
+        if (i < len(world.nodes) - 1):
+            string += "\n"
+            string += "\t" + "\t"
+    string += "]" + "\n"
+    string += "\n"
+    # handling time for p- and c-nodes. Time used to initiate charging and find vacant parking spot.
+    # used in CarMoveHandlingTime
+    string += "handling_time_parking: " + str(world.HANDLING_TIME_PARKING) + "\n"
+    string += "handling_time_charging: " + str(world.HANDLING_TIME_CHARGING) + "\n"
 
-
-# CNODES
-def create_charging_nodes(world: World, num_charging_nodes: int, parking_nodes: [int], capacities: [int],
-                          max_capacities: [int]):
-    for i in range(num_charging_nodes):
-        print("Creating charging node: ", i + 1)
-        parking_node_num = parking_nodes[i]
-        parking_node = world.parking_nodes[parking_node_num - 1]
-        capacity = capacities[i]
-        max_capacity = max_capacities[i]
-        charging_node = ChargingNode(parking_node.x_coordinate, parking_node.y_coordinate, capacity, max_capacity,
-                                     parking_node_num)
-        world.add_charging_nodes(charging_node)
-        world.add_nodes(charging_node)
-
-
-# Employees
-def create_employees(world: World, num_employees: int, start_time_employees: [float], handling_employees: [int]):
-    for i in range(num_employees):
-        print("Creating employee", i + 1)
-        time = start_time_employees[i]
-        # 1 if employee is underway with car, 0 if not currently doing task
-        handling = handling_employees[i]
-
-        # %Vi plasserer en on its way-employee i en hvilken som helst node,
-        # det eneste kravet er at det må stå minst en bil der. Dette er sufficient,
-        # fordi vi antar at dersom han kommer med en bil, så er den definert som tilgjengelig i systemet fra tid 0.
-        if handling == 1:
-            parking_states = []
-            for node in world.parking_nodes:
-                parking_states.append(node.parking_state)
-            # Nodes where pstate is positive
-            positive_start_nodes = [i + 1 for i, parking_state in enumerate(parking_states) if parking_state > 0]
-            start_node = random.choice(positive_start_nodes)
-            employee = Employee(start_node, time, True)
-            world.add_employee(employee)
+    # Travel
+    string += "travel_time_to_origin: [ "
+    for i in range(len(world.employees)):
+        string += str(world.employees[i].start_time)
+        if (i < len(world.employees) - 1):
+            string += " "
         else:
-            start_node = random.randint(1, len(world.parking_nodes))
-            employee = Employee(start_node, time, True)
-            world.add_employee(employee)
+            string += " ] \n"
 
+    string += "start_time_car: [ "
+    for i in range(len(world.cars)):
+        string += str(world.cars[i].start_time)
+        if (i < len(world.cars) - 1):
+            string += " "
+        else:
+            string += " ] \n"
 
-# CARS
-def create_cars(world):
-    initial_theta, initial_handling = world.calculateInitialAdd()
-    car_count = 0
+    string += "planning_period: " + str(world.PLANNING_PERIOD) + "\n"
+    string += "\n"
+
+    # Cars in
+    string += "parking_state: [ "
     for i in range(len(world.parking_nodes)):
-        # Add cars not in need of charging
-        for j in range(world.parking_nodes[i].parking_state):  # -world.pNodes[i].cState):
-            new_car = Car(0, i + 1, False)
-            destinations = []
-            for x in range(len(world.parking_nodes)):
-                if i != x:
-                    destinations.append(x + 1)
-            new_car.set_destinations(destinations)
-            world.add_car(new_car)
-            car_count += 1
-            print("Car {} Node {} - car not in need of charging".format(car_count, i + 1))
-        # Add cars on its way to parking node
-        if initial_handling[i] > 0:
-            for j in range(len(world.employees)):
-                if (world.employees[j].handling == 1) and (world.employees[j].start_node - 1 == i):
-                    new_car = Car(world.employees[j].start_time, i + 1, False)
-                    for x in range(len(world.parking_nodes)):
-                        if i != x:
-                            new_car.destinations.append(x + 1)
-                    world.addCar(new_car)
-                    world.parking_nodes[i].parking_state += 1
+        string += str(world.parking_nodes[i].parking_state)
+        if (i < len(world.parking_nodes) - 1):
+            string += " "
+        else:
+            string += " ] \n"
+    # Cars in need of charging in parking node
+    string += "charging_state: [ "
+    for i in range(len(world.parking_nodes)):
+        string += str(world.parking_nodes[i].charging_state)
+        if (i < len(world.parking_nodes) - 1):
+            string += " "
+        else:
+            string += " ] \n"
 
-                    # if (world.pNodes[i].pState == 0):
-                    #     pstates = []
-                    #     for node in world.pNodes:
-                    #         pstates.append(node.pState)
-                    #     positiveStartNodes = [i + 1 for i, pstate in enumerate(pstates) if pstate > 0]
-                    #     startNode = random.choice(positiveStartNodes)
-                    #     world.pNodes[i].pState += 1
-                    #     startNode.pState -= 1
-                    #     world.addCar(newCar)
+    string += "ideal_state: [ "
+    for i in range(len(world.parking_nodes)):
+        string += str(world.parking_nodes[i].ideal_state)
+        if (i < len(world.parking_nodes) - 1):
+            string += " "
+        else:
+            string += " ] \n"
+    string += "\n"
+    string += "customer_requests: [ "
+    for i in range(len(world.parking_nodes)):
+        #print(world.parking_nodes[i].customer_requests)
+        for j in range(world.num_scenarios):
+            string += str(world.parking_nodes[i].customer_requests[j]) + " "
+        if (i < len(world.parking_nodes) - 1):
+            string += "\n"
+            string += "\t" + "\t"
+        else:
+            string += "] \n"
+    string += "\n"
+    string += "car_returns: [ "
+    for i in range(len(world.parking_nodes)):
+        for j in range(world.num_scenarios):
+            string += str(world.parking_nodes[i].car_returns[j]) + " "
+        if (i < len(world.parking_nodes) - 1):
+            string += "\n"
+            string += "\t" + "\t"
+        else:
+            string += "] \n"
+    string += "\n"
 
-                    car_count += 1
-                    print("Car {} Node {} - car on its way to parking node ".format(car_count, i + 1))
-        # Add cars in need of charging
-        for j in range(world.parking_nodes[i].charging_state):
-            new_car = Car(0, i + 1, True)
-            for x in range(len(world.cNodes)):
-                new_car.destinations.append(len(world.parking_nodes) + x + 1)
-            world.addCar(new_car)
-            car_count += 1
-            print("Car {} Node {} - car in need of charging".format(car_count, i + 1))
+    count = 0
+    for i in range(len(world.cars)):
+        if not (world.cars[i].is_charging):
+            for j in range(len(world.cars[i].destinations)):
+                count += 1
+    string += "num_car_moves_parking : " + str(count) + "\n"
+    count = 0
+    for i in range(len(world.cars)):
+        if (world.cars[i].is_charging):
+            for j in range(len(world.cars[i].destinations)):
+                count += 1
+    string += "num_car_moves_charging : " + str(count) + "\n"
+    string += "num_cars : " + str(len(world.cars)) + "\n"
+    print("numcars: ", len(world.cars))
+    string += "num_tasks : " + str(world.tasks) + "\n"
+    string += "num_first_stage_tasks : " + str(world.first_stage_tasks) + "\n"
+    string += "\n"
+
+    string += "car_move_cars : [ "
+    for i in range(len(world.cars)):
+        for j in range(len(world.cars[i].destinations)):
+            string += str(i + 1)
+            if (i < len(world.cars) - 1):
+                string += " "
+            else:
+                if (j < len(world.cars[i].destinations) - 1):
+                    string += " "
+    string += " ] \n"
+
+    string += "car_move_start_time : [ "
+    for i in range(len(world.cars)):
+        for j in range(len(world.cars[i].destinations)):
+            string += str(world.cars[i].start_time)
+            if (i < len(world.cars) - 1):
+                string += " "
+            else:
+                if (j < len(world.cars[i].destinations) - 1):
+                    string += " "
+    string += " ] \n"
+
+    string += "car_move_origin : [ "
+    for i in range(len(world.cars)):
+        for j in range(len(world.cars[i].destinations)):
+            string += str(world.cars[i].parking_node)
+            if (i < len(world.cars) - 1):
+                string += " "
+            else:
+                if (j < len(world.cars[i].destinations) - 1):
+                    string += " "
+    string += " ] \n"
+    string += "car_move_destination : [ "
+    for i in range(len(world.cars)):
+        for j in range(len(world.cars[i].destinations)):
+            string += str(world.cars[i].destinations[j])
+            if (i < len(world.cars) - 1):
+                string += " "
+            else:
+                if (j < len(world.cars[i].destinations) - 1):
+                    string += " "
+    string += " ] \n"
+    string += "car_move_handling_time : [ "
+    for i in range(len(world.cars)):
+        for j in range(len(world.cars[i].destinations)):
+            if (world.cars[i].destinations[j] > len(world.parking_nodes)):
+                string += str(world.distances_car[
+                                  (world.cars[i].parking_node - 1) * len(world.nodes) + world.cars[i].destinations[
+                                      j] - 1] + world.HANDLING_TIME_CHARGING)
+            else:
+                string += str(world.distances_car[
+                                  (world.cars[i].parking_node - 1) * len(world.nodes) + world.cars[i].destinations[
+                                      j] - 1] + world.HANDLING_TIME_PARKING)
+            if (i < len(world.cars) - 1):
+                string += " "
+            else:
+                if (j < len(world.cars[i].destinations) - 1):
+                    string += " "
+    string += " ] \n"
+    count = 0
+    for i in range(len(world.parking_nodes)):
+        if (world.parking_nodes[i].charging_state > 0):
+            count += 1
+    string += "num_cars_in_need_of_charging : " + str(count)
+    string += "\n"
+    car_in_need_of_charging_nodes = []
+    for i in range(len(world.parking_nodes)):
+        if (world.parking_nodes[i].charging_state > 0):
+            car_in_need_of_charging_nodes.append(i)
+    string += "nodes_with_cars_in_need_of_charging : [ "
+    for i in range(len(car_in_need_of_charging_nodes)):
+        string += str(car_in_need_of_charging_nodes[i] + 1)
+        if (i < len(car_in_need_of_charging_nodes) - 1):
+            string += " "
+    string += " ]\n"
+
+    string += "cars_in_need_of_charging_at_nodes : [ "
+    for i in range(len(world.parking_nodes)):
+        print("(node: {0}, pstate: {1}, cstate: {2}, istate: {3}, requests: {4}, deliveries: {5})".format(
+            i+1, world.parking_nodes[i].parking_state, world.parking_nodes[i].charging_state, world.parking_nodes[i].ideal_state,
+            world.parking_nodes[i].customer_requests, world.parking_nodes[i].car_returns))
+    for i in range(len(world.cars)):
+        print("(car: {0}, parking_node: {1}, destinations: {2})".format(i+1, world.cars[i].parking_node, world.cars[i].destinations))
+
+    for i in range(len(car_in_need_of_charging_nodes)):
+        string += str(world.parking_nodes[car_in_need_of_charging_nodes[i]].charging_state)
+        string += " "
+    string += "]\n"
+
+    string += "bigM : [ "
+    for i in range(len(world.bigM)):
+        string += str(world.bigM[i])
+        string += " "
+    string += "]\n"
+    string += "\n"
+
+    string += "cars_available_in_node : [ "
+    for i in range(len(world.parking_nodes)):
+        string += str(world.parking_nodes[i].parking_state)
+        string += " "
+    string += "]\n"
+    string += "\n"
+
+    f.write(string)
