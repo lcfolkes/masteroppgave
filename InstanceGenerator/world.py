@@ -1,4 +1,4 @@
-from InstanceGenerator.helper_functions import read_config
+from HelperFiles.helper_functions import read_config
 from InstanceGenerator.instance_components import ParkingNode, ChargingNode, Employee, Car
 from DataRetrieval import google_traffic_information_retriever as gI
 import numpy as np
@@ -345,7 +345,7 @@ def create_charging_nodes(world: World, num_charging_nodes: int, parking_nodes: 
 def create_employees(world: World, num_employees: int, start_time_employees: [int], handling_employees: [int]):
     for i in range(num_employees):
         print("Creating employee", i + 1)
-        time = start_time_employees[i]
+        start_time = start_time_employees[i]
         # 1 if employee is underway with car, 0 if not currently doing task
         handling = handling_employees[i]
 
@@ -359,22 +359,22 @@ def create_employees(world: World, num_employees: int, start_time_employees: [in
             # Nodes where pstate is positive
             positive_start_nodes = [i + 1 for i, parking_state in enumerate(parking_states) if parking_state > 0]
             start_node = random.choice(positive_start_nodes)
-            employee = Employee(start_node, time, True)
+            employee = Employee(start_node=start_node, start_time=start_time, handling=True)
             world.add_employee(employee)
         else:
             start_node = random.randint(1, len(world.parking_nodes))
-            employee = Employee(start_node, time, True)
+            employee = Employee(start_node=start_node, start_time=start_time, handling=False)
             world.add_employee(employee)
 
 
 # CARS
-def create_cars(world):
+def create_cars(world: World):
     initial_theta, initial_handling = world.calculate_initial_add()
     car_count = 0
     for i in range(len(world.parking_nodes)):
         # Add cars not in need of charging
         for j in range(world.parking_nodes[i].parking_state):  # -world.pNodes[i].cState):
-            new_car = Car(0, i + 1, False)
+            new_car = Car(parking_node=i + 1, start_time=0, is_charging=False)
             destinations = []
             for x in range(len(world.parking_nodes)):
                 if i != x:
@@ -387,7 +387,7 @@ def create_cars(world):
         if initial_handling[i] > 0:
             for j in range(len(world.employees)):
                 if (world.employees[j].handling == 1) and (world.employees[j].start_node - 1 == i):
-                    new_car = Car(world.employees[j].start_time, i + 1, False)
+                    new_car = Car(parking_node=i + 1, start_time=world.employees[j].start_time, is_charging=False)
                     destinations = []
                     for x in range(len(world.parking_nodes)):
                         if i != x:
@@ -401,7 +401,7 @@ def create_cars(world):
         # Add cars in need of charging
         for j in range(world.parking_nodes[i].charging_state):
             destinations = []
-            new_car = Car(0, i + 1, True)
+            new_car = Car(parking_node=i+1, start_time=0, is_charging=True)
             for x in range(len(world.charging_nodes)):
                 destinations.append(len(world.parking_nodes) + x + 1)
             new_car.set_destinations(destinations)

@@ -1,15 +1,143 @@
 import yaml
 import os
 
-def read_config(config_name: str):
-    with open(config_name, 'r') as stream:
-        try:
-            return yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-# read_config('world_constants_config.yaml')
-
  ## FILE HANDLER ##
+
+def write_to_file_yaml(world, instance_name:str):
+    test_dir = "../Gurobi/tests/{}nodes/".format(len(world.parking_nodes))
+    if not os.path.exists(test_dir):
+        os.makedirs(test_dir)
+    file_name = test_dir + str(instance_name) + "_a.yaml"  # + "_a.txt"
+    if (os.path.exists(file_name)):
+        file_name = test_dir + str(instance_name) + "_b.yaml"
+        if (os.path.exists(file_name)):
+            file_name = test_dir + str(instance_name) + "_c.yaml"
+    print(file_name)
+    data = {}
+    data['num_scenarios'] = world.num_scenarios
+    # Number of parking nodes
+    data['num_parking_nodes'] = len(world.parking_nodes)
+    # Number of charging nodes
+    data['num_charging_nodes'] = len(world.charging_nodes)
+    # Number of employees
+    data['num_employees'] = len(world.employees)
+
+    # start node of employee
+    data['start_node_employee'] = [e.start_node for e in world.employees]
+
+    # Available charging slots
+    data['charging_slots_available'] = [cn.capacity for cn in world.charging_nodes]
+
+    # Total number of charging slots (total capacity of charging node)
+    data['total_number_of_charging_slots'] = [cn.max_capacity for cn in world.charging_nodes]
+
+    # reward for renting out car in second stage
+    data['profit_rental'] = world.PROFIT_RENTAL
+    # cost of relocating vehicle
+    data['cost_relocation'] = world.COST_RELOCATION
+    # cost of deviating from ideal state
+    data['cost_deviation'] = world.COST_DEVIATION
+
+    # car travel times between nodes
+    data['travel_time_vehicle'] = [world.distances_car[i:i+len(world.nodes)]
+                                   for i in range(0, len(world.distances_car), len(world.nodes))]
+
+    # bike travel times between nodes
+    data['travel_time_bike'] = [world.distances_public_bike[i:i+len(world.nodes)]
+                                for i in range(0, len(world.distances_public_bike), len(world.nodes))]
+
+    # handling time for p- and c-nodes. Time used to initiate charging and find vacant parking spot.
+    # used in CarMoveHandlingTime
+    data['handling_time_parking'] = world.HANDLING_TIME_PARKING
+    data['handling_time_charging'] = world.HANDLING_TIME_CHARGING
+
+    # Travel
+    data['travel_time_to_origin'] = [e.start_time for e in world.employees]
+
+    data['start_time_car'] = [c.start_time for c in world.cars]
+
+    data['planning_period'] = world.PLANNING_PERIOD
+
+    # Cars in
+    data['parking_state'] = [pn.parking_state for pn in world.parking_nodes]
+
+    # Cars in need of charging in parking node
+    data['charging_state'] = [pn.charging_state for pn in world.parking_nodes]
+
+    data['ideal_state'] = [pn.ideal_state for pn in world.parking_nodes]
+
+    data['customer_requests'] = [pn.customer_requests.tolist() for pn in world.parking_nodes]
+
+    data['car_returns'] = [pn.car_returns.tolist() for pn in world.parking_nodes]
+
+    data['num_car_moves_parking'] = sum(len(c.destinations) for c in world.cars if not c.is_charging)
+
+    data['num_car_moves_charging'] = sum(len(c.destinations) for c in world.cars if c.is_charging)
+
+    data['num_cars'] = len(world.cars)
+    data['num_tasks'] = world.tasks
+    data['num_first_stage_tasks'] = world.first_stage_tasks
+
+    out_list = []
+    for i in range(len(world.cars)):
+        for j in range(len(world.cars[i].destinations)):
+            out_list.append(i + 1)
+    data['car_move_cars'] = out_list
+
+    out_list = []
+    for i in range(len(world.cars)):
+        for j in range(len(world.cars[i].destinations)):
+            out_list.append(world.cars[i].start_time)
+    data['car_move_start_time'] = out_list
+
+    out_list = []
+    for i in range(len(world.cars)):
+        for j in range(len(world.cars[i].destinations)):
+            out_list.append(world.cars[i].parking_node)
+    data['car_move_origin'] = out_list
+
+    data['car_move_destination'] = [d for c in world.cars for d in c.destinations]
+
+    out_list = []
+    for i in range(len(world.cars)):
+        for j in range(len(world.cars[i].destinations)):
+            if (world.cars[i].destinations[j] > len(world.parking_nodes)):
+                out_list.append(world.distances_car[
+                                  (world.cars[i].parking_node - 1) * len(world.nodes) + world.cars[i].destinations[
+                                      j] - 1] + world.HANDLING_TIME_CHARGING)
+            else:
+                out_list.append(world.distances_car[
+                                  (world.cars[i].parking_node - 1) * len(world.nodes) + world.cars[i].destinations[
+                                      j] - 1] + world.HANDLING_TIME_PARKING)
+
+    data['car_move_handling_time'] = out_list
+
+    data['num_nodes_with_cars_in_need_of_charging'] = sum(1 for pn in world.parking_nodes if pn.charging_state > 0)
+
+    car_in_need_of_charging_nodes = []
+    for i in range(len(world.parking_nodes)):
+        if (world.parking_nodes[i].charging_state > 0):
+            car_in_need_of_charging_nodes.append(i+1)
+
+    data['nodes_with_cars_in_need_of_charging'] = car_in_need_of_charging_nodes
+
+    data['cars_in_need_of_charging_at_nodes'] = [world.parking_nodes[c-1].charging_state for c in car_in_need_of_charging_nodes]
+
+    for i in range(len(world.parking_nodes)):
+        print("(node: {0}, pstate: {1}, cstate: {2}, istate: {3}, requests: {4}, deliveries: {5})".format(
+            i + 1, world.parking_nodes[i].parking_state, world.parking_nodes[i].charging_state,
+            world.parking_nodes[i].ideal_state,
+            world.parking_nodes[i].customer_requests, world.parking_nodes[i].car_returns))
+    for i in range(len(world.cars)):
+        print("(car: {0}, parking_node: {1}, destinations: {2})".format(i + 1, world.cars[i].parking_node,
+                                                                        world.cars[i].destinations))
+
+    data['bigM'] = [m for m in world.bigM]
+
+    data['cars_available_in_node'] = [pn.parking_state for pn in world.parking_nodes]
+
+    with open(file_name, 'w') as outfile:
+        yaml.dump(data, outfile, default_flow_style=None)
 
 def write_to_file(world, instance_name: str):
     test_dir = "../Gurobi/tests/{}nodes/".format(len(world.parking_nodes))
@@ -240,7 +368,7 @@ def write_to_file(world, instance_name: str):
     for i in range(len(world.parking_nodes)):
         if (world.parking_nodes[i].charging_state > 0):
             count += 1
-    string += "num_cars_in_need_of_charging : " + str(count)
+    string += "num_nodes_with_cars_in_need_of_charging : " + str(count)
     string += "\n"
     car_in_need_of_charging_nodes = []
     for i in range(len(world.parking_nodes)):
@@ -281,3 +409,4 @@ def write_to_file(world, instance_name: str):
     string += "\n"
 
     f.write(string)
+    f.close()
