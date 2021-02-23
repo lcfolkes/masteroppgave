@@ -1,16 +1,16 @@
-from InstanceGenerator.helper_functions import *
+from InstanceGenerator.helper_functions import read_config
+from InstanceGenerator.instance_components import ParkingNode, ChargingNode, Employee, Car
+from DataRetrieval import google_traffic_information_retriever as gI
 import numpy as np
 import math
 import random
 import time
 import copy
-from DataRetrieval import google_traffic_information_retriever as gI
 
 DISTANCESCALE = 3
 
 class World:
-    cf = read_config('world_constants_config.yaml')
-
+    cf = read_config('./world_constants_config.yaml')
     # COST CONSTANTS #
     PROFIT_RENTAL = cf['objective_function']['profit_rental']
     COST_RELOCATION = cf['objective_function']['cost_relocation']
@@ -22,7 +22,7 @@ class World:
     PLANNING_PERIOD = cf['time_constants']['planning_period']
 
     # BOARD SIZE #
-    OPERATING_AREA_SIZE = [cf['operating_area_grid']['y'], cf['operating_area_grid']['x']]
+    OPERATING_AREA_SIZE = (cf['board']['operating_area_grid']['y'], cf['board']['operating_area_grid']['x'])
 
     # DEMAND
     CUSTOMER_REQUESTS = cf['node_demands']['customer_requests']
@@ -58,8 +58,6 @@ class World:
         self.distances_public_bike = []
         self.distances_car = []
         self.cars = []
-        self.demands = {}
-        self.deliveries = {}
         self.coordinates = []
         self.remove_coordinates = []
         self.bigM = []
@@ -71,22 +69,25 @@ class World:
     def add_nodes(self, node):
         self.nodes.append(node)
 
-    def add_parking_nodes(self, parking_node):
+    def add_parking_nodes(self, parking_node: ParkingNode):
         self.parking_nodes.append(parking_node)
 
-    def add_charging_nodes(self, charging_node):
+    def add_charging_nodes(self, charging_node: ChargingNode):
         self.charging_nodes.append(charging_node)
 
-    def add_employee(self, employee):
+    def add_employee(self, employee: Employee):
         self.employees.append(employee)
 
-    def add_car(self, car):
+    def add_car(self, car: Car):
         self.cars.append(car)
 
-    def set_scenarios(self, n):
-        self.numScenarios = n
+    def set_scenarios(self, n: int):
+        self.num_scenarios = n
 
-    def set_num_first_stage_tasks(self, n):
+    def set_tasks(self, n: int):
+        self.tasks = n
+
+    def set_num_first_stage_tasks(self, n: int):
         self.firstStageTasks = n
 
     # customer requests in the second stage and
@@ -98,10 +99,10 @@ class World:
         car_returns_prob = [World.CAR_RETURNS[k] for k in World.CAR_RETURNS]
         for i in range(len(self.parking_nodes)):
             # np.random.seed(i)
-            self.parking_nodes[i].customer_requests = np.random.choice(customer_requests, size=self.numScenarios, p=customer_requests_prob)
-            self.parking_nodes[i].car_returns = np.random.choice(car_returns, size=self.numScenarios, p=car_returns_prob)
+            self.parking_nodes[i].set_customer_requests(np.random.choice(customer_requests, size=self.num_scenarios, p=customer_requests_prob))
+            self.parking_nodes[i].set_car_returns(np.random.choice(car_returns, size=self.num_scenarios, p=car_returns_prob))
 
-    def add_cords(self, coordinates: [(float, float)]):
+    def add_coordinates(self, coordinates: [(float, float)]):
         # cord (y,x)
         self.coordinates = coordinates
 
@@ -126,7 +127,7 @@ class World:
                 self.distances_car.append(distanceSq)
                 self.distances_public_bike.append(distance_public_bike)
 
-    def giveRealCoordinatesSpread(self):
+    def give_real_coordinates_spread(self) -> [(float, float)]:
         stepX = (self.UPPER_RIGHT[1] - self.LOWER_LEFT[1]) / World.OPERATING_AREA_SIZE[1]
         stepY = (self.UPPER_RIGHT[0] - self.LOWER_LEFT[0]) / World.OPERATING_AREA_SIZE[0]
         startX = self.LOWER_LEFT[1] + 0.5 * stepX
@@ -160,111 +161,108 @@ class World:
         self.add_coordinates(sample_cords)
         return sample_cords
 
-    def giveRealCoordinatesCluster(self):
-        pass
-
-    def calculateRealDistances(self, cords):
-        if (len(cords) == 0):
+    def calculate_real_distances(self, coordinates):
+        if (len(coordinates) == 0):
             step_x = (World.UPPER_RIGHT[1] - World.LOWER_LEFT[1]) / self.x_dim_parking
             step_y = (World.UPPER_RIGHT[0] - World.LOWER_LEFT[0]) / self.y_dim_parking
             start_x = World.LOWER_LEFT[1] + 0.5 * step_x
             start_y = World.UPPER_RIGHT[0] - 0.5 * step_y
-            cords = []
+            coordinates = []
             for i in range(self.y_dim_parking):
                 for j in range(self.x_dim_parking):
                     cordX = start_x + j * step_x
                     cordY = start_y - i * step_y
-                    cord = (cordY, cordX)
-                    cords.append(cord)
+                    coordinate = (cordY, cordX)
+                    coordinates.append(coordinate)
 
-        travelMatrixCar = gI.run(cords, "driving", False)
+        travel_matrix_car = gI.run(coordinates, "driving", False)
         time.sleep(2)
-        travelMatrixBicycle = gI.run(cords, "bicycling", False)
+        travel_matrix_bicycle = gI.run(coordinates, "bicycling", False)
         time.sleep(2)
-        travelMatrixTransit = gI.run(cords, "transit", False)
+        travel_matrix_transit = gI.run(coordinates, "transit", False)
 
-        for i in range(len(travelMatrixBicycle)):
+        for i in range(len(travel_matrix_bicycle)):
             for j in range(len(self.charging_nodes)):
                 if (self.charging_nodes[j].parking_node - 1 == i):
-                    travelMatrixBicycle[i].append(60)
-                    travelMatrixTransit[i].append(60)
-                    travelMatrixCar[i].append(60)
+                    travel_matrix_bicycle[i].append(60)
+                    travel_matrix_transit[i].append(60)
+                    travel_matrix_car[i].append(60)
                 else:
-                    travelMatrixBicycle[i].append(travelMatrixBicycle[i][self.charging_nodes[j].parking_node - 1])
-                    travelMatrixTransit[i].append(travelMatrixTransit[i][self.charging_nodes[j].parking_node - 1])
-                    travelMatrixCar[i].append(travelMatrixCar[i][self.charging_nodes[j].parking_node - 1])
+                    travel_matrix_bicycle[i].append(travel_matrix_bicycle[i][self.charging_nodes[j].parking_node - 1])
+                    travel_matrix_transit[i].append(travel_matrix_transit[i][self.charging_nodes[j].parking_node - 1])
+                    travel_matrix_car[i].append(travel_matrix_car[i][self.charging_nodes[j].parking_node - 1])
         for i in range(len(self.charging_nodes)):
-            travelMatrixBicycle.append(copy.deepcopy(travelMatrixBicycle[self.charging_nodes[i].parking_node - 1]))
-            travelMatrixTransit.append(copy.deepcopy(travelMatrixTransit[self.charging_nodes[i].parking_node - 1]))
-            travelMatrixCar.append(copy.deepcopy(travelMatrixCar[self.charging_nodes[i].parking_node - 1]))
+            travel_matrix_bicycle.append(copy.deepcopy(travel_matrix_bicycle[self.charging_nodes[i].parking_node - 1]))
+            travel_matrix_transit.append(copy.deepcopy(travel_matrix_transit[self.charging_nodes[i].parking_node - 1]))
+            travel_matrix_car.append(copy.deepcopy(travel_matrix_car[self.charging_nodes[i].parking_node - 1]))
 
-            travelMatrixBicycle[len(travelMatrixBicycle) - 1][self.charging_nodes[i].parking_node - 1] = 60
-            travelMatrixTransit[len(travelMatrixTransit) - 1][self.charging_nodes[i].parking_node - 1] = 60
-            travelMatrixCar[len(travelMatrixCar) - 1][self.charging_nodes[i].parking_node - 1] = 60
+            travel_matrix_bicycle[len(travel_matrix_bicycle) - 1][self.charging_nodes[i].parking_node - 1] = 60
+            travel_matrix_transit[len(travel_matrix_transit) - 1][self.charging_nodes[i].parking_node - 1] = 60
+            travel_matrix_car[len(travel_matrix_car) - 1][self.charging_nodes[i].parking_node - 1] = 60
 
             # Set distance to charging station to 1 for corresponding node
-            travelMatrixBicycle[len(travelMatrixBicycle) - 1][len(self.parking_nodes) + i] = 1.0
-            travelMatrixTransit[len(travelMatrixTransit) - 1][len(self.parking_nodes) + i] = 1.0
-            travelMatrixCar[len(travelMatrixCar) - 1][len(self.parking_nodes) + i] = 1.0
+            travel_matrix_bicycle[len(travel_matrix_bicycle) - 1][len(self.parking_nodes) + i] = 1.0
+            travel_matrix_transit[len(travel_matrix_transit) - 1][len(self.parking_nodes) + i] = 1.0
+            travel_matrix_car[len(travel_matrix_car) - 1][len(self.parking_nodes) + i] = 1.0
 
-        travelMatrixNotHandling = []
-        travelMatrixHandling = []
-        for i in range(len(travelMatrixBicycle)):
-            for j in range(len(travelMatrixBicycle[i])):
-                travelMatrixNotHandling.append(
-                    float(format(min(travelMatrixBicycle[i][j], travelMatrixTransit[i][j]) / 60, '.1f')))
-                travelMatrixHandling.append(float(format(travelMatrixCar[i][j] / 60, '.1f')))
-        self.distances_car = travelMatrixHandling
-        self.distances_public_bike = travelMatrixNotHandling
+        travel_matrix_not_handling = []
+        travel_matrix_handling = []
+        for i in range(len(travel_matrix_bicycle)):
+            for j in range(len(travel_matrix_bicycle[i])):
+                travel_matrix_not_handling.append(
+                    float(format(min(travel_matrix_bicycle[i][j], travel_matrix_transit[i][j]) / 60, '.1f')))
+                travel_matrix_handling.append(float(format(travel_matrix_car[i][j] / 60, '.1f')))
+        self.distances_car = travel_matrix_handling
+        self.distances_public_bike = travel_matrix_not_handling
 
     ## CALCULATE BIGM
-    def calculateBigM(self):
+    def calculate_bigM(self):
         for i in range(len(self.cars)):
             for j in range(len(self.cars[i].destinations)):
-                maxDiff = 0
+                max_diff = 0
                 for l in range(len(self.cars)):
                     for k in range(len(self.cars[l].destinations)):
                         for x in range(len(self.parking_nodes)):
                             distances1 = self.distances_public_bike[(len(self.nodes) * (self.cars[i].destinations[j] - 1)) + x]
                             distances2 = self.distances_public_bike[(len(self.nodes) * (self.cars[l].destinations[k] - 1)) + x]
-                            handlingTime2 = self.distances_car[
-                                len(self.nodes) * (self.cars[l].parkingNode - 1) + self.cars[l].destinations[k] - 1]
-                            diff = distances1 - (distances2 + handlingTime2)
-                            if (diff > maxDiff):
-                                maxDiff = diff
-                bigMdiff = maxDiff
-                bigM = float(format(bigMdiff, '.1f'))
+                            handling_time = self.distances_car[
+                                len(self.nodes) * (self.cars[l].parking_node - 1) + self.cars[l].destinations[k] - 1]
+                            diff = distances1 - (distances2 + handling_time)
+                            if (diff > max_diff):
+                                max_diff = diff
+                bigM_diff = max_diff
+                bigM = float(format(bigM_diff, '.1f'))
                 self.bigM.append(bigM)
 
     ## CALCULATE VISITS ##
 
-    def calculateInitialAdd(self):
+    def calculate_initial_add(self):
         # Initial theta is the initial number of employees at each node (employees on its way to a node included)
         initial_theta = [0 for i in range(len(self.nodes))]
         # Initial handling is a list of employees coming in to each node after handling car
         # if finishing up a task, an employee and a car will arrive a this node
         initial_handling = [0 for i in range(len(self.nodes))]
         for j in range(len(self.employees)):
-            initial_theta[self.employees[j].startNode - 1] += 1
+            initial_theta[self.employees[j].start_node - 1] += 1
             if (self.employees[j].handling):
-                initial_handling[self.employees[j].startNode - 1] += 1
+                initial_handling[self.employees[j].start_node - 1] += 1
         return initial_theta, initial_handling
 
     ## SCALE IDEAL STATE ##
 
     #
     def create_real_ideal_state(self):
-        initialAdd = [0 for i in range(len(self.nodes))]
+        initial_add = [0 for i in range(len(self.nodes))]
         for j in range(len(self.employees)):
             if (self.employees[j].handling):
-                initialAdd[self.employees[j].startNode - 1] += 1
+                initial_add[self.employees[j].start_node - 1] += 1
 
         sum_ideal_state = 0
         sum_parking_state = 0
         # net sum of Requests-Deliveries for each scenario
         for i in range(len(self.parking_nodes)):
             sum_ideal_state += self.parking_nodes[i].ideal_state
-            sum_parking_state += self.parking_nodes[i].parking_state + initialAdd[i]
+            sum_parking_state += self.parking_nodes[i].parking_state + initial_add[i]
 
         # ideal state should be scaled to sum of available cars in the worst case
 
@@ -290,6 +288,123 @@ class World:
                 sum_parking_state_after += 1
             else:
                 r = random.randint(0, len(self.parking_nodes) - 1)
-                if (self.parking_nodes[r].parking_state - initialAdd[r] > 0):
+                if (self.parking_nodes[r].parking_state - initial_add[r] > 0):
                     self.parking_nodes[r].parking_state -= 1
                     sum_parking_state_after -= 1
+
+## - CREATORS - ##
+# PNODES
+def create_parking_nodes(world: World, parking_dim: {str: int}):
+    charging_states = [s for s in World.CHARGING_STATE]
+    charging_state_probs = [World.CHARGING_STATE[s] for s in World.CHARGING_STATE]
+    parking_states = [s for s in World.PARKING_STATE]
+    parking_state_probs = [World.PARKING_STATE[s] for s in World.PARKING_STATE]
+    ideal_states = [s for s in World.IDEAL_STATE]
+    ideal_state_probs = [World.IDEAL_STATE[s] for s in World.IDEAL_STATE]
+    x_dim = parking_dim['x']
+    y_dim = parking_dim['y']
+
+    for i in range(y_dim):
+        x_coordinate = i
+        for j in range(x_dim):
+            # np.random.seed(i+j)
+            # cState = int(np.random.choice([0,1], size=1, p=[0.75, 0.25]))
+            charging_state = int(np.random.choice(charging_states, size=1, p=charging_state_probs))
+            # np.random.seed(i + j)
+            parking_state = int(np.random.choice(parking_states, size=1, p=parking_state_probs))
+            # np.random.seed(i + j)
+            ideal_state = int(np.random.choice(ideal_states, size=1, p=ideal_state_probs))
+
+            # np.random.seed(i + j)
+            # demand = np.random.choice(DEMAND, size=NUMSCENARIOS, p=DEMANDPROB) #customer requests in the second stage
+            # deliveries = np.random.choice(DELIVERIES, NUMSCENARIOS, p=DELIVERIESPROB) #customer deliveries in the second stage
+            y_coordinate = j
+            node = ParkingNode(x_coordinate, y_coordinate, parking_state, charging_state,
+                               ideal_state)  # , demand, deliveries)
+            world.add_nodes(node)
+            world.add_parking_nodes(node)
+    world.add_parking_dim(x_dim, y_dim)
+
+
+# CNODES
+def create_charging_nodes(world: World, num_charging_nodes: int, parking_nodes: [int], capacities: [int],
+                          max_capacities: [int]):
+    for i in range(num_charging_nodes):
+        print("Creating charging node: ", i + 1)
+        parking_node_num = parking_nodes[i]
+        parking_node = world.parking_nodes[parking_node_num - 1]
+        capacity = capacities[i]
+        max_capacity = max_capacities[i]
+        charging_node = ChargingNode(parking_node.x_coordinate, parking_node.y_coordinate, capacity, max_capacity,
+                                     parking_node_num)
+        world.add_charging_nodes(charging_node)
+        world.add_nodes(charging_node)
+
+
+# Employees
+def create_employees(world: World, num_employees: int, start_time_employees: [int], handling_employees: [int]):
+    for i in range(num_employees):
+        print("Creating employee", i + 1)
+        time = start_time_employees[i]
+        # 1 if employee is underway with car, 0 if not currently doing task
+        handling = handling_employees[i]
+
+        # %Vi plasserer en on its way-employee i en hvilken som helst node,
+        # det eneste kravet er at det må stå minst en bil der. Dette er sufficient,
+        # fordi vi antar at dersom han kommer med en bil, så er den definert som tilgjengelig i systemet fra tid 0.
+        if handling == 1:
+            parking_states = []
+            for node in world.parking_nodes:
+                parking_states.append(node.parking_state)
+            # Nodes where pstate is positive
+            positive_start_nodes = [i + 1 for i, parking_state in enumerate(parking_states) if parking_state > 0]
+            start_node = random.choice(positive_start_nodes)
+            employee = Employee(start_node, time, True)
+            world.add_employee(employee)
+        else:
+            start_node = random.randint(1, len(world.parking_nodes))
+            employee = Employee(start_node, time, True)
+            world.add_employee(employee)
+
+
+# CARS
+def create_cars(world):
+    initial_theta, initial_handling = world.calculate_initial_add()
+    car_count = 0
+    for i in range(len(world.parking_nodes)):
+        # Add cars not in need of charging
+        for j in range(world.parking_nodes[i].parking_state):  # -world.pNodes[i].cState):
+            new_car = Car(0, i + 1, False)
+            destinations = []
+            for x in range(len(world.parking_nodes)):
+                if i != x:
+                    destinations.append(x + 1)
+            new_car.set_destinations(destinations)
+            world.add_car(new_car)
+            car_count += 1
+            print("Car {} Node {} - car not in need of charging".format(car_count, i + 1))
+        # Add cars on its way to parking node
+        if initial_handling[i] > 0:
+            for j in range(len(world.employees)):
+                if (world.employees[j].handling == 1) and (world.employees[j].start_node - 1 == i):
+                    new_car = Car(world.employees[j].start_time, i + 1, False)
+                    destinations = []
+                    for x in range(len(world.parking_nodes)):
+                        if i != x:
+                            destinations.append(x + 1)
+                    new_car.set_destinations(destinations)
+                    world.add_car(new_car)
+                    world.parking_nodes[i].parking_state += 1
+
+                    car_count += 1
+                    print("Car {} Node {} - car on its way to parking node ".format(car_count, i + 1))
+        # Add cars in need of charging
+        for j in range(world.parking_nodes[i].charging_state):
+            destinations = []
+            new_car = Car(0, i + 1, True)
+            for x in range(len(world.charging_nodes)):
+                destinations.append(len(world.parking_nodes) + x + 1)
+            new_car.set_destinations(destinations)
+            world.add_car(new_car)
+            car_count += 1
+            print("Car {} Node {} - car in need of charging".format(car_count, i + 1))
