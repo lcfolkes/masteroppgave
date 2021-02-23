@@ -27,7 +27,7 @@ class ChargingNode:
 
 class Employee:
     # find better word for "handling". perhaps occupied or busy is better?
-    def __init__(self, start_node: int, start_time: float, handling: bool):
+    def __init__(self, start_node: int, start_time: int, handling: bool):
         self.start_node = start_node
         self.start_time = start_time
         self.handling = handling
