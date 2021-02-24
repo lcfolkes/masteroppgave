@@ -93,22 +93,22 @@ def write_to_file_yaml(world, instance_name:str):
     out_list = []
     for i in range(len(world.cars)):
         for j in range(len(world.cars[i].destinations)):
-            out_list.append(world.cars[i].parking_node)
+            out_list.append(world.cars[i].parking_node.node_id)
     data['car_move_origin'] = out_list
 
-    data['car_move_destination'] = [d for c in world.cars for d in c.destinations]
+    data['car_move_destination'] = [d.node_id for c in world.cars for d in c.destinations]
 
     out_list = []
     for i in range(len(world.cars)):
         for j in range(len(world.cars[i].destinations)):
-            if (world.cars[i].destinations[j] > len(world.parking_nodes)):
+            if world.cars[i].destinations[j].node_id > len(world.parking_nodes):
                 out_list.append(world.distances_car[
-                                  (world.cars[i].parking_node - 1) * len(world.nodes) + world.cars[i].destinations[
-                                      j] - 1] + world.HANDLING_TIME_CHARGING)
+                                  (world.cars[i].parking_node.node_id - 1) * len(world.nodes) + world.cars[i].destinations[
+                                      j].node_id - 1] + world.HANDLING_TIME_CHARGING)
             else:
                 out_list.append(world.distances_car[
-                                  (world.cars[i].parking_node - 1) * len(world.nodes) + world.cars[i].destinations[
-                                      j] - 1] + world.HANDLING_TIME_PARKING)
+                                  (world.cars[i].parking_node.node_id - 1) * len(world.nodes) + world.cars[i].destinations[
+                                      j].node_id - 1] + world.HANDLING_TIME_PARKING)
 
     data['car_move_handling_time'] = out_list
 
@@ -129,8 +129,8 @@ def write_to_file_yaml(world, instance_name:str):
             world.parking_nodes[i].ideal_state,
             world.parking_nodes[i].customer_requests, world.parking_nodes[i].car_returns))
     for i in range(len(world.cars)):
-        print("(car: {0}, parking_node: {1}, destinations: {2})".format(i + 1, world.cars[i].parking_node,
-                                                                        world.cars[i].destinations))
+        print("(car: {0}, parking_node: {1}, destinations: {2})".format(i + 1, world.cars[i].parking_node.node_id,
+                                                                        [d.node_id for d in world.cars[i].destinations]))
 
     data['bigM'] = [m for m in world.bigM]
 
@@ -340,7 +340,7 @@ def write_to_file(world, instance_name: str):
     string += "car_move_destination : [ "
     for i in range(len(world.cars)):
         for j in range(len(world.cars[i].destinations)):
-            string += str(world.cars[i].destinations[j])
+            string += str(world.cars[i].destinations[j].node_id)
             if (i < len(world.cars) - 1):
                 string += " "
             else:
@@ -350,14 +350,14 @@ def write_to_file(world, instance_name: str):
     string += "car_move_handling_time : [ "
     for i in range(len(world.cars)):
         for j in range(len(world.cars[i].destinations)):
-            if (world.cars[i].destinations[j] > len(world.parking_nodes)):
+            if (world.cars[i].destinations[j].node_id > len(world.parking_nodes)):
                 string += str(world.distances_car[
                                   (world.cars[i].parking_node - 1) * len(world.nodes) + world.cars[i].destinations[
-                                      j] - 1] + world.HANDLING_TIME_CHARGING)
+                                      j] - 1].node_id + world.HANDLING_TIME_CHARGING)
             else:
                 string += str(world.distances_car[
                                   (world.cars[i].parking_node - 1) * len(world.nodes) + world.cars[i].destinations[
-                                      j] - 1] + world.HANDLING_TIME_PARKING)
+                                      j] - 1].node_id + world.HANDLING_TIME_PARKING)
             if (i < len(world.cars) - 1):
                 string += " "
             else:

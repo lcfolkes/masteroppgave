@@ -1,6 +1,6 @@
 # imports
 import gurobipy as gp
-from gurobipy import GRB, Model
+from gurobipy import GRB
 import numpy as np
 from itertools import product
 from HelperFiles.helper_functions import read_config, read_2d_array_to_dict, create_dict_of_indices, create_car_moves_origin_destination
@@ -23,16 +23,12 @@ class GurobiInstance:
         # print("PARKING_NEED_CHARGING_NODES: ", PARKING_NEED_CHARGING_NODES)
         self.CARS = np.arange(1, self.cf['num_cars'] + 1)  # C, set of cars potentially subject to relocation
         # print("CARS: ", CARS)
-        self.CARMOVES = np.arange(1, self.cf['num_car_moves_parking'] + self.cf[
-            'num_car_moves_charging'] + 1)  # R, set of car-moves
-        self.CARMOVES_CAR = create_dict_of_indices(self.CARS,
-                                                   self.cf['car_move_cars'])  # R_c, set of car-moves for car c
-        self.PARKING_MOVES = np.arange(1,
-                                       self.cf['num_car_moves_parking'] + 1)  # set of PARKING-moves, R_i^PD and R_i^PO
+        self.CARMOVES = np.arange(1, self.cf['num_car_moves_parking'] + self.cf['num_car_moves_charging'] + 1)  # R, set of car-moves
+        self.CARMOVES_CAR = create_dict_of_indices(self.CARS, self.cf['car_move_cars'])  # R_c, set of car-moves for car c
+        self.PARKING_MOVES = np.arange(1, self.cf['num_car_moves_parking'] + 1)  # set of PARKING-moves, R_i^PD and R_i^PO
         # print(PARKING_MOVES)
         self.CHARGING_MOVES = np.arange(self.cf['num_car_moves_parking'] + 1,
-                                        self.cf['num_car_moves_parking'] + self.cf[
-                                            'num_car_moves_charging'] + 1)  # set of charging-moves, trenger  R_i^CD and R_i^CO
+                                        self.cf['num_car_moves_parking'] + self.cf['num_car_moves_charging'] + 1)  # set of charging-moves, trenger  R_i^CD and R_i^CO
         self.EMPLOYEES = np.arange(1, self.cf['num_employees'] + 1)  # K, set of service employees
         self.TASKS = np.arange(1, self.cf['num_tasks'] + 1)  # M, set of possible abstract tasks
 
@@ -103,10 +99,8 @@ class GurobiInstance:
             self.SCENARIO_PROBABILITY = 1
 
         if model_type == 0 or model_type == 3:
-            self.CUSTOMER_REQUESTS = read_2d_array_to_dict(self.cf[
-                                                               'customer_requests'])  # R_(is), number of customer requests in second stage in parking node i in scenario s in second stage
-            self.CUSTOMER_DELIVERIES = read_2d_array_to_dict(self.cf[
-                                                                 'car_returns'])  # D_(is), number of vehicles delivered by customers in node i and scenario s in second stage
+            self.CUSTOMER_REQUESTS = read_2d_array_to_dict(self.cf['customer_requests'])  # R_(is), number of customer requests in second stage in parking node i in scenario s in second stage
+            self.CUSTOMER_DELIVERIES = read_2d_array_to_dict(self.cf['car_returns'])  # D_(is), number of vehicles delivered by customers in node i and scenario s in second stage
         else:
             deterministic_customer_request = {}
             deterministic_customer_deliveries = {}
