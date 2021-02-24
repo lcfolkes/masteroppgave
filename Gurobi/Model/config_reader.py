@@ -105,4 +105,4 @@ def create_car_moves_origin_destination(parking_nodes, charging_nodes, origin_li
 
 	return RiPO, RiPD, RiCO, RiCD
 
-cp = ConfigReader("../tests/6nodes/6-3-0-1_a.txt")
+cp = ConfigReader("../../InstanceGenerator/InstanceFiles/6nodes/6-3-0-1_a.txt")

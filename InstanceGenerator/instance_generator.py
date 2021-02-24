@@ -2,11 +2,12 @@ from InstanceGenerator.file_writer import write_to_file, write_to_file_yaml
 from HelperFiles.helper_functions import read_config
 from InstanceGenerator.world import World, create_parking_nodes, create_charging_nodes, create_employees, create_cars
 import copy
+import os
 
 
 # WORLD AND ENTITIES
-def initializeWorld(world: World):
-    cf = read_config('instance_config.yaml')
+def initializeWorld(world: World, instance_config: str):
+    cf = instance_config
     create_parking_nodes(world=world, parking_dim=cf['board']['parking_node_dim'])
     create_charging_nodes(world=world, num_charging_nodes=cf['charging_nodes']['num_charging'],
                           parking_nodes=cf['charging_nodes']['parking_nodes'], capacities=cf['charging_nodes']['capacities'],
@@ -14,10 +15,10 @@ def initializeWorld(world: World):
     create_employees(world=world, num_employees=cf['employees']['num_employees'], start_time_employees=cf['employees']['start_time'],
                      handling_employees=cf['employees']['handling'])
 
-def buildWorld() -> World:
+def buildWorld(instance_config: str) -> World:
     SPREAD = True
     world = World()
-    initializeWorld(world)
+    initializeWorld(world, instance_config)
     coordinates = []
     if (SPREAD):
         coordinates = world.give_real_coordinates_spread()
@@ -47,20 +48,19 @@ def create_instance_from_world(world: World, num_scenarios: int, num_tasks: int,
     for n in new_world.parking_nodes:
         available_cars += n.parking_state
         cars_to_charging += n.charging_state
-    filepath = str(len(new_world.parking_nodes)) + "-" + str(new_world.num_scenarios) + "-" + str(new_world.first_stage_tasks) + "-" + str(version)
-    #write_to_file(new_world, filepath)
-    write_to_file_yaml(new_world, filepath)
+    instance_name = str(len(new_world.parking_nodes)) + "-" + str(new_world.num_scenarios) + "-" + str(new_world.first_stage_tasks) + "-" + str(version)
+    write_to_file_yaml(new_world, instance_name)
     print("Finished")
     return new_world
 
 
 def main():
-    cf = read_config('instance_config.yaml')
+    cf = read_config('./InstanceConfigs/instance_config.yaml')
     print("\nWELCOME TO THE EXAMPLE CREATOR \n")
     worlds = []
     for i in range(cf['examples']):
         print("Creating instance: ", i)
-        world = buildWorld()
+        world = buildWorld(instance_config=cf)
         create_instance_from_world(world, num_scenarios=cf['num_scenarios'], num_tasks=cf['tasks']['num_all'],
                                 num_first_stage_tasks=cf['tasks']['num_first_stage'], version=i+1)
         worlds.append(world)

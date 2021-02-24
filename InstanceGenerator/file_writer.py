@@ -4,7 +4,7 @@ import os
  ## FILE HANDLER ##
 
 def write_to_file_yaml(world, instance_name:str):
-    test_dir = "../Gurobi/tests/{}nodes/".format(len(world.parking_nodes))
+    test_dir = "./InstanceFiles/{}nodes/".format(len(world.parking_nodes))
     if not os.path.exists(test_dir):
         os.makedirs(test_dir)
     file_name = test_dir + str(instance_name) + "_a.yaml"  # + "_a.txt"

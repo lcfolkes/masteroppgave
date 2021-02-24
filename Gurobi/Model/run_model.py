@@ -3,6 +3,7 @@ import sys
 import gurobipy as gp
 import pandas as pd
 from Gurobi.Model.gurobi_instance import GurobiInstance
+from HelperFiles.helper_functions import write_gurobi_results_to_file, append_df_to_excel
 
 def run_model(model, stochastic=True, reset=False):
 	m = model.m
@@ -146,7 +147,7 @@ def run_model(model, stochastic=True, reset=False):
 		print(e)
 		print('Encountered an attribute error')
 
-def run_test_instance(file):
+def run_test_instance(file: str):
 	stochastic_model = GurobiInstance(file, model_type=0)
 	stochastic_model.m.setParam('TimeLimit', 30 * 60)
 	z_stochastic, firststageroutes, secondstageroutes, planningperiod = run_model(stochastic_model, stochastic=True, reset=True)
@@ -159,32 +160,18 @@ def run_test_instance(file):
 	print("Value of Stochastic Solution (VSS)", vss)
 
 	# Write results to file
-	print(file)
-	new_path = file.split('/')[1:]
-	new_path[0] = 'results'
-	new_path[-1] = new_path[-1].split('.')[0]
-	results_dir = os.path.join('..', new_path[0], new_path[1])
-	results_file = os.path.join(results_dir, new_path[-1] + "_results.txt")
-
-	if not os.path.exists(results_dir):
-		os.makedirs(results_dir)
-
-	f = open(results_file, "a+")
-
-	str1 = firststageroutes.to_string(header=True, index=True)
-	str2 = secondstageroutes.to_string(header=True, index=True)
-	f.write("-------------- First stage routes --------------\n")
-	f.write(str1 + "\n")
-	f.write("-------------- Second stage routes --------------\n")
-	f.write(str2 + "\n")
-
-	string = "\nObjVal Stochastic: " + str(z_stochastic.ObjVal) + "\nEEV: " + str(z_eev.ObjVal) + "\nVSS: " + str(vss) + \
+	out_str = ""
+	out_str += "-------------- First stage routes --------------\n"
+	out_str += firststageroutes.to_string(header=True, index=True)
+	out_str += "\n\n-------------- Second stage routes --------------\n"
+	out_str += secondstageroutes.to_string(header=True, index=True)
+	out_str += "\n\nObjVal Stochastic: " + str(z_stochastic.ObjVal) + "\nEEV: " + str(z_eev.ObjVal) + "\nVSS: " + str(vss) + \
 			 "\nPercentage Improvement: " + str(((z_stochastic.ObjVal / z_eev.ObjVal) - 1) * 100) + "\nRuntime stochastic: " \
 			 + str(z_stochastic.Runtime) + "\nPlanning period: " + str(planningperiod)
-	f.write(string)
 
-	f.close()
+	write_gurobi_results_to_file(filename=file, out_str=out_str)
 
+	'''
 	# Write results to excel file
 	firststageroutes = firststageroutes.values[:, 2]
 	secondstageroutes = secondstageroutes.values[:, 3]
@@ -198,12 +185,13 @@ def run_test_instance(file):
 		"Runtime Stochastic": [z_stochastic.Runtime],
 		"First-stage Routes": [firststageroutes],
 		"Second-stage Routes": [secondstageroutes]})
-
+	
+	append_df_to_excel(filename=file, df=df_results)'''
 
 def main():
 	print(sys.path)  # os.getcwd())
 
-	directory = "../tests/6nodes/"
+	directory = "../../InstanceGenerator/InstanceFiles/6nodes/"
 	files = []
 	for filename in os.listdir(directory):
 		files.append(os.path.join(directory, filename))

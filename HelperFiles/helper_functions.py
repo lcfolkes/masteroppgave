@@ -3,6 +3,7 @@ from openpyxl import load_workbook
 import numpy as np
 from itertools import product
 import pandas as pd
+import os
 
 def read_config(config_name: str):
     with open(config_name, 'r') as stream:
@@ -116,3 +117,15 @@ def append_df_to_excel(filename, df, sheet_name='Sheet1', startrow=None,
 
     # save the workbook
     writer.save()
+
+def write_gurobi_results_to_file(filename: str, out_str: str):
+    new_path = filename.split('/')[-2:]
+    new_path[-1] = new_path[-1].split('.')[0]
+    results_dir = os.path.join('../results', new_path[0])
+    results_file = os.path.join(results_dir, new_path[-1] + "_results.txt")
+
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir)
+
+    with open(results_file, "a+") as f:
+        f.write(out_str)
