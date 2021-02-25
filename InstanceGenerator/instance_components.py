@@ -52,15 +52,15 @@ class Car:
     def _set_car_moves(self, destinations):
         car_moves = []
         for destination in destinations:
-            cm = CarMove(self.parking_node, destination)
+            cm = CarMove(self, self.parking_node, destination)
             car_moves.append(cm)
-
         self.car_moves = car_moves
 
 class CarMove:
     id_iter = itertools.count(start=1)
-    def __init__(self, start_node: ParkingNode, end_node: Node):
+    def __init__(self, car: Car, start_node: ParkingNode, end_node: Node):
         self.car_move_id = next(self.id_iter)
+        self.car = car
         self.start_node = start_node #origin node. this could be derived from car object
         self.end_node = end_node #destination node
         self.handling_time = None
@@ -72,8 +72,12 @@ class CarMove:
         elif isinstance(self.end_node, ChargingNode):
             self.handling_time = time + TIME_CONSTANTS['handling_charging']
 
+    def to_string(self):
+        return f"id: {self.car_move_id}, car: {self.car.car_id}, start_node: {self.start_node.node_id}, end_node: {self.end_node.node_id}, " \
+               f"handling_time: {self.handling_time}"
+
 class Employee:
-    # find better word for "handling". perhaps occupied or busy is better?
+    #TODO: add travel time for employee to node
     employee_travel_time = []
 
     def __init__(self, start_node: Node, start_time: int, handling: bool):

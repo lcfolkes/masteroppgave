@@ -193,6 +193,7 @@ class World:
                     travel_matrix_bicycle[i].append(travel_matrix_bicycle[i][self.charging_nodes[j].parking_node.node_id - 1])
                     travel_matrix_transit[i].append(travel_matrix_transit[i][self.charging_nodes[j].parking_node.node_id - 1])
                     travel_matrix_car[i].append(travel_matrix_car[i][self.charging_nodes[j].parking_node.node_id - 1])
+
         for i in range(len(self.charging_nodes)):
             travel_matrix_bicycle.append(copy.deepcopy(travel_matrix_bicycle[self.charging_nodes[i].parking_node.node_id - 1]))
             travel_matrix_transit.append(copy.deepcopy(travel_matrix_transit[self.charging_nodes[i].parking_node.node_id - 1]))
@@ -326,7 +327,6 @@ def create_parking_nodes(world: World, parking_dim: {str: int}):
             #                   charging_state=charging_state, ideal_state=ideal_state)  # , demand, deliveries)
             node = ParkingNode(x_coordinate=x_coordinate, y_coordinate=y_coordinate,
                                parking_state=parking_state, charging_state=charging_state, ideal_state=ideal_state)  # , demand, deliveries)
-            print("Parking node", node.node_id)
             world.add_nodes(node)
             world.add_parking_nodes(node)
     world.add_parking_dim(x_dim, y_dim)
@@ -345,7 +345,6 @@ def create_charging_nodes(world: World, num_charging_nodes: int, parking_nodes: 
         max_capacity = max_capacities[i]
         #charging_node = ChargingNode(node_id=node_id, parking_node=parking_node, capacity=capacity, max_capacity=max_capacity)
         charging_node = ChargingNode(parking_node=parking_node, capacity=capacity, max_capacity=max_capacity)
-        print("Charging node", charging_node.node_id)
         world.add_charging_nodes(charging_node)
         world.add_nodes(charging_node)
 
@@ -420,7 +419,16 @@ def create_cars(world: World):
 
 def create_car_moves(world: World):
     car_moves = []
+    num_nodes = len(world.nodes)
+    for car in world.cars:
+        for car_move in car.car_moves:
+            index = (car_move.start_node.node_id-1)*num_nodes + car_move.end_node.node_id-1
+            travel_time = world.distances_car[index]
+            car_move.set_travel_time(travel_time)
+            print(car_move.to_string())
 
+
+    #TODO: need to set travel times for car_moves objects
 
     #for i in range(len(world.cars)):
     #    for j in range(len(world.cars[i].destinations)):
@@ -428,9 +436,9 @@ def create_car_moves(world: World):
     #        if (world.cars[i].destinations[j].node_id > len(world.parking_nodes)):
     #            string += str(world.distances_car[
     #                              (world.cars[i].parking_node - 1) * len(world.nodes) + world.cars[i].destinations[
-    #                                  j] - 1].node_id + world.HANDLING_TIME_CHARGING)
+    #                                  j].node_id - 1] + world.HANDLING_TIME_CHARGING)
     #        else:
     #            string += str(world.distances_car[
     #                              (world.cars[i].parking_node - 1) * len(world.nodes) + world.cars[i].destinations[
-    #                                  j] - 1].node_id + world.HANDLING_TIME_PARKING)
+    #                                  j].node_id - 1] + world.HANDLING_TIME_PARKING)
     #world.car_moves = car_moves

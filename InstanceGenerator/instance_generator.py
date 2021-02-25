@@ -1,6 +1,7 @@
 from InstanceGenerator.file_writer import write_to_file, write_to_file_yaml
 from HelperFiles.helper_functions import read_config
-from InstanceGenerator.world import World, create_parking_nodes, create_charging_nodes, create_employees, create_cars
+from InstanceGenerator.world import World, create_parking_nodes, \
+    create_charging_nodes, create_employees, create_cars, create_car_moves
 import copy
 import os
 
@@ -30,6 +31,7 @@ def buildWorld(instance_config: str) -> World:
     world.calculate_real_distances(coordinates)
     print("World Initialized")
     create_cars(world=world)
+    create_car_moves(world=world)
     print("World Created")
     world.calculate_bigM()
     return world

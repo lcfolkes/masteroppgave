@@ -352,7 +352,7 @@ def write_to_file(world, instance_name: str):
         for j in range(len(world.cars[i].destinations)):
             if (world.cars[i].destinations[j].node_id > len(world.parking_nodes)):
                 string += str(world.distances_car[
-                                  (world.cars[i].parking_node - 1) * len(world.nodes) + world.cars[i].destinations[
+                                  (world.cars[i].parking_node.node_id - 1) * len(world.nodes) + world.cars[i].destinations[
                                       j] - 1].node_id + world.HANDLING_TIME_CHARGING)
             else:
                 string += str(world.distances_car[
