@@ -58,6 +58,7 @@ class World:
         self.distances_public_bike = []
         self.distances_car = []
         self.cars = []
+        self.car_moves = []
         self.coordinates = []
         self.remove_coordinates = []
         self.bigM = []
@@ -304,11 +305,11 @@ def create_parking_nodes(world: World, parking_dim: {str: int}):
     ideal_state_probs = [World.IDEAL_STATE[s] for s in World.IDEAL_STATE]
     x_dim = parking_dim['x']
     y_dim = parking_dim['y']
-    node_id = 0
+    #node_id = 0
     for i in range(y_dim):
         x_coordinate = i
         for j in range(x_dim):
-            node_id += 1
+            #node_id += 1
             # np.random.seed(i+j)
             # cState = int(np.random.choice([0,1], size=1, p=[0.75, 0.25]))
             charging_state = int(np.random.choice(charging_states, size=1, p=charging_state_probs))
@@ -321,8 +322,11 @@ def create_parking_nodes(world: World, parking_dim: {str: int}):
             # demand = np.random.choice(DEMAND, size=NUMSCENARIOS, p=DEMANDPROB) #customer requests in the second stage
             # deliveries = np.random.choice(DELIVERIES, NUMSCENARIOS, p=DELIVERIESPROB) #customer deliveries in the second stage
             y_coordinate = j
-            node = ParkingNode(node_id=node_id, x_coordinate=x_coordinate, y_coordinate=y_coordinate, parking_state=parking_state,
-                               charging_state=charging_state, ideal_state=ideal_state)  # , demand, deliveries)
+            #node = ParkingNode(node_id=node_id, x_coordinate=x_coordinate, y_coordinate=y_coordinate, parking_state=parking_state,
+            #                   charging_state=charging_state, ideal_state=ideal_state)  # , demand, deliveries)
+            node = ParkingNode(x_coordinate=x_coordinate, y_coordinate=y_coordinate,
+                               parking_state=parking_state, charging_state=charging_state, ideal_state=ideal_state)  # , demand, deliveries)
+            print("Parking node", node.node_id)
             world.add_nodes(node)
             world.add_parking_nodes(node)
     world.add_parking_dim(x_dim, y_dim)
@@ -331,15 +335,17 @@ def create_parking_nodes(world: World, parking_dim: {str: int}):
 # CNODES
 def create_charging_nodes(world: World, num_charging_nodes: int, parking_nodes: [int], capacities: [int],
                           max_capacities: [int]):
-    node_id = len(parking_nodes)
+    #node_id = len(parking_nodes)
     for i in range(num_charging_nodes):
-        node_id += 1
+        #node_id += 1
         print("Creating charging node: ", i + 1)
         parking_node_num = parking_nodes[i]
         parking_node = world.parking_nodes[parking_node_num - 1]
         capacity = capacities[i]
         max_capacity = max_capacities[i]
-        charging_node = ChargingNode(node_id=node_id, parking_node=parking_node, capacity=capacity, max_capacity=max_capacity)
+        #charging_node = ChargingNode(node_id=node_id, parking_node=parking_node, capacity=capacity, max_capacity=max_capacity)
+        charging_node = ChargingNode(parking_node=parking_node, capacity=capacity, max_capacity=max_capacity)
+        print("Charging node", charging_node.node_id)
         world.add_charging_nodes(charging_node)
         world.add_nodes(charging_node)
 
@@ -411,3 +417,20 @@ def create_cars(world: World):
             world.add_car(new_car)
             car_count += 1
             print("Car {} Node {} - car in need of charging".format(car_count, i + 1))
+
+def create_car_moves(world: World):
+    car_moves = []
+
+
+    #for i in range(len(world.cars)):
+    #    for j in range(len(world.cars[i].destinations)):
+    #
+    #        if (world.cars[i].destinations[j].node_id > len(world.parking_nodes)):
+    #            string += str(world.distances_car[
+    #                              (world.cars[i].parking_node - 1) * len(world.nodes) + world.cars[i].destinations[
+    #                                  j] - 1].node_id + world.HANDLING_TIME_CHARGING)
+    #        else:
+    #            string += str(world.distances_car[
+    #                              (world.cars[i].parking_node - 1) * len(world.nodes) + world.cars[i].destinations[
+    #                                  j] - 1].node_id + world.HANDLING_TIME_PARKING)
+    #world.car_moves = car_moves

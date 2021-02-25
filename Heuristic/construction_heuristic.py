@@ -67,4 +67,15 @@ def objective_function():
 
 	total_profit = self.SCENARIO_PROBABILITY * (
 			profit_customer_requests - costs_relocation - cost_deviation_ideal_state)
+			
+'''
+
+''' EXAMPLE OUTPUT
+-------------- First stage routes --------------
+  Employee Task   Route  Travel Time to Task  Start time  Relocation Time  End time
+0        2    1  (2, 6)                  7.7        12.7              7.6      20.3
+
+-------------- Second stage routes --------------
+  Employee Task Scenario   Route  Travel Time to Task  Start time  Relocation Time  End time
+0        2    2        3  (4, 1)                 19.8        40.1             14.1      54.2
 '''
