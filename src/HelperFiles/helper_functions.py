@@ -15,7 +15,6 @@ def read_config(config_name: str):
 
 
 def save_object_to_file(obj, file_name: str):
-	print(obj)
 	with open(file_name, 'wb') as f:
 		dill.dump(obj, f)
 

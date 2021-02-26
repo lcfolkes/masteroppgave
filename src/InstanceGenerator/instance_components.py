@@ -89,7 +89,6 @@ class CarMove:
 
 
 class Employee:
-
     id_iter = itertools.count(start=1)
 
     def __init__(self, start_node: Node, start_time: int, handling: bool):

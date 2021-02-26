@@ -1,13 +1,91 @@
 from src.HelperFiles.helper_functions import load_object_from_file
+import random
 import os
-os.chdir('../InstanceGenerator')
-filename = "InstanceFiles/6nodes/6-3-1-1_b.yaml"
-dill_filename = "InstanceFiles/6nodes/6-3-1-1_c.pkl"
 
-loaded_world = load_object_from_file(dill_filename)
-for car in loaded_world.cars:
+os.chdir('../InstanceGenerator')
+# filename = "InstanceFiles/6nodes/6-3-1-1_b.yaml"
+dill_filename = "InstanceFiles/6nodes/6-3-1-1_a.pkl"
+
+world_instance = load_object_from_file(dill_filename)
+beta = []
+cars = world_instance.cars.copy()
+employees = world_instance.employees.copy()
+gamma_k = {k.employee_id: [] for k in employees}
+
+for car in world_instance.cars:
 	for car_move in car.car_moves:
-		print(car_move.to_string())
+		beta.append(car_move)
+
+
+# calculate_solution()
+
+def objective_function_val(car_move, employee):
+	return random.randint(0, 10)
+
+
+obj_val = 0
+# TODO: start with charging moves. perhaps make list of charging moves
+while cars:
+	current_solution = []
+	for employee in employees:
+		best_car_move = None
+		car_moved = None
+		new_obj_val = 0
+		for car in cars:
+			for car_move in car.car_moves:
+				if world_instance.check_legal_move(car_move, employee) > 0:
+					# objective_function(car_move):
+					temp_val = objective_function_val(car_move, employee)
+					if temp_val > new_obj_val:
+						new_obj_val = temp_val
+						best_car_move = car_move
+						car_moved = car_move.car
+		print(employee.employee_id)
+		if best_car_move is None:
+			cars = []
+		else:
+			print(best_car_move.to_string())
+			print('Employee node', employee.current_node.node_id)
+			print('Employee time', employee.current_time)
+			world_instance.add_car_move_to_employee(best_car_move, employee)
+			print('Employee node', employee.current_node.node_id)
+			print('Employee time', employee.current_time)
+			gamma_k[employee.employee_id].append(best_car_move)
+			cars.remove(car_moved)
+			beta.remove(best_car_move)
+			obj_val += new_obj_val
+
+
+def calculate_solution():
+	for employee in employees:
+		for car_move in employee.car_moves:
+			print(car_move.to_string())
+
+		print('Employee node', employee.current_node)
+		print('Employee time', employee.current_time)
+
+
+'''
+while cars:
+	obj_val = 0
+	current_solution = []
+	for employee in employees:
+		best_car_move = None
+		car_moved = None
+		new_obj_val = 0
+		for car in cars:
+			for car_move in car.car_moves:
+				if world_instance.check_legal_move(car_move, employee) > 0:
+					#objective_function(car_move):
+					world_instance.add_car_move_to_employee(car_move, employee)
+					print(car_move.to_string())
+					break
+		#	print(f"{car}:{carmoves}")
+	#car_index =
+	#print(C)
+	#C.pop()
+'''
+
 '''
 cf = read_config(filename)
 CARS = list(np.arange(1, cf['num_cars'] + 1))  # C, set of cars potentially subject to relocation

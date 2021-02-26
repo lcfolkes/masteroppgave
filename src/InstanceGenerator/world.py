@@ -125,7 +125,7 @@ class World:
 		if employee.current_time + total_travel_time < World.PLANNING_PERIOD:
 			return total_travel_time
 		else:
-			print("Car move exceeds planning period")
+			#print("Car move exceeds planning period")
 			return -1
 
 	## CALCULATE DISTANCE ##
@@ -275,9 +275,9 @@ class World:
 		# if finishing up a task, an employee and a car will arrive a this node
 		initial_handling = [0 for i in range(len(self.nodes))]
 		for j in range(len(self.employees)):
-			initial_theta[self.employees[j].start_node - 1] += 1
+			initial_theta[self.employees[j].start_node.node_id - 1] += 1
 			if (self.employees[j].handling):
-				initial_handling[self.employees[j].start_node - 1] += 1
+				initial_handling[self.employees[j].start_node.node_id - 1] += 1
 		return initial_theta, initial_handling
 
 	## SCALE IDEAL STATE ##
@@ -287,7 +287,7 @@ class World:
 		initial_add = [0 for i in range(len(self.nodes))]
 		for j in range(len(self.employees)):
 			if (self.employees[j].handling):
-				initial_add[self.employees[j].start_node - 1] += 1
+				initial_add[self.employees[j].start_node.node_id - 1] += 1
 
 		sum_ideal_state = 0
 		sum_parking_state = 0
@@ -398,13 +398,17 @@ def create_employees(world: World, num_employees: int, start_time_employees: [in
 				parking_states.append(node.parking_state)
 			# Nodes where pstate is positive
 			positive_start_nodes = [i + 1 for i, parking_state in enumerate(parking_states) if parking_state > 0]
-			start_node = random.choice(positive_start_nodes)
-			employee = Employee(start_node=start_node, start_time=start_time, handling=True)
-			world.add_employee(employee)
+			start_node_id = random.choice(positive_start_nodes)
+			for node in world.parking_nodes:
+				if node.node_id == start_node_id:
+					employee = Employee(start_node=node, start_time=start_time, handling=True)
+					world.add_employee(employee)
 		else:
-			start_node = random.randint(1, len(world.parking_nodes))
-			employee = Employee(start_node=start_node, start_time=start_time, handling=False)
-			world.add_employee(employee)
+			start_node_id = random.randint(1, len(world.parking_nodes))
+			for node in world.parking_nodes:
+				if node.node_id == start_node_id:
+					employee = Employee(start_node=node, start_time=start_time, handling=False)
+					world.add_employee(employee)
 
 
 # CARS
@@ -426,7 +430,7 @@ def create_cars(world: World):
 		# Add cars on its way to parking node
 		if initial_handling[i] > 0:
 			for j in range(len(world.employees)):
-				if (world.employees[j].handling == 1) and (world.employees[j].start_node - 1 == i):
+				if (world.employees[j].handling == 1) and (world.employees[j].start_node.node_id - 1 == i):
 					new_car = Car(parking_node=world.parking_nodes[i], start_time=world.employees[j].start_time,
 								  is_charging=False)
 					destinations = []
@@ -459,7 +463,7 @@ def create_car_moves(world: World):
 			index = (car_move.start_node.node_id - 1) * num_nodes + car_move.end_node.node_id - 1
 			travel_time = world.distances_car[index]
 			car_move.set_travel_time(travel_time)
-			print(car_move.to_string())
+			#print(car_move.to_string())
 
 	# TODO: need to set travel times for car_moves objects
 
