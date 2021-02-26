@@ -1,9 +1,8 @@
-from InstanceGenerator.file_writer import write_to_file, write_to_file_yaml
-from HelperFiles.helper_functions import read_config
-from InstanceGenerator.world import World, create_parking_nodes, \
+from src.InstanceGenerator.file_writer import write_to_file_yaml
+from src.HelperFiles.helper_functions import read_config
+from src.InstanceGenerator.world import World, create_parking_nodes, \
     create_charging_nodes, create_employees, create_cars, create_car_moves
 import copy
-import os
 
 
 # WORLD AND ENTITIES

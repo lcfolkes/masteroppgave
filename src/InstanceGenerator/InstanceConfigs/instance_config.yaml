@@ -19,7 +19,7 @@ board:
 
 #CHARGING NODES
 charging_nodes:
-  num_charging: 2 #vurder fjern
+  num_charging: 2
   parking_nodes: [1, 2]
   capacities: [2, 2]
   max_capacities: [2, 2]

@@ -2,16 +2,18 @@ import yaml
 import os
 
  ## FILE HANDLER ##
+from src.HelperFiles.helper_functions import save_object_to_file
 
-def write_to_file_yaml(world, instance_name:str):
+
+def write_to_file_yaml(world, instance_name: str):
     test_dir = "./InstanceFiles/{}nodes/".format(len(world.parking_nodes))
     if not os.path.exists(test_dir):
         os.makedirs(test_dir)
-    file_name = test_dir + str(instance_name) + "_a.yaml"  # + "_a.txt"
-    if (os.path.exists(file_name)):
-        file_name = test_dir + str(instance_name) + "_b.yaml"
-        if (os.path.exists(file_name)):
-            file_name = test_dir + str(instance_name) + "_c.yaml"
+    file_name = test_dir + str(instance_name) + "_a"
+    if (os.path.exists(file_name + ".yaml")):
+        file_name = test_dir + str(instance_name) + "_b"
+        if (os.path.exists(file_name + ".yaml")):
+            file_name = test_dir + str(instance_name) + "_c"
     print(file_name)
     data = {}
     data['num_scenarios'] = world.num_scenarios
@@ -136,8 +138,12 @@ def write_to_file_yaml(world, instance_name:str):
 
     data['cars_available_in_node'] = [pn.parking_state for pn in world.parking_nodes]
 
-    with open(file_name, 'w') as outfile:
+    yaml_file_name = file_name + ".yaml"
+    with open(yaml_file_name, 'w') as outfile:
         yaml.dump(data, outfile, default_flow_style=None)
+
+    dill_file_name = file_name + ".pkl"
+    save_object_to_file(obj=world, file_name=dill_file_name)
 
 def write_to_file(world, instance_name: str):
     test_dir = "../Gurobi/tests/{}nodes/".format(len(world.parking_nodes))

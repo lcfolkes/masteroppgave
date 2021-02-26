@@ -1,10 +1,14 @@
-from HelperFiles.helper_functions import read_config, read_2d_array_to_dict, create_dict_of_indices, create_car_moves_origin_destination
-import numpy as np
-import gurobipy as gp
+from src.HelperFiles.helper_functions import load_object_from_file
+import os
+os.chdir('../InstanceGenerator')
+filename = "InstanceFiles/6nodes/6-3-1-1_b.yaml"
+dill_filename = "InstanceFiles/6nodes/6-3-1-1_c.pkl"
 
-
-filename = "../InstanceGenerator/InstanceFiles/6nodes/6-3-1-1_b.yaml"
-
+loaded_world = load_object_from_file(dill_filename)
+for car in loaded_world.cars:
+	for car_move in car.car_moves:
+		print(car_move.to_string())
+'''
 cf = read_config(filename)
 CARS = list(np.arange(1, cf['num_cars'] + 1))  # C, set of cars potentially subject to relocation
 CARMOVES = np.arange(1, cf['num_car_moves_parking'] + cf['num_car_moves_charging'] + 1)  # R, set of car-moves
@@ -47,6 +51,7 @@ while CARS:
 
 def objective_function(carmove, employee):
 	pass
+'''
 '''
 def objective_function():
 	### OBJECTIVE FUNCTION ###

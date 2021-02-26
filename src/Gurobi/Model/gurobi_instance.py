@@ -3,7 +3,7 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 from itertools import product
-from HelperFiles.helper_functions import read_config, read_2d_array_to_dict, create_dict_of_indices, create_car_moves_origin_destination
+from src.HelperFiles.helper_functions import read_config, read_2d_array_to_dict, create_dict_of_indices, create_car_moves_origin_destination
 
 
 class GurobiInstance:
