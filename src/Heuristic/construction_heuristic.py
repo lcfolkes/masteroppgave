@@ -25,31 +25,38 @@ def objective_function_val(car_move, employee):
 
 obj_val = 0
 # TODO: start with charging moves. perhaps make list of charging moves
+
 while cars:
 	current_solution = []
+	charging_prioritized = False
 	for employee in employees:
 		best_car_move = None
 		car_moved = None
 		new_obj_val = 0
 		for car in cars:
-			for car_move in car.car_moves:
-				if world_instance.check_legal_move(car_move, employee) > 0:
-					# objective_function(car_move):
-					temp_val = objective_function_val(car_move, employee)
-					if temp_val > new_obj_val:
-						new_obj_val = temp_val
-						best_car_move = car_move
-						car_moved = car_move.car
-		print(employee.employee_id)
+			if car.needs_charging or charging_prioritized:
+				for car_move in car.car_moves:
+					if world_instance.check_legal_move(car_move, employee):
+						# objective_function(car_move):
+						temp_val = objective_function_val(car_move, employee)
+						if temp_val > new_obj_val:
+							new_obj_val = temp_val
+							best_car_move = car_move
+							car_moved = car_move.car
 		if best_car_move is None:
-			cars = []
+			if charging_prioritized:
+				cars = []
+			else:
+				print("Charging prioritized")
+				charging_prioritized = True
 		else:
+			print('\nEmployee id', employee.employee_id)
+			print('Employee node before', employee.current_node.node_id)
+			print('Employee time before', employee.current_time)
 			print(best_car_move.to_string())
-			print('Employee node', employee.current_node.node_id)
-			print('Employee time', employee.current_time)
 			world_instance.add_car_move_to_employee(best_car_move, employee)
-			print('Employee node', employee.current_node.node_id)
-			print('Employee time', employee.current_time)
+			print('Employee node after', employee.current_node.node_id)
+			print('Employee time after', employee.current_time)
 			gamma_k[employee.employee_id].append(best_car_move)
 			cars.remove(car_moved)
 			beta.remove(best_car_move)

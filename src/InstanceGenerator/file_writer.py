@@ -25,7 +25,7 @@ def write_to_file_yaml(world, instance_name: str):
     data['num_employees'] = len(world.employees)
 
     # start node of employee
-    data['start_node_employee'] = [e.start_node for e in world.employees]
+    data['start_node_employee'] = [e.start_node.node_id for e in world.employees]
 
     # Available charging slots
     data['charging_slots_available'] = [cn.capacity for cn in world.charging_nodes]
@@ -72,9 +72,9 @@ def write_to_file_yaml(world, instance_name: str):
 
     data['car_returns'] = [pn.car_returns.tolist() for pn in world.parking_nodes]
 
-    data['num_car_moves_parking'] = sum(len(c.destinations) for c in world.cars if not c.is_charging)
+    data['num_car_moves_parking'] = sum(len(c.destinations) for c in world.cars if not c.needs_charging)
 
-    data['num_car_moves_charging'] = sum(len(c.destinations) for c in world.cars if c.is_charging)
+    data['num_car_moves_charging'] = sum(len(c.destinations) for c in world.cars if c.needs_charging)
 
     data['num_cars'] = len(world.cars)
     data['num_tasks'] = world.tasks
@@ -295,13 +295,13 @@ def write_to_file(world, instance_name: str):
 
     count = 0
     for i in range(len(world.cars)):
-        if not (world.cars[i].is_charging):
+        if not (world.cars[i].needs_charging):
             for j in range(len(world.cars[i].destinations)):
                 count += 1
     string += "num_car_moves_parking : " + str(count) + "\n"
     count = 0
     for i in range(len(world.cars)):
-        if (world.cars[i].is_charging):
+        if (world.cars[i].needs_charging):
             for j in range(len(world.cars[i].destinations)):
                 count += 1
     string += "num_car_moves_charging : " + str(count) + "\n"

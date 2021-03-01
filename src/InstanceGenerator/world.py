@@ -1,5 +1,5 @@
 from src.HelperFiles.helper_functions import read_config
-from src.InstanceGenerator.instance_components import ParkingNode, ChargingNode, Employee, Car, CarMove
+from src.InstanceGenerator.instance_components import ParkingNode, ChargingNode, Employee, Car, CarMove, Node
 from src.DataRetrieval import google_traffic_information_retriever as gI
 import numpy as np
 import math
@@ -113,20 +113,23 @@ class World:
 		self.coordinates = coordinates
 
 	def add_car_move_to_employee(self, car_move: CarMove, employee: Employee):
-		total_travel_time = self.check_legal_move(car_move, employee)
+		total_travel_time = self.get_employee_travel_time_to_node(employee, car_move.start_node)
 		if total_travel_time > 0:
 			employee.add_car_move(total_travel_time, car_move)
 
-	def check_legal_move(self, car_move: CarMove, employee: Employee):
+	def get_employee_travel_time_to_node(self, employee: Employee, end_node: Node):
 		employee_start_node = employee.current_node.node_id - 1
-		car_move_start_node = car_move.start_node.node_id - 1
-		employee_travel_time = self.distances_public_bike[employee_start_node * len(self.nodes) + car_move_start_node]
+		employee_end_node = end_node.node_id - 1
+		return self.distances_public_bike[employee_start_node * len(self.nodes) + employee_end_node]
+
+	def check_legal_move(self, car_move: CarMove, employee: Employee): #return total travel time
+		employee_travel_time = self.get_employee_travel_time_to_node(employee, car_move.start_node)
 		total_travel_time = employee_travel_time + car_move.handling_time
 		if employee.current_time + total_travel_time < World.PLANNING_PERIOD:
-			return total_travel_time
+			return True
 		else:
 			#print("Car move exceeds planning period")
-			return -1
+			return False
 
 	## CALCULATE DISTANCE ##
 
@@ -418,7 +421,7 @@ def create_cars(world: World):
 	for i in range(len(world.parking_nodes)):
 		# Add cars not in need of charging
 		for j in range(world.parking_nodes[i].parking_state):  # -world.pNodes[i].cState):
-			new_car = Car(parking_node=world.parking_nodes[i], start_time=0, is_charging=False)
+			new_car = Car(parking_node=world.parking_nodes[i], start_time=0, needs_charging=False)
 			destinations = []
 			for x in range(len(world.parking_nodes)):
 				if i != x:
@@ -432,7 +435,7 @@ def create_cars(world: World):
 			for j in range(len(world.employees)):
 				if (world.employees[j].handling == 1) and (world.employees[j].start_node.node_id - 1 == i):
 					new_car = Car(parking_node=world.parking_nodes[i], start_time=world.employees[j].start_time,
-								  is_charging=False)
+								  needs_charging=False)
 					destinations = []
 					for x in range(len(world.parking_nodes)):
 						if i != x:
@@ -446,7 +449,7 @@ def create_cars(world: World):
 		# Add cars in need of charging
 		for j in range(world.parking_nodes[i].charging_state):
 			destinations = []
-			new_car = Car(parking_node=world.parking_nodes[i], start_time=0, is_charging=True)
+			new_car = Car(parking_node=world.parking_nodes[i], start_time=0, needs_charging=True)
 			for x in range(len(world.charging_nodes)):
 				destinations.append(world.nodes[len(world.parking_nodes) + x])
 			new_car.set_destinations(destinations)

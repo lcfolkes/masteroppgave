@@ -45,11 +45,11 @@ class ChargingNode(Node):
 class Car:
     id_iter = itertools.count(start=1)
 
-    def __init__(self, parking_node: ParkingNode, start_time: float, is_charging: bool):
+    def __init__(self, parking_node: ParkingNode, start_time: float, needs_charging: bool):
         self.car_id = next(self.id_iter)
         self.parking_node = parking_node
         self.start_time = start_time
-        self.is_charging = is_charging
+        self.needs_charging = needs_charging
         self.destinations = []
         self.car_moves = []
 
@@ -84,7 +84,7 @@ class CarMove:
             self.handling_time = time + TIME_CONSTANTS['handling_charging']
 
     def to_string(self):
-        return f"id: {self.car_move_id}, car: {self.car.car_id}, start_node: {self.start_node.node_id}, end_node: {self.end_node.node_id}, " \
+        return f"car_move_id: {self.car_move_id}, car: {self.car.car_id}, start_node: {self.start_node.node_id}, end_node: {self.end_node.node_id}, " \
                f"handling_time: {self.handling_time}"
 
 
