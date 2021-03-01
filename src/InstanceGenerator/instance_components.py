@@ -18,7 +18,7 @@ class Node:
 
 
 class ParkingNode(Node):
-    # change x_coordinate and y_coordinate to location dict?
+    # Should it be possible to update parking state?
     def __init__(self, x_coordinate: int, y_coordinate: int, parking_state: int, charging_state: int, ideal_state: int):
         super().__init__(x_coordinate, y_coordinate)
         self.parking_state = parking_state
