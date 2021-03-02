@@ -10,6 +10,7 @@ import os
 
 DISTANCESCALE = 3
 
+
 # TODO: generate world object from instance-file
 
 class World:
@@ -113,22 +114,34 @@ class World:
 		self.coordinates = coordinates
 
 	def add_car_move_to_employee(self, car_move: CarMove, employee: Employee):
-		total_travel_time = self.get_employee_travel_time_to_node(employee, car_move.start_node)
-		if total_travel_time > 0:
-			employee.add_car_move(total_travel_time, car_move)
+		total_travel_time = self.get_employee_travel_time_to_node(start_node=employee.current_node,
+																  end_node=car_move.start_node) + car_move.handling_time
+		employee.add_car_move(total_travel_time, car_move)
 
-	def get_employee_travel_time_to_node(self, employee: Employee, end_node: Node):
-		employee_start_node = employee.current_node.node_id - 1
+	def remove_car_move_from_employee(self, car_move: CarMove, employee: Employee):
+		# start_node is the end node of the car move performed before the one we want to remove.
+		# what if the list is empty? then take start_node
+		try:
+			total_travel_time = self.get_employee_travel_time_to_node(start_node=employee.car_moves[-2].end_node,
+																	  end_node=car_move.start_node) + car_move.handling_time
+		except:
+			total_travel_time = self.get_employee_travel_time_to_node(start_node=employee.start_node,
+																	  end_node=car_move.start_node) + car_move.handling_time
+
+		employee.remove_last_car_move(total_travel_time)
+
+	def get_employee_travel_time_to_node(self, start_node: Node, end_node: Node):
+		employee_start_node = start_node.node_id - 1
 		employee_end_node = end_node.node_id - 1
 		return self.distances_public_bike[employee_start_node * len(self.nodes) + employee_end_node]
 
-	def check_legal_move(self, car_move: CarMove, employee: Employee): #return total travel time
-		employee_travel_time = self.get_employee_travel_time_to_node(employee, car_move.start_node)
+	def check_legal_move(self, car_move: CarMove, employee: Employee):  # return total travel time
+		employee_travel_time = self.get_employee_travel_time_to_node(employee.current_node, car_move.start_node)
 		total_travel_time = employee_travel_time + car_move.handling_time
 		if employee.current_time + total_travel_time < World.PLANNING_PERIOD:
 			return True
 		else:
-			#print("Car move exceeds planning period")
+			# print("Car move exceeds planning period")
 			return False
 
 	## CALCULATE DISTANCE ##
@@ -466,19 +479,19 @@ def create_car_moves(world: World):
 			index = (car_move.start_node.node_id - 1) * num_nodes + car_move.end_node.node_id - 1
 			travel_time = world.distances_car[index]
 			car_move.set_travel_time(travel_time)
-			#print(car_move.to_string())
+	# print(car_move.to_string())
 
-	# TODO: need to set travel times for car_moves objects
+# TODO: need to set travel times for car_moves objects
 
-	# for i in range(len(world.cars)):
-	#    for j in range(len(world.cars[i].destinations)):
-	#
-	#        if (world.cars[i].destinations[j].node_id > len(world.parking_nodes)):
-	#            string += str(world.distances_car[
-	#                              (world.cars[i].parking_node - 1) * len(world.nodes) + world.cars[i].destinations[
-	#                                  j].node_id - 1] + world.HANDLING_TIME_CHARGING)
-	#        else:
-	#            string += str(world.distances_car[
-	#                              (world.cars[i].parking_node - 1) * len(world.nodes) + world.cars[i].destinations[
-	#                                  j].node_id - 1] + world.HANDLING_TIME_PARKING)
-	# world.car_moves = car_moves
+# for i in range(len(world.cars)):
+#    for j in range(len(world.cars[i].destinations)):
+#
+#        if (world.cars[i].destinations[j].node_id > len(world.parking_nodes)):
+#            string += str(world.distances_car[
+#                              (world.cars[i].parking_node - 1) * len(world.nodes) + world.cars[i].destinations[
+#                                  j].node_id - 1] + world.HANDLING_TIME_CHARGING)
+#        else:
+#            string += str(world.distances_car[
+#                              (world.cars[i].parking_node - 1) * len(world.nodes) + world.cars[i].destinations[
+#                                  j].node_id - 1] + world.HANDLING_TIME_PARKING)
+# world.car_moves = car_moves
