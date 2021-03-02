@@ -109,10 +109,16 @@ def _calculate_cost_deviation_ideal_state(car_moves):
 	return World.COST_DEVIATION
 
 def _calculate_objective_function(employees):
-	car_moves = []
+	first_stage_car_moves = []
+	second_stage_car_moves = []
 	for employee in employees:
+		counter = 0
 		for car_move in employee.car_moves:
-			car_moves.append(car_move)
+			if counter < world_instance.first_stage_tasks:
+				first_stage_car_moves.append(car_move)
+			else:
+				second_stage_car_moves.append(car_move)
+			counter += 1
 
 	profit_customer_requests = _calculate_profit_customer_requests(car_moves)
 	cost_relocation = _calculate_costs_relocation(car_moves)
