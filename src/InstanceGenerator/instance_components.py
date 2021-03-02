@@ -75,6 +75,7 @@ class CarMove:
         self.end_node = end_node  # destination node
         self.handling_time = None
 
+
     # self.employee = None
 
     def set_travel_time(self, time: int):
@@ -94,8 +95,8 @@ class Employee:
     def __init__(self, start_node: Node, start_time: int, handling: bool):
 
         self.employee_id = next(self.id_iter)
-        self.start_node = start_node
-        self.current_node = start_node
+        self.start_node: Node = start_node
+        self.current_node: Node = start_node
         self.start_time = start_time
         self.current_time = start_time
         self.handling = handling
@@ -105,3 +106,11 @@ class Employee:
         self.current_time += total_travel_time
         self.current_node = car_move.end_node
         self.car_moves.append(car_move)
+
+    def remove_last_car_move(self, total_travel_time: float):
+        self.current_time -= total_travel_time
+        self.car_moves.pop()
+        try:
+            self.current_node = self.car_moves[-1].end_node
+        except:
+            self.current_node = self.start_node
