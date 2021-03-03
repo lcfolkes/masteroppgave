@@ -86,6 +86,9 @@ class World:
 	def add_car(self, car: Car):
 		self.cars.append(car)
 
+	def add_car_move(self, car_move: CarMove):
+		self.car_moves.append(car_move)
+
 	def set_scenarios(self, n: int):
 		self.num_scenarios = n
 
@@ -472,13 +475,13 @@ def create_cars(world: World):
 
 
 def create_car_moves(world: World):
-	car_moves = []
 	num_nodes = len(world.nodes)
 	for car in world.cars:
 		for car_move in car.car_moves:
 			index = (car_move.start_node.node_id - 1) * num_nodes + car_move.end_node.node_id - 1
 			travel_time = world.distances_car[index]
 			car_move.set_travel_time(travel_time)
+			world.add_car_move(car_move)
 	# print(car_move.to_string())
 
 # TODO: need to set travel times for car_moves objects
