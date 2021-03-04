@@ -64,7 +64,7 @@ class Car:
             car_moves.append(cm)
         self.car_moves = car_moves
 
-
+#earliest start time should be added
 class CarMove:
     id_iter = itertools.count(start=1)
 
