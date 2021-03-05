@@ -97,15 +97,31 @@ class Employee:
         self.employee_id = next(self.id_iter)
         self.start_node: Node = start_node
         self.current_node: Node = start_node
+        self.current_node_second_stage: [Node] = []
         self.start_time = start_time
         self.current_time = start_time
+        self.current_time_second_stage = []
         self.handling = handling
         self.car_moves = []
+        self.car_moves_second_stage = []
 
-    def add_car_move(self, total_travel_time: float, car_move: CarMove):
-        self.current_time += total_travel_time
-        self.current_node = car_move.end_node
-        self.car_moves.append(car_move)
+
+    def add_car_move(self, total_travel_time: float, car_move: CarMove, scenario: int = None):
+        if scenario is None:
+            self.current_time += total_travel_time
+            self.current_node = car_move.end_node
+            self.car_moves.append(car_move)
+        else:
+            # zero-indexed scenario
+            self.current_time_second_stage[scenario] += total_travel_time
+            self.current_node_second_stage[scenario] = car_move.end_node
+            self.car_moves_second_stage[scenario].append(car_move)
+
+    def initialize_second_stage(self, num_scenarios: int):
+        for s in range(num_scenarios):
+            self.current_node_second_stage.append(self.current_node)
+            self.current_time_second_stage.append(self.current_time)
+            self.car_moves_second_stage.append([])
 
     def remove_last_car_move(self, total_travel_time: float):
         self.current_time -= total_travel_time
