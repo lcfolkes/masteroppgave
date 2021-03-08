@@ -189,19 +189,20 @@ class ConstructionHeuristic:
 				else:
 					car_moves = parking_moves_second_stage
 
-			for r in range(len(car_moves)):
-				if first_stage:
+			if first_stage:
+				for r in range(len(car_moves)):
 					obj_val = self.get_obj_val_of_car_move(car_move=car_moves[r], first_stage=first_stage)
 					if obj_val > best_obj_val:
 						best_obj_val = obj_val
 						best_car_move = car_moves[r]
-				else:
-					obj_val = [0] * num_scenarios
+			else:
+				obj_val = [0] * num_scenarios
+				for s in range(num_scenarios):
 					# zero indexed scenario
-					for s in range(num_scenarios):
-						pass
-						#print(f"scenario {s+1}: {len(car_moves[s])}")
-					for s in range(num_scenarios):
+					print(obj_val)
+					print(car_moves)
+
+					for r in range(len(car_moves[s])):
 						obj_val[s] = self.get_obj_val_of_car_move(car_move=car_moves[s][r], first_stage=first_stage, scenario=s)
 						if obj_val[s] > best_obj_val_second_stage[s]:
 							best_obj_val_second_stage[s] = obj_val[s]
@@ -294,6 +295,7 @@ class ConstructionHeuristic:
 								parking_moves_second_stage[s] = self.remove_car_move(best_car_move_second_stage[s], car_moves[s])   # should remove car move and other car-moves wit
 							#print(f"car_moves: {len(car_moves[s])}")
 					if not any(parking_moves_second_stage):
+
 						available_employees = False
 				else:
 					available_employees = False
@@ -318,27 +320,19 @@ class ConstructionHeuristic:
 
 		print("-------------- Second stage routes --------------")
 		for employee in self.employees:
-			for s in range(self.num_scenarios):
-				for car_move in employee.car_moves_second_stage[s]:
-					print(f"employee: {employee.employee_id}, scenario: {s+1} " + car_move.to_string())
+			if any(employee.car_moves_second_stage):
+				for s in range(self.num_scenarios):
+					for car_move in employee.car_moves_second_stage[s]:
+						print(f"employee: {employee.employee_id}, scenario: {s+1} " + car_move.to_string())
 
 
-ch = ConstructionHeuristic("InstanceFiles/6nodes/6-3-1-1_a.pkl")
-#print("obj_val", obj_val)
-#ch.add_car_moves_to_employees3()
+print("\n---- HEURISTIC ----")
+ch = ConstructionHeuristic("InstanceFiles/6nodes/6-3-1-1_b.pkl")
+ch.add_car_moves_to_employees()
 ch.add_car_moves_to_employees()
 ch.print_solution()
 ch.get_objective_function_val()
-print("\n----GUROBI----")
-gi = GurobiInstance("InstanceFiles/6nodes/6-3-1-1_a.yaml", ch.employees)
+print("\n---- GUROBI ----")
+gi = GurobiInstance("InstanceFiles/6nodes/6-3-1-1_b.yaml", ch.employees)
+#gi = GurobiInstance("InstanceFiles/6nodes/6-3-1-1_a.yaml")
 run_model(gi)
-
-''' EXAMPLE OUTPUT
-	-------------- First stage routes --------------
-	  Employee Task   Route  Travel Time to Task  Start time  Relocation Time  End time
-	0        2    1  (2, 6)                  7.7        12.7              7.6      20.3
-	
-	-------------- Second stage routes --------------
-	  Employee Task Scenario   Route  Travel Time to Task  Start time  Relocation Time  End time
-	0        2    2        3  (4, 1)                 19.8        40.1             14.1      54.2
-'''

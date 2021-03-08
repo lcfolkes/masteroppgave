@@ -7,7 +7,7 @@ from src.HelperFiles.helper_functions import read_config, read_2d_array_to_dict,
 
 
 class GurobiInstance:
-    def __init__(self, filepath: str, employees):
+    def __init__(self, filepath: str, employees=None):
         self.cf = read_config(filepath)
         # print("SCENARIOS: ", SCENARIOS)
         self.NODES = np.arange(1, self.cf['num_parking_nodes'] + self.cf['num_charging_nodes'] + 1)  # N, set of nodes
@@ -75,9 +75,13 @@ class GurobiInstance:
         self.CUSTOMER_REQUESTS = read_2d_array_to_dict(self.cf['customer_requests'])  # R_(is), number of customer requests in second stage in parking node i in scenario s in second stage
         self.CUSTOMER_DELIVERIES = read_2d_array_to_dict(self.cf['car_returns'])  # D_(is), number of vehicles delivered by customers in node i and scenario s in second stage
 
-        self.first_stage_car_moves, self.second_stage_car_moves = self._get_car_moves_from_employees(employees)
+        if employees is not None:
+            self.first_stage_car_moves, self.second_stage_car_moves = self._get_car_moves_from_employees(employees)
+            initial_solution = self._get_initial_solution()
+            self.m = self.create_model(initial_solution)
 
-        self.m = self.create_model()
+        else:
+            self.m = self.create_model()
 
     def _get_car_moves_from_employees(self, employees):
         first_stage_car_moves = {}
@@ -116,7 +120,7 @@ class GurobiInstance:
 
         return initial_solution
 
-    def create_model(self):
+    def create_model(self, initial_solution=None):
 
         # Create a new Model
         m: gp.Model = gp.Model("mip1")
@@ -124,9 +128,10 @@ class GurobiInstance:
         # Create variables
         x = m.addVars(product(self.EMPLOYEES, self.CARMOVES, self.TASKS, self.SCENARIOS), vtype=GRB.BINARY, name="x")  # x_krms, 1 if service employee k performs car-move r as task number m in scenario s, 0 otherwise
 
-        for krms in self._get_initial_solution():
-            x[krms].lb = 1
-            x[krms].ub = 1
+        if initial_solution is not None:
+            for krms in initial_solution:
+                x[krms].lb = 1
+                x[krms].ub = 1
 
         y = m.addVars(self.PARKING_NODES, lb=0, vtype=GRB.INTEGER,
                       name="y")  # y_i, Number of cars in node i by the beginning of the second stage
