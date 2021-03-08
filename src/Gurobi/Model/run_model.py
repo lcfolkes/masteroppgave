@@ -134,10 +134,10 @@ def run_model(model, stochastic=True, reset=False):
 		# TODO: sort dataframe with ascending endtime in addition to Employee and, Task and scenario
 		pd.set_option('display.width', 320)
 		pd.set_option('display.max_columns', 10)
-		# print("-------------- First stage routes --------------")
-		# print(df_firststage_routes)
-		# print("\n-------------- Second stage routes --------------")
-		# print(df_secondstage_routes)
+		print("-------------- First stage routes --------------")
+		print(df_firststage_routes)
+		print("\n-------------- Second stage routes --------------")
+		print(df_secondstage_routes)
 
 		return m, df_firststage_routes, df_secondstage_routes, model.PLANNING_PERIOD
 
@@ -202,4 +202,4 @@ def main():
 		run_test_instance(file)
 
 
-main()
+#main()

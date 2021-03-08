@@ -1,8 +1,12 @@
 import os
+
+from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
+
 os.chdir('../InstanceGenerator')
 from InstanceGenerator.instance_components import ParkingNode, Employee, ChargingNode
 from InstanceGenerator.world import World
 from src.HelperFiles.helper_functions import load_object_from_file
+from src.Gurobi.Model.run_model import run_model
 import numpy as np
 
 
@@ -325,10 +329,9 @@ ch = ConstructionHeuristic("InstanceFiles/6nodes/6-3-1-1_a.pkl")
 ch.add_car_moves_to_employees()
 ch.print_solution()
 ch.get_objective_function_val()
-
-
-
-
+print("\n----GUROBI----")
+gi = GurobiInstance("InstanceFiles/6nodes/6-3-1-1_a.yaml", ch.employees)
+run_model(gi)
 
 ''' EXAMPLE OUTPUT
 	-------------- First stage routes --------------
