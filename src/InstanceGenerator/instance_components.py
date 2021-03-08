@@ -114,6 +114,7 @@ class Employee:
         else:
             # zero-indexed scenario
             self.current_time_second_stage[scenario] += total_travel_time
+            #print(f"e_id: {self.employee_id}, second_current_time: {self.current_time_second_stage}")
             self.current_node_second_stage[scenario] = car_move.end_node
             self.car_moves_second_stage[scenario].append(car_move)
 
@@ -130,3 +131,9 @@ class Employee:
             self.current_node = self.car_moves[-1].end_node
         except:
             self.current_node = self.start_node
+
+    def to_string(self):
+         return  f"employee_id: {self.employee_id}\t start_node: {self.start_node.node_id}\t current_node: {self.current_node.node_id}" \
+              f"\tcurrent_node_second_stage: {[n.node_id for n in self.current_node_second_stage]} \n current_time: {self.current_time}" \
+              f"\tcurrent_time_second_stage: {self.current_time_second_stage}\n car_moves: {[cm.car_move_id for cm in self.car_moves]}" \
+              f"\tcar_moves_second_stage: {[[cm.car_move_id for cm in car_moves] for car_moves in self.car_moves_second_stage]}"

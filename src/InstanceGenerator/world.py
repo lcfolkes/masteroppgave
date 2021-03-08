@@ -127,7 +127,7 @@ class World:
 			# zero-indexed scenario
 			total_travel_time = self.get_employee_travel_time_to_node(start_node=employee.current_node_second_stage[scenario],
 																  end_node=car_move.start_node) + car_move.handling_time
-			employee.add_car_move(total_travel_time, car_move)
+			employee.add_car_move(total_travel_time=total_travel_time, car_move=car_move, scenario=scenario)
 
 	def remove_car_move_from_employee(self, car_move: CarMove, employee: Employee):
 		# start_node is the end node of the car move performed before the one we want to remove.
@@ -155,9 +155,10 @@ class World:
 			current_time = employee.current_time_second_stage[scenario]
 			employee_travel_time = self.get_employee_travel_time_to_node(employee.current_node_second_stage[scenario], car_move.start_node)
 
-		total_time = current_time = employee_travel_time + car_move.handling_time
+		total_time = current_time + employee_travel_time + car_move.handling_time
 
 		if total_time < World.PLANNING_PERIOD:
+			#print(total_time)
 			return True
 		else:
 			# print("Car move exceeds planning period")
