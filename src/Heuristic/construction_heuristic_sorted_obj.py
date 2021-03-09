@@ -28,12 +28,6 @@ class ConstructionHeuristic:
 		self.parking_moves = []
 		self.num_scenarios = self.world_instance.num_scenarios
 
-		self.available_employees = True
-		self.prioritize_charging = True
-		self.first_stage = True
-		self.charging_moves_second_stage = []
-		self.parking_moves_second_stage = []
-
 		for car in self.world_instance.cars:
 			for car_move in car.car_moves:
 				self.car_moves.append(car_move)
@@ -139,7 +133,7 @@ class ConstructionHeuristic:
 		print("Objective function value: ", round(obj_val, 2))
 		return obj_val
 
-	def _get_obj_val_of_car_move(self, first_stage_car_moves: [CarMove] = None, second_stage_car_moves: [CarMove] = None,
+	def get_obj_val_of_car_move(self, first_stage_car_moves: [CarMove] = None, second_stage_car_moves: [CarMove] = None,
 								scenario=None):
 		'''pa = argparse.ArgumentParser()
 		args = pa.parse_args()
@@ -174,40 +168,177 @@ class ConstructionHeuristic:
 		return profit_customer_requests - cost_relocation - cost_deviation_ideal_state
 
 	def add_car_moves_to_employees(self):
-		while self.available_employees:
+		available_employees = True
+		prioritize_charging = True
+		first_stage = True
+		num_scenarios = self.num_scenarios
+		charging_moves = self.charging_moves  # [car_move for car_move in self.car_moves if isinstance(car_move.end_node, ChargingNode)]
+		charging_moves_second_stage = []
+		parking_moves = self.parking_moves  # [car_move for car_move in self.car_moves if isinstance(car_move.end_node, ParkingNode)]
+		parking_moves_second_stage = []
+
+		# first_stage_car_moves = []
+		# second_stage_car_moves = []
+		it = 1
+
+		while available_employees:
+			best_car_move = None
+			best_obj_val = 0
+			best_car_move_second_stage = [None] * num_scenarios
+			best_obj_val_second_stage = [0] * num_scenarios
+
+			print("\niteration: ", it)
+			it+=1
+			print("len_charging_moves", len(charging_moves))
+			print("len_parking_moves", len(parking_moves))
 
 			# check if charging_moves_list is not empty
-			if self.charging_moves:
-				self.prioritize_charging = True
-				if self.first_stage:
-					car_moves = self.charging_moves
+			if charging_moves:
+				prioritize_charging = True
+				if first_stage:
+					car_moves = charging_moves
 				else:
-					car_moves = self.charging_moves_second_stage
+					car_moves = charging_moves_second_stage
 
 			else:
-				self.prioritize_charging = False
-				if self.first_stage:
-					car_moves = self.parking_moves
+				prioritize_charging = False
+				if first_stage:
+					car_moves = parking_moves
 				else:
-					car_moves = self.parking_moves_second_stage
+					car_moves = parking_moves_second_stage
 
-			if self.first_stage:
-				#### GET BEST CAR MOVE ###
-				best_car_move_first_stage = self._get_best_car_move(car_moves=car_moves)
-				#### GET BEST EMPLOYEE ###
-				best_employee_first_stage = self._get_best_employee(best_car_move=best_car_move_first_stage)
-				#### ADD CAR MOVE TO EMPLOYEE ###
-				self._add_car_move_to_employee(car_moves=car_moves, best_car_move=best_car_move_first_stage,
-											   best_employee=best_employee_first_stage)
+			if first_stage:
+				assigned_car_moves = self._get_assigned_car_moves()
+				for r in range(len(car_moves)):
+					obj_val = self.get_obj_val_of_car_move(first_stage_car_moves=assigned_car_moves+[car_moves[r]])
+
+					if obj_val > best_obj_val:
+						best_obj_val = obj_val
+						best_car_move = car_moves[r]
+
+				print("obj_val: ", obj_val)
+				print("best_obj_val: ", best_obj_val)
+				print(f"best_car_move: {best_car_move.car_move_id}, {best_car_move.start_node.node_id} --> {best_car_move.end_node.node_id}")
 			else:
-				#### GET BEST CAR MOVE ###
-				best_car_move_second_stage = self._get_best_car_move(car_moves=car_moves)
-				#### GET BEST EMPLOYEE ###
-				best_employee_second_stage = self._get_best_employee(best_car_move=best_car_move_second_stage)
-				#### ADD CAR MOVE TO EMPLOYEE ###
-				self._add_car_move_to_employee(car_moves=car_moves, best_car_move=best_car_move_second_stage,
-										   best_employee=best_employee_second_stage)
+				obj_val = [0] * num_scenarios
+				assigned_first_stage_car_moves = self._get_assigned_car_moves()
+				for s in range(num_scenarios):
+					# zero indexed scenario
+					#print(obj_val)
+					#print(car_moves)
+					assigned_second_stage_car_moves = self._get_assigned_car_moves(scenario=s)
+					for r in range(len(car_moves[s])):
+						obj_val[s] = self.get_obj_val_of_car_move(first_stage_car_moves=assigned_first_stage_car_moves,
+																  second_stage_car_moves=assigned_second_stage_car_moves + [car_moves[s][r]], scenario=s)
+						if obj_val[s] > best_obj_val_second_stage[s]:
+							best_obj_val_second_stage[s] = obj_val[s]
+							best_car_move_second_stage[s] = car_moves[s][r]
 
+			# print(obj_val)
+			# print(first_stage)
+			# print(best_car_move_second_stage)
+			# print(best_obj_val_second_stage)
+
+			if first_stage:
+				best_employee = None
+				best_travel_time_to_car_move = 100
+				end_node = best_car_move.start_node
+			else:
+				best_employee_second_stage = [None] * num_scenarios
+				best_travel_time_to_car_move_second_stage = [100] * num_scenarios
+				end_node = [(cm.start_node if cm is not None else cm) for cm in best_car_move_second_stage]
+
+			for employee in self.employees:
+				task_num = len(employee.car_moves)
+				# if first stage and the number of completed task for employee is below the number of tasks in first stage,
+				# or if second stage and the number of completed tasks are the same or larger than the number of tasks in first stage
+				if first_stage == (task_num < self.world_instance.first_stage_tasks):
+					if first_stage:
+						legal_move = self.world_instance.check_legal_move(car_move=best_car_move, employee=employee)
+						if legal_move:
+							start_node = employee.current_node
+							travel_time_to_car_move = self.world_instance.get_employee_travel_time_to_node(start_node,
+																										   end_node)
+							if travel_time_to_car_move < best_travel_time_to_car_move:
+								best_travel_time_to_car_move = travel_time_to_car_move
+								best_employee = employee
+						else:
+							# TODO: handle best move not possible eg. of legal move is false, then try next best move
+							# allow employees to enter first and second stage independently?
+							pass
+						print("employee: ", employee.employee_id)
+						print("legal_move: ", legal_move)
+					else:
+						for s in range(num_scenarios):
+							if best_car_move_second_stage[s] is not None:
+								legal_move = self.world_instance.check_legal_move(
+									car_move=best_car_move_second_stage[s], employee=employee, scenario=s)
+								if legal_move:
+									start_node = employee.current_node_second_stage[s]
+									travel_time_to_car_move = self.world_instance.get_employee_travel_time_to_node(
+										start_node, end_node[s])
+									if travel_time_to_car_move < best_travel_time_to_car_move_second_stage[s]:
+										best_travel_time_to_car_move_second_stage[s] = travel_time_to_car_move
+										best_employee_second_stage[s] = employee
+				# print(best_travel_time_to_car_move_second_stage)
+			if first_stage:
+				if best_employee is not None:
+					print('\nEmployee id', best_employee.employee_id)
+					print('Employee node before', best_employee.current_node.node_id)
+					print('Employee time before', best_employee.current_time)
+					print('Travel time to start node', best_travel_time_to_car_move)
+					print(best_car_move.to_string())
+					self.world_instance.add_car_move_to_employee(best_car_move, best_employee)
+					print('Employee node after', best_employee.current_node.node_id)
+					print('Employee time after', best_employee.current_time)
+					if prioritize_charging:
+						charging_moves = self.remove_car_move(best_car_move,
+															  car_moves)  # should remove car move and other car-moves with the same car
+					else:
+						parking_moves = self.remove_car_move(best_car_move,
+															 car_moves)  # should remove car move and other car-moves with the same car
+					first_stage = False
+					for employee in self.employees:
+						task_num = len(employee.car_moves)
+						if task_num < self.world_instance.first_stage_tasks:
+							first_stage = True
+					if not first_stage:
+						# initialize charging and parking moves for second stage
+						charging_moves_second_stage = [charging_moves for s in range(num_scenarios)]
+						parking_moves_second_stage = [parking_moves for s in range(num_scenarios)]
+				else:
+					available_employees = False
+			# Second stage
+			else:
+				# print(best_car_move_second_stage)
+				# If any employee is not note, continue
+				if not all(e is None for e in best_employee_second_stage):
+					for s in range(num_scenarios):
+						# print(best_employee_second_stage[s].to_string())
+						if best_employee_second_stage[s] is not None:
+							# print('\nEmployee id', best_employee_second_stage[s].employee_id)
+							# print('\nScenario', s+1)
+							# print('Employee node before', best_employee.current_node_second_stage[s].node_id)
+							# print('Employee time before', best_employee.current_time_second_stage[s])
+							# print('Travel time to start node', best_travel_time_to_car_move_second_stage[s])
+							self.world_instance.add_car_move_to_employee(best_car_move_second_stage[s],
+																		 best_employee_second_stage[s], s)
+							# print('Employee node after', best_employee.current_node_second_stage[s].node_id)
+							# print('Employee time after', best_employee.current_time_second_stage[s])
+							# When first stage is finished, initialize car_moves to be list of copies of car_moves (number of copies = num_scenarios)
+							if prioritize_charging:
+								charging_moves_second_stage[s] = self.remove_car_move(best_car_move_second_stage[s],
+																					  car_moves[
+																						  s])  # should remove car move and other car-moves with the same car
+							else:
+								parking_moves_second_stage[s] = self.remove_car_move(best_car_move_second_stage[s],
+																					 car_moves[
+																						 s])  # should remove car move and other car-moves wit
+					# print(f"car_moves: {len(car_moves[s])}")
+					if not any(parking_moves_second_stage):
+						available_employees = False
+				else:
+					available_employees = False
 
 	def remove_car_move(self, chosen_car_move, car_moves):
 		car = chosen_car_move.car.car_id
@@ -226,151 +357,6 @@ class ConstructionHeuristic:
 					car_moves.append(car_move)
 
 		return car_moves
-
-	def _get_best_car_move(self, car_moves):
-
-		if self.first_stage:
-			best_car_move_first_stage = None
-			best_obj_val_first_stage = 0
-			assigned_car_moves_first_stage = self._get_assigned_car_moves()
-
-			for r in range(len(car_moves)):
-				obj_val = self._get_obj_val_of_car_move(first_stage_car_moves=assigned_car_moves_first_stage + [car_moves[r]])
-
-				if obj_val > best_obj_val_first_stage:
-					best_obj_val_first_stage = obj_val
-					best_car_move_first_stage = car_moves[r]
-
-			print("obj_val: ", obj_val)
-			print("best_obj_val: ", best_obj_val_first_stage)
-			print(f"best_car_move: {best_car_move_first_stage.car_move_id}, {best_car_move_first_stage.start_node.node_id} --> {best_car_move_first_stage.end_node.node_id}")
-			return best_car_move_first_stage
-
-		else:
-			best_car_move_second_stage = [None] * self.num_scenarios
-			best_obj_val_second_stage = [0] * self.num_scenarios
-			obj_val = [0] * self.num_scenarios
-			assigned_first_stage_car_moves = self._get_assigned_car_moves()
-
-			for s in range(self.num_scenarios):
-				# zero indexed scenario
-				assigned_second_stage_car_moves = self._get_assigned_car_moves(scenario=s)
-				for r in range(len(car_moves[s])):
-					obj_val[s] = self._get_obj_val_of_car_move(first_stage_car_moves=assigned_first_stage_car_moves,
-															   second_stage_car_moves=assigned_second_stage_car_moves + [
-																   car_moves[s][r]], scenario=s)
-					if obj_val[s] > best_obj_val_second_stage[s]:
-						best_obj_val_second_stage[s] = obj_val[s]
-						best_car_move_second_stage[s] = car_moves[s][r]
-
-			return best_car_move_second_stage
-
-	def _get_best_employee(self, best_car_move):
-		if self.first_stage:
-			best_employee = None
-			best_travel_time_to_car_move = 100
-			end_node = best_car_move.start_node
-		else:
-			best_employee_second_stage = [None] * self.num_scenarios
-			best_travel_time_to_car_move_second_stage = [100] * self.num_scenarios
-			end_node = [(cm.start_node if cm is not None else cm) for cm in best_car_move]
-
-		for employee in self.employees:
-			task_num = len(employee.car_moves)
-			# if first stage and the number of completed task for employee is below the number of tasks in first stage,
-			# or if second stage and the number of completed tasks are the same or larger than the number of tasks in first stage
-			if self.first_stage == (task_num < self.world_instance.first_stage_tasks):
-				if self.first_stage:
-					legal_move = self.world_instance.check_legal_move(car_move=best_car_move, employee=employee)
-					if legal_move:
-						start_node = employee.current_node
-						travel_time_to_car_move = self.world_instance.get_employee_travel_time_to_node(start_node,
-																									   end_node)
-						if travel_time_to_car_move < best_travel_time_to_car_move:
-							best_travel_time_to_car_move = travel_time_to_car_move
-							best_employee = employee
-
-					else:
-						# TODO: handle best move not possible eg. of legal move is false, then try next best move
-						# allow employees to enter first and second stage independently?
-						pass
-					print("employee: ", employee.employee_id)
-					print("legal_move: ", legal_move)
-				else:
-					for s in range(self.num_scenarios):
-						if best_car_move[s] is not None:
-							legal_move = self.world_instance.check_legal_move(
-								car_move=best_car_move[s], employee=employee, scenario=s)
-							if legal_move:
-								start_node = employee.current_node_second_stage[s]
-								travel_time_to_car_move = self.world_instance.get_employee_travel_time_to_node(
-									start_node, end_node[s])
-								if travel_time_to_car_move < best_travel_time_to_car_move_second_stage[s]:
-									best_travel_time_to_car_move_second_stage[s] = travel_time_to_car_move
-									best_employee_second_stage[s] = employee
-
-		if self.first_stage:
-			return best_employee
-		else:
-			return best_employee_second_stage
-
-	# print(best_travel_time_to_car_move_second_stage)
-
-	def _add_car_move_to_employee(self, car_moves, best_car_move, best_employee):
-		if self.first_stage:
-			if best_employee is not None:
-				print('\nEmployee id', best_employee.employee_id)
-				print('Employee node before', best_employee.current_node.node_id)
-				print('Employee time before', best_employee.current_time)
-				#print('Travel time to start node', best_travel_time_to_car_move)
-				print(best_car_move.to_string())
-				self.world_instance.add_car_move_to_employee(best_car_move, best_employee)
-				print('Employee node after', best_employee.current_node.node_id)
-				print('Employee time after', best_employee.current_time)
-				if self.prioritize_charging:
-					self.charging_moves = self.remove_car_move(best_car_move, car_moves)  # should remove car move and other car-moves with the same car
-				else:
-					self.parking_moves = self.remove_car_move(best_car_move, car_moves)  # should remove car move and other car-moves with the same car
-
-				self.first_stage = False
-				for employee in self.employees:
-					task_num = len(employee.car_moves)
-					if task_num < self.world_instance.first_stage_tasks:
-						self.first_stage = True
-				if not self.first_stage:
-					# initialize charging and parking moves for second stage
-					self.charging_moves_second_stage = [self.charging_moves for s in range(self.num_scenarios)]
-					self.parking_moves_second_stage = [self.parking_moves for s in range(self.num_scenarios)]
-			else:
-				self.available_employees = False
-		# Second stage
-		else:
-			# print(best_car_move_second_stage)
-			# If any employee is not note, continue
-			if not all(e is None for e in best_employee):
-				for s in range(self.num_scenarios):
-					# print(best_employee_second_stage[s].to_string())
-					if best_employee[s] is not None:
-						# print('\nEmployee id', best_employee_second_stage[s].employee_id)
-						# print('\nScenario', s+1)
-						# print('Employee node before', best_employee.current_node_second_stage[s].node_id)
-						# print('Employee time before', best_employee.current_time_second_stage[s])
-						# print('Travel time to start node', best_travel_time_to_car_move_second_stage[s])
-						self.world_instance.add_car_move_to_employee(best_car_move[s], best_employee[s], s)
-						# print('Employee node after', best_employee.current_node_second_stage[s].node_id)
-						# print('Employee time after', best_employee.current_time_second_stage[s])
-						# When first stage is finished, initialize car_moves to be list of copies of car_moves (number of copies = num_scenarios)
-						if self.prioritize_charging:
-							self.charging_moves_second_stage[s] = self.remove_car_move(best_car_move[s],
-																				  car_moves[s])  # should remove car move and other car-moves with the same car
-						else:
-							self.parking_moves_second_stage[s] = self.remove_car_move(best_car_move[s],
-																				 car_moves[s])  # should remove car move and other car-moves wit
-				# print(f"car_moves: {len(car_moves[s])}")
-				if not any(self.parking_moves_second_stage):
-					self.available_employees = False
-			else:
-				self.available_employees = False
 
 	# print(f"obj_val: {obj_val}")
 
