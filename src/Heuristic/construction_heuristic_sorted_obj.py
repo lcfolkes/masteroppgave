@@ -327,11 +327,11 @@ class ConstructionHeuristic:
 							# print('Employee time after', best_employee.current_time_second_stage[s])
 							# When first stage is finished, initialize car_moves to be list of copies of car_moves (number of copies = num_scenarios)
 							if prioritize_charging:
-								charging_moves_second_stage[s] = self.remove_car_move(best_car_move_second_stage[s],
+								charging_moves_second_stage[s] = self._remove_car_move(best_car_move_second_stage[s],
 																					  car_moves[
 																						  s])  # should remove car move and other car-moves with the same car
 							else:
-								parking_moves_second_stage[s] = self.remove_car_move(best_car_move_second_stage[s],
+								parking_moves_second_stage[s] = self._remove_car_move(best_car_move_second_stage[s],
 																					 car_moves[
 																						 s])  # should remove car move and other car-moves wit
 					# print(f"car_moves: {len(car_moves[s])}")
@@ -340,7 +340,7 @@ class ConstructionHeuristic:
 				else:
 					available_employees = False
 
-	def remove_car_move(self, chosen_car_move, car_moves):
+	def _remove_car_move(self, chosen_car_move, car_moves):
 		car = chosen_car_move.car.car_id
 		# return list of car moves that are not associated with the car of the chosen car move
 		return [cm for cm in car_moves if cm.car.car_id != car]

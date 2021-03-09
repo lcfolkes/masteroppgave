@@ -8,7 +8,12 @@ from InstanceGenerator.world import World
 from src.HelperFiles.helper_functions import load_object_from_file
 from src.Gurobi.Model.run_model import run_model
 import numpy as np
-import argparse
+
+
+def _remove_car_move(chosen_car_move, car_moves):
+	car = chosen_car_move.car.car_id
+	# return list of car moves that are not associated with the car of the chosen car move
+	return [cm for cm in car_moves if cm.car.car_id != car]
 
 
 class ConstructionHeuristic:
@@ -57,6 +62,7 @@ class ConstructionHeuristic:
 		for n in end_nodes_first_stage:
 			y[n.node_id] += 1
 
+
 		node_demands = {parking_node.node_id: {'customer_requests': parking_node.customer_requests,
 											   'car_returns': parking_node.car_returns} for parking_node in
 						self.parking_nodes}
@@ -68,8 +74,10 @@ class ConstructionHeuristic:
 		# car_move.start_node should be a list of car moves with len(list) = num_scenarios
 		for n in self.parking_nodes:
 			second_stage_moves_out = np.array([cm.count(n) for cm in start_nodes_second_stage])
+			y[n.node_id] = np.maximum(y[n.node_id], 0)
 			z_val = np.minimum(y[n.node_id] + node_demands[n.node_id]['car_returns'] - second_stage_moves_out,
 							   node_demands[n.node_id]['customer_requests'])
+			z_val = np.maximum(z_val, 0)
 			z[n.node_id] = z_val
 
 		return z
@@ -94,7 +102,9 @@ class ConstructionHeuristic:
 		start_nodes_first_stage = [car_move.start_node for car_move in first_stage_car_moves]
 		end_nodes_first_stage = [car_move.end_node for car_move in first_stage_car_moves if
 								 isinstance(car_move.end_node, ParkingNode)]
+
 		w = {n.node_id: (n.ideal_state - n.parking_state + z[n.node_id] - n.car_returns) for n in self.parking_nodes}
+
 
 		for n in start_nodes_first_stage:
 			w[n.node_id] += 1
@@ -110,34 +120,14 @@ class ConstructionHeuristic:
 			second_stage_moves_out = np.array([cm.count(n) for cm in start_nodes_second_stage])
 			second_stage_moves_in = np.array([cm.count(n) for cm in end_nodes_second_stage])
 			w[n.node_id] += second_stage_moves_out - second_stage_moves_in
+			# require w_is >= 0
+			w[n.node_id] = np.maximum(w[n.node_id], 0)
+
 
 		w_sum = sum(v for k, v in w.items())
 		w_sum_scenario_average = np.mean(w_sum)
-
 		# only return first scenario for now
 		return World.COST_DEVIATION * w_sum_scenario_average
-
-	def get_objective_function_val(self):
-		first_stage_car_moves = []
-		second_stage_car_moves = [[]] * self.num_scenarios
-		for employee in self.employees:
-			for car_move in employee.car_moves:
-				first_stage_car_moves.append(car_move)
-			for s in range(self.num_scenarios):
-				second_stage_car_moves[s].append(car_move)
-
-		all_second_stage_car_moves = [cm for s in second_stage_car_moves for cm in s]
-		all_car_moves = first_stage_car_moves + all_second_stage_car_moves
-		z = self._calculate_z(first_stage_car_moves, second_stage_car_moves)
-		profit_customer_requests = self._calculate_profit_customer_requests(z)
-		cost_relocation = self._calculate_costs_relocation(all_car_moves)
-		cost_deviation_ideal_state = self._calculate_cost_deviation_ideal_state(z, first_stage_car_moves,
-																				second_stage_car_moves)
-
-		# print(profit_customer_requests - cost_relocation - cost_deviation_ideal_state)
-		obj_val = profit_customer_requests - cost_relocation - cost_deviation_ideal_state
-		print("Objective function value: ", round(obj_val, 2))
-		return obj_val
 
 	def _get_obj_val_of_car_move(self, first_stage_car_moves: [CarMove] = None, second_stage_car_moves: [CarMove] = None,
 								scenario=None):
@@ -170,12 +160,39 @@ class ConstructionHeuristic:
 
 		profit_customer_requests = self._calculate_profit_customer_requests(z)
 
-		# print(profit_customer_requests - cost_relocation - cost_deviation_ideal_state)
+		#print(profit_customer_requests - cost_relocation - cost_deviation_ideal_state)
+		#print("profit_customer_requests: ", profit_customer_requests)
+		#print("cost_relocation: ", cost_relocation)
+		#print("cost_deviation_ideal_state: ", cost_deviation_ideal_state)
 		return profit_customer_requests - cost_relocation - cost_deviation_ideal_state
 
-	def add_car_moves_to_employees(self):
-		while self.available_employees:
+	def get_objective_function_val(self):
+		first_stage_car_moves = []
+		second_stage_car_moves = [[]] * self.num_scenarios
+		for employee in self.employees:
+			for car_move in employee.car_moves:
+				first_stage_car_moves.append(car_move)
+			for s in range(self.num_scenarios):
+				second_stage_car_moves[s].append(car_move)
 
+		all_second_stage_car_moves = [cm for s in second_stage_car_moves for cm in s]
+		all_car_moves = first_stage_car_moves + all_second_stage_car_moves
+		z = self._calculate_z(first_stage_car_moves, second_stage_car_moves)
+		profit_customer_requests = self._calculate_profit_customer_requests(z)
+		cost_relocation = self._calculate_costs_relocation(all_car_moves)
+		cost_deviation_ideal_state = self._calculate_cost_deviation_ideal_state(z, first_stage_car_moves,
+																				second_stage_car_moves)
+
+		# print(profit_customer_requests - cost_relocation - cost_deviation_ideal_state)
+		obj_val = profit_customer_requests - cost_relocation - cost_deviation_ideal_state
+		print("Objective function value: ", round(obj_val, 2))
+		return obj_val
+
+
+
+	def add_car_moves_to_employees(self):
+
+		while self.available_employees:
 			# check if charging_moves_list is not empty
 			if self.charging_moves:
 				self.prioritize_charging = True
@@ -209,10 +226,6 @@ class ConstructionHeuristic:
 										   best_employee=best_employee_second_stage)
 
 
-	def remove_car_move(self, chosen_car_move, car_moves):
-		car = chosen_car_move.car.car_id
-		# return list of car moves that are not associated with the car of the chosen car move
-		return [cm for cm in car_moves if cm.car.car_id != car]
 
 	def _get_assigned_car_moves(self, scenario: int = None):
 		car_moves = []
@@ -231,8 +244,12 @@ class ConstructionHeuristic:
 
 		if self.first_stage:
 			best_car_move_first_stage = None
-			best_obj_val_first_stage = 0
 			assigned_car_moves_first_stage = self._get_assigned_car_moves()
+			best_obj_val_first_stage = -1000
+			if not self.prioritize_charging:
+				print("hello")
+				best_obj_val_first_stage = self._get_obj_val_of_car_move(first_stage_car_moves=assigned_car_moves_first_stage)
+				print(best_obj_val_first_stage)
 
 			for r in range(len(car_moves)):
 				obj_val = self._get_obj_val_of_car_move(first_stage_car_moves=assigned_car_moves_first_stage + [car_moves[r]])
@@ -240,6 +257,7 @@ class ConstructionHeuristic:
 				if obj_val > best_obj_val_first_stage:
 					best_obj_val_first_stage = obj_val
 					best_car_move_first_stage = car_moves[r]
+					print(best_car_move_first_stage)
 
 			print("obj_val: ", obj_val)
 			print("best_obj_val: ", best_obj_val_first_stage)
@@ -291,7 +309,9 @@ class ConstructionHeuristic:
 							best_employee = employee
 
 					else:
-						# TODO: handle best move not possible eg. of legal move is false, then try next best move
+						# TODO: if no employee can perform car move, remove car move.
+						# if best car_move gives negative objfunc value
+						# if no car_move possible or no improving car moves,
 						# allow employees to enter first and second stage independently?
 						pass
 					print("employee: ", employee.employee_id)
@@ -328,9 +348,9 @@ class ConstructionHeuristic:
 				print('Employee node after', best_employee.current_node.node_id)
 				print('Employee time after', best_employee.current_time)
 				if self.prioritize_charging:
-					self.charging_moves = self.remove_car_move(best_car_move, car_moves)  # should remove car move and other car-moves with the same car
+					self.charging_moves = _remove_car_move(best_car_move, car_moves)  # should remove car move and other car-moves with the same car
 				else:
-					self.parking_moves = self.remove_car_move(best_car_move, car_moves)  # should remove car move and other car-moves with the same car
+					self.parking_moves = _remove_car_move(best_car_move, car_moves)  # should remove car move and other car-moves with the same car
 
 				self.first_stage = False
 				for employee in self.employees:
@@ -361,10 +381,10 @@ class ConstructionHeuristic:
 						# print('Employee time after', best_employee.current_time_second_stage[s])
 						# When first stage is finished, initialize car_moves to be list of copies of car_moves (number of copies = num_scenarios)
 						if self.prioritize_charging:
-							self.charging_moves_second_stage[s] = self.remove_car_move(best_car_move[s],
+							self.charging_moves_second_stage[s] = _remove_car_move(best_car_move[s],
 																				  car_moves[s])  # should remove car move and other car-moves with the same car
 						else:
-							self.parking_moves_second_stage[s] = self.remove_car_move(best_car_move[s],
+							self.parking_moves_second_stage[s] = _remove_car_move(best_car_move[s],
 																				 car_moves[s])  # should remove car move and other car-moves wit
 				# print(f"car_moves: {len(car_moves[s])}")
 				if not any(self.parking_moves_second_stage):
