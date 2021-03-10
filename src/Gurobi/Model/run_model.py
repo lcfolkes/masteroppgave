@@ -34,30 +34,29 @@ def run_model(model, stochastic=True, reset=False):
 
 		# for k,v in EMPLOYEE_START_LOCATION.items():
 		#    print("Employee: {}, Node: {}".format(k,v))
-
-		# print("\n--- RESULTS ---")
+		'''
+		print("\n--- RESULTS ---")
 		x_count, y_count, z_count, w_count = 1, 1, 1, 1
-		# for v in m.getVars():
-		#    if(v.varName[0] == 't'):
-		#       print(v.varName, v.x)
-		#         if (v.varName[0] == 'x' and x_count > 0):
-		#             print("x[k,r,m,s]: Service employee k performs car-move r as task number m in scenario s")
-		#             x_count = 0
-		#         if (v.varName[0] == 'y' and y_count > 0):
-		#             print("y[i]: Number of cars in node i by the beginning of the second stage")
-		#             y_count = 0
-		#         elif (v.varName[0] == 'z' and z_count > 0):
-		#             print("z[i,s]: Number of customer requests served in second stage in node i in scenario s")
-		#             z_count = 0
-		#         elif (v.varName[0] == 'w' and w_count > 0):
-		#             print("w[i,s]: Number of cars short of ideal state in node i in scenario s")
-		#             w_count = 0
-		#
-		#    if (v.varName[0] == 'x' and v.x > 0):
-		#        l = list(map(int, (v.varName[2:-1].split(','))))
-		#        print("{0} {1} ({2} --> {3})".format(v.varName, int(v.x),CARMOVE_ORIGIN[l[1]],CARMOVE_DESTINATION[l[1]]))
-		#         elif (v.varName[0] != 'x'):
-		#             print('%s %g' % (v.varName, v.x))
+		for v in m.getVars():
+			if(v.varName[0] == 't'):
+				print(v.varName, v.x)
+			if (v.varName[0] == 'x' and x_count > 0):
+				print("x[k,r,m,s]: Service employee k performs car-move r as task number m in scenario s")
+				x_count = 0
+			if (v.varName[0] == 'y' and y_count > 0):
+				print("y[i]: Number of cars in node i by the beginning of the second stage")
+				y_count = 0
+			elif (v.varName[0] == 'z' and z_count > 0):
+				print("z[i,s]: Number of customer requests served in second stage in node i in scenario s")
+				z_count = 0
+			elif (v.varName[0] == 'w' and w_count > 0):
+				print("w[i,s]: Number of cars short of ideal state in node i in scenario s")
+				w_count = 0
+			if (v.varName[0] == 'x' and v.x > 0):
+				l = list(map(int, (v.varName[2:-1].split(','))))
+				print("{0} {1} ({2} --> {3})".format(v.varName, int(v.x), model.CARMOVE_ORIGIN[l[1]], model.CARMOVE_DESTINATION[l[1]]))
+			elif (v.varName[0] != 'x'):
+				print('%s %g' % (v.varName, v.x))'''
 
 		print('Obj: %g' % m.objVal)
 
@@ -134,10 +133,11 @@ def run_model(model, stochastic=True, reset=False):
 		# TODO: sort dataframe with ascending endtime in addition to Employee and, Task and scenario
 		pd.set_option('display.width', 320)
 		pd.set_option('display.max_columns', 10)
-		# print("-------------- First stage routes --------------")
-		# print(df_firststage_routes)
-		# print("\n-------------- Second stage routes --------------")
-		# print(df_secondstage_routes)
+		print("-------------- First stage routes --------------")
+		print(df_firststage_routes)
+		print("\n-------------- Second stage routes --------------")
+		print(df_secondstage_routes)
+
 
 		return m, df_firststage_routes, df_secondstage_routes, model.PLANNING_PERIOD
 
@@ -202,4 +202,4 @@ def main():
 		run_test_instance(file)
 
 
-main()
+#main()
