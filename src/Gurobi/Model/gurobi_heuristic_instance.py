@@ -119,7 +119,7 @@ class GurobiInstance:
                     krms = (employee_id, car_move_id, task, s+1)
                     # x_krms, employee, car_move, task, scenario
                     initial_solution.append(krms)
-        print(initial_solution)
+        #print(initial_solution)
         return initial_solution
 
     def create_model(self, initial_solution=None):
@@ -158,8 +158,6 @@ class GurobiInstance:
                                        for r in self.CARMOVES
                                        for k in self.EMPLOYEES
                                        for s in self.SCENARIOS)
-
-
 
 
         # ideal state deviation cost

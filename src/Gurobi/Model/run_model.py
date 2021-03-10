@@ -34,7 +34,7 @@ def run_model(model, stochastic=True, reset=False):
 
 		# for k,v in EMPLOYEE_START_LOCATION.items():
 		#    print("Employee: {}, Node: {}".format(k,v))
-
+		'''
 		print("\n--- RESULTS ---")
 		x_count, y_count, z_count, w_count = 1, 1, 1, 1
 		for v in m.getVars():
@@ -52,12 +52,11 @@ def run_model(model, stochastic=True, reset=False):
 			elif (v.varName[0] == 'w' and w_count > 0):
 				print("w[i,s]: Number of cars short of ideal state in node i in scenario s")
 				w_count = 0
-
 			if (v.varName[0] == 'x' and v.x > 0):
 				l = list(map(int, (v.varName[2:-1].split(','))))
 				print("{0} {1} ({2} --> {3})".format(v.varName, int(v.x), model.CARMOVE_ORIGIN[l[1]], model.CARMOVE_DESTINATION[l[1]]))
 			elif (v.varName[0] != 'x'):
-				print('%s %g' % (v.varName, v.x))
+				print('%s %g' % (v.varName, v.x))'''
 
 		print('Obj: %g' % m.objVal)
 
