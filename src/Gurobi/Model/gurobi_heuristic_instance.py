@@ -38,6 +38,8 @@ class GurobiInstance:
         self.PROFIT_RENTAL = self.cf['profit_rental']  # C^(RC), Profit per unit of time of renting out cars
         self.COST_RELOCATION = self.cf['cost_relocation']  # C^R, Cost per unit of time of relocation activities
         self.COST_DEVIATION = self.cf['cost_deviation']  # C^D, Cost per car of not reaching ideal state
+
+
         self.INITIAL_AVAILABLE_CARS = dict(zip(self.PARKING_NODES, self.cf[
             'cars_available_in_node']))  # S^(In)_i, Initial number of available cars (cars not in need of charging)
         self.IDEAL_STATE = dict(
@@ -117,7 +119,7 @@ class GurobiInstance:
                     krms = (employee_id, car_move_id, task, s+1)
                     # x_krms, employee, car_move, task, scenario
                     initial_solution.append(krms)
-
+        print(initial_solution)
         return initial_solution
 
     def create_model(self, initial_solution=None):
@@ -157,6 +159,9 @@ class GurobiInstance:
                                        for k in self.EMPLOYEES
                                        for s in self.SCENARIOS)
 
+
+
+
         # ideal state deviation cost
         cost_deviation_ideal_state = gp.quicksum(
             self.COST_DEVIATION * w[(i, s)] for i in self.PARKING_NODES for s in self.SCENARIOS)
@@ -164,9 +169,18 @@ class GurobiInstance:
         total_profit = self.SCENARIO_PROBABILITY * (
                 profit_customer_requests - costs_relocation - cost_deviation_ideal_state)
 
+        #### GET OBJ VAL COMPONENTS ####
+        profit_customer_requests_var = m.addVar(vtype=GRB.CONTINUOUS, lb=0, name="profit_customer_requests")
+        cost_relocation_var = m.addVar(vtype=GRB.CONTINUOUS, lb=0, name="cost_relocation")
+        cost_deviation_ideal_state_var = m.addVar(vtype=GRB.CONTINUOUS, lb=0, name="cost_deviation_ideal_state")
+        m.addConstr(profit_customer_requests_var == profit_customer_requests * self.SCENARIO_PROBABILITY)
+        m.addConstr(cost_relocation_var == costs_relocation * self.SCENARIO_PROBABILITY)
+        m.addConstr(cost_deviation_ideal_state_var == cost_deviation_ideal_state * self.SCENARIO_PROBABILITY)
+
         m.setObjective(total_profit, GRB.MAXIMIZE)
 
         ### CONSTRAINTS ###
+
 
         ## Relocation of rental vehicles
 
