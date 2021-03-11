@@ -78,19 +78,26 @@ class ConstructionHeuristic:
 			z[n.node_id] = z_val
 		return z
 
-	def _calculate_profit_customer_requests(self, z):
+	def _calculate_profit_customer_requests(self, z, scenario=None):
 		# sum across scenarios for all nodes
 		z_sum = sum(v for k, v in z.items())
-		z_sum_scenario_average = np.mean(z_sum)
-		return World.PROFIT_RENTAL * z_sum_scenario_average
+		if scenario is None:
+			z_sum_scenario_average = np.mean(z_sum)
+			return World.PROFIT_RENTAL * z_sum_scenario_average
+		else:
+			return World.PROFIT_RENTAL * z_sum[scenario]
 
-	def _calculate_costs_relocation(self, car_moves):
+
+	def _calculate_costs_relocation(self, car_moves, individual_scenario=False):
 		# Sum of all travel times across all car moves
 		sum_travel_time = sum(car_move.handling_time for car_move in car_moves)
-		sum_travel_time_scenario_avg = sum_travel_time / self.num_scenarios
-		return World.COST_RELOCATION * sum_travel_time_scenario_avg
+		if individual_scenario:
+			return World.COST_RELOCATION * sum_travel_time
+		else:
+			sum_travel_time_scenario_avg = sum_travel_time / self.num_scenarios
+			return World.COST_RELOCATION * sum_travel_time_scenario_avg
 
-	def _calculate_cost_deviation_ideal_state(self, z, first_stage_car_moves, second_stage_car_moves, verbose=False):
+	def _calculate_cost_deviation_ideal_state(self, z, first_stage_car_moves, second_stage_car_moves, scenario=None, verbose=False):
 		start_nodes_first_stage = [car_move.start_node for car_move in first_stage_car_moves]
 		end_nodes_first_stage = [car_move.end_node for car_move in first_stage_car_moves if
 								 isinstance(car_move.end_node, ParkingNode)]
@@ -115,34 +122,40 @@ class ConstructionHeuristic:
 
 
 		w_sum = sum(v for k, v in w.items())
-		w_sum_scenario_average = np.mean(w_sum)
+
+		if scenario is None:
+			w_sum_scenario_average = np.mean(w_sum)
+			return World.COST_DEVIATION * w_sum_scenario_average
+		else:
+			return World.PROFIT_RENTAL * w_sum[scenario]
 		# only return first scenario for now
-		return World.COST_DEVIATION * w_sum_scenario_average
 
 	def _get_obj_val_of_car_move(self, first_stage_car_moves: [CarMove] = None, second_stage_car_moves: [CarMove] = None,
 								scenario=None):
+		# TODO: if handling individual carmoves, then make sure objective function is only calculated for a given scenario
 		# first stage
 		if scenario is None:
 			z = self._calculate_z(first_stage_car_moves=first_stage_car_moves, second_stage_car_moves=[[]])
+			profit_customer_requests = self._calculate_profit_customer_requests(z)
 			cost_deviation_ideal_state = self._calculate_cost_deviation_ideal_state(z,
 																					first_stage_car_moves=first_stage_car_moves,
 																					second_stage_car_moves=[[]])
 			first_stage_duplicate_for_scenarios = list(np.repeat(first_stage_car_moves, self.num_scenarios))
 			cost_relocation = self._calculate_costs_relocation(first_stage_duplicate_for_scenarios)
 
+
 		else:
 			car_moves_second_stage = [[] for _ in range(self.num_scenarios)]
 			car_moves_second_stage[scenario] = second_stage_car_moves
 			z = self._calculate_z(first_stage_car_moves=first_stage_car_moves,
 								  second_stage_car_moves=car_moves_second_stage)
+			profit_customer_requests = self._calculate_profit_customer_requests(z, scenario=scenario)
 			cost_deviation_ideal_state = self._calculate_cost_deviation_ideal_state(z,
 																					first_stage_car_moves=first_stage_car_moves,
 																					second_stage_car_moves=car_moves_second_stage)
 
-			first_stage_duplicate_for_scenarios = list(np.repeat(first_stage_car_moves, self.num_scenarios))
-			cost_relocation = self._calculate_costs_relocation(first_stage_duplicate_for_scenarios + second_stage_car_moves)
-
-		profit_customer_requests = self._calculate_profit_customer_requests(z)
+			#first_stage_duplicate_for_scenarios = list(np.repeat(first_stage_car_moves, self.num_scenarios))
+			cost_relocation = self._calculate_costs_relocation(first_stage_car_moves + second_stage_car_moves, individual_scenario=True)
 
 		return profit_customer_requests - cost_relocation - cost_deviation_ideal_state
 
@@ -164,10 +177,29 @@ class ConstructionHeuristic:
 		z = self._calculate_z(first_stage_car_moves, second_stage_car_moves, True)
 		profit_customer_requests = self._calculate_profit_customer_requests(z)
 		cost_relocation = self._calculate_costs_relocation(all_car_moves)
-		cost_deviation_ideal_state = self._calculate_cost_deviation_ideal_state(z, first_stage_car_moves,
-																				second_stage_car_moves,True)
+		cost_deviation_ideal_state = self._calculate_cost_deviation_ideal_state(z=z, first_stage_car_moves=first_stage_car_moves,
+																				second_stage_car_moves=second_stage_car_moves, scenario=None, verbose=True)
+
 		obj_val = profit_customer_requests - cost_relocation - cost_deviation_ideal_state
 		print("Objective function value: ", round(obj_val, 2))
+
+		#### OBJECTIVE FUNCTION VALUE FOR SCENARIOS ####
+		obj_val_list = []
+		assigned_first_stage_car_moves = self._get_assigned_car_moves()
+		second_stage_car_moves = []
+		for s in range(self.num_scenarios):
+			assigned_second_stage_car_moves = self._get_assigned_car_moves(scenario=s)
+			second_stage_car_moves.append(assigned_second_stage_car_moves)
+			obj_val_list.append(self._get_obj_val_of_car_move(
+				first_stage_car_moves=assigned_first_stage_car_moves,
+				second_stage_car_moves=assigned_second_stage_car_moves, scenario=s))
+		print(f"Obj. function value of scenarios: {[round(o, 2) for o in obj_val_list]}, mean: {np.mean(obj_val_list)}")
+
+		'''print([car_move.car_move_id for car_move in assigned_first_stage_car_moves])
+		for scenario in second_stage_car_moves:
+			print([cm.car_move_id for cm in scenario])'''
+		# NO PROBLEMS WITH _get_assigned_car_moves()
+		# TODO: check y, z, w, etc. values for both ways of calculating objective value
 		return obj_val
 
 
@@ -228,11 +260,11 @@ class ConstructionHeuristic:
 		return car_moves
 
 	def _get_best_car_move(self, car_moves):
-
+		# FIRST STAGE
 		if self.first_stage:
 			best_car_move_first_stage = None
 			assigned_car_moves_first_stage = self._get_assigned_car_moves()
-			#best_obj_val_first_stage = -1000
+			best_obj_val_first_stage = -1000
 			if not self.prioritize_charging:
 				best_obj_val_first_stage = self._get_obj_val_of_car_move(first_stage_car_moves=assigned_car_moves_first_stage)
 
@@ -247,6 +279,7 @@ class ConstructionHeuristic:
 			#print(f"best_car_move: {best_car_move_first_stage.car_move_id}, {best_car_move_first_stage.start_node.node_id} --> {best_car_move_first_stage.end_node.node_id}")
 			return best_car_move_first_stage
 
+		# SECOND STAGE
 		else:
 			best_car_move_second_stage = [None for _ in range(self.num_scenarios)]
 			best_obj_val_second_stage = [-1000 for _ in range(self.num_scenarios)]
@@ -266,10 +299,23 @@ class ConstructionHeuristic:
 					obj_val[s] = self._get_obj_val_of_car_move(first_stage_car_moves=assigned_first_stage_car_moves,
 															   second_stage_car_moves=assigned_second_stage_car_moves +
 																   [car_moves[s][r]], scenario=s)
+					if car_moves[s][r].car_move_id == 27 and s == 0:
+						print(f"car_move {car_moves[s][r].car_move_id}, s {s + 1}")
+						print(f"obj_val {obj_val[s]} best_obj_val {best_obj_val_second_stage[s]}")
+
 					if obj_val[s] > best_obj_val_second_stage[s]:
 						best_obj_val_second_stage[s] = obj_val[s]
 						best_car_move_second_stage[s] = car_moves[s][r]
 
+			out_list = []
+			for car_move in best_car_move_second_stage:
+				if car_move is not None:
+					out_list.append(car_move.car_move_id)
+				else:
+					out_list.append(car_move)
+
+			print(out_list)
+			print([round(o,2) for o in best_obj_val_second_stage])
 			return best_car_move_second_stage
 
 	def _get_best_employee(self, best_car_move):
@@ -416,11 +462,11 @@ class ConstructionHeuristic:
 
 
 print("\n---- HEURISTIC ----")
-ch = ConstructionHeuristic("InstanceFiles/6nodes/6-3-1-1_b.pkl")
+ch = ConstructionHeuristic("InstanceFiles/6nodes/6-3-1-1_a.pkl")
 ch.add_car_moves_to_employees()
 ch.print_solution()
 ch.get_objective_function_val()
 print("\n---- GUROBI ----")
-gi = GurobiInstance("InstanceFiles/6nodes/6-3-1-1_b.yaml", ch.employees)
+gi = GurobiInstance("InstanceFiles/6nodes/6-3-1-1_a.yaml", ch.employees)
 # gi = GurobiInstance("InstanceFiles/6nodes/6-3-1-1_a.yaml")
 run_model(gi)
