@@ -67,9 +67,10 @@ class ConstructionHeuristic:
 
 		start_nodes_second_stage = [[car_move.start_node.node_id for car_move in scenarios] for scenarios in
 									second_stage_car_moves]
+		print(start_nodes_second_stage)
 		# car_move.start_node should be a list of car moves with len(list) = num_scenarios
 		for n in self.parking_nodes:
-			second_stage_moves_out = np.array([cm.count(n.node_id) for cm in start_nodes_second_stage])
+			second_stage_moves_out = np.array([scenario.count(n.node_id) for scenario in start_nodes_second_stage])
 			y[n.node_id] = np.maximum(y[n.node_id], 0)
 
 			z_val = np.minimum(y[n.node_id] + node_demands[n.node_id]['car_returns'] - second_stage_moves_out,
@@ -82,9 +83,11 @@ class ConstructionHeuristic:
 		# sum across scenarios for all nodes
 		z_sum = sum(v for k, v in z.items())
 		if scenario is None:
+			#print(f"z_sum {z_sum}")
 			z_sum_scenario_average = np.mean(z_sum)
 			return World.PROFIT_RENTAL * z_sum_scenario_average
 		else:
+			#print(f"z_sum[{scenario+1}] {z_sum[scenario]}")
 			return World.PROFIT_RENTAL * z_sum[scenario]
 
 
@@ -92,9 +95,12 @@ class ConstructionHeuristic:
 		# Sum of all travel times across all car moves
 		sum_travel_time = sum(car_move.handling_time for car_move in car_moves)
 		if individual_scenario:
+			#print(f"individual_scenario {sum_travel_time}")
 			return World.COST_RELOCATION * sum_travel_time
 		else:
 			sum_travel_time_scenario_avg = sum_travel_time / self.num_scenarios
+			#print(f"sum_scenarios {sum_travel_time}")
+			#print(f"avg_scenarios {sum_travel_time_scenario_avg}")
 			return World.COST_RELOCATION * sum_travel_time_scenario_avg
 
 	def _calculate_cost_deviation_ideal_state(self, z, first_stage_car_moves, second_stage_car_moves, scenario=None, verbose=False):
@@ -110,29 +116,31 @@ class ConstructionHeuristic:
 		for n in end_nodes_first_stage:
 			w[n.node_id] -= 1
 
-		start_nodes_second_stage = [[car_move.start_node for car_move in scenarios] for scenarios in
+		start_nodes_second_stage = [[car_move.start_node.node_id for car_move in scenarios] for scenarios in
 									second_stage_car_moves]
-		end_nodes_second_stage = [[car_move.end_node for car_move in scenarios] for scenarios in second_stage_car_moves]
+
+		end_nodes_second_stage = [[car_move.end_node.node_id for car_move in scenarios] for scenarios in second_stage_car_moves]
+
 		for n in self.parking_nodes:
-			second_stage_moves_out = np.array([cm.count(n) for cm in start_nodes_second_stage])
-			second_stage_moves_in = np.array([cm.count(n) for cm in end_nodes_second_stage])
+			second_stage_moves_out = np.array([cm.count(n.node_id) for cm in start_nodes_second_stage])
+			second_stage_moves_in = np.array([cm.count(n.node_id) for cm in end_nodes_second_stage])
 			w[n.node_id] += second_stage_moves_out - second_stage_moves_in
 			# require w_is >= 0
 			w[n.node_id] = np.maximum(w[n.node_id], 0)
-
 
 		w_sum = sum(v for k, v in w.items())
 
 		if scenario is None:
 			w_sum_scenario_average = np.mean(w_sum)
+			#print(f"w_sum {w_sum}")
 			return World.COST_DEVIATION * w_sum_scenario_average
 		else:
-			return World.PROFIT_RENTAL * w_sum[scenario]
+			#print(f"w_sum[{scenario+1}] {w_sum[scenario]}")
+			return World.COST_DEVIATION * w_sum[scenario]
 		# only return first scenario for now
 
 	def _get_obj_val_of_car_move(self, first_stage_car_moves: [CarMove] = None, second_stage_car_moves: [CarMove] = None,
-								scenario=None):
-		# TODO: if handling individual carmoves, then make sure objective function is only calculated for a given scenario
+								scenario=None, verbose=False):
 		# first stage
 		if scenario is None:
 			z = self._calculate_z(first_stage_car_moves=first_stage_car_moves, second_stage_car_moves=[[]])
@@ -148,11 +156,11 @@ class ConstructionHeuristic:
 			car_moves_second_stage = [[] for _ in range(self.num_scenarios)]
 			car_moves_second_stage[scenario] = second_stage_car_moves
 			z = self._calculate_z(first_stage_car_moves=first_stage_car_moves,
-								  second_stage_car_moves=car_moves_second_stage)
+								  second_stage_car_moves=car_moves_second_stage, verbose=True)
 			profit_customer_requests = self._calculate_profit_customer_requests(z, scenario=scenario)
 			cost_deviation_ideal_state = self._calculate_cost_deviation_ideal_state(z,
 																					first_stage_car_moves=first_stage_car_moves,
-																					second_stage_car_moves=car_moves_second_stage)
+																					second_stage_car_moves=car_moves_second_stage, scenario=scenario)
 
 			#first_stage_duplicate_for_scenarios = list(np.repeat(first_stage_car_moves, self.num_scenarios))
 			cost_relocation = self._calculate_costs_relocation(first_stage_car_moves + second_stage_car_moves, individual_scenario=True)
@@ -194,12 +202,7 @@ class ConstructionHeuristic:
 				first_stage_car_moves=assigned_first_stage_car_moves,
 				second_stage_car_moves=assigned_second_stage_car_moves, scenario=s))
 		print(f"Obj. function value of scenarios: {[round(o, 2) for o in obj_val_list]}, mean: {np.mean(obj_val_list)}")
-
-		'''print([car_move.car_move_id for car_move in assigned_first_stage_car_moves])
-		for scenario in second_stage_car_moves:
-			print([cm.car_move_id for cm in scenario])'''
-		# NO PROBLEMS WITH _get_assigned_car_moves()
-		# TODO: check y, z, w, etc. values for both ways of calculating objective value
+		assert(round(np.mean(obj_val_list), 2) == round(obj_val, 2)), "Different objective function values"
 		return obj_val
 
 
@@ -290,7 +293,7 @@ class ConstructionHeuristic:
 					assigned_second_stage_car_moves = self._get_assigned_car_moves(scenario=s)
 					best_obj_val_second_stage[s] = self._get_obj_val_of_car_move(first_stage_car_moves=assigned_first_stage_car_moves,
 														   second_stage_car_moves=assigned_second_stage_car_moves, scenario=s)
-
+			print(f"best_obj_val_second_stage {best_obj_val_second_stage}")
 			obj_val = [0 for _ in range(self.num_scenarios)]
 			for s in range(self.num_scenarios):
 				# zero indexed scenario
@@ -299,9 +302,9 @@ class ConstructionHeuristic:
 					obj_val[s] = self._get_obj_val_of_car_move(first_stage_car_moves=assigned_first_stage_car_moves,
 															   second_stage_car_moves=assigned_second_stage_car_moves +
 																   [car_moves[s][r]], scenario=s)
-					if car_moves[s][r].car_move_id == 27 and s == 0:
-						print(f"car_move {car_moves[s][r].car_move_id}, s {s + 1}")
-						print(f"obj_val {obj_val[s]} best_obj_val {best_obj_val_second_stage[s]}")
+					#if car_moves[s][r].car_move_id == 27 and s == 0:
+					#	print(f"car_move {car_moves[s][r].car_move_id}, s {s + 1}")
+					#	print(f"obj_val {obj_val[s]} best_obj_val {best_obj_val_second_stage[s]}")
 
 					if obj_val[s] > best_obj_val_second_stage[s]:
 						best_obj_val_second_stage[s] = obj_val[s]
