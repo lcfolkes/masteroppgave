@@ -14,7 +14,7 @@ def remove_car_move(chosen_car_move, car_moves):
 	return [cm for cm in car_moves if cm.car.car_id != car]
 
 class ConstructionHeuristic:
-	# instance_file = "InstanceFiles/6nodes/6-3-1-1_a.pkl"
+	# instance_file = "InstanceFiles/6nodes/6-3-1-1_d.pkl"
 	# filename = "InstanceFiles/6nodes/6-3-1-1_b.yaml"
 
 	def __init__(self, instance_file):
@@ -67,7 +67,7 @@ class ConstructionHeuristic:
 
 		start_nodes_second_stage = [[car_move.start_node.node_id for car_move in scenarios] for scenarios in
 									second_stage_car_moves]
-		print(start_nodes_second_stage)
+
 		# car_move.start_node should be a list of car moves with len(list) = num_scenarios
 		for n in self.parking_nodes:
 			second_stage_moves_out = np.array([scenario.count(n.node_id) for scenario in start_nodes_second_stage])
@@ -77,6 +77,8 @@ class ConstructionHeuristic:
 							   node_demands[n.node_id]['customer_requests'])
 			z_val = np.maximum(z_val, 0)
 			z[n.node_id] = z_val
+			if verbose:
+				print(f"z[{n.node_id}] {z[n.node_id]}")
 		return z
 
 	def _calculate_profit_customer_requests(self, z, scenario=None):
@@ -109,12 +111,22 @@ class ConstructionHeuristic:
 								 isinstance(car_move.end_node, ParkingNode)]
 
 		w = {n.node_id: (n.ideal_state - n.parking_state + z[n.node_id] - n.car_returns) for n in self.parking_nodes}
-
+		if verbose:
+			print([n.node_id for n in start_nodes_first_stage])
+			print([n.node_id for n in end_nodes_first_stage])
+			for n in self.parking_nodes:
+				print(f"w[{n.node_id}] {w[n.node_id]} \t before")
 
 		for n in start_nodes_first_stage:
 			w[n.node_id] += 1
 		for n in end_nodes_first_stage:
 			w[n.node_id] -= 1
+
+		if verbose:
+			print([n.node_id for n in start_nodes_first_stage])
+			print([n.node_id for n in end_nodes_first_stage])
+			for n in self.parking_nodes:
+				print(f"w[{n.node_id}] {w[n.node_id]} \t before")
 
 		start_nodes_second_stage = [[car_move.start_node.node_id for car_move in scenarios] for scenarios in
 									second_stage_car_moves]
@@ -124,9 +136,13 @@ class ConstructionHeuristic:
 		for n in self.parking_nodes:
 			second_stage_moves_out = np.array([cm.count(n.node_id) for cm in start_nodes_second_stage])
 			second_stage_moves_in = np.array([cm.count(n.node_id) for cm in end_nodes_second_stage])
+
 			w[n.node_id] += second_stage_moves_out - second_stage_moves_in
 			# require w_is >= 0
 			w[n.node_id] = np.maximum(w[n.node_id], 0)
+
+			if verbose:
+				print(f"w[{n.node_id}] {w[n.node_id]} \t after moves in/out")
 
 		w_sum = sum(v for k, v in w.items())
 
@@ -156,7 +172,7 @@ class ConstructionHeuristic:
 			car_moves_second_stage = [[] for _ in range(self.num_scenarios)]
 			car_moves_second_stage[scenario] = second_stage_car_moves
 			z = self._calculate_z(first_stage_car_moves=first_stage_car_moves,
-								  second_stage_car_moves=car_moves_second_stage, verbose=True)
+								  second_stage_car_moves=car_moves_second_stage)#, verbose=True)
 			profit_customer_requests = self._calculate_profit_customer_requests(z, scenario=scenario)
 			cost_deviation_ideal_state = self._calculate_cost_deviation_ideal_state(z,
 																					first_stage_car_moves=first_stage_car_moves,
@@ -293,7 +309,7 @@ class ConstructionHeuristic:
 					assigned_second_stage_car_moves = self._get_assigned_car_moves(scenario=s)
 					best_obj_val_second_stage[s] = self._get_obj_val_of_car_move(first_stage_car_moves=assigned_first_stage_car_moves,
 														   second_stage_car_moves=assigned_second_stage_car_moves, scenario=s)
-			print(f"best_obj_val_second_stage {best_obj_val_second_stage}")
+			#print(f"best_obj_val_second_stage {best_obj_val_second_stage}")
 			obj_val = [0 for _ in range(self.num_scenarios)]
 			for s in range(self.num_scenarios):
 				# zero indexed scenario
@@ -317,8 +333,8 @@ class ConstructionHeuristic:
 				else:
 					out_list.append(car_move)
 
-			print(out_list)
-			print([round(o,2) for o in best_obj_val_second_stage])
+			#print(out_list)
+			#print([round(o,2) for o in best_obj_val_second_stage])
 			return best_car_move_second_stage
 
 	def _get_best_employee(self, best_car_move):
@@ -465,11 +481,11 @@ class ConstructionHeuristic:
 
 
 print("\n---- HEURISTIC ----")
-ch = ConstructionHeuristic("InstanceFiles/6nodes/6-3-1-1_a.pkl")
+ch = ConstructionHeuristic("InstanceFiles/6nodes/6-3-1-1_c.pkl")
 ch.add_car_moves_to_employees()
 ch.print_solution()
 ch.get_objective_function_val()
 print("\n---- GUROBI ----")
-gi = GurobiInstance("InstanceFiles/6nodes/6-3-1-1_a.yaml", ch.employees)
-# gi = GurobiInstance("InstanceFiles/6nodes/6-3-1-1_a.yaml")
+gi = GurobiInstance("InstanceFiles/6nodes/6-3-1-1_c.yaml", ch.employees)
+# gi = GurobiInstance("InstanceFiles/6nodes/6-3-1-1_d.yaml")
 run_model(gi)

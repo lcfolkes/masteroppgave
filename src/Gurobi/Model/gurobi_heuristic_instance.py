@@ -134,6 +134,7 @@ class GurobiInstance:
             for krms in initial_solution:
                 x[krms].lb = 1
                 x[krms].ub = 1
+                print(f"x[{krms}]")
 
         y = m.addVars(self.PARKING_NODES, lb=0, vtype=GRB.INTEGER,
                       name="y")  # y_i, Number of cars in node i by the beginning of the second stage
