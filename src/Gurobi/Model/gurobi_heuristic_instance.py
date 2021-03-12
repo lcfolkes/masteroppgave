@@ -106,6 +106,7 @@ class GurobiInstance:
                 car_move_id = car_moves[i].car_move_id
                 for scenario in self.SCENARIOS:
                     krms = (employee_id, car_move_id, task, scenario)
+                    print(f"x[{krms}] ({car_moves[i].start_node.node_id} --> {car_moves[i].end_node.node_id})")
                     # x_krms, employee, car_move, task, scenario
                     initial_solution.append(krms)
             task_employee[employee_id] = task
@@ -117,6 +118,7 @@ class GurobiInstance:
                     task += 1
                     car_move_id = car_move.car_move_id
                     krms = (employee_id, car_move_id, task, s+1)
+                    print(f"x[{krms}] ({car_move.start_node.node_id} --> {car_move.end_node.node_id})")
                     # x_krms, employee, car_move, task, scenario
                     initial_solution.append(krms)
         #print(initial_solution)
@@ -134,7 +136,6 @@ class GurobiInstance:
             for krms in initial_solution:
                 x[krms].lb = 1
                 x[krms].ub = 1
-                print(f"x[{krms}]")
 
         y = m.addVars(self.PARKING_NODES, lb=0, vtype=GRB.INTEGER,
                       name="y")  # y_i, Number of cars in node i by the beginning of the second stage

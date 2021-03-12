@@ -62,8 +62,9 @@ def main():
     for i in range(cf['examples']):
         print("Creating instance: ", i)
         world = buildWorld(instance_config=cf)
-        create_instance_from_world(world, num_scenarios=cf['num_scenarios'], num_tasks=cf['tasks']['num_all'],
-                                num_first_stage_tasks=cf['tasks']['num_first_stage'], version=i+1)
+        #create_instance_from_world(world, num_scenarios=cf['num_scenarios'], num_tasks=cf['tasks']['num_all'],
+        #                        num_first_stage_tasks=cf['tasks']['num_first_stage'], version=i+1)
+        create_instance_from_world(world, num_scenarios=1, num_tasks=cf['tasks']['num_all'], num_first_stage_tasks=cf['tasks']['num_first_stage'], version=i+1)
         worlds.append(world)
 
 main()
