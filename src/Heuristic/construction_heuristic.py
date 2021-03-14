@@ -233,16 +233,22 @@ class ConstructionHeuristic:
 
             else:
                 self.prioritize_charging = False
+                if not self._check_all_charging_moves_completed():
+                    print("Instance not solvable. Cannot charge all cars.")
+                    break
                 if self.first_stage:
                     car_moves = self.parking_moves
                 else:
                     car_moves = self.parking_moves_second_stage
 
+
             if self.first_stage:
                 #### GET BEST CAR MOVE ###
                 best_car_move_first_stage = self._get_best_car_move(car_moves=car_moves)
+                #print(best_car_move_first_stage.to_string())
                 #### GET BEST EMPLOYEE ###
                 best_employee_first_stage = self._get_best_employee(best_car_move=best_car_move_first_stage)
+                #print(f"employee {best_employee_first_stage}")
                 if best_employee_first_stage is not None:
                     #### ADD CAR MOVE TO EMPLOYEE ###
                     self._add_car_move_to_employee(car_moves=car_moves, best_car_move=best_car_move_first_stage,
@@ -259,6 +265,7 @@ class ConstructionHeuristic:
                 if best_employee_second_stage is not None:
                     self._add_car_move_to_employee(car_moves=car_moves, best_car_move=best_car_move_second_stage,
                                                best_employee=best_employee_second_stage)
+
 
 
 
@@ -316,8 +323,8 @@ class ConstructionHeuristic:
                                                                second_stage_car_moves=assigned_second_stage_car_moves +
                                                                    [car_moves[s][r]], scenario=s)
                     if car_moves[s][r].car_move_id == 7 and s == 0:
-                    	print(f"car_move {car_moves[s][r].car_move_id}, s {s + 1}")
-                    	print(f"obj_val {obj_val[s]} best_obj_val {best_obj_val_second_stage[s]}")
+                        print(f"car_move {car_moves[s][r].car_move_id}, s {s + 1}")
+                        print(f"obj_val {obj_val[s]} best_obj_val {best_obj_val_second_stage[s]}")
 
                     if obj_val[s] > best_obj_val_second_stage[s]:
                         best_obj_val_second_stage[s] = obj_val[s]
@@ -353,6 +360,7 @@ class ConstructionHeuristic:
             if self.first_stage == (task_num < self.world_instance.first_stage_tasks):
                 if self.first_stage:
                     legal_move = self.world_instance.check_legal_move(car_move=best_car_move, employee=employee)
+                    print(f"legal_move {legal_move}")
                     if legal_move:
                         best_move_not_legal = False
                         start_node = employee.current_node
@@ -440,6 +448,7 @@ class ConstructionHeuristic:
                         print('Employee node before', best_employee[s].current_node_second_stage[s].node_id)
                         print('Employee time before', best_employee[s].current_time_second_stage[s])
                         #print('Travel time to start node', best_travel_time_to_car_move_second_stage[s])
+                        print(best_car_move[s].to_string())
                         self.world_instance.add_car_move_to_employee(best_car_move[s], best_employee[s], s)
                         print('Employee node after', best_employee[s].current_node_second_stage[s].node_id)
                         print('Employee time after', best_employee[s].current_time_second_stage[s])
@@ -456,8 +465,20 @@ class ConstructionHeuristic:
             else:
                 self.available_employees = False
 
-
-
+    def _check_all_charging_moves_completed(self) -> bool:
+        num = [0 for _ in range(self.num_scenarios)]
+        for employee in self.employees:
+            for car_move in employee.car_moves:
+                if isinstance(car_move.end_node, ChargingNode):
+                    num = [n+1 for n in num]
+            if not self.first_stage:
+                for i in range(self.num_scenarios):
+                    for car_move in employee.car_moves_second_stage[i]:
+                        if isinstance(car_move.end_node, ChargingNode):
+                            num[i] += 1
+        # returns whether the number of charging moves for the scenario with the lowest number of charging moves assigned
+        # equals the sum of cars in need of charging
+        return min(num) == sum(n.charging_state for n in self.parking_nodes)
     # print(f"obj_val: {obj_val}")
 
     def print_solution(self):
@@ -479,10 +500,13 @@ class ConstructionHeuristic:
 
 print("\n---- HEURISTIC ----")
 ch = ConstructionHeuristic("InstanceFiles/6nodes/6-1-1-1_b.pkl")
-ch.add_car_moves_to_employees()
-ch.print_solution()
-ch.get_objective_function_val()
-print("\n---- GUROBI ----")
-gi = GurobiInstance("InstanceFiles/6nodes/6-1-1-1_b.yaml", employees=ch.employees, optimize=False)
-# gi = GurobiInstance("InstanceFiles/6nodes/6-3-1-1_d.yaml")
-run_model(gi)
+try:
+    ch.add_car_moves_to_employees()
+    ch.print_solution()
+    ch.get_objective_function_val()
+    print("\n---- GUROBI ----")
+    gi = GurobiInstance("InstanceFiles/6nodes/6-1-1-1_b.yaml", employees=ch.employees, optimize=False)
+    # gi = GurobiInstance("InstanceFiles/6nodes/6-3-1-1_d.yaml")
+    run_model(gi)
+except:
+    print("Instance not solvable")

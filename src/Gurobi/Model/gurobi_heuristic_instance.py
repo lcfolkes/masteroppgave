@@ -8,6 +8,14 @@ from src.HelperFiles.helper_functions import read_config, read_2d_array_to_dict,
 
 class GurobiInstance:
     def __init__(self, filepath: str, employees=None, optimize=True):
+        """
+        Construct a new 'GurobiInstance' object.
+        :param filepath: .yaml file of instance
+        :param employees: employees with assigned carmoves. solution is constructed from these
+        :param optimize: if true, further optimize constructed solution. if false, evaluate constructed solution
+        :return: returns a gurobi instance
+        """
+
         self.cf = read_config(filepath)
         # print("SCENARIOS: ", SCENARIOS)
         self.NODES = np.arange(1, self.cf['num_parking_nodes'] + self.cf['num_charging_nodes'] + 1)  # N, set of nodes
