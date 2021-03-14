@@ -478,11 +478,11 @@ class ConstructionHeuristic:
 
 
 print("\n---- HEURISTIC ----")
-ch = ConstructionHeuristic("InstanceFiles/6nodes/6-3-1-1_c.pkl")
+ch = ConstructionHeuristic("InstanceFiles/6nodes/6-1-1-1_b.pkl")
 ch.add_car_moves_to_employees()
 ch.print_solution()
 ch.get_objective_function_val()
 print("\n---- GUROBI ----")
-gi = GurobiInstance("InstanceFiles/6nodes/6-3-1-1_c.yaml", ch.employees)
+gi = GurobiInstance("InstanceFiles/6nodes/6-1-1-1_b.yaml", employees=ch.employees, optimize=False)
 # gi = GurobiInstance("InstanceFiles/6nodes/6-3-1-1_d.yaml")
 run_model(gi)

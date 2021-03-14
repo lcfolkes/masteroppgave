@@ -7,7 +7,7 @@ from src.HelperFiles.helper_functions import read_config, read_2d_array_to_dict,
 
 
 class GurobiInstance:
-    def __init__(self, filepath: str, employees=None):
+    def __init__(self, filepath: str, employees=None, optimize=True):
         self.cf = read_config(filepath)
         # print("SCENARIOS: ", SCENARIOS)
         self.NODES = np.arange(1, self.cf['num_parking_nodes'] + self.cf['num_charging_nodes'] + 1)  # N, set of nodes
@@ -80,7 +80,7 @@ class GurobiInstance:
         if employees is not None:
             self.first_stage_car_moves, self.second_stage_car_moves = self._get_car_moves_from_employees(employees)
             initial_solution = self._get_initial_solution()
-            self.m = self.create_model(initial_solution)
+            self.m = self.create_model(initial_solution, optimize)
 
         else:
             self.m = self.create_model()
@@ -124,7 +124,7 @@ class GurobiInstance:
         #print(initial_solution)
         return initial_solution
 
-    def create_model(self, initial_solution=None):
+    def create_model(self, initial_solution=None, optimize=True):
 
         # Create a new Model
         m: gp.Model = gp.Model("mip1")
@@ -133,6 +133,11 @@ class GurobiInstance:
         x = m.addVars(product(self.EMPLOYEES, self.CARMOVES, self.TASKS, self.SCENARIOS), vtype=GRB.BINARY, name="x")  # x_krms, 1 if service employee k performs car-move r as task number m in scenario s, 0 otherwise
 
         if initial_solution is not None:
+            if not optimize:
+                for krms in product(self.EMPLOYEES, self.CARMOVES, self.TASKS, self.SCENARIOS):
+                    x[krms].lb = 0
+                    x[krms].ub = 0
+
             for krms in initial_solution:
                 x[krms].lb = 1
                 x[krms].ub = 1
