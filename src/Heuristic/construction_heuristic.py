@@ -7,6 +7,7 @@ from InstanceGenerator.world import World
 from src.HelperFiles.helper_functions import load_object_from_file
 from src.Gurobi.Model.run_model import run_model
 import numpy as np
+from itertools import product
 
 def remove_car_move(chosen_car_move, car_moves):
     car = chosen_car_move.car.car_id
@@ -20,15 +21,16 @@ class ConstructionHeuristic:
     def __init__(self, instance_file):
 
         self.world_instance = load_object_from_file(instance_file)
-        self.beta = []
+        self.num_scenarios = self.world_instance.num_scenarios
         self.employees = self.world_instance.employees
         self.parking_nodes = self.world_instance.parking_nodes
-        self.gamma_k = {k.employee_id: [] for k in self.employees}
         self.cars = self.world_instance.cars
+        self.unused_car_moves = [[] for _ in range(self.num_scenarios)] # [beta] list of unused car_moves for scenaro s (zero index)
+        self.assigned_car_moves = {ks: [] for ks in product([k.employee_id for k in self.employees], [s+1 for s in range(self.num_scenarios)])} # [gamma_ks] dictionary containing ordered list of car_moves assigned to employee k in scenario s
         self.car_moves = []  # self.world_instance.car_moves
         self.charging_moves = []
         self.parking_moves = []
-        self.num_scenarios = self.world_instance.num_scenarios
+        self._initialize_car_moves()
 
         self.available_employees = True
         self.prioritize_charging = True
@@ -36,9 +38,12 @@ class ConstructionHeuristic:
         self.charging_moves_second_stage = []
         self.parking_moves_second_stage = []
 
+    def _initialize_car_moves(self):
         for car in self.world_instance.cars:
             for car_move in car.car_moves:
                 self.car_moves.append(car_move)
+                for s in range(self.num_scenarios):
+                    self.unused_car_moves[s].append(car_move)
                 if car.needs_charging:
                     self.charging_moves.append(car_move)
                 else:
@@ -417,6 +422,9 @@ class ConstructionHeuristic:
                 #print('Travel time to start node', best_travel_time_to_car_move)
                 print(best_car_move.to_string())
                 self.world_instance.add_car_move_to_employee(best_car_move, best_employee)
+                for s in range(self.num_scenarios):
+                    self.assigned_car_moves[(best_employee.employee_id, s+1)].append(best_car_move)
+                    self.unused_car_moves[s].remove(best_car_move)
                 print('Employee node after', best_employee.current_node.node_id)
                 print('Employee time after', best_employee.current_time)
                 if self.prioritize_charging:
@@ -450,6 +458,9 @@ class ConstructionHeuristic:
                         #print('Travel time to start node', best_travel_time_to_car_move_second_stage[s])
                         print(best_car_move[s].to_string())
                         self.world_instance.add_car_move_to_employee(best_car_move[s], best_employee[s], s)
+                        if best_car_move[s] is not None:
+                            self.assigned_car_moves[(best_employee[s].employee_id, s+1)].append(best_car_move[s])
+                            self.unused_car_moves[s].remove(best_car_move[s])
                         print('Employee node after', best_employee[s].current_node_second_stage[s].node_id)
                         print('Employee time after', best_employee[s].current_time_second_stage[s])
                         # When first stage is finished, initialize car_moves to be list of copies of car_moves (number of copies = num_scenarios)
@@ -478,6 +489,8 @@ class ConstructionHeuristic:
                             num[i] += 1
         # returns whether the number of charging moves for the scenario with the lowest number of charging moves assigned
         # equals the sum of cars in need of charging
+        print(num)
+        print(sum(n.charging_state for n in self.parking_nodes))
         return min(num) == sum(n.charging_state for n in self.parking_nodes)
     # print(f"obj_val: {obj_val}")
 
@@ -499,14 +512,16 @@ class ConstructionHeuristic:
 
 
 print("\n---- HEURISTIC ----")
-ch = ConstructionHeuristic("InstanceFiles/6nodes/6-1-1-1_b.pkl")
-try:
-    ch.add_car_moves_to_employees()
-    ch.print_solution()
-    ch.get_objective_function_val()
-    print("\n---- GUROBI ----")
-    gi = GurobiInstance("InstanceFiles/6nodes/6-1-1-1_b.yaml", employees=ch.employees, optimize=False)
-    # gi = GurobiInstance("InstanceFiles/6nodes/6-3-1-1_d.yaml")
-    run_model(gi)
-except:
-    print("Instance not solvable")
+ch = ConstructionHeuristic("InstanceFiles/6nodes/6-3-1-1_a.pkl")
+#try:
+ch.add_car_moves_to_employees()
+ch.print_solution()
+ch.get_objective_function_val()
+print(ch.assigned_car_moves)
+print(ch.unused_car_moves)
+print("\n---- GUROBI ----")
+gi = GurobiInstance("InstanceFiles/6nodes/6-3-1-1_a.yaml", employees=ch.employees, optimize=False)
+# gi = GurobiInstance("InstanceFiles/6nodes/6-3-1-1_d.yaml")
+run_model(gi)
+#except:
+#    print("Instance not solvable")
