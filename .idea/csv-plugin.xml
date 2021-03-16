@@ -10,6 +10,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/src/InstanceGenerator/InstanceConfigs/instance_config.yaml">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/src/InstanceGenerator/instance_generator.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>

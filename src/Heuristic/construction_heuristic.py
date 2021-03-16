@@ -247,6 +247,7 @@ class ConstructionHeuristic:
     def add_car_moves_to_employees(self):
         improving_car_move_exists = True
         while self.available_employees and improving_car_move_exists:
+            print([cm.car_move_id for cm in self.charging_moves])
             # check if charging_moves_list is not empty
             if self.charging_moves:
                 self.prioritize_charging = True
@@ -312,18 +313,17 @@ class ConstructionHeuristic:
             if not self.prioritize_charging:
                 best_obj_val_first_stage = self._get_obj_val_of_car_move(
                     first_stage_car_moves=assigned_car_moves_first_stage)
-            else:
-                for r in range(len(car_moves)):
-                    travel_time = car_moves[r].handling_time
-                    if travel_time > longest_travel_time_first_stage:
-                        longest_travel_time_first_stage = travel_time
-                        best_car_move_first_stage = car_moves[r]
-            if not self.prioritize_charging:
                 for r in range(len(car_moves)):
                     obj_val = self._get_obj_val_of_car_move(
                         first_stage_car_moves=assigned_car_moves_first_stage + [car_moves[r]])
                     if obj_val > best_obj_val_first_stage:
                         best_obj_val_first_stage = obj_val
+                        best_car_move_first_stage = car_moves[r]
+            else:
+                for r in range(len(car_moves)):
+                    travel_time = car_moves[r].handling_time
+                    if travel_time > longest_travel_time_first_stage:
+                        longest_travel_time_first_stage = travel_time
                         best_car_move_first_stage = car_moves[r]
 
             # print("obj_val: ", obj_val)
@@ -337,6 +337,7 @@ class ConstructionHeuristic:
             best_car_move_second_stage = [None for _ in range(self.num_scenarios)]
             best_obj_val_second_stage = [-1000 for _ in range(self.num_scenarios)]
             assigned_first_stage_car_moves = self._get_assigned_car_moves()
+            longest_travel_time_second_stage = [0 for _ in range(self.num_scenarios)]
 
             if not self.prioritize_charging:
                 for s in range(self.num_scenarios):
@@ -349,17 +350,27 @@ class ConstructionHeuristic:
             for s in range(self.num_scenarios):
                 # zero indexed scenario
                 assigned_second_stage_car_moves = self._get_assigned_car_moves(scenario=s)
-                for r in range(len(car_moves[s])):
-                    obj_val[s] = self._get_obj_val_of_car_move(first_stage_car_moves=assigned_first_stage_car_moves,
-                                                               second_stage_car_moves=assigned_second_stage_car_moves +
-                                                                                      [car_moves[s][r]], scenario=s)
-                    #if car_moves[s][r].car_move_id == 7 and s == 0:
-                    #    print(f"car_move {car_moves[s][r].car_move_id}, s {s + 1}")
-                    #    print(f"obj_val {obj_val[s]} best_obj_val {best_obj_val_second_stage[s]}")
+                # Parking moves second stage
+                if not self.prioritize_charging:
+                    for r in range(len(car_moves[s])):
+                        obj_val[s] = self._get_obj_val_of_car_move(first_stage_car_moves=assigned_first_stage_car_moves,
+                                                                   second_stage_car_moves=assigned_second_stage_car_moves +
+                                                                                          [car_moves[s][r]], scenario=s)
+                        #if car_moves[s][r].car_move_id == 7 and s == 0:
+                        #    print(f"car_move {car_moves[s][r].car_move_id}, s {s + 1}")
+                        #    print(f"obj_val {obj_val[s]} best_obj_val {best_obj_val_second_stage[s]}")
 
-                    if obj_val[s] > best_obj_val_second_stage[s]:
-                        best_obj_val_second_stage[s] = obj_val[s]
-                        best_car_move_second_stage[s] = car_moves[s][r]
+                        if obj_val[s] > best_obj_val_second_stage[s]:
+                            best_obj_val_second_stage[s] = obj_val[s]
+                            best_car_move_second_stage[s] = car_moves[s][r]
+
+                # Charging moves second stage
+                else:
+                    for r in range(len(car_moves[s])):
+                        travel_time = car_moves[s][r].handling_time
+                        if travel_time > longest_travel_time_second_stage[s]:
+                            longest_travel_time_second_stage[s] = travel_time
+                            best_car_move_second_stage[s] = car_moves[s][r]
 
             out_list = []
             for car_move in best_car_move_second_stage:
@@ -542,19 +553,19 @@ class ConstructionHeuristic:
                         print(f"employee: {employee.employee_id}, scenario: {s + 1} " + car_move.to_string())
 
 
-filename = "InstanceFiles/6nodes/6-1-1-1_b"
+filename = "InstanceFiles/6nodes/6-3-1-1_c"
 
 print("\n---- HEURISTIC ----")
 ch = ConstructionHeuristic(filename + ".pkl")
 # try:
 ch.add_car_moves_to_employees()
 ch.print_solution()
-#ch.get_objective_function_val()
+ch.get_objective_function_val()
 print(ch.assigned_car_moves)
 print(ch.unused_car_moves)
 print("\n---- GUROBI ----")
-#gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)
-gi = GurobiInstance(filename + ".yaml")
+gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=True)
+#gi = GurobiInstance(filename + ".yaml")
 run_model(gi)
 # except:
 #    print("Instance not solvable")
