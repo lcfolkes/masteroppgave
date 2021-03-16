@@ -1,6 +1,5 @@
 import os
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
-
 os.chdir('../InstanceGenerator')
 from src.InstanceGenerator.instance_components import ParkingNode, Employee, ChargingNode, CarMove
 from InstanceGenerator.world import World
@@ -27,11 +26,9 @@ class ConstructionHeuristic:
         self.employees = self.world_instance.employees
         self.parking_nodes = self.world_instance.parking_nodes
         self.cars = self.world_instance.cars
-        self.unused_car_moves = [[] for _ in range(
-            self.num_scenarios)]  # [beta_s] list of unused car_moves for scenaro s (zero index)
-        self.assigned_car_moves = {ks: [] for ks in product([k.employee_id for k in self.employees], [s + 1 for s in
-                                                                                                      range(
-                                                                                                          self.num_scenarios)])}  # [gamma_ks] dictionary containing ordered list of car_moves assigned to employee k in scenario s
+        self.unused_car_moves = [[] for _ in range(self.num_scenarios)] # [beta] list of unused car_moves for scenaro s (zero index)
+        # TODO: change assigned_car_moves to list of lists
+        self.assigned_car_moves = {k.employee_id: [[] for _ in range(self.num_scenarios)] for k in self.employees}  # [gamma_k] dictionary containing ordered list of car_moves assigned to employee k in scenario s
         self.car_moves = []  # self.world_instance.car_moves
         self.charging_moves = []
         self.parking_moves = []
@@ -465,7 +462,7 @@ class ConstructionHeuristic:
                 print(best_car_move.to_string())
                 self.world_instance.add_car_move_to_employee(best_car_move, best_employee)
                 for s in range(self.num_scenarios):
-                    self.assigned_car_moves[(best_employee.employee_id, s + 1)].append(best_car_move)
+                    self.assigned_car_moves[best_employee.employee_id][s].append(best_car_move)
                     self.unused_car_moves[s].remove(best_car_move)
                 print('Employee node after', best_employee.current_node.node_id)
                 print('Employee time after', best_employee.current_time)
@@ -503,7 +500,7 @@ class ConstructionHeuristic:
                         print(best_car_move[s].to_string())
                         self.world_instance.add_car_move_to_employee(best_car_move[s], best_employee[s], s)
                         if best_car_move[s] is not None:
-                            self.assigned_car_moves[(best_employee[s].employee_id, s + 1)].append(best_car_move[s])
+                            self.assigned_car_moves[best_employee[s].employee_id][s].append(best_car_move[s])
                             self.unused_car_moves[s].remove(best_car_move[s])
                         print('Employee node after', best_employee[s].current_node_second_stage[s].node_id)
                         print('Employee time after', best_employee[s].current_time_second_stage[s])
