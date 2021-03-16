@@ -14,6 +14,18 @@ def write_to_file_yaml(world, instance_name: str):
         file_name = test_dir + str(instance_name) + "_b"
         if (os.path.exists(file_name + ".yaml")):
             file_name = test_dir + str(instance_name) + "_c"
+            if (os.path.exists(file_name + ".yaml")):
+                file_name = test_dir + str(instance_name) + "_d"
+                if (os.path.exists(file_name + ".yaml")):
+                    file_name = test_dir + str(instance_name) + "_e"
+                    if (os.path.exists(file_name + ".yaml")):
+                        file_name = test_dir + str(instance_name) + "_f"
+                        if (os.path.exists(file_name + ".yaml")):
+                            file_name = test_dir + str(instance_name) + "_g"
+                            if (os.path.exists(file_name + ".yaml")):
+                                file_name = test_dir + str(instance_name) + "_h"
+                                if (os.path.exists(file_name + ".yaml")):
+                                    file_name = test_dir + str(instance_name) + "_i"
     print(file_name)
     data = {}
     data['num_scenarios'] = world.num_scenarios

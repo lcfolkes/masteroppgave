@@ -560,7 +560,7 @@ class ConstructionHeuristic:
                         print(f"employee: {employee.employee_id}, scenario: {s + 1} " + car_move.to_string())
 
 
-filename = "InstanceFiles/6nodes/6-3-1-1_c"
+filename = "InstanceFiles/6nodes/6-3-1-1_h"
 
 print("\n---- HEURISTIC ----")
 ch = ConstructionHeuristic(filename + ".pkl")
