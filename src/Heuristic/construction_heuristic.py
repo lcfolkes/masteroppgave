@@ -248,13 +248,16 @@ class ConstructionHeuristic:
         improving_car_move_exists = True
         while self.available_employees and improving_car_move_exists:
             print([cm.car_move_id for cm in self.charging_moves])
+            print([[cm.car_move_id for cm in s] for s in self.charging_moves_second_stage])
             # check if charging_moves_list is not empty
-            if self.charging_moves:
+            if (self.charging_moves and self.first_stage) or (any(self.charging_moves_second_stage) and not
+                                                                                            self.first_stage):
                 self.prioritize_charging = True
                 if self.first_stage:
                     car_moves = self.charging_moves
                 else:
                     car_moves = self.charging_moves_second_stage
+
 
             else:
                 self.prioritize_charging = False
@@ -507,12 +510,16 @@ class ConstructionHeuristic:
                         # When first stage is finished, initialize car_moves to be list of copies of car_moves (number of copies = num_scenarios)
                         if self.prioritize_charging:
                             self.charging_moves_second_stage[s] = remove_car_move(best_car_move[s],
-                                                                                  car_moves[
-                                                                                      s])  # should remove car move and other car-moves with the same car
+                                                                                  car_moves[s])
+                            #self.charging_moves = remove_car_move(best_car_move[s],
+                            #                                     car_moves[s])
+
+
+                            # should remove car move and other car-moves with the same car
                         else:
                             self.parking_moves_second_stage[s] = remove_car_move(best_car_move[s],
-                                                                                 car_moves[
-                                                                                     s])  # should remove car move and other car-moves wit
+                                                                                 car_moves[s])
+                            # should remove car move and other car-moves with the same car
                 # print(f"car_moves: {len(car_moves[s])}")
                 if not any(self.parking_moves_second_stage):
                     self.available_employees = False
@@ -564,8 +571,8 @@ ch.get_objective_function_val()
 print(ch.assigned_car_moves)
 print(ch.unused_car_moves)
 print("\n---- GUROBI ----")
-gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=True)
-#gi = GurobiInstance(filename + ".yaml")
+#gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=True)
+gi = GurobiInstance(filename + ".yaml")
 run_model(gi)
 # except:
 #    print("Instance not solvable")
