@@ -3,9 +3,9 @@ import os
 import random
 import copy
 
-print(os.getcwd())
-os.chdir('../../InstanceGenerator')
-from Heuristics.construction_heuristic import ConstructionHeuristic
+#print(os.getcwd())
+#os.chdir('../../InstanceGenerator')
+#from Heuristics.construction_heuristic import ConstructionHeuristic
 
 
 class Destroy(ABC):
@@ -28,13 +28,14 @@ class Destroy(ABC):
 		print("input solution")
 		for k, v in self.input_solution.items():
 			print(k)
-			print([cm.car_move_id for cm in v])
-
+			for s in v:
+				print([cm.car_move_id for cm in s])
 
 		print("destroyed solution")
 		for k, v in self.destroyed_solution.items():
 			print(k)
-			print([cm.car_move_id for cm in v])
+			for s in v:
+				print([cm.car_move_id for cm in s])
 
 
 class RandomRemoval(Destroy):
@@ -42,25 +43,27 @@ class RandomRemoval(Destroy):
 	def __init__(self, solution, num_first_stage_tasks, neighborhood_size):
 		super().__init__(solution, num_first_stage_tasks, neighborhood_size)
 
-		#self.destroyed_solution = self._destroy()
-
 	def _destroy(self, neighborhood_size):
 		solution = copy.deepcopy(self.input_solution)
 		n_size = neighborhood_size
 		while n_size > 0:
-			chosen_key = random.choice(list(solution.keys()))
-			if len(solution[chosen_key]) == 0:
+			k = random.choice(list(solution.keys()))
+
+			# ensures list of chosen key is not empty
+			if not any(solution[k]):
 				continue
-			i = random.randrange(0, len(solution[chosen_key]), 1)
-			print(i)
+			i = random.randrange(0, len(solution[k]), 1)
+
 			if i < self.num_first_stage_tasks:
-				keys = [k for k in solution.keys() if k[0] == chosen_key[0]]
-				for k in keys:
-					car_moves = solution[k]
-					solution[k] = car_moves[:i] + car_moves[i+1:]
+				num_scenarios = len(solution[k])
+				for s in range(num_scenarios):
+					car_moves = solution[k][s]
+					solution[k][s] = car_moves[:i] + car_moves[i+1:]
+
 			else:
-				car_moves = solution[chosen_key]
-				solution[chosen_key] = car_moves[:i] + car_moves[i+1:]
+				s = random.randrange(0, len(solution[k]), 1)
+				car_moves = solution[k][s]
+				solution[k][s] = car_moves[:i] + car_moves[i+1:]
 
 			n_size -= 1
 

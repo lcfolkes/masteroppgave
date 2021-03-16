@@ -2,19 +2,40 @@ from abc import ABC, abstractmethod
 
 class LocalSearchOperator(ABC):
 
-	@abstractmethod
-	def get_id(self) -> int:
-		pass
+	def __init__(self, solution, unused_car_moves):
+		self.initial_solution = solution
+		self.unused_car_moves = unused_car_moves
+		self.mutated_solution = None
 
-	@abstractmethod
-	def equals(self, object) -> bool:
-		pass
 
-	@abstractmethod
-	def hash_code(self) -> int:
-		pass
+class IntraMove(LocalSearchOperator):
+	def __init__(self, solution, unused_car_moves):
+		super().__init__(solution, unused_car_moves)
 
-	@abstractmethod
-	#def compareTo(self, new_candidate: LocalSearchOperator) -> int:
-	def compare_to(self, new_candidate) -> int:
-		pass
+class InterMove(LocalSearchOperator):
+	def __init__(self, solution, unused_car_moves):
+		super().__init__(solution, unused_car_moves)
+
+class Inter2Move(LocalSearchOperator):
+	def __init__(self, solution, unused_car_moves):
+		super().__init__(solution, unused_car_moves)
+
+class InterSwap(LocalSearchOperator):
+	def __init__(self, solution, unused_car_moves):
+		super().__init__(solution, unused_car_moves)
+
+class EjectionInsert(LocalSearchOperator):
+	def __init__(self, solution, unused_car_moves):
+		super().__init__(solution, unused_car_moves)
+
+class EjectionRemove(LocalSearchOperator):
+	def __init__(self, solution, unused_car_moves):
+		super().__init__(solution, unused_car_moves)
+
+class EjectionReplace(LocalSearchOperator):
+	def __init__(self, solution, unused_car_moves):
+		super().__init__(solution, unused_car_moves)
+
+class EjectionSwap(LocalSearchOperator):
+	def __init__(self, solution, unused_car_moves):
+		super().__init__(solution, unused_car_moves)
