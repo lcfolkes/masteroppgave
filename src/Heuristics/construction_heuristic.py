@@ -1,6 +1,5 @@
 import os
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
-
 os.chdir('../InstanceGenerator')
 from src.InstanceGenerator.instance_components import ParkingNode, Employee, ChargingNode, CarMove
 from InstanceGenerator.world import World
