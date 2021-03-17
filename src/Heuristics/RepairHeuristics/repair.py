@@ -32,7 +32,12 @@ class Repair(ABC):
 		
 
 class GreedyInsertion(Repair):
+	'''
+	The greedy insertion heuristic greedily inserts car_moves yielding the greatest improvement to the
+	objective function value (similar to the construction heuristic)
+	'''
 	def __init__(self, destroyed_solution, unused_car_moves, num_first_stage_tasks, neighborhood_size):
+
 		super().__init__(destroyed_solution, unused_car_moves, num_first_stage_tasks, neighborhood_size)
 
 	def _repair(self):
@@ -42,13 +47,16 @@ class GreedyInsertion(Repair):
 			best_car_move, best_employee, best_index = self._get_best_insertion(regret=1)
 			current_solution = insert_car_move(current_solution, best_car_move, best_employee, best_index)
 			q -= 1
+		#print(destroyed_solution)
 
 
 class RegretInsertion(Repair):
+	'''
+	The regret insertion heuristic considers the alternative costs of inserting a car_move into gamma (assigned_car_moves).
+	The
+	'''
 	def __init__(self, destroyed_solution, unused_car_moves, num_first_stage_tasks, neighborhood_size):
 		super().__init__(self, destroyed_solution, unused_car_moves, num_first_stage_tasks, neighborhood_size)
-
-
 
 
 
