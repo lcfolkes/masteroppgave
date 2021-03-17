@@ -121,7 +121,6 @@ class ConstructionHeuristic:
 
     def _calculate_cost_deviation_ideal_state(self, z, first_stage_car_moves, second_stage_car_moves, scenario=None,
                                               verbose=False):
-        # TODO: Some car moves moving into a node (maybe when only happens in one/some scenarios) are not counted in calculation of w variable.
 
         start_nodes_first_stage = [car_move.start_node for car_move in first_stage_car_moves if
                                    isinstance(car_move.end_node, ParkingNode)]
@@ -171,7 +170,7 @@ class ConstructionHeuristic:
         # only return first scenario for now
 
     def _get_obj_val_of_car_move(self, first_stage_car_moves: [CarMove] = None,
-                                 second_stage_car_moves: [CarMove] = None,
+                                 second_stage_car_moves: [[CarMove]] = None,
                                  scenario=None, verbose=False):
         # first stage
         if scenario is None:

@@ -103,11 +103,10 @@ class WorstRemoval(Destroy):
 
 		self.randomization_degree = randomization_degree
 
-		print(self.first_stage_solution)
-
-		#second_stage_solution = self._get_second_stage_solution()
 		second_stage_solution_dict = helpers.get_second_stage_solution_dict(solution, num_first_stage_tasks)
-		second_stage_solution_list = helpers.get_second_stage_solution_list_from_dict(second_stage_solution_dict, self.num_scenarios)
+		self.second_stage_solution_list = helpers.get_second_stage_solution_list_from_dict(second_stage_solution_dict,
+																					  self.num_scenarios)
+
 
 
 	def _destroy(self):
@@ -115,7 +114,8 @@ class WorstRemoval(Destroy):
 		pass
 
 	def _get_worst_move(self, randomizaton_degree):
-		pass
+		ConstructionHeuristic.
+
 
 		'''
 		while q>0 do:
