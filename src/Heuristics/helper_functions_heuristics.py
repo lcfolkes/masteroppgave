@@ -7,7 +7,8 @@ from InstanceGenerator.world import World
 os.chdir(path_to_src)
 print(os.getcwd())
 
-def get_first_stage_solution_list_from_dict(first_stage_solution: {int:[CarMove]}) -> [CarMove]:
+
+def get_first_stage_solution_list_from_dict(first_stage_solution: {int: [CarMove]}) -> [CarMove]:
 	'''
 	:param first_stage_solution: first stage solution dictionary, {e1: [cm1, cm2], e2: [cm3]}
 	:return: [cm1, cm2, cm3]
@@ -48,12 +49,23 @@ def get_second_stage_solution_list_from_dict(second_stage_solution_dict: {int: [
 				second_stage_solution[s].append(v[s][i])
 	return second_stage_solution
 
-#### OBJECTIVE FUNCTION ####
 
-def calculate_z(parking_nodes, first_stage_car_moves, second_stage_car_moves, verbose=False):
+# ------------------------ #
+#    OBJECTIVE FUNCTION    #
+# ------------------------ #
+
+def calculate_z(parking_nodes: [ParkingNode], first_stage_car_moves: [CarMove], second_stage_car_moves: [[CarMove]],
+				verbose: bool = False) -> {int: np.array([int])}:
 	# z is the number of customer requests served. It must be the lower of the two values
 	# available cars and the number of customer requests D_is
 	# number of available cars in the beginning of the second stage, y_i
+	'''
+	:param parking_nodes: list of parking node objects, [pn1, pn2]
+	:param first_stage_car_moves: list of car_move objects for first stage, [cm1, cm2]
+	:param second_stage_car_moves: [[cm2],[cm2],[cm2, cm3]]
+	:param verbose: if True print information
+	:return: z, dictionary with node_id as keys and a numpy array for each scenario as value, {node_id: np.array([0, 2, 1])}
+	'''
 
 	start_nodes_first_stage = [car_move.start_node for car_move in first_stage_car_moves if
 							   isinstance(car_move.end_node, ParkingNode)]
@@ -89,7 +101,12 @@ def calculate_z(parking_nodes, first_stage_car_moves, second_stage_car_moves, ve
 	return z
 
 
-def calculate_profit_customer_requests(z, scenario=None):
+def calculate_profit_customer_requests(z: {int: np.array([int])}, scenario: int = None) -> float:
+	'''
+	:param z: dictionary with node_id as keys and a numpy array for each scenario as value, {node_id: np.array([0, 2, 1])}
+	:param scenario: integer describing scenario. If given, only calculate profit from request for that scenario
+	:return: float with profit. if scenarios is given, then avg. over scenarios is returned, else value for given scenario is returned
+	'''
 	# sum across scenarios for all nodes
 	z_sum = sum(v for k, v in z.items())
 	if scenario is None:
@@ -101,7 +118,13 @@ def calculate_profit_customer_requests(z, scenario=None):
 		return World.PROFIT_RENTAL * z_sum[scenario]
 
 
-def calculate_costs_relocation(car_moves, num_scenarios=None, individual_scenario=False):
+def calculate_costs_relocation(car_moves: [[CarMove]], num_scenarios: int = None, individual_scenario: bool = False) -> float:
+	'''
+	:param car_moves: list of scenarios containing car_moves, [[cm1],[cm1],[cm1, cm2]]
+	:param num_scenarios: int
+	:param individual_scenario: boolean. if individual scenario then you do not average over scenarios
+	:return: flaot with costs for relocation
+	'''
 	# Sum of all travel times across all car moves
 	sum_travel_time = sum(car_move.handling_time for car_move in car_moves)
 	if individual_scenario:
@@ -114,8 +137,19 @@ def calculate_costs_relocation(car_moves, num_scenarios=None, individual_scenari
 		return World.COST_RELOCATION * sum_travel_time_scenario_avg
 
 
-def calculate_cost_deviation_ideal_state(parking_nodes, z, first_stage_car_moves, second_stage_car_moves, scenario=None,
-										  verbose=False):
+def calculate_cost_deviation_ideal_state(parking_nodes: [ParkingNode], z: {int: np.array([int])},
+										 first_stage_car_moves: [CarMove], second_stage_car_moves: [[CarMove]],
+										 scenario: int = None, verbose: bool = False) -> float:
+	'''
+	:param parking_nodes: list of parking node objects
+	:param z: dictionary with node_id as keys and a numpy array for each scenario as value, {node_id: np.array([0, 2, 1])}
+	:param first_stage_car_moves: list of car_move objects for first stage, [cm1, cm2]
+	:param second_stage_car_moves: [[cm2],[cm2],[cm2, cm3]]
+	:param scenario: if None, then average for all scenario is calculated, else for a specific scenario
+	:param verbose: True if you want to print information
+	:return: return float with the cost associated with deviation from the ideal state.
+	'''
+
 	start_nodes_first_stage = [car_move.start_node for car_move in first_stage_car_moves if
 							   isinstance(car_move.end_node, ParkingNode)]
 	end_nodes_first_stage = [car_move.end_node for car_move in first_stage_car_moves if
@@ -165,16 +199,27 @@ def calculate_cost_deviation_ideal_state(parking_nodes, z, first_stage_car_moves
 
 # only return first scenario for now
 
-def get_obj_val_of_car_move(parking_nodes: [ParkingNode], num_scenarios: int, first_stage_car_moves: [CarMove] = None,
-							 second_stage_car_moves: [[CarMove]] = None,
-							 scenario=None, verbose=False):
+def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int, first_stage_car_moves: [CarMove] = None,
+							second_stage_car_moves: [[CarMove]] = None,
+							scenario: int = None, verbose: bool = False) -> float:
+	'''
+	:param parking_nodes: list of parking node objects
+	:param num_scenarios:
+	:param first_stage_car_moves: list of car_move objects for first stage, [cm1, cm2]
+	:param second_stage_car_moves: [[cm2],[cm2],[cm2, cm3]]
+	:param scenario: if None, then average for all scenario is calculated, else for a specific scenario
+	:param verbose:  True if you want to print information
+	:return: flaot of objective value of car_moves
+	'''
+
 	# first stage
 	if scenario is None:
-		z = calculate_z(parking_nodes=parking_nodes, first_stage_car_moves=first_stage_car_moves, second_stage_car_moves=[[]])
+		z = calculate_z(parking_nodes=parking_nodes, first_stage_car_moves=first_stage_car_moves,
+						second_stage_car_moves=[[]])
 		profit_customer_requests = calculate_profit_customer_requests(z)
 		cost_deviation_ideal_state = calculate_cost_deviation_ideal_state(parking_nodes=parking_nodes, z=z,
-																				first_stage_car_moves=first_stage_car_moves,
-																				second_stage_car_moves=[[]])
+																		  first_stage_car_moves=first_stage_car_moves,
+																		  second_stage_car_moves=[[]])
 
 		first_stage_duplicate_for_scenarios = list(np.repeat(first_stage_car_moves, num_scenarios))
 		cost_relocation = calculate_costs_relocation(first_stage_duplicate_for_scenarios, num_scenarios)
@@ -184,21 +229,28 @@ def get_obj_val_of_car_move(parking_nodes: [ParkingNode], num_scenarios: int, fi
 		car_moves_second_stage = [[] for _ in range(num_scenarios)]
 		car_moves_second_stage[scenario] = second_stage_car_moves
 		z = calculate_z(parking_nodes=parking_nodes, first_stage_car_moves=first_stage_car_moves,
-							  second_stage_car_moves=car_moves_second_stage)  # , verbose=True)
+						second_stage_car_moves=car_moves_second_stage)  # , verbose=True)
 		profit_customer_requests = calculate_profit_customer_requests(z, scenario=scenario)
 		cost_deviation_ideal_state = calculate_cost_deviation_ideal_state(parking_nodes=parking_nodes, z=z,
-																				first_stage_car_moves=first_stage_car_moves,
-																				second_stage_car_moves=car_moves_second_stage,
-																				scenario=scenario)
+																		  first_stage_car_moves=first_stage_car_moves,
+																		  second_stage_car_moves=car_moves_second_stage,
+																		  scenario=scenario)
 
 		# first_stage_duplicate_for_scenarios = list(np.repeat(first_stage_car_moves, self.num_scenarios))
 		cost_relocation = calculate_costs_relocation(first_stage_car_moves + second_stage_car_moves,
-														   individual_scenario=True)
+													 individual_scenario=True)
 
 	return profit_customer_requests - cost_relocation - cost_deviation_ideal_state
 
 
-def get_objective_function_val(parking_nodes, employees, num_scenarios):
+def get_objective_function_val(parking_nodes: [ParkingNode], employees: [Employee], num_scenarios: int) -> float:
+	'''
+	:param parking_nodes: list of parking node objects, [pn1, pn2]
+	:param employees: list of employees, [em1, em2]
+	:param num_scenarios: int describing number of scenarios
+	:return: returns float of objective value for all carmoves assigned to employees
+	'''
+
 	first_stage_car_moves = []
 	second_stage_car_moves = [[] for _ in range(num_scenarios)]
 	for employee in employees:
@@ -217,9 +269,9 @@ def get_objective_function_val(parking_nodes, employees, num_scenarios):
 	profit_customer_requests = calculate_profit_customer_requests(z)
 	cost_relocation = calculate_costs_relocation(car_moves=all_car_moves, num_scenarios=num_scenarios)
 	cost_deviation_ideal_state = calculate_cost_deviation_ideal_state(parking_nodes=parking_nodes, z=z,
-																			first_stage_car_moves=first_stage_car_moves,
-																			second_stage_car_moves=second_stage_car_moves,
-																			scenario=None, verbose=True)
+																	  first_stage_car_moves=first_stage_car_moves,
+																	  second_stage_car_moves=second_stage_car_moves,
+																	  scenario=None, verbose=True)
 
 	obj_val = profit_customer_requests - cost_relocation - cost_deviation_ideal_state
 	print(f"Objective function value: {round(obj_val, 2)}")

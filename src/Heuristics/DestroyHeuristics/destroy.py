@@ -90,28 +90,48 @@ class RandomRemoval(Destroy):
 
 class WorstRemoval(Destroy):
 
-	def __init__(self, solution, num_first_stage_tasks, neighborhood_size, randomization_degree):
+	def __init__(self, solution, num_first_stage_tasks, neighborhood_size, randomization_degree, parking_nodes):
 		'''
 		Worst removal removes solutions that have a bad influence on the objective value.
 		In this case, that means moves where the objective function decreases little when they are removed.
 		:param randomization_degree: (p) parameter that determines the degree of randomization
 		'''
-		super().__init__(solution, num_first_stage_tasks, neighborhood_size)
-
+		self.parking_nodes = parking_nodes
 		self.randomization_degree = randomization_degree
-
-		second_stage_solution_dict = helpers.get_second_stage_solution_dict(solution, num_first_stage_tasks)
-		self.second_stage_solution_list = helpers.get_second_stage_solution_list_from_dict(second_stage_solution_dict,
-																					  self.num_scenarios)
-
+		super().__init__(solution, num_first_stage_tasks, neighborhood_size)
 
 
 	def _destroy(self):
+		first_stage_solution_list = helpers.get_first_stage_solution_list_from_dict(self.first_stage_solution)
+		first_stage_solution_dict = copy.deepcopy(self.first_stage_solution)
 
-		pass
+		obj_val = {} # {index: obj val}
 
-#	def _get_worst_move(self, randomizaton_degree):
-#		ConstructionHeuristic.
+		for i in range(len(first_stage_solution_list)):
+			first_stage_solution_copy = first_stage_solution_list[:i] + first_stage_solution_list[i+1:]
+			obj_val_remove_cm = helpers.get_obj_val_of_car_moves(parking_nodes=self.parking_nodes, num_scenarios=self.num_scenarios,
+												   first_stage_car_moves=first_stage_solution_copy)
+			obj_val[i] = obj_val_remove_cm
+
+		n_size = self.neighborhood_size
+		remove_list = sorted(obj_val.items(), key=lambda x: x[1], reverse=False) # e.g. [(index, obj_val] = [(0, 85.96), (1, 89.74)]
+		removed_car_moves_by_id = []
+		while n_size > 0:
+			removed_car_moves_by_id.append(first_stage_solution_list.pop(remove_list[0][0]).car_move_id)
+			n_size -= 1
+
+		for k, v in first_stage_solution_dict.items():
+			first_stage_solution_dict[k] = [cm for cm in first_stage_solution_dict[k] if cm.car_move_id
+												not in removed_car_moves_by_id]
+
+		return first_stage_solution_dict
+
+
+
+
+	#def _get_worst_move(self, randomization_degree):
+	#	ConstructionHeuristic.
+
 
 
 		'''
@@ -165,4 +185,6 @@ if __name__ == "__main__":
 	# rr.to_string()
 
 	wr = WorstRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
-					  neighborhood_size=1, randomization_degree=0)
+					  neighborhood_size=1, randomization_degree=0, parking_nodes=ch.parking_nodes)
+
+	wr.to_string()
