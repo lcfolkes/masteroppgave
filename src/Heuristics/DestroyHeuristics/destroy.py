@@ -3,9 +3,9 @@ import os
 import random
 import copy
 
-#print(os.getcwd())
-#os.chdir('../../InstanceGenerator')
-#from Heuristics.construction_heuristic import ConstructionHeuristic
+print(os.getcwd())
+os.chdir('../../InstanceGenerator')
+from Heuristics.construction_heuristic import ConstructionHeuristic
 
 
 class Destroy(ABC):
@@ -14,13 +14,36 @@ class Destroy(ABC):
 		:param solution: (s) assigned car_moves of constructed solution. solution[(k,s)], dictionary containing car_move assigned to employee in scenario s
 		:param neighborhood_size: (n) number of car_moves to remove
 		'''
-		self.input_solution = solution
+		self.num_scenarios = len(list(solution.items())[0][1])
 		self.num_first_stage_tasks = num_first_stage_tasks
-		self.destroyed_solution = self._destroy(neighborhood_size)
+		self.removed_moves = []
+		self.input_solution = solution
+		self.first_stage_solution = self._get_first_stage_solution()
+		self.neighborhood_size = neighborhood_size
+		self.destroyed_solution = self._destroy()
 
 	@abstractmethod
-	def _destroy(self, solution):
+	def _destroy(self):
 		pass
+
+	def _get_first_stage_solution(self):
+		removed_second_stage_moves = set()
+		first_stage_solution = {}
+		for k, v in self.input_solution.items():
+			first_stage_solution[k] = set()
+			for s in range(len(self.input_solution[k])):
+				for i in range(self.num_first_stage_tasks):
+					first_stage_solution[k].add(self.input_solution[k][s][i])
+				for i in range(self.num_first_stage_tasks, len(self.input_solution[k][s])):
+					removed_second_stage_moves.add(self.input_solution[k][s][i])
+			first_stage_solution[k] = list(first_stage_solution[k])
+
+		self.removed_moves = list(removed_second_stage_moves)
+
+		print(self.input_solution)
+		print(self.removed_moves)
+		print(first_stage_solution)
+		return first_stage_solution
 
 
 	def to_string(self):
@@ -31,11 +54,15 @@ class Destroy(ABC):
 			for s in v:
 				print([cm.car_move_id for cm in s])
 
+		print("first stage solution")
+		for k, v in self.first_stage_solution.items():
+			print(k)
+			print([cm.car_move_id for cm in v])
+
 		print("destroyed solution")
 		for k, v in self.destroyed_solution.items():
 			print(k)
-			for s in v:
-				print([cm.car_move_id for cm in s])
+			print([cm.car_move_id for cm in v])
 
 
 class RandomRemoval(Destroy):
@@ -43,29 +70,19 @@ class RandomRemoval(Destroy):
 	def __init__(self, solution, num_first_stage_tasks, neighborhood_size):
 		super().__init__(solution, num_first_stage_tasks, neighborhood_size)
 
-	def _destroy(self, neighborhood_size):
-		solution = copy.deepcopy(self.input_solution)
-		n_size = neighborhood_size
+	def _destroy(self):
+		solution = copy.deepcopy(self.first_stage_solution)
+		n_size = self.neighborhood_size
 		while n_size > 0:
 			k = random.choice(list(solution.keys()))
-
 			# ensures list of chosen key is not empty
 			if not any(solution[k]):
 				continue
 			i = random.randrange(0, len(solution[k]), 1)
-
-			if i < self.num_first_stage_tasks:
-				num_scenarios = len(solution[k])
-				for s in range(num_scenarios):
-					car_moves = solution[k][s]
-					solution[k][s] = car_moves[:i] + car_moves[i+1:]
-
-			else:
-				s = random.randrange(0, len(solution[k]), 1)
-				car_moves = solution[k][s]
-				solution[k][s] = car_moves[:i] + car_moves[i+1:]
-
+			self.removed_moves.append(solution[k][i])
+			solution[k] = solution[k][:i] + solution[k][i + 1:]
 			n_size -= 1
+		print(self.removed_moves)
 
 		return solution
 
@@ -98,5 +115,5 @@ if __name__ == "__main__":
 	ch.print_solution()
 	ch.get_objective_function_val()
 	rr = RandomRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
-					   neighborhood_size=2)
+					   neighborhood_size=1)
 	rr.to_string()
