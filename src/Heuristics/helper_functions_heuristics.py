@@ -1,9 +1,11 @@
+import copy
 import os
 import numpy as np
-os.chdir('../InstanceGenerator')
+from path_manager import path_to_src
 from src.InstanceGenerator.instance_components import ParkingNode, Employee, ChargingNode, CarMove
 from InstanceGenerator.world import World
-
+os.chdir(path_to_src)
+print(os.getcwd())
 
 def get_first_stage_solution_list_from_dict(first_stage_solution: {int:[CarMove]}) -> [CarMove]:
 	'''
@@ -222,3 +224,15 @@ def get_objective_function_val(parking_nodes, employees, num_scenarios):
 	obj_val = profit_customer_requests - cost_relocation - cost_deviation_ideal_state
 	print(f"Objective function value: {round(obj_val, 2)}")
 	return obj_val
+
+
+def insert_car_move(current_solution: {int: [CarMove]}, car_move: CarMove, employee: Employee) -> {int: [CarMove]}:
+	'''
+	:param current_solution: dictionary with employee as key, list of first stage moves as value
+	:param car_move: car move object
+	:param employee: employee object
+	:return: solution with the inserted car move
+	'''
+	solution = copy.deepcopy(current_solution)
+	solution[employee].append(car_move)
+	return solution

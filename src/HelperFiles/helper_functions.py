@@ -1,10 +1,15 @@
+import os
+from path_manager import path_to_src
 import yaml
 from openpyxl import load_workbook
 import numpy as np
 from itertools import product
 import pandas as pd
-import os
 import dill
+os.chdir(path_to_src)
+print(os.getcwd())
+
+
 
 def read_config(config_name: str):
 	with open(config_name, 'r') as stream:

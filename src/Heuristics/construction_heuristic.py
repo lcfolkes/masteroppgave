@@ -1,12 +1,13 @@
 import os
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
-os.chdir('../InstanceGenerator')
 from src.InstanceGenerator.instance_components import ParkingNode, Employee, ChargingNode, CarMove
 from InstanceGenerator.world import World
 from src.HelperFiles.helper_functions import load_object_from_file
 from src.Gurobi.Model.run_model import run_model
 import numpy as np
 from itertools import product
+from path_manager import path_to_src
+os.chdir(path_to_src)
 
 
 def remove_car_move(chosen_car_move, car_moves):
@@ -556,7 +557,7 @@ class ConstructionHeuristic:
                         print(f"employee: {employee.employee_id}, scenario: {s + 1} " + car_move.to_string())
 
 
-filename = "InstanceFiles/6nodes/6-3-1-1_h"
+filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-1-1_h"
 
 print("\n---- HEURISTIC ----")
 ch = ConstructionHeuristic(filename + ".pkl")

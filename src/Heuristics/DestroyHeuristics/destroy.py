@@ -3,10 +3,10 @@ import os
 import random
 import copy
 
-print(os.getcwd())
-os.chdir('../../InstanceGenerator')
-from Heuristics.construction_heuristic import ConstructionHeuristic
-import Heuristics.helper_functions_heuristics as helpers
+#print(os.getcwd())
+#os.chdir('../../InstanceGenerator')
+#from Heuristics.construction_heuristic import ConstructionHeuristic
+#import Heuristics.helper_functions_heuristics as helpers
 
 
 class Destroy(ABC):
@@ -110,8 +110,8 @@ class WorstRemoval(Destroy):
 
 		pass
 
-	def _get_worst_move(self, randomizaton_degree):
-		ConstructionHeuristic.
+#	def _get_worst_move(self, randomizaton_degree):
+#		ConstructionHeuristic.
 
 
 		'''
