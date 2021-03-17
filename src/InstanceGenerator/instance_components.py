@@ -132,6 +132,9 @@ class Employee:
         except:
             self.current_node = self.start_node
 
+    def reset(self):
+        self.__init__(start_node=self.start_node, start_time=self.start_time, handling=self.handling)
+
     def to_string(self):
          return  f"employee_id: {self.employee_id}\t start_node: {self.start_node.node_id}\t current_node: {self.current_node.node_id}" \
               f"\tcurrent_node_second_stage: {[n.node_id for n in self.current_node_second_stage]} \n current_time: {self.current_time}" \

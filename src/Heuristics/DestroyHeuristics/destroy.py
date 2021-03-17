@@ -6,6 +6,7 @@ import copy
 print(os.getcwd())
 os.chdir('../../InstanceGenerator')
 from Heuristics.construction_heuristic import ConstructionHeuristic
+import Heuristics.helper_functions_heuristics as helpers
 
 
 class Destroy(ABC):
@@ -82,23 +83,51 @@ class RandomRemoval(Destroy):
 			self.removed_moves.append(solution[k][i])
 			solution[k] = solution[k][:i] + solution[k][i + 1:]
 			n_size -= 1
-		print(self.removed_moves)
+		#print(self.removed_moves)
 
 		return solution
 
+
 class WorstRemoval(Destroy):
+
 	def __init__(self, solution, num_first_stage_tasks, neighborhood_size, randomization_degree):
 		'''
-		Worst removal removes solutions that have a bad influence on the objective value. In this case, that means moves where the objective function decreases little when they are removed.
+		Worst removal removes solutions that have a bad influence on the objective value.
+		In this case, that means moves where the objective function decreases little when they are removed.
 		:param randomization_degree: (p) parameter that determines the degree of randomization
 		'''
 		super().__init__(solution, num_first_stage_tasks, neighborhood_size)
 
 		self.randomization_degree = randomization_degree
 
+		print(self.first_stage_solution)
+
+		#second_stage_solution = self._get_second_stage_solution()
+		second_stage_solution_dict = helpers.get_second_stage_solution_dict(solution, num_first_stage_tasks)
+		second_stage_solution_list = helpers.get_second_stage_solution_list_from_dict(second_stage_solution_dict, self.num_scenarios)
 
 
+	def _destroy(self):
 
+		pass
+
+	def _get_worst_move(self, randomizaton_degree):
+		pass
+
+		'''
+		while q>0 do:
+			Array: L = All planned requests i, sorted by descending cost (i,s)
+			
+			choose a random number y in the interval [0,1)
+			
+			request: r = L[y^p|L|]
+			
+			remove r from solution s
+			
+			q -= 1
+		
+		end while 
+		'''
 
 
 class ShawRemoval(Destroy):
@@ -125,13 +154,15 @@ class ShawRemoval(Destroy):
 		pass
 
 
-
 if __name__ == "__main__":
 	print("\n---- HEURISTIC ----")
 	ch = ConstructionHeuristic("InstanceFiles/6nodes/6-3-1-1_a.pkl")
 	ch.add_car_moves_to_employees()
 	ch.print_solution()
 	ch.get_objective_function_val()
-	rr = RandomRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
-					   neighborhood_size=1)
-	rr.to_string()
+	# rr = RandomRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
+	#				   neighborhood_size=1)
+	# rr.to_string()
+
+	wr = WorstRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
+					  neighborhood_size=1, randomization_degree=0)
