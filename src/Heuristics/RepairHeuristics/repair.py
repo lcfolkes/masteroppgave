@@ -45,7 +45,7 @@ class GreedyInsertion(Repair):
 
 	def _repair(self):
 		q = self.neighborhood_size
-		current_solution = self.destroyed_solution
+		current_solution = copy.deepcopy(self.destroyed_solution)
 		while q > 0:
 			best_car_move, best_employee, best_index = self._get_best_insertion(current_solution, regret=1)
 			current_solution = insert_car_move(current_solution, best_car_move, best_employee, best_index)
