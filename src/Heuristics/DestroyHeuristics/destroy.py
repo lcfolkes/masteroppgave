@@ -16,7 +16,6 @@ class Destroy(ABC):
 		'''
 		self.num_scenarios = len(list(solution.items())[0][1])
 		self.num_first_stage_tasks = num_first_stage_tasks
-
 		self.removed_moves = []
 		self.input_solution = solution
 		self.first_stage_solution = self._get_first_stage_solution()
@@ -72,9 +71,7 @@ class RandomRemoval(Destroy):
 		super().__init__(solution, num_first_stage_tasks, neighborhood_size)
 
 	def _destroy(self):
-
 		solution = copy.deepcopy(self.first_stage_solution)
-
 		n_size = self.neighborhood_size
 		while n_size > 0:
 			k = random.choice(list(solution.keys()))
@@ -113,7 +110,7 @@ class ShawRemoval(Destroy):
 		'''
 		super().__init__(solution, num_first_stage_tasks, neighborhood_size)
 		'''
-		:param randomization_degree: (p) parameter that determines the degree of randomization 
+		:param randomization_degree: (p) parameter that determines the degree of randomization
 		'''
 		self.randomization_degree = randomization_degree
 

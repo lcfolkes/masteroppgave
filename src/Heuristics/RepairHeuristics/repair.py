@@ -28,7 +28,10 @@ class Repair(ABC):
 	def _repair(self):
 		pass
 
-	def _get_best_insertion(self, regret):
+
+
+
+
 		
 
 class GreedyInsertion(Repair):
@@ -44,10 +47,39 @@ class GreedyInsertion(Repair):
 		q = self.neighborhood_size
 		current_solution = self.destroyed_solution
 		while q > 0:
-			best_car_move, best_employee, best_index = self._get_best_insertion(regret=1)
+			best_car_move, best_employee, best_index = self._get_best_insertion(current_solution, regret=1)
 			current_solution = insert_car_move(current_solution, best_car_move, best_employee, best_index)
 			q -= 1
 		#print(destroyed_solution)
+
+	def _get_best_insertion(self, current_solution):
+		best_car_move = None
+		best_employee = None
+		best_index = None
+		best_obj_val = -1000
+		for car_move in self.unused_car_moves:
+			for employee in self.destroyed_solution:
+				if len(employee) == 0:
+					obj_val = get_obj_value_first_stage(current_solution, car_move, employee, task_number=1)
+					if obj_val > best_obj_val:
+						best_car_move = car_move
+						best_employee = employee
+						best_index = 1
+
+				elif len(employee) < self.num_first_stage_tasks:
+					best_obj_val_car_move = -1000
+					best_index_car_move = None
+					for index in range(1, len(employee)+2):
+						obj_val = get_obj_value_first_stage(current_solution, car_move, employee, task_nr=index)
+						if obj_val > best_obj_val_car_move:
+							best_obj_val_car_move = obj_val
+							best_index_car_move = index
+					if best_obj_val_car_move > best_obj_val:
+						best_car_move = car_move
+						best_employee = employee
+						best_index = best_index_car_move
+						best_obj_val = best_obj_val_car_move
+		return best_car_move, best_employee, best_index
 
 
 class RegretInsertion(Repair):
@@ -55,6 +87,10 @@ class RegretInsertion(Repair):
 	The regret insertion heuristic considers the alternative costs of inserting a car_move into gamma (assigned_car_moves).
 	The
 	'''
+
+	def _repair(self):
+		pass
+
 	def __init__(self, destroyed_solution, unused_car_moves, num_first_stage_tasks, neighborhood_size):
 		super().__init__(self, destroyed_solution, unused_car_moves, num_first_stage_tasks, neighborhood_size)
 
