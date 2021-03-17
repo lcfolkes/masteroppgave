@@ -12,14 +12,15 @@ class Destroy(ABC):
 	def __init__(self, solution, num_first_stage_tasks, neighborhood_size):
 		'''
 		:param solution: (s) assigned car_moves of constructed solution. solution[(k,s)], dictionary containing car_move assigned to employee in scenario s
-		:param neighborhood_size: (n) number of car_moves to remove
+		:param neighborhood_size: (q) number of car_moves to remove
 		'''
 		self.input_solution = solution
 		self.num_first_stage_tasks = num_first_stage_tasks
-		self.destroyed_solution = self._destroy(neighborhood_size)
+		self.neighborhood_size = neighborhood_size
+		self.destroyed_solution = self._destroy()
 
 	@abstractmethod
-	def _destroy(self, solution):
+	def _destroy(self):
 		pass
 
 
@@ -43,9 +44,9 @@ class RandomRemoval(Destroy):
 	def __init__(self, solution, num_first_stage_tasks, neighborhood_size):
 		super().__init__(solution, num_first_stage_tasks, neighborhood_size)
 
-	def _destroy(self, neighborhood_size):
+	def _destroy(self):
 		solution = copy.deepcopy(self.input_solution)
-		n_size = neighborhood_size
+		n_size = self.neighborhood_size
 		while n_size > 0:
 			k = random.choice(list(solution.keys()))
 
@@ -72,6 +73,7 @@ class RandomRemoval(Destroy):
 class WorstRemoval(Destroy):
 	def __init__(self, solution, num_first_stage_tasks, neighborhood_size, randomization_degree):
 		'''
+		Worst removal removes solutions that have a bad influence on the objective value. In this case, that means moves where the objective function decreases little when they are removed.
 		:param randomization_degree: (p) parameter that determines the degree of randomization
 		'''
 		super().__init__(solution, num_first_stage_tasks, neighborhood_size)
@@ -79,16 +81,33 @@ class WorstRemoval(Destroy):
 		self.randomization_degree = randomization_degree
 
 
+
+
+
+
 class ShawRemoval(Destroy):
+
 	def __init__(self, solution, num_first_stage_tasks, neighborhood_size, randomization_degree):
+		'''
+		Shaw removal removes car-moves that are somewhat similar to each other. It takes in a solution, the number of car moves to remove, and a randomness parameter p >= 1.
+		:param randomization_degree: (p) parameter that determines the degree of randomization
+		'''
 		super().__init__(solution, num_first_stage_tasks, neighborhood_size)
 		'''
 		:param randomization_degree: (p) parameter that determines the degree of randomization 
 		'''
 		self.randomization_degree = randomization_degree
 
+	# The relatedness measure can e.g. measure how close the the start nodes are to each other, and the same for the
+	# end nodes, when the car moves are started, and maybe whether only a few employees are able to perform both
+	# requests. It should also probably only compare parking moves with parking moves and charging moves with
+	# charging moves.
 	def _relatednes_measure(self, car_move_i, car_move_j):
 		pass
+
+	def _destroy(self):
+		pass
+
 
 
 if __name__ == "__main__":

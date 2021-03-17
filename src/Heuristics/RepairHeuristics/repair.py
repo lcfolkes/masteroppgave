@@ -24,9 +24,25 @@ class Repair(ABC):
 		self.num_first_stage_tasks = num_first_stage_tasks
 		self.neighborhood_size = neighborhood_size
 
+	@abstractmethod
+	def _repair(self):
+		pass
+
+	def _get_best_insertion(self, regret):
+		
+
 class GreedyInsertion(Repair):
 	def __init__(self, destroyed_solution, unused_car_moves, num_first_stage_tasks, neighborhood_size):
 		super().__init__(destroyed_solution, unused_car_moves, num_first_stage_tasks, neighborhood_size)
+
+	def _repair(self):
+		q = self.neighborhood_size
+		current_solution = self.destroyed_solution
+		while q > 0:
+			best_car_move, best_employee, best_index = self._get_best_insertion(regret=1)
+			current_solution = insert_car_move(current_solution, best_car_move, best_employee, best_index)
+			q -= 1
+
 
 class RegretInsertion(Repair):
 	def __init__(self, destroyed_solution, unused_car_moves, num_first_stage_tasks, neighborhood_size):
