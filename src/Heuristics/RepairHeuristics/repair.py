@@ -66,6 +66,7 @@ class GreedyInsertion(Repair):
         while q > 0:
             best_car_move, best_employee = self._get_best_insertion(current_solution)
             current_solution = insert_car_move(current_solution, best_car_move, best_employee)
+            self.unused_car_moves.remove(best_car_move)
             q -= 1
         self.repaired_solution = current_solution
         return current_solution
@@ -109,7 +110,7 @@ class RegretInsertion(Repair):
 
 if __name__ == "__main__":
     print("\n---- HEURISTIC ----")
-    ch = ConstructionHeuristic("InstanceGenerator/InstanceFiles/6nodes/6-3-1-1_a.pkl")
+    ch = ConstructionHeuristic("InstanceGenerator/InstanceFiles/6nodes/6-3-1-1_g.pkl")
     ch.add_car_moves_to_employees()
     ch.print_solution()
     ch.get_objective_function_val()
