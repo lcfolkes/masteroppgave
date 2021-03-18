@@ -3,7 +3,6 @@ from src.HelperFiles.helper_functions import read_config
 import os
 from path_manager import path_to_src
 os.chdir(path_to_src)
-print(os.getcwd())
 
 
 TIME_CONSTANTS = read_config('InstanceGenerator/world_constants_config.yaml')['time_constants']

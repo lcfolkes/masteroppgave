@@ -7,7 +7,7 @@ from itertools import product
 import pandas as pd
 import dill
 os.chdir(path_to_src)
-print(os.getcwd())
+
 
 
 
