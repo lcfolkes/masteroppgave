@@ -1,4 +1,6 @@
 import os
+import random
+
 from path_manager import path_to_src
 from abc import ABC, abstractmethod
 import copy
@@ -47,14 +49,6 @@ class Repair(ABC):
 
 
 class GreedyInsertion(Repair):
-    """
-    The greedy insertion heuristic greedily inserts car moves yielding the greatest improvement to the
-    objective function value (similar to the construction heuristic)
-    """
-
-    def __init__(self, destroyed_solution, unused_car_moves, num_first_stage_tasks, neighborhood_size, parking_nodes):
-
-        super().__init__(destroyed_solution, unused_car_moves, num_first_stage_tasks, neighborhood_size, parking_nodes)
 
     def _repair(self) -> {int: [CarMove]}:
         """
@@ -82,7 +76,6 @@ class GreedyInsertion(Repair):
         best_obj_val = -1000
         for car_move in self.unused_car_moves:
             for employee_id, employee_moves in current_solution.items():
-                print(employee_moves)
                 if len(employee_moves) < self.num_first_stage_tasks:
                     solution_with_move = insert_car_move(current_solution, car_move, employee_id)
                     solution_with_move = get_first_stage_solution_list_from_dict(solution_with_move)
@@ -96,28 +89,89 @@ class GreedyInsertion(Repair):
 
 
 class RegretInsertion(Repair):
-    """
-    The regret insertion heuristic considers the alternative costs of inserting a car_move into gamma (assigned_car_moves).
-    The
-    """
 
-    def _repair(self):
-        pass
+    def __init__(self, destroyed_solution, unused_car_moves, num_first_stage_tasks, neighborhood_size, parking_nodes, regret_nr):
+        """
+        The regret insertion heuristic considers the alternative costs of inserting a car_move into gamma (assigned_car_moves).
+        """
+        self.regret_nr = regret_nr
 
-    def __init__(self, destroyed_solution, unused_car_moves, num_first_stage_tasks, neighborhood_size):
-        super().__init__(self, destroyed_solution, unused_car_moves, num_first_stage_tasks, neighborhood_size)
+        super().__init__(destroyed_solution, unused_car_moves, num_first_stage_tasks, neighborhood_size, parking_nodes)
+
+    def _repair(self) -> {int: [CarMove]}:
+        """
+        Assigns car moves to employees and returns the repaired solution
+        :return: a repaired solution in the form of a dictionary with key: employee id and value: a list of car moves
+        """
+        if self.regret_nr > len(self.destroyed_solution)-1:
+            print("Regret number cannot be higher than one less than the number of employees!")
+            exit()
+
+        q = self.neighborhood_size
+        current_solution = copy.deepcopy(self.destroyed_solution)
+        while q > 0:
+            best_car_move, best_employee = self._get_best_insertion_regret(current_solution, self.regret_nr)
+            current_solution = insert_car_move(current_solution, best_car_move, best_employee)
+            self.unused_car_moves.remove(best_car_move)
+            q -= 1
+        self.repaired_solution = current_solution
+        return current_solution
+
+    def _get_best_insertion_regret(self, current_solution: {int: [CarMove]}, regret_nr: int) -> (CarMove, int):
+        """
+        Finds the best car_move to insert, and the id of the employee that should perform it,  based on the regret
+        value.
+        :param current_solution: a dictionary with key: employee id and value: list of car moves
+        :param regret_nr: the regret value
+        :return best car move, best employee
+        """
+        # For each car move, we create a list with the employees the car move can be assigned to, which is sorted so
+        # that the first element in the list is the employee for which the objective function increases the most if
+        # assigned to the car move. The regret value is the difference between inserting the car move in its best
+        # position and in its kth (regret_nr) position. We do this for each car move, and then select the one with the
+        # highest regret value.
+
+        best_car_move = None
+        best_employee = None
+        highest_obj_val_diff = -0.1
+        for car_move in self.unused_car_moves:
+            obj_val_dict = {}
+            for employee_id, employee_moves in current_solution.items():
+                if len(employee_moves) < self.num_first_stage_tasks:
+                    solution_with_move = insert_car_move(current_solution, car_move, employee_id)
+                    solution_with_move = get_first_stage_solution_list_from_dict(solution_with_move)
+                    obj_val = get_obj_val_of_car_moves(self.parking_nodes, num_scenarios=1,
+                                                       first_stage_car_moves=solution_with_move)
+                    obj_val_dict[employee_id] = obj_val
+            obj_values_sorted = sorted(obj_val_dict.values())
+            if (len(obj_values_sorted) <= regret_nr):
+                best_car_move = car_move
+                best_employees = []
+                for key, value in obj_val_dict.items():
+                    if value == obj_values_sorted[0]:
+                        best_employees.append(key)
+                        best_employee = random.choice(best_employees)
+            elif (obj_values_sorted[0] - obj_values_sorted[regret_nr]) > highest_obj_val_diff:
+                best_car_move = car_move
+                best_employees = []
+                for key, value in obj_val_dict.items():
+                    if value == obj_values_sorted[0]:
+                        best_employees.append(key)
+                best_employee = random.choice(best_employees)
+        return best_car_move, best_employee
+
 
 
 if __name__ == "__main__":
     print("\n---- HEURISTIC ----")
-    ch = ConstructionHeuristic("InstanceGenerator/InstanceFiles/6nodes/6-3-1-1_g.pkl")
+    ch = ConstructionHeuristic("InstanceGenerator/InstanceFiles/6nodes/6-3-1-1_c.pkl")
     ch.add_car_moves_to_employees()
     ch.print_solution()
     ch.get_objective_function_val()
     rr = RandomRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
                        neighborhood_size=2)
     rr.to_string()
-    gi = GreedyInsertion(destroyed_solution=rr.destroyed_solution, unused_car_moves=rr.removed_moves,
+    gi = RegretInsertion(destroyed_solution=rr.destroyed_solution, unused_car_moves=rr.removed_moves,
                          num_first_stage_tasks=ch.world_instance.first_stage_tasks, neighborhood_size=2,
-                         parking_nodes=ch.parking_nodes)
+                         parking_nodes=ch.parking_nodes, regret_nr=2)
     gi.to_string()
