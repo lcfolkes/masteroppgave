@@ -200,7 +200,7 @@ def calculate_cost_deviation_ideal_state(parking_nodes: [ParkingNode], z: {int: 
 def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int, first_stage_car_moves: [CarMove] = None,
 							second_stage_car_moves: [[CarMove]] = None,
 							scenario: int = None, verbose: bool = False) -> float:
-	'''
+	"""
 	:param parking_nodes: list of parking node objects
 	:param num_scenarios:
 	:param first_stage_car_moves: list of car_move objects for first stage, [cm1, cm2]
@@ -208,7 +208,7 @@ def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int, f
 	:param scenario: if None, then average for all scenario is calculated, else for a specific scenario
 	:param verbose:  True if you want to print information
 	:return: flaot of objective value of car_moves
-	'''
+	"""
 
 	# first stage
 	if scenario is None:

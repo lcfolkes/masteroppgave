@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import os
 import random
 import copy
+import numpy as np
 
 print(os.getcwd())
 os.chdir('../../InstanceGenerator')
@@ -97,7 +98,8 @@ class WorstRemoval(Destroy):
 		'''
 		Worst removal removes solutions that have a bad influence on the objective value.
 		In this case, that means moves where the objective function decreases little when they are removed.
-		:param randomization_degree: (p) parameter that determines the degree of randomization
+		:param randomization_degree: (p) parameter that determines the degree of randomization, p>=1.
+				Low value of p corresponds to much randomness
 		'''
 		self.parking_nodes = parking_nodes
 		self.randomization_degree = randomization_degree
@@ -120,7 +122,9 @@ class WorstRemoval(Destroy):
 		remove_list = sorted(obj_val.items(), key=lambda x: x[1], reverse=False) # e.g. [(index, obj_val] = [(0, 85.96), (1, 89.74)]
 		removed_car_moves_by_id = []
 		while n_size > 0:
-			removed_car_moves_by_id.append(first_stage_solution_list.pop(remove_list[0][0]).car_move_id)
+			# Handle randomization
+			index = np.floor(np.power(random.random(), self.randomization_degree) * len(remove_list)).astype(int)
+			removed_car_moves_by_id.append(first_stage_solution_list.pop(remove_list[index][0]).car_move_id)
 			n_size -= 1
 
 		for k, v in first_stage_solution_dict.items():
@@ -129,26 +133,6 @@ class WorstRemoval(Destroy):
 
 		return first_stage_solution_dict
 
-
-
-	#def _get_worst_move(self, randomizaton_degree):
-	#	ConstructionHeuristic.
-
-
-		'''
-		while q>0 do:
-			Array: L = All planned requests i, sorted by descending cost (i,s)
-			
-			choose a random number y in the interval [0,1)
-			
-			request: r = L[y^p|L|]
-			
-			remove r from solution s
-			
-			q -= 1
-		
-		end while 
-		'''
 
 
 class ShawRemoval(Destroy):
@@ -186,6 +170,6 @@ if __name__ == "__main__":
 	# rr.to_string()
 
 	wr = WorstRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
-					  neighborhood_size=1, randomization_degree=0, parking_nodes=ch.parking_nodes)
+					  neighborhood_size=1, randomization_degree=10, parking_nodes=ch.parking_nodes)
 
 	wr.to_string()
