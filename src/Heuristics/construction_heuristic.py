@@ -1,12 +1,13 @@
 import os
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
-os.chdir('../InstanceGenerator')
 from src.InstanceGenerator.instance_components import ParkingNode, Employee, ChargingNode, CarMove
 from InstanceGenerator.world import World
 from src.HelperFiles.helper_functions import load_object_from_file
 from src.Gurobi.Model.run_model import run_model
 import numpy as np
-from itertools import product
+from path_manager import path_to_src
+
+os.chdir(path_to_src)
 
 
 def remove_car_move(chosen_car_move, car_moves):
@@ -26,9 +27,11 @@ class ConstructionHeuristic:
         self.employees = self.world_instance.employees
         self.parking_nodes = self.world_instance.parking_nodes
         self.cars = self.world_instance.cars
-        self.unused_car_moves = [[] for _ in range(self.num_scenarios)] # [beta] list of unused car_moves for scenaro s (zero index)
+        self.unused_car_moves = [[] for _ in range(
+            self.num_scenarios)]  # [beta] list of unused car_moves for scenario s (zero index)
         # TODO: change assigned_car_moves to list of lists
-        self.assigned_car_moves = {k.employee_id: [[] for _ in range(self.num_scenarios)] for k in self.employees}  # [gamma_k] dictionary containing ordered list of car_moves assigned to employee k in scenario s
+        self.assigned_car_moves = {k.employee_id: [[] for _ in range(self.num_scenarios)] for k in
+                                   self.employees}  # [gamma_k] dictionary containing ordered list of car_moves assigned to employee k in scenario s
         self.car_moves = []  # self.world_instance.car_moves
         self.charging_moves = []
         self.parking_moves = []
@@ -243,11 +246,11 @@ class ConstructionHeuristic:
     def add_car_moves_to_employees(self):
         improving_car_move_exists = True
         while self.available_employees and improving_car_move_exists:
-            print([cm.car_move_id for cm in self.charging_moves])
-            print([[cm.car_move_id for cm in s] for s in self.charging_moves_second_stage])
+            #print([cm.car_move_id for cm in self.charging_moves])
+            #print([[cm.car_move_id for cm in s] for s in self.charging_moves_second_stage])
             # check if charging_moves_list is not empty
-            if (self.charging_moves and self.first_stage) or (any(self.charging_moves_second_stage) and not
-                                                                                            self.first_stage):
+            if (self.charging_moves and self.first_stage) or (any(self.charging_moves_second_stage) and
+                                                              not self.first_stage):
                 self.prioritize_charging = True
                 if self.first_stage:
                     car_moves = self.charging_moves
@@ -331,7 +334,7 @@ class ConstructionHeuristic:
             return best_car_move_first_stage
 
         # SECOND STAGE
-        #TODO: Handle assigning charging moves in the second stage
+        # TODO: Handle assigning charging moves in the second stage
         else:
             best_car_move_second_stage = [None for _ in range(self.num_scenarios)]
             best_obj_val_second_stage = [-1000 for _ in range(self.num_scenarios)]
@@ -355,7 +358,7 @@ class ConstructionHeuristic:
                         obj_val[s] = self._get_obj_val_of_car_move(first_stage_car_moves=assigned_first_stage_car_moves,
                                                                    second_stage_car_moves=assigned_second_stage_car_moves +
                                                                                           [car_moves[s][r]], scenario=s)
-                        #if car_moves[s][r].car_move_id == 7 and s == 0:
+                        # if car_moves[s][r].car_move_id == 7 and s == 0:
                         #    print(f"car_move {car_moves[s][r].car_move_id}, s {s + 1}")
                         #    print(f"obj_val {obj_val[s]} best_obj_val {best_obj_val_second_stage[s]}")
 
@@ -507,9 +510,8 @@ class ConstructionHeuristic:
                         if self.prioritize_charging:
                             self.charging_moves_second_stage[s] = remove_car_move(best_car_move[s],
                                                                                   car_moves[s])
-                            #self.charging_moves = remove_car_move(best_car_move[s],
+                            # self.charging_moves = remove_car_move(best_car_move[s],
                             #                                     car_moves[s])
-
 
                             # should remove car move and other car-moves with the same car
                         else:
@@ -556,7 +558,7 @@ class ConstructionHeuristic:
                         print(f"employee: {employee.employee_id}, scenario: {s + 1} " + car_move.to_string())
 
 
-filename = "InstanceFiles/6nodes/6-3-1-1_h"
+filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-1-1_f"
 
 print("\n---- HEURISTIC ----")
 ch = ConstructionHeuristic(filename + ".pkl")
@@ -567,7 +569,7 @@ ch.get_objective_function_val()
 print(ch.assigned_car_moves)
 print(ch.unused_car_moves)
 print("\n---- GUROBI ----")
-#gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=True)
+# gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=True)
 gi = GurobiInstance(filename + ".yaml")
 run_model(gi)
 # except:

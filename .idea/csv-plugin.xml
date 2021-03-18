@@ -10,6 +10,34 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/src/Heuristics/DestroyHeuristics/destroy.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="&#9;" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/src/Heuristics/RepairHeuristics/repair.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="&#9;" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/src/Heuristics/construction_heuristic.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/src/Heuristics/helper_functions_heuristics.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/src/InstanceGenerator/InstanceConfigs/instance_config.yaml">
           <value>
             <Attribute>

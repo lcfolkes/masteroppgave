@@ -1,11 +1,11 @@
 import itertools
 from src.HelperFiles.helper_functions import read_config
 import os
-#os.chdir('../')
-print(os.getcwd())
+from path_manager import path_to_src
+os.chdir(path_to_src)
 
 
-TIME_CONSTANTS = read_config('./world_constants_config.yaml')['time_constants']
+TIME_CONSTANTS = read_config('InstanceGenerator/world_constants_config.yaml')['time_constants']
 
 
 class Node:

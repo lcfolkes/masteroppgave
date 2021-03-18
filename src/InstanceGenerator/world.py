@@ -7,6 +7,8 @@ import random
 import time
 import copy
 import os
+from path_manager import path_to_src
+os.chdir(path_to_src)
 
 DISTANCESCALE = 3
 
@@ -14,7 +16,7 @@ DISTANCESCALE = 3
 # TODO: generate world object from instance-file
 
 class World:
-	cf = read_config('./world_constants_config.yaml')
+	cf = read_config('InstanceGenerator/world_constants_config.yaml')
 	# COST CONSTANTS #
 	PROFIT_RENTAL = cf['objective_function']['profit_rental']
 	COST_RELOCATION = cf['objective_function']['cost_relocation']
