@@ -155,35 +155,6 @@ class World:
 		employee_end_node = end_node.node_id - 1
 		return self.distances_public_bike[employee_start_node * len(self.nodes) + employee_end_node]
 
-	def check_legal_move(self, car_move: CarMove, employee: Employee, scenario: int = None):  # return total travel time
-		current_time = None
-		current_node = None
-		start_node = car_move.start_node
-		if scenario is None:
-			current_time = employee.current_time
-			current_node = employee.current_node
-		else:
-			# zero-indexed scenario
-			current_time = employee.current_time_second_stage[scenario]
-			current_node = employee.current_node_second_stage[scenario]
-
-		employee_travel_time = self.get_employee_travel_time_to_node(current_node, start_node)
-
-		total_time = current_time + employee_travel_time + car_move.handling_time
-		print(f"\nEmployee {employee.employee_id}")
-		print(f"Current node {current_node.node_id}")
-		print(car_move.to_string())
-		print(f"total_time = current_time + employee_travel_time_to_node + handling_time")
-		print(f" {total_time} = {current_time} + {employee_travel_time} + {car_move.handling_time}")
-		print(f"planning_period: {World.PLANNING_PERIOD}")
-
-		if total_time < World.PLANNING_PERIOD:
-			#print(total_time)
-			return True
-		else:
-			# print("Car move exceeds planning period")
-			return False
-
 
 	## CALCULATE DISTANCE ##
 

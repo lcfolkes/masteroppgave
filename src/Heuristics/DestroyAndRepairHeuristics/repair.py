@@ -1,16 +1,18 @@
 import os
 import random
 
+from Heuristics.feasibility_checker import FeasibilityChecker
 from path_manager import path_to_src
 from abc import ABC, abstractmethod
 import copy
 from Heuristics.DestroyAndRepairHeuristics.destroy import RandomRemoval
 from Heuristics.helper_functions_heuristics import insert_car_move, get_obj_val_of_car_moves, \
-    get_first_stage_solution_list_from_dict
+    get_first_stage_solution_list_from_dict, get_objective_function_val
 from Heuristics.construction_heuristic import ConstructionHeuristic
 from InstanceGenerator.instance_components import CarMove, ParkingNode
 from Heuristics.DestroyAndRepairHeuristics.destroy import Destroy
 
+print(path_to_src)
 os.chdir(path_to_src)
 
 
@@ -25,7 +27,7 @@ class Repair(ABC):
         return list(moves)
 
     def __init__(self, destroyed_solution_object: Destroy, construction_heuristic: ConstructionHeuristic) -> {int: [CarMove]}:
-        #TODO: take in unused moves from construction heuristic as well
+        #TODO: check feasibility of solution
         """
         :param destroyed_solution_object: object from destroyed solution
         :param construction_heuristic: construction heuristic object
@@ -114,6 +116,7 @@ class RegretInsertion(Repair):
         super().__init__(destroyed_solution_object, construction_heuristic)
 
     def _repair(self) -> {int: [CarMove]}:
+        #TODO: remove infeasible car_moves
         """
         Assigns car moves to employees and returns the repaired solution
         :return: a repaired solution in the form of a dictionary with key: employee id and value: a list of car moves
@@ -179,14 +182,14 @@ class RegretInsertion(Repair):
 
 if __name__ == "__main__":
     print("\n---- HEURISTIC ----")
-    ch = ConstructionHeuristic("InstanceGenerator/InstanceFiles/6nodes/6-3-1-1_c.pkl")
-    ch.add_car_moves_to_employees()
-    ch.print_solution()
-    ch.get_objective_function_val()
+    ch = ConstructionHeuristic("./InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a.pkl")
     rr = RandomRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
                        neighborhood_size=2)
     rr.to_string()
-    gi = RegretInsertion(destroyed_solution=rr.destroyed_solution, unused_car_moves=rr.removed_moves,
-                         num_first_stage_tasks=ch.world_instance.first_stage_tasks, neighborhood_size=2,
-                         parking_nodes=ch.parking_nodes, regret_nr=2)
+    gi = RegretInsertion(destroyed_solution_object=rr,
+                         construction_heuristic=ch, regret_nr=1)
     gi.to_string()
+
+    fc = FeasibilityChecker(ch.world_instance)
+    print("feasibilityChecker")
+    fc.is_first_stage_solution_feasible(gi.repaired_solution)

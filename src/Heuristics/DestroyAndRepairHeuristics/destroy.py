@@ -5,6 +5,8 @@ import copy
 from path_manager import path_to_src
 from Heuristics.construction_heuristic import ConstructionHeuristic
 import Heuristics.helper_functions_heuristics as helpers
+from Heuristics.helper_functions_heuristics import insert_car_move, get_obj_val_of_car_moves, \
+    get_first_stage_solution_list_from_dict
 from Heuristics.heuristics_constants import HeuristicsConstants
 import numpy as np
 from src.InstanceGenerator.instance_components import CarMove
@@ -200,11 +202,12 @@ class ShawRemoval(Destroy):
 		return first_stage_solution_dict
 
 if __name__ == "__main__":
+	from Heuristics.helper_functions_heuristics import get_objective_function_val
+
 	print("\n---- HEURISTIC ----")
 	ch = ConstructionHeuristic("./InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a.pkl")
-	ch.add_car_moves_to_employees()
 	ch.print_solution()
-	ch.get_objective_function_val()
+	get_objective_function_val(ch.parking_nodes, ch.employees, ch.num_scenarios)
 	# rr = RandomRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
 	#				   neighborhood_size=1)
 	# rr.to_string()
