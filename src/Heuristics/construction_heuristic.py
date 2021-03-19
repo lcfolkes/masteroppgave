@@ -25,7 +25,8 @@ class ConstructionHeuristic:
             self.num_scenarios)]  # [beta] list of unused car_moves for scenario s (zero index)
         # TODO: change assigned_car_moves to list of lists
         self.assigned_car_moves = {k.employee_id: [[] for _ in range(self.num_scenarios)] for k in
-                                   self.employees}  # [gamma_k] dictionary containing ordered list of car_moves assigned to employee k in scenario s
+                                   self.employees}  # [gamma_k] dictionary containing ordered list of car_moves,
+        # assigned to employee k in scenario s
         self.car_moves = []  # self.world_instance.car_moves
         self.charging_moves = []
         self.parking_moves = []
@@ -95,8 +96,7 @@ class ConstructionHeuristic:
                                                               world_instance=self.world_instance,
                                                               prioritize_charging=self.prioritize_charging,
                                                               charging_moves=self.charging_moves,
-                                                              charging_moves_second_stage=
-                                                              self.charging_moves_second_stage,
+                                                              charging_moves_second_stage=self.charging_moves_second_stage,
                                                               parking_moves_second_stage=
                                                               self.parking_moves_second_stage)
                 # print(f"employee {best_employee_first_stage}")
@@ -146,10 +146,12 @@ class ConstructionHeuristic:
                 print('Employee time after', best_employee.current_time)
                 if self.prioritize_charging:
                     self.charging_moves = remove_car_move(best_car_move,
-                                                          car_moves)  # should remove car move and other car-moves with the same car
+                                                          car_moves)  # should remove car move and other
+                    # car-moves with the same car
                 else:
                     self.parking_moves = remove_car_move(best_car_move,
-                                                         car_moves)  # should remove car move and other car-moves with the same car
+                                                         car_moves)  # should remove car move and other
+                    # car-moves with the same car
 
                 self.first_stage = False
                 for employee in self.employees:
@@ -182,7 +184,8 @@ class ConstructionHeuristic:
                             self.unused_car_moves[s].remove(best_car_move[s])
                         print('Employee node after', best_employee[s].current_node_second_stage[s].node_id)
                         print('Employee time after', best_employee[s].current_time_second_stage[s])
-                        # When first stage is finished, initialize car_moves to be list of copies of car_moves (number of copies = num_scenarios)
+                        # When first stage is finished, initialize car_moves to be list of copies of
+                        # car_moves (number of copies = num_scenarios)
                         if self.prioritize_charging:
                             self.charging_moves_second_stage[s] = remove_car_move(best_car_move[s],
                                                                                   car_moves[s])
@@ -199,7 +202,6 @@ class ConstructionHeuristic:
                     self.available_employees = False
             else:
                 self.available_employees = False
-
 
     def print_solution(self):
 
