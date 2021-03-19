@@ -2,7 +2,7 @@ import os
 from path_manager import path_to_src
 from abc import ABC, abstractmethod
 import copy
-from Heuristics.DestroyHeuristics.destroy import RandomRemoval
+from Heuristics.DestroyAndRepairHeuristics.destroy import RandomRemoval
 from Heuristics.helper_functions_heuristics import insert_car_move, get_obj_val_of_car_moves, \
     get_first_stage_solution_list_from_dict
 from Heuristics.construction_heuristic import ConstructionHeuristic
