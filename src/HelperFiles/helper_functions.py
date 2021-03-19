@@ -9,8 +9,6 @@ import dill
 os.chdir(path_to_src)
 
 
-
-
 def read_config(config_name: str):
 	with open(config_name, 'r') as stream:
 		try:

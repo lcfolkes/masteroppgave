@@ -119,17 +119,24 @@ class World:
 		self.coordinates = coordinates
 
 	def add_car_move_to_employee(self, car_move: CarMove, employee: Employee, scenario: int = None):
+
 		if scenario is None:
-			total_travel_time = self.get_employee_travel_time_to_node(start_node=employee.current_node,
-																	  end_node=car_move.start_node) + car_move.handling_time
+			car_move_start_time = self.get_employee_travel_time_to_node(start_node=employee.current_node,
+																	  end_node=car_move.start_node)
+			total_travel_time = car_move_start_time + car_move.handling_time
+			car_move.set_start_time(car_move_start_time)
 			employee.add_car_move(total_travel_time, car_move)
 			if len(employee.car_moves) == self.first_stage_tasks:
 				employee.initialize_second_stage(num_scenarios=self.num_scenarios)
 		else:
 			# zero-indexed scenario
-			total_travel_time = self.get_employee_travel_time_to_node(start_node=employee.current_node_second_stage[scenario],
+			car_move_start_time = self.get_employee_travel_time_to_node(start_node=employee.current_node_second_stage[scenario],
 																  end_node=car_move.start_node) + car_move.handling_time
+			total_travel_time = car_move_start_time + car_move.handling_time
+
+			car_move.set_start_time(car_move_start_time)
 			employee.add_car_move(total_travel_time=total_travel_time, car_move=car_move, scenario=scenario)
+
 
 	def remove_car_move_from_employee(self, car_move: CarMove, employee: Employee):
 		# start_node is the end node of the car move performed before the one we want to remove.
@@ -147,35 +154,6 @@ class World:
 		employee_start_node = start_node.node_id - 1
 		employee_end_node = end_node.node_id - 1
 		return self.distances_public_bike[employee_start_node * len(self.nodes) + employee_end_node]
-
-	def check_legal_move(self, car_move: CarMove, employee: Employee, scenario: int = None):  # return total travel time
-		current_time = None
-		current_node = None
-		start_node = car_move.start_node
-		if scenario is None:
-			current_time = employee.current_time
-			current_node = employee.current_node
-		else:
-			# zero-indexed scenario
-			current_time = employee.current_time_second_stage[scenario]
-			current_node = employee.current_node_second_stage[scenario]
-
-		employee_travel_time = self.get_employee_travel_time_to_node(current_node, start_node)
-
-		total_time = current_time + employee_travel_time + car_move.handling_time
-		print(f"\nEmployee {employee.employee_id}")
-		print(f"Current node {current_node.node_id}")
-		print(car_move.to_string())
-		print(f"total_time = current_time + employee_travel_time_to_node + handling_time")
-		print(f" {total_time} = {current_time} + {employee_travel_time} + {car_move.handling_time}")
-		print(f"planning_period: {World.PLANNING_PERIOD}")
-
-		if total_time < World.PLANNING_PERIOD:
-			#print(total_time)
-			return True
-		else:
-			# print("Car move exceeds planning period")
-			return False
 
 
 	## CALCULATE DISTANCE ##
