@@ -74,15 +74,22 @@ class CarMove:
         self.start_node = start_node  # origin node. this could be derived from car object
         self.end_node = end_node  # destination node
         self.handling_time = None
+        self.employee = None
+        self.is_charging_move = (True if isinstance(end_node, ChargingNode) else False)
+        self.start_time = []
 
-
-    # self.employee = None
 
     def set_travel_time(self, time: int):
         if isinstance(self.end_node, ParkingNode):
             self.handling_time = time + TIME_CONSTANTS['handling_parking']
         elif isinstance(self.end_node, ChargingNode):
             self.handling_time = time + TIME_CONSTANTS['handling_charging']
+
+    def set_start_time(self, time: int):
+        self.start_time.append(time)
+
+    def set_employee(self, employee):
+        self.employee = employee
 
     def to_string(self):
         return f"car_move_id: {self.car_move_id}, car: {self.car.car_id}, start_node: {self.start_node.node_id}, end_node: {self.end_node.node_id}, " \

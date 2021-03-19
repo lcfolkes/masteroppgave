@@ -56,7 +56,7 @@ def create_instance_from_world(world: World, num_scenarios: int, num_tasks: int,
 
 
 def main():
-    cf = read_config('./InstanceConfigs/instance_config.yaml')
+    cf = read_config('./InstanceGenerator/InstanceConfigs/instance_config.yaml')
     print("\nWELCOME TO THE EXAMPLE CREATOR \n")
     worlds = []
     for i in range(cf['examples']):

@@ -6,7 +6,7 @@ from src.HelperFiles.helper_functions import save_object_to_file
 
 
 def write_to_file_yaml(world, instance_name: str):
-    test_dir = "./InstanceFiles/{}nodes/".format(len(world.parking_nodes))
+    test_dir = "./InstanceGenerator/InstanceFiles/{}nodes/".format(len(world.parking_nodes))
     if not os.path.exists(test_dir):
         os.makedirs(test_dir)
     file_name = test_dir + str(instance_name) + "_a"

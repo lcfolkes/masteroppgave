@@ -211,9 +211,10 @@ class ConstructionHeuristic:
             for car_move in employee.car_moves:
                 first_stage_car_moves.append(car_move)
 
-            for s in range(self.num_scenarios):
-                for car_move in employee.car_moves_second_stage[s]:
-                    second_stage_car_moves[s].append(car_move)
+            if not self.first_stage:
+                for s in range(self.num_scenarios):
+                    for car_move in employee.car_moves_second_stage[s]:
+                        second_stage_car_moves[s].append(car_move)
 
         all_second_stage_car_moves = [cm for s in second_stage_car_moves for cm in s]
         first_stage_duplicate_for_scenarios = list(np.repeat(first_stage_car_moves, self.num_scenarios))
@@ -229,18 +230,6 @@ class ConstructionHeuristic:
         obj_val = profit_customer_requests - cost_relocation - cost_deviation_ideal_state
         print("Objective function value: ", round(obj_val, 2))
 
-        #### OBJECTIVE FUNCTION VALUE FOR SCENARIOS ####
-        obj_val_list = []
-        assigned_first_stage_car_moves = self._get_assigned_car_moves()
-        second_stage_car_moves = []
-        for s in range(self.num_scenarios):
-            assigned_second_stage_car_moves = self._get_assigned_car_moves(scenario=s)
-            second_stage_car_moves.append(assigned_second_stage_car_moves)
-            obj_val_list.append(self._get_obj_val_of_car_move(
-                first_stage_car_moves=assigned_first_stage_car_moves,
-                second_stage_car_moves=assigned_second_stage_car_moves, scenario=s))
-        print(f"Obj. function value of scenarios: {[round(o, 2) for o in obj_val_list]}, mean: {np.mean(obj_val_list)}")
-        assert (round(np.mean(obj_val_list), 2) == round(obj_val, 2)), "Different objective function values"
         return obj_val
 
     def add_car_moves_to_employees(self):
@@ -271,13 +260,16 @@ class ConstructionHeuristic:
             if self.first_stage:
                 #### GET BEST CAR MOVE ###
                 best_car_move_first_stage = self._get_best_car_move(car_moves=car_moves)
+                if best_car_move_first_stage is None:
+                    improving_car_move_exists = False
                 # print(best_car_move_first_stage.to_string())
                 #### GET BEST EMPLOYEE ###
-                best_employee_first_stage = self._get_best_employee(best_car_move=best_car_move_first_stage)
-                # print(f"employee {best_employee_first_stage}")
-                if best_employee_first_stage is not None:
+                else:
+                    best_employee_first_stage = self._get_best_employee(best_car_move=best_car_move_first_stage)
+                    # print(f"employee {best_employee_first_stage}")
+                    if best_employee_first_stage is not None:
                     #### ADD CAR MOVE TO EMPLOYEE ###
-                    self._add_car_move_to_employee(car_moves=car_moves, best_car_move=best_car_move_first_stage,
+                        self._add_car_move_to_employee(car_moves=car_moves, best_car_move=best_car_move_first_stage,
                                                    best_employee=best_employee_first_stage)
 
             else:
@@ -558,19 +550,20 @@ class ConstructionHeuristic:
                         print(f"employee: {employee.employee_id}, scenario: {s + 1} " + car_move.to_string())
 
 
-filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-1-1_f"
+if __name__ == "__main__":
+    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_e"
 
-print("\n---- HEURISTIC ----")
-ch = ConstructionHeuristic(filename + ".pkl")
-# try:
-ch.add_car_moves_to_employees()
-ch.print_solution()
-ch.get_objective_function_val()
-print(ch.assigned_car_moves)
-print(ch.unused_car_moves)
-print("\n---- GUROBI ----")
-# gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=True)
-gi = GurobiInstance(filename + ".yaml")
-run_model(gi)
-# except:
-#    print("Instance not solvable")
+    print("\n---- HEURISTIC ----")
+    ch = ConstructionHeuristic(filename + ".pkl")
+    # try:
+    ch.add_car_moves_to_employees()
+    ch.print_solution()
+    ch.get_objective_function_val()
+    #print(ch.assigned_car_moves)
+    #print(ch.unused_car_moves)
+    print("\n---- GUROBI ----")
+    # gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=True)
+    #gi = GurobiInstance(filename + ".yaml")
+    #run_model(gi)
+    # except:
+    #    print("Instance not solvable")
