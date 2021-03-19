@@ -9,14 +9,26 @@ from Heuristics.helper_functions_heuristics import insert_car_move, get_obj_val_
     get_first_stage_solution_list_from_dict
 from Heuristics.construction_heuristic import ConstructionHeuristic
 from InstanceGenerator.instance_components import CarMove, ParkingNode
+from Heuristics.DestroyAndRepairHeuristics.destroy import Destroy
 
 os.chdir(path_to_src)
 
 
 class Repair(ABC):
-    def __init__(self, destroyed_solution: {int: [CarMove]}, unused_car_moves: [CarMove], num_first_stage_tasks: int,
-                 neighborhood_size: int, parking_nodes: [ParkingNode]) -> {int: [CarMove]}:
+
+    @classmethod
+    def get_unused_moves(cls, moves_by_scenario, removed_moves):
+        moves = set(removed_moves)
+        for scenario in moves_by_scenario:
+            for cm in scenario:
+                moves.add(cm)
+        return list(moves)
+
+    def __init__(self, destroyed_solution_object: Destroy, construction_heuristic: ConstructionHeuristic) -> {int: [CarMove]}:
+        #TODO: take in unused moves from construction heuristic as well
         """
+        :param destroyed_solution_object: object from destroyed solution
+        :param construction_heuristic: construction heuristic object
         :param destroyed_solution: dictionary of destroyed solution returned from a Destroy heuristic
         :param unused_car_moves: list of unused car_moves for each scenario e.g.: [[], [], []]
         :param num_first_stage_tasks: int
@@ -24,11 +36,11 @@ class Repair(ABC):
         :param parking_nodes: list of ParkingNode
         :return A repaired solution in the form of a dictionary with key employee and value list of first-stage car moves
         """
-        self.destroyed_solution = destroyed_solution
-        self.unused_car_moves = unused_car_moves
-        self.num_first_stage_tasks = num_first_stage_tasks
-        self.neighborhood_size = neighborhood_size
-        self.parking_nodes = parking_nodes
+        self.destroyed_solution = destroyed_solution_object.destroyed_solution
+        self.unused_car_moves = Repair.get_unused_moves(construction_heuristic.unused_car_moves, destroyed_solution_object.removed_moves)
+        self.num_first_stage_tasks = destroyed_solution_object.num_first_stage_tasks
+        self.neighborhood_size = destroyed_solution_object.neighborhood_size
+        self.parking_nodes = construction_heuristic.parking_nodes
         self.repaired_solution = self._repair()
 
     @abstractmethod
@@ -49,6 +61,9 @@ class Repair(ABC):
 
 
 class GreedyInsertion(Repair):
+
+    def __init__(self, destroyed_solution_object: Destroy, construction_heuristic: ConstructionHeuristic):
+        super().__init__(destroyed_solution_object, construction_heuristic)
 
     def _repair(self) -> {int: [CarMove]}:
         """
@@ -90,13 +105,13 @@ class GreedyInsertion(Repair):
 
 class RegretInsertion(Repair):
 
-    def __init__(self, destroyed_solution, unused_car_moves, num_first_stage_tasks, neighborhood_size, parking_nodes, regret_nr):
+    def __init__(self, destroyed_solution_object, construction_heuristic, regret_nr):
         """
         The regret insertion heuristic considers the alternative costs of inserting a car_move into gamma (assigned_car_moves).
         """
         self.regret_nr = regret_nr
 
-        super().__init__(destroyed_solution, unused_car_moves, num_first_stage_tasks, neighborhood_size, parking_nodes)
+        super().__init__(destroyed_solution_object, construction_heuristic)
 
     def _repair(self) -> {int: [CarMove]}:
         """

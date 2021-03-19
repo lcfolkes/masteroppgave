@@ -88,6 +88,9 @@ class CarMove:
     def set_start_time(self, time: int):
         self.start_time.append(time)
 
+    def reset_start_time(self):
+        self.start_time = []
+
     def set_employee(self, employee):
         self.employee = employee
 
@@ -140,6 +143,11 @@ class Employee:
             self.current_node = self.start_node
 
     def reset(self):
+        for cm in self.car_moves:
+            cm.reset_time()
+        for scenario in self.car_moves_second_stage:
+            for cm in scenario:
+                cm.reset_time()
         self.__init__(start_node=self.start_node, start_time=self.start_time, handling=self.handling)
 
     def to_string(self):

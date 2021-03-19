@@ -7,6 +7,7 @@ from Heuristics.construction_heuristic import ConstructionHeuristic
 import Heuristics.helper_functions_heuristics as helpers
 from Heuristics.heuristics_constants import HeuristicsConstants
 import numpy as np
+from src.InstanceGenerator.instance_components import CarMove
 
 os.chdir(path_to_src)
 
@@ -144,7 +145,12 @@ class ShawRemoval(Destroy):
 	# requests. It should also probably only compare parking moves with parking moves and charging moves with
 	# charging moves.
 	@classmethod
-	def relatedness_measure(cls, car_move_i, car_move_j):
+	def relatedness_measure(cls, car_move_i: CarMove, car_move_j: CarMove):
+		'''
+		:param car_move_i: a car move object
+		:param car_move_j: another car move object
+		:return:
+		'''
 		relatedness = 0
 		relatedness += HeuristicsConstants.FROM_NODE_WEIGHT * (0 if car_move_i.start_node.node_id == car_move_j.start_node.node_id else 1)
 		relatedness += HeuristicsConstants.TO_NODE_WEIGHT * (0 if car_move_i.end_node.node_id == car_move_j.end_node.node_id else 1)
