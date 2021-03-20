@@ -43,6 +43,7 @@ class Repair(ABC):
         self.num_first_stage_tasks = destroyed_solution_object.num_first_stage_tasks
         self.neighborhood_size = destroyed_solution_object.neighborhood_size
         self.parking_nodes = construction_heuristic.parking_nodes
+        self.feasibility_checker = FeasibilityChecker(construction_heuristic.world_instance)
         self.repaired_solution = self._repair()
 
     @abstractmethod
@@ -95,13 +96,14 @@ class GreedyInsertion(Repair):
             for employee_id, employee_moves in current_solution.items():
                 if len(employee_moves) < self.num_first_stage_tasks:
                     solution_with_move = insert_car_move(current_solution, car_move, employee_id)
-                    solution_with_move = get_first_stage_solution_list_from_dict(solution_with_move)
-                    obj_val = get_obj_val_of_car_moves(self.parking_nodes, num_scenarios=1,
-                                                       first_stage_car_moves=solution_with_move)
-                    if obj_val > best_obj_val:
-                        best_obj_val = obj_val
-                        best_car_move = car_move
-                        best_employee = employee_id
+                    if self.feasibility_checker.is_first_stage_solution_feasible(solution_with_move):
+                        solution_with_move = get_first_stage_solution_list_from_dict(solution_with_move)
+                        obj_val = get_obj_val_of_car_moves(self.parking_nodes, num_scenarios=1,
+                                                           first_stage_car_moves=solution_with_move)
+                        if obj_val > best_obj_val:
+                            best_obj_val = obj_val
+                            best_car_move = car_move
+                            best_employee = employee_id
         return best_car_move, best_employee
 
 
@@ -157,10 +159,14 @@ class RegretInsertion(Repair):
             for employee_id, employee_moves in current_solution.items():
                 if len(employee_moves) < self.num_first_stage_tasks:
                     solution_with_move = insert_car_move(current_solution, car_move, employee_id)
-                    solution_with_move = get_first_stage_solution_list_from_dict(solution_with_move)
-                    obj_val = get_obj_val_of_car_moves(self.parking_nodes, num_scenarios=1,
-                                                       first_stage_car_moves=solution_with_move)
-                    obj_val_dict[employee_id] = obj_val
+                    if self.feasibility_checker.is_first_stage_solution_feasible(solution_with_move):
+                        solution_with_move = get_first_stage_solution_list_from_dict(solution_with_move)
+                        obj_val = get_obj_val_of_car_moves(self.parking_nodes, num_scenarios=1,
+                                                           first_stage_car_moves=solution_with_move)
+                        obj_val_dict[employee_id] = obj_val
+                        print(obj_val_dict)
+                        print(best_car_move)
+
             obj_values_sorted = sorted(obj_val_dict.values())
             if (len(obj_values_sorted) <= regret_nr):
                 best_car_move = car_move
@@ -176,6 +182,8 @@ class RegretInsertion(Repair):
                     if value == obj_values_sorted[0]:
                         best_employees.append(key)
                 best_employee = random.choice(best_employees)
+        print(best_car_move)
+        print(best_employee)
         return best_car_move, best_employee
 
 
@@ -186,10 +194,11 @@ if __name__ == "__main__":
     rr = RandomRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
                        neighborhood_size=2)
     rr.to_string()
-    gi = RegretInsertion(destroyed_solution_object=rr,
-                         construction_heuristic=ch, regret_nr=1)
+    gi = RegretInsertion(destroyed_solution_object=rr, construction_heuristic=ch, regret_nr=1)
+
+    #gi = GreedyInsertion(destroyed_solution_object=rr, construction_heuristic=ch)
     gi.to_string()
 
     fc = FeasibilityChecker(ch.world_instance)
     print("feasibilityChecker")
-    fc.is_first_stage_solution_feasible(gi.repaired_solution)
+    print(fc.is_first_stage_solution_feasible(gi.repaired_solution))
