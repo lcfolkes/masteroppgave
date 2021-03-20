@@ -1,6 +1,8 @@
 import copy
 import os
 import numpy as np
+
+from Heuristics.feasibility_checker import FeasibilityChecker
 from path_manager import path_to_src
 from src.InstanceGenerator.instance_components import ParkingNode, Employee, CarMove, ChargingNode
 from InstanceGenerator.world import World
@@ -154,6 +156,10 @@ def calculate_z(parking_nodes: [ParkingNode], first_stage_car_moves: [CarMove], 
         if verbose:
             print(f"z[{n.node_id}] {z[n.node_id]}")
     return z
+
+# ------------------------ #
+#  OBJECTIVE FUNCTION END  #
+# ------------------------ #
 
 
 def check_all_charging_moves_completed(num_scenarios: int, employees: [Employee], first_stage: bool,
@@ -320,6 +326,8 @@ def get_best_employee(parking_moves: [CarMove], employees: [Employee], best_car_
     :param parking_moves_second_stage:
     :return:
     """
+
+    feasibility_checker = FeasibilityChecker(world_instance)
     if first_stage:
         best_employee = None
         best_travel_time_to_car_move = 100
@@ -338,7 +346,7 @@ def get_best_employee(parking_moves: [CarMove], employees: [Employee], best_car_
         # in first stage
         if first_stage == (task_num < world_instance.first_stage_tasks):
             if first_stage:
-                legal_move = world_instance.check_legal_move(car_move=best_car_move, employee=employee)
+                legal_move = feasibility_checker.check_legal_move(car_move=best_car_move, employee=employee)
                 print(f"legal_move {legal_move}")
                 if legal_move:
                     best_move_not_legal = False
@@ -352,7 +360,7 @@ def get_best_employee(parking_moves: [CarMove], employees: [Employee], best_car_
             else:
                 for s in range(num_scenarios):
                     if best_car_move[s] is not None:
-                        legal_move = world_instance.check_legal_move(
+                        legal_move = feasibility_checker.check_legal_move(
                             car_move=best_car_move[s], employee=employee, scenario=s)
                         if legal_move:
                             best_move_not_legal = False

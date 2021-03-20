@@ -23,7 +23,6 @@ class ConstructionHeuristic:
         self.cars = self.world_instance.cars
         self.unused_car_moves = [[] for _ in range(
             self.num_scenarios)]  # [beta] list of unused car_moves for scenario s (zero index)
-        # TODO: change assigned_car_moves to list of lists
         self.assigned_car_moves = {k.employee_id: [[] for _ in range(self.num_scenarios)] for k in
                                    self.employees}  # [gamma_k] dictionary containing ordered list of car_moves,
         # assigned to employee k in scenario s
@@ -37,6 +36,8 @@ class ConstructionHeuristic:
         self.first_stage = True
         self.charging_moves_second_stage = []
         self.parking_moves_second_stage = []
+
+        self.add_car_moves_to_employees()
 
     def _initialize_car_moves(self):
         for car in self.world_instance.cars:
@@ -102,7 +103,7 @@ class ConstructionHeuristic:
                 # print(f"employee {best_employee_first_stage}")
                 if best_employee_first_stage is not None:
                     #### ADD CAR MOVE TO EMPLOYEE ###
-                    self._add_car_move_to_employee(car_moves=car_moves, best_car_move=best_car_move_first_stage,
+                        self._add_car_move_to_employee(car_moves=car_moves, best_car_move=best_car_move_first_stage,
                                                    best_employee=best_employee_first_stage)
 
             else:
@@ -217,20 +218,20 @@ class ConstructionHeuristic:
                     for car_move in employee.car_moves_second_stage[s]:
                         print(f"employee: {employee.employee_id}, scenario: {s + 1} " + car_move.to_string())
 
+if __name__ == "__main__":
 
-filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-1-1_f"
+    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-1-1_f"
 
-print("\n---- HEURISTIC ----")
-ch = ConstructionHeuristic(filename + ".pkl")
-# try:
-ch.add_car_moves_to_employees()
-ch.print_solution()
-get_objective_function_val(ch.parking_nodes, ch.employees, ch.num_scenarios)
-print(ch.assigned_car_moves)
-print(ch.unused_car_moves)
-print("\n---- GUROBI ----")
-# gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=True)
-gi = GurobiInstance(filename + ".yaml")
-run_model(gi)
-# except:
-#    print("Instance not solvable")
+    print("\n---- HEURISTIC ----")
+    ch = ConstructionHeuristic(filename + ".pkl")
+    # try:
+    ch.print_solution()
+    get_objective_function_val(ch.parking_nodes, ch.employees, ch.num_scenarios)
+    print(ch.assigned_car_moves)
+    print(ch.unused_car_moves)
+    print("\n---- GUROBI ----")
+    # gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=True)
+    gi = GurobiInstance(filename + ".yaml")
+    run_model(gi)
+    # except:
+    #    print("Instance not solvable")
