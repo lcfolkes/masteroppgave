@@ -281,6 +281,10 @@ def get_objective_function_val(parking_nodes: [ParkingNode], employees: [Employe
 
     return obj_val
 
+# ------------------------ #
+#  OBJECTIVE FUNCTION END  #
+# ------------------------ #
+
 
 def insert_car_move(current_solution: {int: [CarMove]}, car_move: CarMove, employee: int) -> {int: [CarMove]}:
     """
