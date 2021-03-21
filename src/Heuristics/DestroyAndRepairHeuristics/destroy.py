@@ -4,9 +4,9 @@ import random
 import copy
 from path_manager import path_to_src
 from Heuristics.construction_heuristic import ConstructionHeuristic
-import Heuristics.helper_functions_heuristics as helpers
-from Heuristics.helper_functions_heuristics import insert_car_move, get_obj_val_of_car_moves, \
-    get_first_stage_solution_list_from_dict
+from Heuristics.helper_functions_heuristics import get_first_stage_solution_list_from_dict
+from Heuristics.objective_function import get_obj_val_of_car_moves, get_objective_function_val
+
 from Heuristics.heuristics_constants import HeuristicsConstants
 import numpy as np
 from src.InstanceGenerator.instance_components import CarMove
@@ -109,14 +109,14 @@ class WorstRemoval(Destroy):
 		super().__init__(solution, num_first_stage_tasks, neighborhood_size)
 
 	def _destroy(self):
-		first_stage_solution_list = helpers.get_first_stage_solution_list_from_dict(self.first_stage_solution)
+		first_stage_solution_list = get_first_stage_solution_list_from_dict(self.first_stage_solution)
 		first_stage_solution_dict = copy.deepcopy(self.first_stage_solution)
 
 		obj_val = {}  # {index: obj val}
 
 		for i in range(len(first_stage_solution_list)):
 			first_stage_solution_copy = first_stage_solution_list[:i] + first_stage_solution_list[i + 1:]
-			obj_val_remove_cm = helpers.get_obj_val_of_car_moves(parking_nodes=self.parking_nodes,
+			obj_val_remove_cm = get_obj_val_of_car_moves(parking_nodes=self.parking_nodes,
 																 num_scenarios=self.num_scenarios,
 																 first_stage_car_moves=first_stage_solution_copy)
 			obj_val[i] = obj_val_remove_cm
@@ -172,7 +172,7 @@ class ShawRemoval(Destroy):
 
 
 	def _destroy(self):
-		first_stage_solution_list = helpers.get_first_stage_solution_list_from_dict(self.first_stage_solution)
+		first_stage_solution_list = get_first_stage_solution_list_from_dict(self.first_stage_solution)
 		first_stage_solution_dict = copy.deepcopy(self.first_stage_solution)
 
 		removed_list = []

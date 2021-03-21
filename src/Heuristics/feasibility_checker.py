@@ -24,13 +24,13 @@ class FeasibilityChecker():
 	def check_assigned_solution(self, employees):
 		pass
 
-	def is_first_stage_solution_feasible(self, solution: {int: [CarMove]}):
+	def is_first_stage_solution_feasible(self, solution: {Employee: [CarMove]}):
 		#employees = self._initialize_employees()
 		feasible = True
-		for employee in self.world_instance.employees:
+		for employee, car_moves in solution.items():
 			travel_time = employee.start_time
 			current_node = employee.start_node
-			for car_move in solution[employee.employee_id]:
+			for car_move in car_moves:
 				start_node = car_move.start_node
 				travel_time += self.world_instance.get_employee_travel_time_to_node(current_node, start_node) + car_move.handling_time
 				current_node = start_node

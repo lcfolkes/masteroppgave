@@ -1,9 +1,8 @@
-import copy
 import os
 import numpy as np
 
 from path_manager import path_to_src
-from src.InstanceGenerator.instance_components import ParkingNode, Employee, CarMove
+from src.InstanceGenerator.instance_components import ParkingNode, Employee, CarMove, ChargingNode
 from InstanceGenerator.world import World
 
 os.chdir(path_to_src)
@@ -159,6 +158,7 @@ def calculate_cost_deviation_ideal_state(parking_nodes: [ParkingNode], z: {int: 
         # print(f"w_sum[{scenario+1}] {w_sum[scenario]}")
         return World.COST_DEVIATION * w_sum[scenario]
 
+
 '''
 def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int, first_stage_car_moves: [CarMove] = None,
                              second_stage_car_moves: [[CarMove]] = None,
@@ -202,9 +202,12 @@ def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int, f
 
     return profit_customer_requests - cost_relocation - cost_deviation_ideal_state
 '''
-def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int, travel_time_between_car_moves: float, first_stage_car_moves: [CarMove] = None,
+
+
+def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int,
+                             first_stage_car_moves: [CarMove] = None,
                              second_stage_car_moves: [[CarMove]] = None,
-                             scenario: int = None, verbose: bool = False) -> float:
+                             scenario: int = None, travel_time_between_car_moves = 0, verbose: bool = False) -> float:
     """
     :param parking_nodes: list of parking node objects
     :param num_scenarios:
@@ -227,6 +230,9 @@ def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int, t
 
         first_stage_duplicate_for_scenarios = list(np.repeat(first_stage_car_moves, num_scenarios))
         cost_relocation = calculate_costs_relocation(first_stage_duplicate_for_scenarios, num_scenarios)
+        cost_deviation_charging_moves = calculate_cost_deviation_charging_moves(parking_nodes=parking_nodes,
+                                                                                first_stage_car_moves=first_stage_car_moves,
+                                                                                second_stage_car_moves=[[]])
 
     else:
         car_moves_second_stage = [[] for _ in range(num_scenarios)]
@@ -243,7 +249,14 @@ def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int, t
         cost_relocation = calculate_costs_relocation(first_stage_car_moves + second_stage_car_moves, num_scenarios,
                                                      individual_scenario=True)
 
-    return profit_customer_requests - cost_relocation - cost_deviation_ideal_state
+        cost_deviation_charging_moves = calculate_cost_deviation_charging_moves(parking_nodes=parking_nodes,
+                                                                                first_stage_car_moves=first_stage_car_moves,
+                                                                                second_stage_car_moves=second_stage_car_moves,
+                                                                                scenario=scenario)
+
+    cost_travel_time_between_car_moves = 0.42*travel_time_between_car_moves
+
+    return profit_customer_requests - cost_relocation - cost_deviation_ideal_state - cost_deviation_charging_moves - cost_travel_time_between_car_moves
 
 
 def get_objective_function_val(parking_nodes: [ParkingNode], employees: [Employee], num_scenarios: int) -> float:
@@ -261,9 +274,10 @@ def get_objective_function_val(parking_nodes: [ParkingNode], employees: [Employe
         for car_move in employee.car_moves:
             first_stage_car_moves.append(car_move)
 
-        for s in range(num_scenarios):
-            for car_move in employee.car_moves_second_stage[s]:
-                second_stage_car_moves[s].append(car_move)
+        if(employee.car_moves_second_stage):
+            for s in range(num_scenarios):
+                for car_move in employee.car_moves_second_stage[s]:
+                    second_stage_car_moves[s].append(car_move)
 
     all_second_stage_car_moves = [cm for s in second_stage_car_moves for cm in s]
     first_stage_duplicate_for_scenarios = list(np.repeat(first_stage_car_moves, num_scenarios))
@@ -276,10 +290,31 @@ def get_objective_function_val(parking_nodes: [ParkingNode], employees: [Employe
                                                                       second_stage_car_moves=second_stage_car_moves,
                                                                       scenario=None, verbose=True)
 
+
     obj_val = profit_customer_requests - cost_relocation - cost_deviation_ideal_state
     print(f"Objective function value: {round(obj_val, 2)}")
 
     return obj_val
+
+
+def calculate_cost_deviation_charging_moves(parking_nodes: [ParkingNode], first_stage_car_moves: [CarMove],
+                                            second_stage_car_moves: [[CarMove]], scenario=None):
+    num_cars_in_need_of_charging = sum(pnode.charging_state for pnode in parking_nodes)
+    num_charging_moves_first_stage = sum(1 for cm in first_stage_car_moves if isinstance(cm.end_node, ChargingNode))
+    num_charging_moves_second_stage = [0 for _ in range(len(second_stage_car_moves))]
+    if any(second_stage_car_moves):
+        for s in range(len(second_stage_car_moves)):
+            num_charging_moves_second_stage[s] = sum(1 for cm in second_stage_car_moves[s] if isinstance(cm.end_node, ChargingNode))
+
+    if scenario is None:
+        num_charging_moves = num_charging_moves_first_stage + np.mean(num_charging_moves_second_stage)
+        # print(f"w_sum {w_sum}")
+    else:
+        num_charging_moves = num_charging_moves_first_stage + num_charging_moves_second_stage[scenario]
+        # print(f"w_sum[{scenario+1}] {w_sum[scenario]}")
+
+    return World.COST_DEVIATION_CHARGING * (num_cars_in_need_of_charging - num_charging_moves)
+
 
 # ------------------------ #
 #  OBJECTIVE FUNCTION END  #

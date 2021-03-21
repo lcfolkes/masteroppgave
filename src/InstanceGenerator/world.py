@@ -21,6 +21,7 @@ class World:
 	PROFIT_RENTAL = cf['objective_function']['profit_rental']
 	COST_RELOCATION = cf['objective_function']['cost_relocation']
 	COST_DEVIATION = cf['objective_function']['cost_deviation']
+	COST_DEVIATION_CHARGING = cf['objective_function']['cost_deviation']
 
 	# TIME CONSTANTS #
 	HANDLING_TIME_PARKING = cf['time_constants']['handling_parking']
