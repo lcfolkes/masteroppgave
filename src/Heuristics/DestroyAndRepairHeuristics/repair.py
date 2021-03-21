@@ -118,7 +118,6 @@ class RegretInsertion(Repair):
         super().__init__(destroyed_solution_object, construction_heuristic)
 
     def _repair(self) -> {int: [CarMove]}:
-        #TODO: remove infeasible car_moves
         """
         Assigns car moves to employees and returns the repaired solution
         :return: a repaired solution in the form of a dictionary with key: employee id and value: a list of car moves
@@ -132,6 +131,7 @@ class RegretInsertion(Repair):
         while q > 0:
             best_car_move, best_employee = self._get_best_insertion_regret(current_solution, self.regret_nr)
             current_solution = insert_car_move(current_solution, best_car_move, best_employee)
+            print(current_solution)
             self.unused_car_moves.remove(best_car_move)
             q -= 1
         self.repaired_solution = current_solution
@@ -156,34 +156,36 @@ class RegretInsertion(Repair):
         highest_obj_val_diff = -0.1
         for car_move in self.unused_car_moves:
             obj_val_dict = {}
+            car_move_feasible = False
             for employee_id, employee_moves in current_solution.items():
                 if len(employee_moves) < self.num_first_stage_tasks:
                     solution_with_move = insert_car_move(current_solution, car_move, employee_id)
                     if self.feasibility_checker.is_first_stage_solution_feasible(solution_with_move):
+                        car_move_feasible = True
                         solution_with_move = get_first_stage_solution_list_from_dict(solution_with_move)
                         obj_val = get_obj_val_of_car_moves(self.parking_nodes, num_scenarios=1,
                                                            first_stage_car_moves=solution_with_move)
                         obj_val_dict[employee_id] = obj_val
-                        print(obj_val_dict)
-                        print(best_car_move)
+
+            if not car_move_feasible:
+                continue
 
             obj_values_sorted = sorted(obj_val_dict.values())
-            if (len(obj_values_sorted) <= regret_nr):
+            if (len(obj_values_sorted) <= regret_nr) or \
+                    ((obj_values_sorted[0] - obj_values_sorted[regret_nr]) > highest_obj_val_diff):
                 best_car_move = car_move
                 best_employees = []
-                for key, value in obj_val_dict.items():
-                    if value == obj_values_sorted[0]:
-                        best_employees.append(key)
-                        best_employee = random.choice(best_employees)
-            elif (obj_values_sorted[0] - obj_values_sorted[regret_nr]) > highest_obj_val_diff:
-                best_car_move = car_move
-                best_employees = []
+                print(obj_val_dict)
                 for key, value in obj_val_dict.items():
                     if value == obj_values_sorted[0]:
                         best_employees.append(key)
                 best_employee = random.choice(best_employees)
-        print(best_car_move)
-        print(best_employee)
+
+
+            #print(f"best_car_move {best_car_move}")
+            #print(f"best_employee {best_employee}")
+        print(f"best_car_move {best_car_move}")
+        print(f"best_employee {best_employee}")
         return best_car_move, best_employee
 
 
