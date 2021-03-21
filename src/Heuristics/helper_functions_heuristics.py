@@ -106,7 +106,7 @@ def get_travel_time_between_car_moves(employees, scenario: int = None):
 
     return travel_time
 
-
+'''
 def get_best_car_move(parking_nodes, employees, car_moves, first_stage, prioritize_charging, num_scenarios):
     # FIRST STAGE
     if first_stage:
@@ -191,8 +191,74 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, prioriti
         # print(out_list)
         # print([round(o,2) for o in best_obj_val_second_stage])
         return best_car_move_second_stage
+'''
 
+def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scenarios):
+    # FIRST STAGE
+    if first_stage:
+        best_car_move_first_stage = None
+        assigned_car_moves_first_stage = get_assigned_car_moves(employees)
+        best_obj_val_first_stage = -1000
+        longest_travel_time_first_stage = -1000
+        best_obj_val_first_stage = get_obj_val_of_car_moves(parking_nodes=parking_nodes, num_scenarios=num_scenarios,
+                                                            first_stage_car_moves=assigned_car_moves_first_stage)
+        for r in range(len(car_moves)):
+            obj_val = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
+                                               first_stage_car_moves=assigned_car_moves_first_stage + [
+                                                   car_moves[r]])
+            if obj_val > best_obj_val_first_stage:
+                best_obj_val_first_stage = obj_val
+                best_car_move_first_stage = car_moves[r]
 
+        return best_car_move_first_stage
+
+    # SECOND STAGE
+    else:
+        best_car_move_second_stage = [None for _ in range(num_scenarios)]
+        best_obj_val_second_stage = [-1000 for _ in range(num_scenarios)]
+        assigned_first_stage_car_moves = get_assigned_car_moves(employees)
+        longest_travel_time_second_stage = [0 for _ in range(num_scenarios)]
+
+        for s in range(num_scenarios):
+            assigned_second_stage_car_moves = get_assigned_car_moves(employees, scenario=s)
+            best_obj_val_second_stage[s] = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
+                                                                    first_stage_car_moves=
+                                                                    assigned_first_stage_car_moves,
+                                                                    second_stage_car_moves=
+                                                                    assigned_second_stage_car_moves,
+                                                                    scenario=s)
+        # print(f"best_obj_val_second_stage {best_obj_val_second_stage}")
+        obj_val = [0 for _ in range(num_scenarios)]
+        for s in range(num_scenarios):
+            # zero indexed scenario
+            assigned_second_stage_car_moves = get_assigned_car_moves(employees, scenario=s)
+            # Parking moves second stage
+
+            for r in range(len(car_moves[s])):
+                obj_val[s] = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
+                                                      first_stage_car_moves=assigned_first_stage_car_moves,
+                                                      second_stage_car_moves=assigned_second_stage_car_moves +
+                                                                             [car_moves[s][r]], scenario=s)
+                # if car_moves[s][r].car_move_id == 7 and s == 0:
+                #    print(f"car_move {car_moves[s][r].car_move_id}, s {s + 1}")
+                #    print(f"obj_val {obj_val[s]} best_obj_val {best_obj_val_second_stage[s]}")
+
+                if obj_val[s] > best_obj_val_second_stage[s]:
+                    best_obj_val_second_stage[s] = obj_val[s]
+                    best_car_move_second_stage[s] = car_moves[s][r]
+
+        out_list = []
+        for car_move in best_car_move_second_stage:
+            if car_move is not None:
+                out_list.append(car_move.car_move_id)
+            else:
+                out_list.append(car_move)
+
+        # print(out_list)
+        # print([round(o,2) for o in best_obj_val_second_stage])
+        return best_car_move_second_stage
+
+'''
 def get_best_employee(parking_moves, employees, best_car_move, first_stage, num_scenarios, world_instance,
                       prioritize_charging, charging_moves, charging_moves_second_stage, parking_moves_second_stage):
     feasibility_checker = FeasibilityChecker(world_instance)
@@ -258,6 +324,77 @@ def get_best_employee(parking_moves, employees, best_car_move, first_stage, num_
                 for s in range(num_scenarios):
                     parking_moves_second_stage[s] = [cm for cm in parking_moves_second_stage[s] if
                                                      cm != best_car_move[s]]
+            return
+        else:
+            return best_employee_second_stage
+
+'''
+
+def get_best_employee(parking_moves, employees, best_car_move, first_stage, num_scenarios, world_instance,
+                      charging_moves, charging_moves_second_stage, parking_moves_second_stage):
+    feasibility_checker = FeasibilityChecker(world_instance)
+    if first_stage:
+        best_employee = None
+        best_travel_time_to_car_move = 100
+        end_node = best_car_move.start_node
+    else:
+        best_employee_second_stage = [None for _ in range(num_scenarios)]
+        best_travel_time_to_car_move_second_stage = [100 for _ in range(num_scenarios)]
+        end_node = [(cm.start_node if cm is not None else cm) for cm in best_car_move]
+
+    best_move_not_legal = True
+
+    for employee in employees:
+        task_num = len(employee.car_moves)
+        # if first stage and the number of completed task for employee is below the number of tasks in first stage,
+        # or if second stage and the number of completed tasks are the same or larger than the number of tasks in first stage
+        if first_stage == (task_num < world_instance.first_stage_tasks):
+            if first_stage:
+                legal_move = feasibility_checker.check_legal_move(car_move=best_car_move, employee=employee)
+                print(f"legal_move {legal_move}")
+                if legal_move:
+                    best_move_not_legal = False
+                    start_node = employee.current_node
+                    travel_time_to_car_move = world_instance.get_employee_travel_time_to_node(start_node,
+                                                                                              end_node)
+                    if travel_time_to_car_move < best_travel_time_to_car_move:
+                        best_travel_time_to_car_move = travel_time_to_car_move
+                        best_employee = employee
+
+            else:
+                for s in range(num_scenarios):
+                    if best_car_move[s] is not None:
+                        legal_move = feasibility_checker.check_legal_move(
+                            car_move=best_car_move[s], employee=employee, scenario=s)
+                        if legal_move:
+                            best_move_not_legal = False
+                            start_node = employee.current_node_second_stage[s]
+                            travel_time_to_car_move = world_instance.get_employee_travel_time_to_node(
+                                start_node, end_node[s])
+                            if travel_time_to_car_move < best_travel_time_to_car_move_second_stage[s]:
+                                best_travel_time_to_car_move_second_stage[s] = travel_time_to_car_move
+                                best_employee_second_stage[s] = employee
+
+        # Remove best move if not legal. Else return best employee
+        #TODO: charging moves and parking moves must be updated
+    if first_stage:
+        if best_move_not_legal:
+            if isinstance(best_car_move.end_node, ChargingNode):
+                charging_moves.remove(best_car_move)
+            else:
+                parking_moves.remove(best_car_move)
+            return
+        else:
+            return best_employee
+    else:
+        if best_move_not_legal:
+            for s in range(num_scenarios):
+                if isinstance(best_car_move[s].end_node, ChargingNode):
+                    charging_moves_second_stage[s] = [cm for cm in charging_moves_second_stage[s] if
+                                                  cm != best_car_move[s]]
+                else:
+                    parking_moves_second_stage[s] = [cm for cm in parking_moves_second_stage[s] if
+                                                 cm != best_car_move[s]]
             return
         else:
             return best_employee_second_stage
