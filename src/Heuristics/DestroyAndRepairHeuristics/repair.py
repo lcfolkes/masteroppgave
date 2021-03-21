@@ -118,7 +118,6 @@ class RegretInsertion(Repair):
         super().__init__(destroyed_solution_object, construction_heuristic)
 
     def _repair(self) -> {int: [CarMove]}:
-        #TODO: remove infeasible car_moves
         """
         Assigns car moves to employees and returns the repaired solution
         :return: a repaired solution in the form of a dictionary with key: employee id and value: a list of car moves

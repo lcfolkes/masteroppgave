@@ -1,8 +1,8 @@
 import os
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
-from Heuristics.helper_functions_heuristics import remove_car_move, \
-    get_objective_function_val, get_best_car_move, get_best_employee, \
+from Heuristics.helper_functions_heuristics import remove_car_move, get_best_car_move, get_best_employee, \
     check_all_charging_moves_completed
+from Heuristics.objective_function import get_objective_function_val
 from src.HelperFiles.helper_functions import load_object_from_file
 from src.Gurobi.Model.run_model import run_model
 from path_manager import path_to_src
