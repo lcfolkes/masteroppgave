@@ -6,9 +6,8 @@ from path_manager import path_to_src
 from abc import ABC, abstractmethod
 import copy
 from Heuristics.DestroyAndRepairHeuristics.destroy import RandomRemoval
-from Heuristics.helper_functions_heuristics import insert_car_move, get_first_stage_solution_list_from_dict, get_travel_time_between_car_moves
-from Heuristics.objective_function import get_objective_function_val, get_obj_val_of_car_moves
-#from Heuristics.construction_heuristic import ConstructionHeuristic
+from Heuristics.helper_functions_heuristics import insert_car_move, get_first_stage_solution_list_from_dict
+from Heuristics.objective_function import get_obj_val_of_car_moves
 from Heuristics.construction_heuristic_new import ConstructionHeuristic
 
 from InstanceGenerator.instance_components import CarMove, ParkingNode, Employee
@@ -58,13 +57,18 @@ class Repair(ABC):
         print("\nREPAIR")
         print("destroyed solution")
         for k, v in self.destroyed_solution.items():
-            print(k)
+            print(k.employee_id)
             print([cm.car_move_id for cm in v])
-
+        destroyed_solution = get_first_stage_solution_list_from_dict(self.destroyed_solution)
+        print("Objective value: ", round(get_obj_val_of_car_moves(self.parking_nodes, num_scenarios=1,
+                                                            first_stage_car_moves=destroyed_solution), 2))
         print("repaired solution")
         for k, v in self.repaired_solution.items():
-            print(k)
+            print(k.employee_id)
             print([cm.car_move_id for cm in v])
+        repaired_solution = get_first_stage_solution_list_from_dict(self.repaired_solution)
+        print("Objective value: ", round(get_obj_val_of_car_moves(self.parking_nodes, num_scenarios=1,
+                                                            first_stage_car_moves=repaired_solution), 2))
 
 
 class GreedyInsertion(Repair):
@@ -157,7 +161,6 @@ class RegretInsertion(Repair):
         # assigned to the car move. The regret value is the difference between inserting the car move in its best
         # position and in its kth (regret_nr) position. We do this for each car move, and then select the one with the
         # highest regret value.
-
         best_car_move = None
         best_employee = None
         highest_obj_val_diff = -0.1
@@ -170,6 +173,7 @@ class RegretInsertion(Repair):
                     if self.feasibility_checker.is_first_stage_solution_feasible(solution_with_move):
                         car_move_feasible = True
                         solution_with_move = get_first_stage_solution_list_from_dict(solution_with_move)
+
                         obj_val = get_obj_val_of_car_moves(self.parking_nodes, num_scenarios=1,
                                                            first_stage_car_moves=solution_with_move)
                         obj_val_dict[employee] = obj_val
@@ -177,9 +181,8 @@ class RegretInsertion(Repair):
             if not car_move_feasible:
                 continue
 
-            obj_values_sorted = sorted(obj_val_dict.values())
-            if (len(obj_values_sorted) <= regret_nr) or \
-                    ((obj_values_sorted[0] - obj_values_sorted[regret_nr]) > highest_obj_val_diff):
+            obj_values_sorted = sorted(obj_val_dict.values(), reverse=True)
+            if len(obj_values_sorted) and ((0 > highest_obj_val_diff) <= regret_nr):
                 best_car_move = car_move
                 best_employees = []
                 for key, value in obj_val_dict.items():
@@ -187,18 +190,21 @@ class RegretInsertion(Repair):
                         best_employees.append(key)
                 best_employee = random.choice(best_employees)
 
+            elif (obj_values_sorted[0] - obj_values_sorted[regret_nr]) > highest_obj_val_diff:
+                best_car_move = car_move
+                best_employees = []
+                for key, value in obj_val_dict.items():
+                    if value == obj_values_sorted[0]:
+                        best_employees.append(key)
+                best_employee = random.choice(best_employees)
 
-            #print(f"best_car_move {best_car_move}")
-            #print(f"best_employee {best_employee}")
-        #print(f"best_car_move {best_car_move}")
-        #print(f"best_employee {best_employee}")
         return best_car_move, best_employee
 
 
 
 if __name__ == "__main__":
     print("\n---- HEURISTIC ----")
-    ch = ConstructionHeuristic("./InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a.pkl")
+    ch = ConstructionHeuristic("./InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_b.pkl")
     rr = RandomRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
                        neighborhood_size=2)
     rr.to_string()

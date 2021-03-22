@@ -74,7 +74,8 @@ class CarMove:
         self.start_node = start_node  # origin node. this could be derived from car object
         self.end_node = end_node  # destination node
         self.handling_time = None
-        self.employee = None
+        self.employee = []
+        self.employee_second_stage = []
         self.is_charging_move = (True if isinstance(end_node, ChargingNode) else False)
         self.start_time = []
 
@@ -91,8 +92,11 @@ class CarMove:
     def reset_start_time(self):
         self.start_time = []
 
-    def set_employee(self, employee):
-        self.employee = employee
+    def set_employee(self, employee, scenario=None):
+        if scenario == None:
+            self.employee = employee
+        else:
+            self.employee_second_stage[scenario]=employee
 
     def to_string(self):
         return f"car_move_id: {self.car_move_id}, car: {self.car.car_id}, start_node: {self.start_node.node_id}, end_node: {self.end_node.node_id}, " \
@@ -121,12 +125,14 @@ class Employee:
             self.current_time += total_travel_time
             self.current_node = car_move.end_node
             self.car_moves.append(car_move)
+            car_move.set_employee(self, scenario)
         else:
             # zero-indexed scenario
             self.current_time_second_stage[scenario] += total_travel_time
             #print(f"e_id: {self.employee_id}, second_current_time: {self.current_time_second_stage}")
             self.current_node_second_stage[scenario] = car_move.end_node
             self.car_moves_second_stage[scenario].append(car_move)
+            car_move.set_employee(self, scenario)
 
     def initialize_second_stage(self, num_scenarios: int):
         for s in range(num_scenarios):
@@ -136,7 +142,9 @@ class Employee:
 
     def remove_last_car_move(self, total_travel_time: float):
         self.current_time -= total_travel_time
-        self.car_moves.pop()
+        cm = self.car_moves.pop()
+        cm.employee = None
+
         try:
             self.current_node = self.car_moves[-1].end_node
         except:

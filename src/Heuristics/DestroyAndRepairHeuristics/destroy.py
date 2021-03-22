@@ -3,9 +3,9 @@ import os
 import random
 import copy
 from path_manager import path_to_src
-from Heuristics.construction_heuristic import ConstructionHeuristic
+from Heuristics.construction_heuristic_new import ConstructionHeuristic
 from Heuristics.helper_functions_heuristics import get_first_stage_solution_list_from_dict
-from Heuristics.objective_function import get_obj_val_of_car_moves, get_objective_function_val
+from Heuristics.objective_function import get_obj_val_of_car_moves
 
 from Heuristics.heuristics_constants import HeuristicsConstants
 import numpy as np
@@ -49,27 +49,28 @@ class Destroy(ABC):
 
 		self.removed_moves = list(removed_second_stage_moves)
 
-		print(self.input_solution)
-		print(self.removed_moves)
-		print(first_stage_solution)
+		#print(self.input_solution)
+		#print(self.removed_moves)
+		#print(first_stage_solution)
 		return first_stage_solution
 
 	def to_string(self):
 		print("\nDESTROY")
 		print("input solution")
 		for k, v in self.input_solution.items():
-			print(k)
+			print(k.employee_id)
 			for s in v:
 				print([cm.car_move_id for cm in s])
 
 		print("first stage solution")
 		for k, v in self.first_stage_solution.items():
-			print(k)
+			print(k.employee_id)
 			print([cm.car_move_id for cm in v])
+
 
 		print("destroyed solution")
 		for k, v in self.destroyed_solution.items():
-			print(k)
+			print(k.employee_id)
 			print([cm.car_move_id for cm in v])
 
 
@@ -202,7 +203,7 @@ class ShawRemoval(Destroy):
 		return first_stage_solution_dict
 
 if __name__ == "__main__":
-	from Heuristics.helper_functions_heuristics import get_objective_function_val
+	from Heuristics.objective_function import get_objective_function_val
 
 	print("\n---- HEURISTIC ----")
 	ch = ConstructionHeuristic("./InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a.pkl")
@@ -215,7 +216,7 @@ if __name__ == "__main__":
 	#wr = WorstRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
 	#				  neighborhood_size=1, randomization_degree=10, parking_nodes=ch.parking_nodes)
 	#wr.to_string()
-
+	print("solution\n", ch.assigned_car_moves)
 	sr = ShawRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
 					  neighborhood_size=2, randomization_degree=10)
 	sr.to_string()
