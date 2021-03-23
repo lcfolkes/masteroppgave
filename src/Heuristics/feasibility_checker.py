@@ -46,8 +46,6 @@ class FeasibilityChecker():
 
 			if travel_time > self.world_instance.PLANNING_PERIOD:
 				feasible = False
-			# TODO: ensure is_first_stage_solution_feasible calculates the correct time
-		print(feasible)
 		return feasible
 
 	def check_legal_move(self, car_move: CarMove, employee: Employee, scenario: int = None):  # return total travel time

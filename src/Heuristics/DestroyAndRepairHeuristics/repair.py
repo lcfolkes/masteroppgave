@@ -30,7 +30,6 @@ class Repair(ABC):
 
     def __init__(self, destroyed_solution_object: Destroy, unused_car_moves: [[CarMove]], parking_nodes: [ParkingNode],
                  world_instance: World) -> {int: [CarMove]}:
-        #TODO: check feasibility of solution
         """
         :param destroyed_solution_object: object from destroyed solution
         :param construction_heuristic: construction heuristic object
@@ -90,14 +89,13 @@ class GreedyInsertion(Repair):
         #current_solution = copy.copy(self.destroyed_solution)
         current_solution = copy.deepcopy(self.destroyed_solution)
         while q > 0:
-            print(f'Iteration {self.neighborhood_size-q}')
             best_car_move, best_employee = self._get_best_insertion(current_solution)
-            print(best_car_move, best_employee)
+            # Handles cases when you cannot insert q car_moves to the solution
             if None in (best_car_move, best_employee):
                 print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
                 break
             current_solution = insert_car_move(current_solution, best_car_move, best_employee.employee_id)
-            self.feasibility_checker.is_first_stage_solution_feasible(current_solution, True)
+            self.feasibility_checker.is_first_stage_solution_feasible(current_solution)
             self.unused_car_moves.remove(best_car_move)
             q -= 1
         self.repaired_solution = current_solution
@@ -111,14 +109,14 @@ class GreedyInsertion(Repair):
         """
         best_car_move = None
         best_employee = None
-        best_obj_val = -1000 # TODO: should this take current solution as input
-        #best_obj_val = get_obj_val_of_car_moves(self.parking_nodes, num_scenarios=1, first_stage_car_moves=current_solution)
+        input_solution = get_first_stage_solution_list_from_dict(current_solution)
+        best_obj_val = get_obj_val_of_car_moves(parking_nodes=self.parking_nodes, num_scenarios=1,
+                                                first_stage_car_moves=input_solution)
 
         for car_move in self.unused_car_moves:
             for employee, employee_moves in current_solution.items():
                 if len(employee_moves) < self.num_first_stage_tasks:
                     solution_with_move = insert_car_move(current_solution, car_move, employee.employee_id)
-
                     if self.feasibility_checker.is_first_stage_solution_feasible(solution_with_move):
                         solution_with_move = get_first_stage_solution_list_from_dict(solution_with_move)
 
@@ -233,5 +231,4 @@ if __name__ == "__main__":
 
     fc = FeasibilityChecker(ch.world_instance)
     print("feasibilityChecker")
-    print(gi.repaired_solution)
     print(fc.is_first_stage_solution_feasible(gi.repaired_solution))

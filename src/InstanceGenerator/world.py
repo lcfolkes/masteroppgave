@@ -13,8 +13,6 @@ os.chdir(path_to_src)
 DISTANCESCALE = 3
 
 
-# TODO: generate world object from instance-file
-
 class World:
 	cf = read_config('InstanceGenerator/world_constants_config.yaml')
 	# COST CONSTANTS #
@@ -494,7 +492,6 @@ def create_car_moves(world: World):
 			world.add_car_move(car_move)
 	# print(car_move.to_string())
 
-# TODO: need to set travel times for car_moves objects
 
 # for i in range(len(world.cars)):
 #    for j in range(len(world.cars[i].destinations)):
