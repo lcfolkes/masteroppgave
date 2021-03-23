@@ -224,9 +224,6 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
                                                       first_stage_car_moves=assigned_first_stage_car_moves,
                                                       second_stage_car_moves=assigned_second_stage_car_moves +
                                                                              [car_moves[s][r]], scenario=s, include_employee_check=False)
-                # if car_moves[s][r].car_move_id == 7 and s == 0:
-                #    print(f"car_move {car_moves[s][r].car_move_id}, s {s + 1}")
-                #    print(f"obj_val {obj_val[s]} best_obj_val {best_obj_val_second_stage[s]}")
 
                 if obj_val[s] > best_obj_val_second_stage[s]:
                     best_obj_val_second_stage[s] = obj_val[s]

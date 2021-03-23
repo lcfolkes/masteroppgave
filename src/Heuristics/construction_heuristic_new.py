@@ -231,10 +231,10 @@ class ConstructionHeuristic:
 
 if __name__ == "__main__":
     filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_b"
-    print("\n---- GUROBI ----")
+    #print("\n---- GUROBI ----")
     # gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=True)
-    gi = GurobiInstance(filename + ".yaml")
-    run_model(gi)
+    #gi = GurobiInstance(filename + ".yaml")
+    #run_model(gi)
 
     print("\n---- HEURISTIC ----")
     ch = ConstructionHeuristic(filename + ".pkl")
