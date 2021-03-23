@@ -81,22 +81,29 @@ class GreedyInsertion(Repair):
     def __init__(self, destroyed_solution_object: Destroy, unused_car_moves: [[CarMove]], parking_nodes: [ParkingNode], world_instance: World):
         super().__init__(destroyed_solution_object, unused_car_moves, parking_nodes, world_instance)
 
-    def _repair(self) -> {int: [CarMove]}:
+    def _repair(self) -> {Employee: [CarMove]}:
         """
         Greedily assigns car moves to employees and returns the repaired solution
         :return: a repaired solution in the form of a dictionary with key: employee id and value: a list of car moves
         """
         q = self.neighborhood_size
-        current_solution = copy.copy(self.destroyed_solution)
+        #current_solution = copy.copy(self.destroyed_solution)
+        current_solution = copy.deepcopy(self.destroyed_solution)
         while q > 0:
+            print(f'Iteration {self.neighborhood_size-q}')
             best_car_move, best_employee = self._get_best_insertion(current_solution)
+            print(best_car_move, best_employee)
+            if None in (best_car_move, best_employee):
+                print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
+                break
             current_solution = insert_car_move(current_solution, best_car_move, best_employee.employee_id)
+            self.feasibility_checker.is_first_stage_solution_feasible(current_solution, True)
             self.unused_car_moves.remove(best_car_move)
             q -= 1
         self.repaired_solution = current_solution
         return current_solution
 
-    def _get_best_insertion(self, current_solution: {Employee: [CarMove]}) -> (CarMove, int):
+    def _get_best_insertion(self, current_solution: {Employee: [CarMove]}) -> (CarMove, Employee):
         """
         Finds the best car_move to insert, and the id of the employee that should perform it
         :param current_solution: a dictionary with key: employee id and value: list of car moves
@@ -104,13 +111,14 @@ class GreedyInsertion(Repair):
         """
         best_car_move = None
         best_employee = None
-        best_obj_val = -1000
-        #travel_time_between_car_moves = get_travel_time_between_car_moves(self.construction_heuristic)
+        best_obj_val = -1000 # TODO: should this take current solution as input
+        #best_obj_val = get_obj_val_of_car_moves(self.parking_nodes, num_scenarios=1, first_stage_car_moves=current_solution)
 
         for car_move in self.unused_car_moves:
             for employee, employee_moves in current_solution.items():
                 if len(employee_moves) < self.num_first_stage_tasks:
                     solution_with_move = insert_car_move(current_solution, car_move, employee.employee_id)
+
                     if self.feasibility_checker.is_first_stage_solution_feasible(solution_with_move):
                         solution_with_move = get_first_stage_solution_list_from_dict(solution_with_move)
 
@@ -120,7 +128,8 @@ class GreedyInsertion(Repair):
                             best_obj_val = obj_val
                             best_car_move = car_move
                             best_employee = employee
-        #print(self.feasibility_checker.is_first_stage_solution_feasible(solution_with_move))
+
+
         return best_car_move, best_employee
 
 
@@ -210,7 +219,7 @@ class RegretInsertion(Repair):
 
 if __name__ == "__main__":
     print("\n---- HEURISTIC ----")
-    ch = ConstructionHeuristic("./InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_b.pkl")
+    ch = ConstructionHeuristic("./InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a.pkl")
     ch.add_car_moves_to_employees()
     rr = RandomRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
                        neighborhood_size=2)

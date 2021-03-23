@@ -97,10 +97,10 @@ class CarMove:
             self.employee = employee
         else:
             if not self.employee_second_stage:
-                self.__initialize_second_stage(len(employee.car_moves_second_stage))
+                self._initialize_second_stage(len(employee.car_moves_second_stage))
             self.employee_second_stage[scenario] = employee
 
-    def __initialize_second_stage(self, num_scenarios: int):
+    def _initialize_second_stage(self, num_scenarios: int):
         for s in range(num_scenarios):
             self.employee_second_stage.append([])
 
