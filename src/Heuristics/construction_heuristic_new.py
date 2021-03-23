@@ -36,8 +36,9 @@ class ConstructionHeuristic:
 
         #self.add_car_moves_to_employees()
 
-    def rebuild(self, solution):
+    def rebuild(self, solution, verbose=False):
         self.__init__(self.instance_file)
+
         employee_ids = {e.employee_id: e for e in self.employees}
         car_move_ids = {cm.car_move_id: cm for cm in self.car_moves}
         for employee_obj, car_move_objs in solution.items():
@@ -45,6 +46,16 @@ class ConstructionHeuristic:
             for cm_obj in car_move_objs:
                 cm = car_move_ids[cm_obj.car_move_id]
                 self._add_car_move_to_employee(car_moves=self.car_moves, best_car_move=cm, best_employee=emp)
+
+        if verbose:
+            print("\nRepaired solution")
+            self.print_solution()
+
+        self.add_car_moves_to_employees()
+
+        if verbose:
+            print("\nRebuilt solution")
+            self.print_solution()
 
     def _initialize_car_moves(self):
         for car in self.world_instance.cars:
@@ -77,7 +88,7 @@ class ConstructionHeuristic:
             if first_stage == (task_num < world_instance.first_stage_tasks):
                 if first_stage:
                     legal_move = feasibility_checker.check_legal_move(car_move=best_car_move, employee=employee)
-                    print(f"legal_move {legal_move}")
+                    #print(f"legal_move {legal_move}")
                     if legal_move:
                         best_move_not_legal = False
                         start_node = employee.current_node

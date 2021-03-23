@@ -10,7 +10,7 @@ class RebuildHeuristic():
     pass
 
 if __name__ == "__main__":
-    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a"
+    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_b"
     print("\n---- HEURISTIC ----")
     ch = ConstructionHeuristic(filename+".pkl")
     ch.add_car_moves_to_employees()
@@ -28,13 +28,13 @@ if __name__ == "__main__":
     fc = FeasibilityChecker(ch.world_instance)
     print("feasibilityChecker")
     print(fc.is_first_stage_solution_feasible(gi.repaired_solution, True))
-    ch.rebuild(gi.repaired_solution)
-    ch.print_solution()
-    ch.add_car_moves_to_employees()
-    ch.print_solution()
+
+    ch.rebuild(gi.repaired_solution, True)
 
     print("\n---- GUROBI ----")
+    print("Verify in Gurobi")
     gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)
+    print("\nOptimize in Gurobi")
     gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=True)
     # gi = GurobiInstance(filename + ".yaml")
     # run_model(gi)
