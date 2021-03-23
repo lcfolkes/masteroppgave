@@ -41,6 +41,7 @@ class ConstructionHeuristic:
 
         self.add_car_moves_to_employees()
 
+
     def _initialize_car_moves(self):
         for car in self.world_instance.cars:
             for car_move in car.car_moves:
@@ -57,6 +58,8 @@ class ConstructionHeuristic:
                         fastest_time = car_move.handling_time
                         fastest_move = car_move
                 self.charging_moves.append(fastest_move)
+
+
 
     def add_car_moves_to_employees(self):
         improving_car_move_exists = True

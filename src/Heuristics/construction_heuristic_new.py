@@ -16,6 +16,7 @@ class ConstructionHeuristic:
 
     def __init__(self, instance_file):
 
+        self.instance_file = instance_file
         self.world_instance = load_object_from_file(instance_file)
         self.num_scenarios = self.world_instance.num_scenarios
         self.employees = self.world_instance.employees
@@ -33,7 +34,17 @@ class ConstructionHeuristic:
         self.available_employees = True
         self.first_stage = True
 
-        self.add_car_moves_to_employees()
+        #self.add_car_moves_to_employees()
+
+    def rebuild(self, solution):
+        self.__init__(self.instance_file)
+        employee_ids = {e.employee_id: e for e in self.employees}
+        car_move_ids = {cm.car_move_id: cm for cm in self.car_moves}
+        for employee_obj, car_move_objs in solution.items():
+            emp = employee_ids[employee_obj.employee_id]
+            for cm_obj in car_move_objs:
+                cm = car_move_ids[cm_obj.car_move_id]
+                self._add_car_move_to_employee(car_moves=self.car_moves, best_car_move=cm, best_employee=emp)
 
     def _initialize_car_moves(self):
         for car in self.world_instance.cars:
