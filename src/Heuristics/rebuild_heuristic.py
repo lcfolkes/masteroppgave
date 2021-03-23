@@ -1,6 +1,7 @@
 from DestroyAndRepairHeuristics.destroy import RandomRemoval, WorstRemoval, ShawRemoval
 from DestroyAndRepairHeuristics.repair import GreedyInsertion, RegretInsertion
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
+from Gurobi.Model.run_model import run_model
 from Heuristics.feasibility_checker import FeasibilityChecker
 from construction_heuristic_new import ConstructionHeuristic
 
@@ -27,15 +28,21 @@ if __name__ == "__main__":
 
     fc = FeasibilityChecker(ch.world_instance)
     print("feasibilityChecker")
-    print(fc.is_first_stage_solution_feasible(gi.repaired_solution, True))
+    print(fc.is_first_stage_solution_feasible(gi.repaired_solution))
 
     ch.rebuild(gi.repaired_solution, True)
+    # gi = GurobiInstance(filename + ".yaml")
+    # run_model(gi)
+
+    ch.add_car_moves_to_employees()
+    ch.print_solution()
 
     print("\n---- GUROBI ----")
     print("Verify in Gurobi")
     gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)
+    run_model(gi)
+'''
     print("\nOptimize in Gurobi")
     gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=True)
-    # gi = GurobiInstance(filename + ".yaml")
-    # run_model(gi)
-
+    run_model(gi)
+'''

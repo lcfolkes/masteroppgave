@@ -51,11 +51,11 @@ class ConstructionHeuristic:
             print("\nRepaired solution")
             self.print_solution()
 
-        self.add_car_moves_to_employees()
+        #self.add_car_moves_to_employees()
 
-        if verbose:
-            print("\nRebuilt solution")
-            self.print_solution()
+        #if verbose:
+        #    print("\nRebuilt solution")
+        #    self.print_solution()
 
     def _initialize_car_moves(self):
         for car in self.world_instance.cars:
@@ -78,8 +78,6 @@ class ConstructionHeuristic:
 
         best_move_not_legal = True
 
-
-
         for employee in employees:
             task_num = len(employee.car_moves)
             # if first stage and the number of completed task for employee is below the number of tasks in first stage,
@@ -88,7 +86,7 @@ class ConstructionHeuristic:
             if first_stage == (task_num < world_instance.first_stage_tasks):
                 if first_stage:
                     legal_move = feasibility_checker.check_legal_move(car_move=best_car_move, employee=employee)
-                    #print(f"legal_move {legal_move}")
+                    print(f"legal_move {legal_move}\n{best_car_move.to_string()}")
                     if legal_move:
                         best_move_not_legal = False
                         start_node = employee.current_node
@@ -103,9 +101,12 @@ class ConstructionHeuristic:
                         if best_car_move[s] is not None:
                             legal_move = feasibility_checker.check_legal_move(
                                 car_move=best_car_move[s], employee=employee, scenario=s)
+                            print(f"\n{best_car_move[s].to_string()}\nlegal_move {legal_move}")
+
                             if legal_move:
                                 best_move_not_legal = False
                                 start_node = employee.current_node_second_stage[s]
+
                                 travel_time_to_car_move = world_instance.get_employee_travel_time_to_node(
                                     start_node, end_node[s])
                                 if travel_time_to_car_move < best_travel_time_to_car_move_second_stage[s]:

@@ -155,6 +155,9 @@ class RegretInsertion(Repair):
         current_solution = copy.deepcopy(self.destroyed_solution)
         while q > 0:
             best_car_move, best_employee = self._get_best_insertion_regret(current_solution, self.regret_nr)
+            if None in (best_car_move, best_employee):
+                print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
+                break
             current_solution = insert_car_move(current_solution, best_car_move, best_employee.employee_id)
             self.unused_car_moves.remove(best_car_move)
             q -= 1

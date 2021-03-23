@@ -49,8 +49,6 @@ class FeasibilityChecker():
 		return feasible
 
 	def check_legal_move(self, car_move: CarMove, employee: Employee, scenario: int = None):  # return total travel time
-		current_time = None
-		current_node = None
 		start_node = car_move.start_node
 		if scenario is None:
 			current_time = employee.current_time
@@ -74,6 +72,16 @@ class FeasibilityChecker():
 		'''
 
 		if total_time < World.PLANNING_PERIOD:
+			print()
+			print(f"\nEmployee {employee.employee_id}")
+			print(f"Scenario {scenario+1 if scenario else scenario}")
+			print(f"node before: {current_node.node_id}")
+			print(f"time before: {current_time}")
+			print(f"employee travel time: {employee_travel_time}")
+			print(f"car_move handling time: {car_move.handling_time}")
+			print(f"node after: {car_move.end_node.node_id}")
+			print(f"total time: {total_time}")
+
 			return True
 		else:
 			# print("Car move exceeds planning period")
