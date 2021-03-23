@@ -72,6 +72,7 @@ class FeasibilityChecker():
 		'''
 
 		if total_time < World.PLANNING_PERIOD:
+			'''
 			print()
 			print(f"\nEmployee {employee.employee_id}")
 			print(f"Scenario {scenario+1 if scenario else scenario}")
@@ -81,7 +82,7 @@ class FeasibilityChecker():
 			print(f"car_move handling time: {car_move.handling_time}")
 			print(f"node after: {car_move.end_node.node_id}")
 			print(f"total time: {total_time}")
-
+			'''
 			return True
 		else:
 			# print("Car move exceeds planning period")

@@ -36,7 +36,6 @@ class Destroy(ABC):
 	def _get_first_stage_solution(self):
 		removed_second_stage_moves = set()
 		first_stage_solution = {}
-		print(self.input_solution)
 		for k, v in self.input_solution.items():
 			first_stage_solution[k] = set()
 			for s in range(len(self.input_solution[k])):
