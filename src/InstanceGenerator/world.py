@@ -13,8 +13,6 @@ os.chdir(path_to_src)
 DISTANCESCALE = 3
 
 
-# TODO: generate world object from instance-file
-
 class World:
 	cf = read_config('InstanceGenerator/world_constants_config.yaml')
 	# COST CONSTANTS #
@@ -122,19 +120,20 @@ class World:
 	def add_car_move_to_employee(self, car_move: CarMove, employee: Employee, scenario: int = None):
 
 		if scenario is None:
-			car_move_start_time = self.get_employee_travel_time_to_node(start_node=employee.current_node,
-																	  end_node=car_move.start_node)
-			total_travel_time = car_move_start_time + car_move.handling_time
+			travel_time_to_car_move = self.get_employee_travel_time_to_node(start_node=employee.current_node,
+												  end_node=car_move.start_node)
+			car_move_start_time = employee.current_time + travel_time_to_car_move
+			total_travel_time = travel_time_to_car_move + car_move.handling_time
 			car_move.set_start_time(car_move_start_time)
 			employee.add_car_move(total_travel_time, car_move)
 			if len(employee.car_moves) == self.first_stage_tasks:
 				employee.initialize_second_stage(num_scenarios=self.num_scenarios)
 		else:
 			# zero-indexed scenario
-			car_move_start_time = self.get_employee_travel_time_to_node(start_node=employee.current_node_second_stage[scenario],
-																  end_node=car_move.start_node) + car_move.handling_time
-			total_travel_time = car_move_start_time + car_move.handling_time
-
+			travel_time_to_car_move = self.get_employee_travel_time_to_node(
+				start_node=employee.current_node_second_stage[scenario], end_node=car_move.start_node)
+			car_move_start_time = employee.current_time_second_stage[scenario] + travel_time_to_car_move
+			total_travel_time = travel_time_to_car_move + car_move.handling_time
 			car_move.set_start_time(car_move_start_time)
 			employee.add_car_move(total_travel_time=total_travel_time, car_move=car_move, scenario=scenario)
 
@@ -494,7 +493,6 @@ def create_car_moves(world: World):
 			world.add_car_move(car_move)
 	# print(car_move.to_string())
 
-# TODO: need to set travel times for car_moves objects
 
 # for i in range(len(world.cars)):
 #    for j in range(len(world.cars[i].destinations)):

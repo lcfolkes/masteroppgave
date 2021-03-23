@@ -24,25 +24,31 @@ class FeasibilityChecker():
 	def check_assigned_solution(self, employees):
 		pass
 
-	def is_first_stage_solution_feasible(self, solution: {Employee: [CarMove]}):
+	def is_first_stage_solution_feasible(self, solution: {Employee: [CarMove]}, verbose=False):
 		#employees = self._initialize_employees()
 		feasible = True
 		for employee, car_moves in solution.items():
 			travel_time = employee.start_time
 			current_node = employee.start_node
+			if verbose:
+				print(f"Emp {employee.employee_id}: {travel_time}")
 			for car_move in car_moves:
 				start_node = car_move.start_node
-				travel_time += self.world_instance.get_employee_travel_time_to_node(current_node, start_node) + car_move.handling_time
-				current_node = start_node
+				end_node = car_move.end_node
+				emp_travel_time_to_node = self.world_instance.get_employee_travel_time_to_node(current_node, start_node)
+				if verbose:
+					print(f"Employee travel time from {current_node.node_id} to {start_node.node_id}: {emp_travel_time_to_node}")
+					print(f"Car move travel time from {start_node.node_id} to {end_node.node_id}: {car_move.handling_time}")
+				travel_time += emp_travel_time_to_node + car_move.handling_time
+				current_node = end_node
+				if verbose:
+					print(f"Emp {employee.employee_id}: {travel_time}")
 
 			if travel_time > self.world_instance.PLANNING_PERIOD:
 				feasible = False
-
 		return feasible
 
 	def check_legal_move(self, car_move: CarMove, employee: Employee, scenario: int = None):  # return total travel time
-		current_time = None
-		current_node = None
 		start_node = car_move.start_node
 		if scenario is None:
 			current_time = employee.current_time
@@ -66,6 +72,16 @@ class FeasibilityChecker():
 		'''
 
 		if total_time < World.PLANNING_PERIOD:
+			print()
+			print(f"\nEmployee {employee.employee_id}")
+			print(f"Scenario {scenario+1 if scenario else scenario}")
+			print(f"node before: {current_node.node_id}")
+			print(f"time before: {current_time}")
+			print(f"employee travel time: {employee_travel_time}")
+			print(f"car_move handling time: {car_move.handling_time}")
+			print(f"node after: {car_move.end_node.node_id}")
+			print(f"total time: {total_time}")
+
 			return True
 		else:
 			# print("Car move exceeds planning period")
