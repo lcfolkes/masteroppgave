@@ -24,8 +24,7 @@ class ConstructionHeuristic:
         self.cars = self.world_instance.cars
         self.unused_car_moves = [[] for _ in range(
             self.num_scenarios)]  # [beta] list of unused car_moves for scenario s (zero index)
-        self.assigned_car_moves = {k: [[] for _ in range(self.num_scenarios)] for k in
-                                   self.employees}  # [gamma_k] dictionary containing ordered list of car_moves,
+        self.assigned_car_moves = {k: [[] for _ in range(self.num_scenarios)] for k in self.employees}  # [gamma_k] dictionary containing ordered list of car_moves,
         # assigned to employee k in scenario s
         self.car_moves = []  # self.world_instance.car_moves
         self.car_moves_second_stage = []
@@ -33,11 +32,25 @@ class ConstructionHeuristic:
 
         self.available_employees = True
         self.first_stage = True
+        self.hash_key = 0
 
         #self.add_car_moves_to_employees()
 
     def get_obj_val(self):
         return get_objective_function_val(self.parking_nodes, self.employees, self.num_scenarios)
+
+    def _set_hash_key(self):
+        hash_dict = {}
+        for k, v in self.assigned_car_moves.items():
+            emp_moves = []
+            for s in v:
+                scen_moves = []
+                for cm in s:
+                    scen_moves.append(cm.car_move_id)
+                emp_moves.append(scen_moves)
+            hash_dict[k.employee_id] = emp_moves
+
+        self.hash_key = hash(str(hash_dict))
 
     def rebuild(self, solution, verbose=False):
         self.__init__(self.instance_file)
@@ -184,6 +197,7 @@ class ConstructionHeuristic:
                     self._add_car_move_to_employee(car_moves=car_moves, best_car_move=best_car_move_second_stage,
                                                    best_employee=best_employee_second_stage)
 
+
     def _add_car_move_to_employee(self, car_moves, best_car_move, best_employee):
         if self.first_stage:
             if best_employee is not None:
@@ -245,6 +259,8 @@ class ConstructionHeuristic:
                     self.available_employees = False
             else:
                 self.available_employees = False
+
+        self._set_hash_key()
 
     def print_solution(self):
 

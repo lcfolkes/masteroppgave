@@ -15,7 +15,7 @@ os.chdir(path_to_src)
 
 
 class Destroy(ABC):
-	def __init__(self, solution, num_first_stage_tasks, neighborhood_size):
+	def __init__(self, solution, num_first_stage_tasks, neighborhood_size=2):
 		"""
         :param solution: (s) assigned car_moves of constructed solution. solution[(k,s)], dictionary containing car_move
         assigned to employee in scenario s
