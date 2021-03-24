@@ -47,7 +47,7 @@ class ALNS():
 
     def run(self):
         visited_hash_keys = set()
-        it = 100
+        it = 30
         solution = ConstructionHeuristic(self.filename)
         solution.add_car_moves_to_employees()
         best_solution = copy.deepcopy(solution)
@@ -58,7 +58,7 @@ class ALNS():
         obj_vals = [best_obj_val]
         while it > 0:
             if it % 10 == 0:
-                print(f"Iteration {100-it}")
+                print(f"Iteration {30-it}")
                 print(f"Best objective value {best_obj_val}")
 
             solution = best_solution
@@ -126,7 +126,8 @@ class ALNS():
 if __name__ == "__main__":
     filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a"
     alns = ALNS(filename + ".pkl")
-    gi = GurobiInstance(filename + ".yaml")
+    gi = GurobiInstance(filename + ".yaml", employees=alns.best_solution.employees, optimize=False)
+    #gi = GurobiInstance(filename + ".yaml")
     run_model(gi)
 
     '''
