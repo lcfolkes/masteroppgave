@@ -19,8 +19,8 @@ if __name__ == "__main__":
     rr = RandomRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
                        neighborhood_size=2)
     rr.to_string()
-    gi = GreedyInsertion(destroyed_solution_object=rr, unused_car_moves=ch.unused_car_moves,
-                         parking_nodes=ch.parking_nodes, world_instance=ch.world_instance)
+    gi = RegretInsertion(destroyed_solution_object=rr, unused_car_moves=ch.unused_car_moves,
+                         parking_nodes=ch.parking_nodes, world_instance=ch.world_instance, regret_nr=1)
     gi.to_string()
     #ri = RegretInsertion(destroyed_solution_object=rr, unused_car_moves=ch.unused_car_moves,
     #                     parking_nodes=ch.parking_nodes, world_instance=ch.world_instance, regret_nr=1)

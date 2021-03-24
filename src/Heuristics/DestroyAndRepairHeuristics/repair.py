@@ -57,8 +57,8 @@ class Repair(ABC):
         print("\nREPAIR")
         print(f"destroyed solution: {type(self.destroyed_solution_object)}")
         for k, v in self.destroyed_solution.items():
-            print(k.employee_id)
-            print([cm.car_move_id for cm in v])
+            #print(k.employee_id)
+            #print([cm.car_move_id for cm in v])
             for cm in v:
                 print(cm.to_string())
         destroyed_solution = get_first_stage_solution_list_from_dict(self.destroyed_solution)
@@ -66,8 +66,8 @@ class Repair(ABC):
                                                             first_stage_car_moves=destroyed_solution), 2))
         print(f"repaired solution: {type(self)}")
         for k, v in self.repaired_solution.items():
-            print(k.employee_id)
-            print([cm.car_move_id for cm in v])
+            #print(k.employee_id)
+            #print([cm.car_move_id for cm in v])
             for cm in v:
                 print(cm.to_string())
         repaired_solution = get_first_stage_solution_list_from_dict(self.repaired_solution)
