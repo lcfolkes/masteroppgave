@@ -46,51 +46,57 @@ class ALNS():
 
     def run(self):
         visited_hash_keys = set()
-        it = 10
-        construction = ConstructionHeuristic(self.filename)
-        construction.add_car_moves_to_employees()
-        best_solution = copy.deepcopy(construction)
+        it = 100
+        solution = ConstructionHeuristic(self.filename)
+        solution.add_car_moves_to_employees()
+        best_solution = copy.deepcopy(solution)
         visited_hash_keys.add(best_solution.hash_key)
         # TODO: this is the old objective function val
-        best_obj_val = construction.get_obj_val()
+        best_obj_val = solution.get_obj_val()
+        print(best_obj_val)
         obj_vals = [best_obj_val]
         while it > 0:
-            destroy = self._get_destroy_operator(solution=construction.assigned_car_moves,
-                                           num_first_stage_tasks=construction.world_instance.first_stage_tasks,
-                                           neighborhood_size=2, randomization_degree=100,
-                                           parking_nodes=construction.parking_nodes)
+            if it % 10 == 0:
+                print(f"Iteration {100-it}")
+                print(f"Best objective value {best_obj_val}")
+
+            solution = best_solution
+            destroy = self._get_destroy_operator(solution=solution.assigned_car_moves,
+                                           num_first_stage_tasks=solution.world_instance.first_stage_tasks,
+                                           neighborhood_size=2, randomization_degree=1000,
+                                           parking_nodes=solution.parking_nodes)
 
             repair = self._get_repair_operator(destroyed_solution_object=destroy,
-                                         unused_car_moves=construction.unused_car_moves,
-                                         parking_nodes=construction.parking_nodes,
-                                         world_instance=construction.world_instance)
-            construction.rebuild(repair.repaired_solution)
+                                         unused_car_moves=solution.unused_car_moves,
+                                         parking_nodes=solution.parking_nodes,
+                                         world_instance=solution.world_instance)
+            solution.rebuild(repair.repaired_solution)
 
-            if construction.hash_key in visited_hash_keys:
-                print("Solution already visited")
+            if solution.hash_key in visited_hash_keys:
+                #print("Solution already visited")
+                pass
             else:
                 #update scores for repair and destroy
-                visited_hash_keys.add(construction.hash_key)
-                obj_val = construction.get_obj_val()
+                visited_hash_keys.add(solution.hash_key)
+                obj_val = solution.get_obj_val()
                 obj_vals.append(obj_val)
                 if obj_val > best_obj_val:
-                    best_solution = copy.deepcopy(construction)
+                    best_solution = copy.deepcopy(solution)
             it -= 1
 
         self.best_solution = best_solution
         self.best_obj_val = best_obj_val
         plt.plot(obj_vals)
         plt.show()
-        print(obj_vals)
         print(best_obj_val)
-        print(visited_hash_keys)
         best_solution.print_solution()
 
     def _get_destroy_operator(self, solution, num_first_stage_tasks, neighborhood_size, randomization_degree,
                              parking_nodes) -> Destroy:
         w_sum_destroy = sum(w for o, w in self.destroy_operators.items())
         w_dist_destroy = [w / w_sum_destroy for o, w in self.destroy_operators.items()]
-        operator = random.choices(list(self.destroy_operators), w_dist_destroy)[0]
+        #operator = random.choices(list(self.destroy_operators), w_dist_destroy)[0]
+        operator = "worst"
 
         if operator == "random":
             return RandomRemoval(solution, num_first_stage_tasks, neighborhood_size)

@@ -123,15 +123,14 @@ class WorstRemoval(Destroy):
 
 		n_size = self.neighborhood_size
 		obj_val_list = sorted(obj_val.items(), key=lambda x: x[1],
-							 reverse=False)  # e.g. [(index, obj_val] = [(0, 85.96), (1, 89.74)]
+							 reverse=True)  # e.g. [(index, obj_val] = [(1, 89.74), (0, 85.96)]
 		removed_car_moves_by_id = []
 		while n_size > 0:
 			# Handle randomization (y^p*|L|)
 			index = np.floor(np.power(random.random(), self.randomization_degree) * len(obj_val_list)).astype(int)
-			removed_car_moves_by_id.append(
-				first_stage_solution_list.pop(
-					obj_val_list[index][0]
-				).car_move_id)
+			idx = obj_val_list[index][0]
+			obj_val_list.pop(index)
+			removed_car_moves_by_id.append(first_stage_solution_list[idx].car_move_id)
 			n_size -= 1
 
 		for k, v in first_stage_solution_dict.items():

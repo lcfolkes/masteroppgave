@@ -297,7 +297,7 @@ def get_objective_function_val(parking_nodes: [ParkingNode], employees: [Employe
                                                                       scenario=None, verbose=True)
 
     obj_val = profit_customer_requests - cost_relocation - cost_deviation_ideal_state
-    print(f"Objective function value: {round(obj_val, 2)}")
+    #print(f"Objective function value: {round(obj_val, 2)}")
 
     return obj_val
 
