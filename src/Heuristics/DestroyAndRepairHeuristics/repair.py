@@ -92,7 +92,7 @@ class GreedyInsertion(Repair):
             best_car_move, best_employee = self._get_best_insertion(current_solution)
             # Handles cases when you cannot insert q car_moves to the solution
             if None in (best_car_move, best_employee):
-                print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
+                #print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
                 break
             current_solution = insert_car_move(current_solution, best_car_move, best_employee.employee_id)
             self.feasibility_checker.is_first_stage_solution_feasible(current_solution)
@@ -156,7 +156,7 @@ class RegretInsertion(Repair):
         while q > 0:
             best_car_move, best_employee = self._get_best_insertion_regret(current_solution, self.regret_nr)
             if None in (best_car_move, best_employee):
-                print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
+                #print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
                 break
             current_solution = insert_car_move(current_solution, best_car_move, best_employee.employee_id)
             self.unused_car_moves.remove(best_car_move)
