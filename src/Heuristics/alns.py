@@ -7,8 +7,8 @@ from Gurobi.Model.run_model import run_model
 from construction_heuristic_new import ConstructionHeuristic
 from path_manager import path_to_src
 import os
-os.chdir(path_to_src)
 
+os.chdir(path_to_src)
 
 
 class ALNS():
@@ -23,15 +23,18 @@ class ALNS():
         it = 100
         construction = ConstructionHeuristic(self.filename)
         construction.add_car_moves_to_employees()
+        construction.print_solution()
         best_solution = copy.deepcopy(construction)
         # TODO: this is the old objective function val
         best_obj_val = construction.get_obj_val()
         obj_vals = []
         while it > 0:
-            destroy = RandomRemoval(solution=construction.assigned_car_moves, num_first_stage_tasks=construction.world_instance.first_stage_tasks,
-                       neighborhood_size=2)
-            repair = GreedyInsertion(destroyed_solution_object=destroy, unused_car_moves=construction.unused_car_moves,
-                         parking_nodes=construction.parking_nodes, world_instance=construction.world_instance)
+            destroy = WorstRemoval(solution=construction.assigned_car_moves,
+                                    num_first_stage_tasks=construction.world_instance.first_stage_tasks,
+                                    neighborhood_size=2, randomization_degree=100, parking_nodes=construction.parking_nodes)
+            repair = RegretInsertion(destroyed_solution_object=destroy, unused_car_moves=construction.unused_car_moves,
+                                     parking_nodes=construction.parking_nodes,
+                                     world_instance=construction.world_instance, regret_nr=1)
 
             construction.rebuild(repair.repaired_solution)
 
@@ -48,14 +51,11 @@ class ALNS():
         best_solution.print_solution()
 
 
-
 if __name__ == "__main__":
-    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_b"
+    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_f"
     alns = ALNS(filename + ".pkl")
     gi = GurobiInstance(filename + ".yaml")
     run_model(gi)
-
-
 
     '''
     filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_b"

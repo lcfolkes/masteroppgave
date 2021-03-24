@@ -180,13 +180,14 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, prioriti
 
 def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scenarios):
     # FIRST STAGE
+
     if first_stage:
         best_car_move_first_stage = None
         assigned_car_moves_first_stage = get_assigned_car_moves(employees)
-        best_obj_val_first_stage = -1000
         longest_travel_time_first_stage = -1000
         best_obj_val_first_stage = get_obj_val_of_car_moves(parking_nodes=parking_nodes, num_scenarios=num_scenarios,
                                                             first_stage_car_moves=assigned_car_moves_first_stage, include_employee_check=False)
+        #print("Iteration")
         for r in range(len(car_moves)):
             obj_val = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
                                                first_stage_car_moves=assigned_car_moves_first_stage + [
@@ -194,7 +195,9 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
             if obj_val > best_obj_val_first_stage:
                 best_obj_val_first_stage = obj_val
                 best_car_move_first_stage = car_moves[r]
-
+                #print(f"{best_car_move_first_stage.start_node.node_id} -> {best_car_move_first_stage.end_node.node_id}, Obj val:{obj_val}")
+            #elif best_car_move_first_stage:
+                #print(f"{best_car_move_first_stage.start_node.node_id} -> {best_car_move_first_stage.end_node.node_id}, Not improving")
         return best_car_move_first_stage
 
     # SECOND STAGE

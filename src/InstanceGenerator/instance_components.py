@@ -2,8 +2,8 @@ import itertools
 from src.HelperFiles.helper_functions import read_config
 import os
 from path_manager import path_to_src
-os.chdir(path_to_src)
 
+os.chdir(path_to_src)
 
 TIME_CONSTANTS = read_config('InstanceGenerator/world_constants_config.yaml')['time_constants']
 
@@ -64,7 +64,8 @@ class Car:
             car_moves.append(cm)
         self.car_moves = car_moves
 
-#earliest start time should be added
+
+# earliest start time should be added
 class CarMove:
     id_iter = itertools.count(start=1)
 
@@ -77,8 +78,8 @@ class CarMove:
         self.employee = []
         self.employee_second_stage = []
         self.is_charging_move = (True if isinstance(end_node, ChargingNode) else False)
-        self.start_time = []
-
+        self.start_time = None
+        self.start_times_second_stage = []
 
     def set_travel_time(self, time: int):
         if isinstance(self.end_node, ParkingNode):
@@ -86,8 +87,11 @@ class CarMove:
         elif isinstance(self.end_node, ChargingNode):
             self.handling_time = time + TIME_CONSTANTS['handling_charging']
 
-    def set_start_time(self, time: int):
-        self.start_time.append(time)
+    def set_start_time(self, time: int, scenario = None):
+        if not scenario:
+            self.start_time = time
+        else:
+            self.start_times_second_stage[scenario] = time
 
     def reset_start_time(self):
         self.start_time = []
@@ -103,10 +107,12 @@ class CarMove:
     def _initialize_second_stage(self, num_scenarios: int):
         for s in range(num_scenarios):
             self.employee_second_stage.append([])
+            self.start_times_second_stage.append([])
 
     def to_string(self):
-        return f"car_move_id: {self.car_move_id}, car: {self.car.car_id}, start_node: {self.start_node.node_id}, end_node: {self.end_node.node_id}, " \
-               f"handling_time: {self.handling_time}"
+        return f"Car move: {self.car_move_id}, Car: {self.car.car_id}, Route: ({self.start_node.node_id} -> {self.end_node.node_id}), " \
+               f"" \
+               f"Handling time: {self.handling_time}"
 
 
 class Employee:
@@ -123,21 +129,28 @@ class Employee:
         self.current_time_second_stage = []
         self.handling = handling
         self.car_moves = []
+        self.start_times_car_moves = []
+        self.travel_times_car_moves = []
         self.car_moves_second_stage = []
-
+        self.start_times_car_moves_second_stage = []
+        self.travel_times_car_moves_second_stage = []
 
     def add_car_move(self, total_travel_time: float, car_move: CarMove, scenario: int = None):
         if scenario is None:
             self.current_time += total_travel_time
             self.current_node = car_move.end_node
             self.car_moves.append(car_move)
+            self.start_times_car_moves.append(car_move.start_time)
+            self.travel_times_car_moves.append(total_travel_time-car_move.handling_time)
             car_move.set_employee(self)
         else:
             # zero-indexed scenario
             self.current_time_second_stage[scenario] += total_travel_time
-            #print(f"e_id: {self.employee_id}, second_current_time: {self.current_time_second_stage}")
+            # print(f"e_id: {self.employee_id}, second_current_time: {self.current_time_second_stage}")
             self.current_node_second_stage[scenario] = car_move.end_node
             self.car_moves_second_stage[scenario].append(car_move)
+            self.start_times_car_moves_second_stage[scenario].append(car_move.start_times_second_stage[scenario])
+            self.travel_times_car_moves_second_stage[scenario].append(total_travel_time-car_move.handling_time)
             car_move.set_employee(self, scenario)
 
     def initialize_second_stage(self, num_scenarios: int):
@@ -145,8 +158,10 @@ class Employee:
             self.current_node_second_stage.append(self.current_node)
             self.current_time_second_stage.append(self.current_time)
             self.car_moves_second_stage.append([])
+            self.start_times_car_moves_second_stage.append([])
+            self.travel_times_car_moves_second_stage.append([])
 
-
+    # TODO: If we use this, it must be modified to handle second stage moves
     def remove_last_car_move(self, total_travel_time: float):
         self.current_time -= total_travel_time
         cm = self.car_moves.pop()
@@ -157,16 +172,24 @@ class Employee:
         except:
             self.current_node = self.start_node
 
+
     def reset(self):
         for cm in self.car_moves:
             cm.reset_time()
         for scenario in self.car_moves_second_stage:
             for cm in scenario:
                 cm.reset_time()
+        for i in range(len(self.start_times_car_moves)):
+            self.start_times_car_moves[i] = None
+            self.travel_times_car_moves[i] = None
+        for s in range(len(self.start_times_car_moves_second_stage)):
+            for i in range(len(self.start_times_car_moves_second_stage[s])):
+                self.start_times_car_moves_second_stage[s][i] = None
+                self.travel_times_car_moves_second_stage[s][i] = None
         self.__init__(start_node=self.start_node, start_time=self.start_time, handling=self.handling)
 
     def to_string(self):
-         return  f"employee_id: {self.employee_id}\t start_node: {self.start_node.node_id}\t current_node: {self.current_node.node_id}" \
-              f"\tcurrent_node_second_stage: {[n.node_id for n in self.current_node_second_stage]} \n current_time: {self.current_time}" \
-              f"\tcurrent_time_second_stage: {self.current_time_second_stage}\n car_moves: {[cm.car_move_id for cm in self.car_moves]}" \
-              f"\tcar_moves_second_stage: {[[cm.car_move_id for cm in car_moves] for car_moves in self.car_moves_second_stage]}"
+        return f"employee_id: {self.employee_id}\t start_node: {self.start_node.node_id}\t current_node: {self.current_node.node_id}" \
+               f"\tcurrent_node_second_stage: {[n.node_id for n in self.current_node_second_stage]} \n current_time: {self.current_time}" \
+               f"\tcurrent_time_second_stage: {self.current_time_second_stage}\n car_moves: {[cm.car_move_id for cm in self.car_moves]}" \
+               f"\tcar_moves_second_stage: {[[cm.car_move_id for cm in car_moves] for car_moves in self.car_moves_second_stage]}"

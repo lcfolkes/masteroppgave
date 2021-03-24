@@ -118,10 +118,14 @@ class ConstructionHeuristic:
 
             # Remove best move if not legal. Else return best employee
         if first_stage:
+            #if best_employee:
+                #print("Best employee", best_employee.employee_id)
             if best_move_not_legal:
                 self.car_moves.remove(best_car_move)
+                #print("not legal")
                 return
             else:
+                #print("legal")
                 return best_employee
         else:
             if best_move_not_legal:
@@ -185,6 +189,7 @@ class ConstructionHeuristic:
                                                    best_employee=best_employee_second_stage)
 
     def _add_car_move_to_employee(self, car_moves, best_car_move, best_employee):
+        # TODO: Remove car moves that concern the same car as the one that is removed
         if self.first_stage:
             if best_employee is not None:
                 '''
@@ -193,6 +198,7 @@ class ConstructionHeuristic:
                 print('Employee time before', best_employee.current_time)
                 # print('Travel time to start node', best_travel_time_to_car_move)
                 #print(best_car_move.to_string())
+                '''
                 self.world_instance.add_car_move_to_employee(best_car_move, best_employee)
                 for s in range(self.num_scenarios):
                     self.assigned_car_moves[best_employee][s].append(best_car_move)
@@ -228,6 +234,7 @@ class ConstructionHeuristic:
                         print('Employee time before', best_employee[s].current_time_second_stage[s])
                         # print('Travel time to start node', best_travel_time_to_car_move_second_stage[s])
                         #print(best_car_move[s].to_string())
+                        '''
                         self.world_instance.add_car_move_to_employee(best_car_move[s], best_employee[s], s)
                         if best_car_move[s] is not None:
                             self.assigned_car_moves[best_employee[s]][s].append(best_car_move[s])
@@ -247,11 +254,15 @@ class ConstructionHeuristic:
                 self.available_employees = False
 
     def print_solution(self):
-
+        print("--------CONSTRUCTION HEURISTIC SOLUTION--------")
         print("-------------- First stage routes --------------")
         for employee in self.employees:
             for car_move in employee.car_moves:
-                print(f"employee: {employee.employee_id}, " + car_move.to_string())
+                print(f"Employee: {employee.employee_id}, Task nr: {employee.car_moves.index(car_move)+1}, "
+                      + car_move.to_string() + ", "
+                      + f"Start time: {employee.start_times_car_moves[employee.car_moves.index(car_move)]}, "
+                      + f"Travel time to move: {round(employee.travel_times_car_moves[employee.car_moves.index(car_move)], 2)}, "
+                      + f"Time after: {round(car_move.start_time + car_move.handling_time, 2)}")
 
         print("-------------- Second stage routes --------------")
         for employee in self.employees:
@@ -259,7 +270,6 @@ class ConstructionHeuristic:
                 for s in range(self.num_scenarios):
                     for car_move in employee.car_moves_second_stage[s]:
                         print(f"employee: {employee.employee_id}, scenario: {s + 1} " + car_move.to_string())
-
 
 if __name__ == "__main__":
     filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_b"
