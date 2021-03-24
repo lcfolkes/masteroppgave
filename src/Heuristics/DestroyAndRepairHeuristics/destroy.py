@@ -15,7 +15,7 @@ os.chdir(path_to_src)
 
 
 class Destroy(ABC):
-	def __init__(self, solution, num_first_stage_tasks, neighborhood_size):
+	def __init__(self, solution, num_first_stage_tasks, neighborhood_size=2):
 		"""
         :param solution: (s) assigned car_moves of constructed solution. solution[(k,s)], dictionary containing car_move
         assigned to employee in scenario s
@@ -125,18 +125,13 @@ class WorstRemoval(Destroy):
 		n_size = self.neighborhood_size
 		obj_val_list = sorted(obj_val.items(), key=lambda x: x[1],
 							 reverse=True)  # e.g. [(index, obj_val] = [(1, 89.74), (0, 85.96)]
-		#print(obj_val_list)
 		removed_car_moves_by_id = []
 		while n_size > 0:
 			# Handle randomization (y^p*|L|)
 			index = np.floor(np.power(random.random(), self.randomization_degree) * len(obj_val_list)).astype(int)
-			#print("index",index)
-			#print(obj_val_list[index][0])
-			removed_car_moves_by_id.append(
-				first_stage_solution_list[obj_val_list[index][0]].car_move_id)
+			idx = obj_val_list[index][0]
 			obj_val_list.pop(index)
-			#print(first_stage_solution_list)
-			#print("obj_val_list", obj_val_list)
+			removed_car_moves_by_id.append(first_stage_solution_list[idx].car_move_id)
 			n_size -= 1
 
 		for k, v in first_stage_solution_dict.items():

@@ -26,6 +26,6 @@ charging_nodes:
 
 #EMPLOYEES
 employees:
-  num_employees: 2
-  start_time: [0, 5]
-  handling: [0, 0]
+  num_employees: 4
+  start_time: [0, 5, 0, 0]
+  handling: [0, 0, 0, 0]
