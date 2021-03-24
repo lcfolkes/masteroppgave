@@ -95,8 +95,7 @@ class ALNS():
                              parking_nodes) -> Destroy:
         w_sum_destroy = sum(w for o, w in self.destroy_operators.items())
         w_dist_destroy = [w / w_sum_destroy for o, w in self.destroy_operators.items()]
-        #operator = random.choices(list(self.destroy_operators), w_dist_destroy)[0]
-        operator = "worst"
+        operator = random.choices(list(self.destroy_operators), w_dist_destroy)[0]
 
         if operator == "random":
             return RandomRemoval(solution, num_first_stage_tasks, neighborhood_size)
@@ -127,8 +126,8 @@ class ALNS():
 if __name__ == "__main__":
     filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a"
     alns = ALNS(filename + ".pkl")
-    #gi = GurobiInstance(filename + ".yaml")
-    #run_model(gi)
+    gi = GurobiInstance(filename + ".yaml")
+    run_model(gi)
 
 
 
