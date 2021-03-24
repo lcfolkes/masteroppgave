@@ -36,6 +36,9 @@ class ConstructionHeuristic:
 
         #self.add_car_moves_to_employees()
 
+    def get_obj_val(self):
+        return get_objective_function_val(self.parking_nodes, self.employees, self.num_scenarios)
+
     def rebuild(self, solution, verbose=False):
         self.__init__(self.instance_file)
 
@@ -184,6 +187,7 @@ class ConstructionHeuristic:
     def _add_car_move_to_employee(self, car_moves, best_car_move, best_employee):
         if self.first_stage:
             if best_employee is not None:
+                '''
                 print('\nEmployee id', best_employee.employee_id)
                 print('Employee node before', best_employee.current_node.node_id)
                 print('Employee time before', best_employee.current_time)
@@ -193,8 +197,10 @@ class ConstructionHeuristic:
                 for s in range(self.num_scenarios):
                     self.assigned_car_moves[best_employee][s].append(best_car_move)
                     self.unused_car_moves[s].remove(best_car_move)
+                '''
                 print('Employee node after', best_employee.current_node.node_id)
                 print('Employee time after', best_employee.current_time)
+                '''
                 self.car_moves = remove_car_move(best_car_move, car_moves)
 
                 self.first_stage = False
@@ -215,6 +221,7 @@ class ConstructionHeuristic:
                 for s in range(self.num_scenarios):
                     # print(best_employee_second_stage[s].to_string())
                     if best_employee[s] is not None:
+                        '''
                         print('\nEmployee id', best_employee[s].employee_id)
                         print('Scenario', s + 1)
                         print('Employee node before', best_employee[s].current_node_second_stage[s].node_id)
@@ -225,8 +232,10 @@ class ConstructionHeuristic:
                         if best_car_move[s] is not None:
                             self.assigned_car_moves[best_employee[s]][s].append(best_car_move[s])
                             self.unused_car_moves[s].remove(best_car_move[s])
+                        '''
                         print('Employee node after', best_employee[s].current_node_second_stage[s].node_id)
                         print('Employee time after', best_employee[s].current_time_second_stage[s])
+                        '''
                         # When first stage is finished, initialize car_moves to be list of copies of
                         # car_moves (number of copies = num_scenarios)
                         self.car_moves_second_stage[s] = remove_car_move(best_car_move[s], car_moves[s])
