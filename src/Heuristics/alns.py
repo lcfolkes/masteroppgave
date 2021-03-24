@@ -11,17 +11,18 @@ import os
 import matplotlib.pyplot as plt
 os.chdir(path_to_src)
 
+os.chdir(path_to_src)
 
 
 '''
-_IS_BEST = 
+_IS_BEST =
 sigma_1: The last remove-insert operation resulted in a new global best solution
 _IS_BETTER =
 sigma_2: The last remove-insert operation resulted in a solution that has not been accepted before.
-         The cost of the new solution is better than the cost of the current solution.  
+         The cost of the new solution is better than the cost of the current solution.
 _IS_ACCEPTED =
 sigma_3: The last remove-insert operation resulted in a solution that has not been accepted before. The cost of
-            the new solution is worse than the cost of current solution, but the solution was accepted. 
+            the new solution is worse than the cost of current solution, but the solution was accepted.
 _IS_REJECTED =
 
 '''
@@ -122,14 +123,11 @@ class ALNS():
         else:
             exit("Repair operator does not exist")
 
-
 if __name__ == "__main__":
     filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a"
     alns = ALNS(filename + ".pkl")
     gi = GurobiInstance(filename + ".yaml")
     run_model(gi)
-
-
 
     '''
     filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_b"

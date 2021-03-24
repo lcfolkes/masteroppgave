@@ -322,7 +322,9 @@ def calculate_cost_deviation_charging_moves(parking_nodes: [ParkingNode], first_
         num_charging_moves = num_charging_moves_first_stage + num_charging_moves_second_stage[scenario]
         # print(f"w_sum[{scenario+1}] {w_sum[scenario]}")
 
-    return World.COST_DEVIATION_CHARGING * (num_cars_in_need_of_charging - num_charging_moves)
+    #return World.COST_DEVIATION_CHARGING * (num_cars_in_need_of_charging - num_charging_moves)
+    return 1000 * (num_cars_in_need_of_charging - num_charging_moves)
+
 
 
 def calculate_cost_travel_time_between_car_moves(first_stage_car_moves: [CarMove] = None,

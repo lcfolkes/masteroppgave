@@ -36,6 +36,7 @@ class Destroy(ABC):
 	def _get_first_stage_solution(self):
 		removed_second_stage_moves = set()
 		first_stage_solution = {}
+		#print(self.input_solution)
 		for k, v in self.input_solution.items():
 			first_stage_solution[k] = set()
 			for s in range(len(self.input_solution[k])):
@@ -136,7 +137,7 @@ class WorstRemoval(Destroy):
 		for k, v in first_stage_solution_dict.items():
 			first_stage_solution_dict[k] = [cm for cm in first_stage_solution_dict[k] if cm.car_move_id
 											not in removed_car_moves_by_id]
-
+		#print(first_stage_solution_dict)
 		return first_stage_solution_dict
 
 
@@ -180,7 +181,7 @@ class ShawRemoval(Destroy):
 
 		while len(removed_list) < self.neighborhood_size:
 			rand_index = random.randrange(0, len(removed_list), 1)
-			print(rand_index)
+			#print(rand_index)
 			removed_car_move = removed_list[rand_index]
 			car_moves_not_removed = [cm for cm in first_stage_solution_list if cm not in removed_list]
 			car_moves_not_removed = sorted(
