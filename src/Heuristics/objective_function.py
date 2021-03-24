@@ -55,8 +55,10 @@ def calculate_z(parking_nodes: [ParkingNode], first_stage_car_moves: [CarMove], 
                            node_demands[n.node_id]['customer_requests'])
         z_val = np.maximum(z_val, 0)
         z[n.node_id] = z_val
+        '''
         if verbose:
             print(f"z[{n.node_id}] {z[n.node_id]}")
+        '''
     return z
 
 
@@ -141,12 +143,13 @@ def calculate_cost_deviation_ideal_state(parking_nodes: [ParkingNode], z: {int: 
         # require w_is >= 0
         w[n.node_id] = np.maximum(w[n.node_id], 0)
 
+        '''
         if verbose:
             print(f"\nw[{n.node_id}] {w[n.node_id]}")
             print(f"ideal state {n.ideal_state}")
             print(f"initial_state {n.parking_state}")
             print(f"car returns {n.car_returns}")
-            print(f"customer requests {n.customer_requests}")
+            print(f"customer requests {n.customer_requests}")'''
 
     w_sum = sum(v for k, v in w.items())
 
