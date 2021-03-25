@@ -124,11 +124,13 @@ class ALNS():
             exit("Repair operator does not exist")
 
 if __name__ == "__main__":
-    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a"
+    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_special_case"
     alns = ALNS(filename + ".pkl")
     gi = GurobiInstance(filename + ".yaml", employees=alns.best_solution.employees, optimize=False)
     #gi = GurobiInstance(filename + ".yaml")
     run_model(gi)
+    gi2 = GurobiInstance(filename + ".yaml", optimize=True)
+    run_model(gi2)
 
     '''
     filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_b"

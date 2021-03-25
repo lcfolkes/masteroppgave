@@ -91,7 +91,7 @@ class FeasibilityChecker():
 
 
 if __name__ == "__main__":
-	'''ch = ConstructionHeuristic("./InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a.pkl")
+	'''ch = ConstructionHeuristic("./InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_special_case.pkl")
 	rr = RandomRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
 					   neighborhood_size=2)
 	#rr.to_string()
