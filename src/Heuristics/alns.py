@@ -166,12 +166,13 @@ class ALNS():
 if __name__ == "__main__":
     filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_special_case"
     alns = ALNS(filename + ".pkl")
-    print("Optimal solution")
-    gi = GurobiInstance(filename + ".yaml")
-    run_model(gi)
     print("Evaluate solution")
     gi = GurobiInstance(filename + ".yaml", employees=alns.best_solution.employees, optimize=False)
     run_model(gi)
+    print("Optimal solution")
+    gi2 = GurobiInstance(filename + ".yaml")
+    run_model(gi2)
+
 
     # TODO: check objective function
 
