@@ -314,6 +314,8 @@ def get_best_employee(parking_moves, employees, best_car_move, first_stage, num_
             return best_employee_second_stage
 
 '''
+def safe_zero_division(a, b):
+    return a / b if b else 0.0
 
 
 def check_all_charging_moves_completed(num_scenarios, employees, first_stage, parking_nodes) -> bool:

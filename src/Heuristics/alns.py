@@ -5,8 +5,10 @@ from DestroyAndRepairHeuristics.destroy import Destroy, RandomRemoval, WorstRemo
 from DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretInsertion
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
+from Heuristics.helper_functions_heuristics import safe_zero_division
 from construction_heuristic_new import ConstructionHeuristic
 from path_manager import path_to_src
+import numpy as np
 import os
 import matplotlib.pyplot as plt
 os.chdir(path_to_src)
@@ -42,12 +44,13 @@ class ALNS():
 
         self.destroy_operators = OrderedDict({'random': 1.0, 'worst': 1.0, 'shaw': 1.0})
         self.repair_operators = OrderedDict({'greedy': 1.0, 'regret2': 1.0, 'regret3': 1.0})
-        self.destroy_operators_record = OrderedDict({'random': [1.0, 0], 'worst': [1.0, 0], 'shaw': [1.0, 0]})
-        self.repair_operators_record = OrderedDict({'greedy': [1.0, 0], 'regret2': [1.0, 0], 'regret3': [1.0, 0]})
+        self.destroy_operators_record = OrderedDict({'random': [1.0, 0.0], 'worst': [1.0, 0.0], 'shaw': [1.0, 0.0]})
+        self.repair_operators_record = OrderedDict({'greedy': [1.0, 0.0], 'regret2': [1.0, 0.0], 'regret3': [1.0, 0.0]})
 
         self._callbacks = {}
 
         self.best_solution = None
+        self.best_solutions = None
         self.best_obj_val = 0
         self.run()
 
@@ -61,14 +64,16 @@ class ALNS():
         visited_hash_keys.add(current_solution.hash_key)
         # TODO: this is the old objective function val
         best_obj_val = solution.get_obj_val()
+        best_solutions = [[copy.deepcopy(solution), best_obj_val]]
         current_obj_val = best_obj_val
         obj_vals = [best_obj_val]
+        temperature = 100 # Start temperature must be set differently
+        cooling_rate = 0.9 # cooling_rate in (0,1)
 
         # SEGMENTS
         for i in range(10):
-
             for j in range(10):
-                print(f"Iteration {i*100 + j}")
+                print(f"Iteration {i*10 + j}")
                 print(f"Best objective value {best_obj_val}")
 
                 solution = copy.deepcopy(current_solution)
@@ -89,33 +94,54 @@ class ALNS():
                 else:
                     #update scores for repair and destroy
                     visited_hash_keys.add(solution.hash_key)
-                    obj_val = solution.get_obj_val()
-                    obj_vals.append(obj_val)
+                    current_obj_val = solution.get_obj_val()
+                    obj_vals.append(current_obj_val)
 
-                    #Add acceptance criteria
-                    if obj_val > current_obj_val:
-                        if obj_val > best_obj_val:
+                    if self._accept(current_obj_val, best_obj_val, temperature):
+                        if current_obj_val > best_obj_val:
                             best_solution = copy.deepcopy(solution)
+                            best_obj_val = current_obj_val
+                            best_solutions.append([copy.deepcopy(solution), current_obj_val])
                             self._update_weight_record(_IS_BEST, destroy, repair)
-                        else:
+                        elif current_obj_val > current_obj_val:
                             self._update_weight_record(_IS_BETTER, destroy, repair)
-                    else:
-                        self._update_weight_record(_IS_ACCEPTED, destroy, repair)
+                        else:
+                            self._update_weight_record(_IS_ACCEPTED, destroy, repair)
 
-                    current_solution = copy.deepcopy(solution)
+                        current_solution = copy.deepcopy(solution)
+                    else:
+                        print("not accepted")
+
+                temperature *= cooling_rate
 
 
             self._update_score_adjustment_parameters()
 
 
         self.best_solution = best_solution
+        self.best_solutions = best_solutions
         self.best_obj_val = best_obj_val
         plt.plot(obj_vals)
         plt.show()
+        print(obj_vals)
         print(best_obj_val)
         print(self.destroy_operators)
         print(self.repair_operators)
-        best_solution.print_solution()
+        print("best solutions")
+        for s in best_solutions:
+            print(s[1])
+            print(s[0].print_solution())
+        #best_solution.print_solution()
+
+    def _accept(self, current_obj_val, best_obj_val, temperature) -> bool:
+        if current_obj_val > best_obj_val:
+            acceptance_probability = 1
+        else:
+            p = np.exp(- (best_obj_val - current_obj_val) / temperature)
+            acceptance_probability = p
+
+        accept = acceptance_probability > random.random()
+        return accept
 
     def _get_destroy_operator(self, solution, num_first_stage_tasks, neighborhood_size, randomization_degree,
                              parking_nodes) -> Destroy:
@@ -176,27 +202,31 @@ class ALNS():
 
         for k, v in self.destroy_operators.items():
             self.destroy_operators[k] = self.destroy_operators[k]*(1.0-reaction_factor) + \
-                                        (reaction_factor/self.destroy_operators_record[k][1])*self.destroy_operators_record[k][0]
+                                        safe_zero_division(reaction_factor, self.destroy_operators_record[k][1]) * \
+                                        self.destroy_operators_record[k][0]
             self.destroy_operators_record[k][0] = self.destroy_operators[k]
             self.destroy_operators_record[k][0] = 0
 
         for k, v in self.repair_operators.items():
             self.repair_operators[k] = self.repair_operators[k]*(1.0-reaction_factor) + \
-                                        (reaction_factor/self.repair_operators_record[k][1])*self.repair_operators_record[k][0]
+                                        safe_zero_division(reaction_factor, self.repair_operators_record[k][1]) * \
+                                       self.repair_operators_record[k][0]
             self.repair_operators_record[k][0] = self.repair_operators[k]
             self.repair_operators_record[k][0] = 0
 
 
+
 if __name__ == "__main__":
-    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_special_case"
+    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_d"
     alns = ALNS(filename + ".pkl")
 
-    print("Evaluate solution")
-    gi = GurobiInstance(filename + ".yaml", employees=alns.best_solution.employees, optimize=False)
-    run_model(gi)
-    #print("Optimal solution")
-    #gi2 = GurobiInstance(filename + ".yaml")
-    #run_model(gi2)
+    print("\n############## Evaluate solution ##############")
+    for s in alns.best_solutions:
+        gi = GurobiInstance(filename + ".yaml", employees=s[0].employees, optimize=False)
+        run_model(gi)
+    print("\n############## Optimal solution ##############")
+    gi2 = GurobiInstance(filename + ".yaml")
+    run_model(gi2)
 
 
     # TODO: check objective function
