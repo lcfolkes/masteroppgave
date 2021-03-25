@@ -126,12 +126,22 @@ class WorstRemoval(Destroy):
 		obj_val_list = sorted(obj_val.items(), key=lambda x: x[1],
 							 reverse=True)  # e.g. [(index, obj_val] = [(1, 89.74), (0, 85.96)]
 		removed_car_moves_by_id = []
-		while n_size > 0:
+		while n_size > 0 and len(obj_val_list) > 0:
 			# Handle randomization (y^p*|L|)
 			index = np.floor(np.power(random.random(), self.randomization_degree) * len(obj_val_list)).astype(int)
-			idx = obj_val_list[index][0]
-			obj_val_list.pop(index)
-			removed_car_moves_by_id.append(first_stage_solution_list[idx].car_move_id)
+
+			try:
+				idx = obj_val_list[index][0]
+				obj_val_list.pop(index)
+				removed_car_moves_by_id.append(first_stage_solution_list[idx].car_move_id)
+			except:
+				# TODO: find out why we sometimes get index out of range.
+				#  I suspect it happens when len of list is 0 and index becomes 0
+				# seems to be correct. What do we do if it does not work? just continue?
+				print("destroy.py/worst")
+				print(f"index {index}")
+				print(f"list_len {len(obj_val_list)}")
+
 			n_size -= 1
 
 		for k, v in first_stage_solution_dict.items():
@@ -178,8 +188,9 @@ class ShawRemoval(Destroy):
 		removed_list = []
 		rand_index = random.randrange(0, len(first_stage_solution_list), 1)
 		removed_list.append(first_stage_solution_list[rand_index])
+		car_moves_not_removed = [cm for cm in first_stage_solution_list if cm not in removed_list]
 
-		while len(removed_list) < self.neighborhood_size:
+		while len(removed_list) < self.neighborhood_size and len(car_moves_not_removed) > 0:
 			rand_index = random.randrange(0, len(removed_list), 1)
 			#print(rand_index)
 			removed_car_move = removed_list[rand_index]
@@ -189,8 +200,16 @@ class ShawRemoval(Destroy):
 				key=lambda cm: ShawRemoval.relatedness_measure(cm, removed_car_move),
 				reverse=False)
 			# Handle randomization (y^p*|L|)
-			index = np.floor(np.power(random.random(), self.randomization_degree) * len(car_moves_not_removed)).astype(int)
-			removed_list.append(car_moves_not_removed[index])
+			try:
+				index = np.floor(np.power(random.random(), self.randomization_degree) * len(car_moves_not_removed)).astype(int)
+				removed_list.append(car_moves_not_removed[index])
+			except:
+				# TODO: find out why we sometimes get index out of range.
+				# I suspect it happens when len of list is 0 and index becomes 0
+				print("destroy.py/shaw")
+				print(f"index {index}")
+				print(f"list_len {len(car_moves_not_removed)}")
+
 
 		self.removed_moves = removed_list
 		removed_list = [cm.car_move_id for cm in removed_list]

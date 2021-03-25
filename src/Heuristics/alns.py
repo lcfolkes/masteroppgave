@@ -13,17 +13,20 @@ os.chdir(path_to_src)
 
 os.chdir(path_to_src)
 
+_IS_BEST = 3
+_IS_BETTER = 2
+_IS_ACCEPTED = 1
+_IS_REJECTED = 0
 
 '''
-_IS_BEST =
-sigma_1: The last remove-insert operation resulted in a new global best solution
-_IS_BETTER =
-sigma_2: The last remove-insert operation resulted in a solution that has not been accepted before.
+
+_IS_BEST (sigma_1): The last remove-insert operation resulted in a new global best solution
+_IS_BETTER (sigma_2): The last remove-insert operation resulted in a solution that has not been accepted before.
          The cost of the new solution is better than the cost of the current solution.
-_IS_ACCEPTED =
-sigma_3: The last remove-insert operation resulted in a solution that has not been accepted before. The cost of
+
+_IS_ACCEPTED (sigma_3): The last remove-insert operation resulted in a solution that has not been accepted before. The cost of
             the new solution is worse than the cost of current solution, but the solution was accepted.
-_IS_REJECTED =
+_IS_REJECTED
 
 '''
 
@@ -47,24 +50,26 @@ class ALNS():
 
     def run(self):
         visited_hash_keys = set()
-        it = 100
+        it = 20
+
         solution = ConstructionHeuristic(self.filename)
         solution.add_car_moves_to_employees()
         best_solution = copy.deepcopy(solution)
+        current_solution = copy.deepcopy(solution)
         visited_hash_keys.add(best_solution.hash_key)
         # TODO: this is the old objective function val
         best_obj_val = solution.get_obj_val()
-        print(best_obj_val)
+        current_obj_val = best_obj_val
         obj_vals = [best_obj_val]
         while it > 0:
             if it % 10 == 0:
                 print(f"Iteration {100-it}")
                 print(f"Best objective value {best_obj_val}")
 
-            solution = best_solution
+            solution = copy.deepcopy(current_solution)
             destroy = self._get_destroy_operator(solution=solution.assigned_car_moves,
                                            num_first_stage_tasks=solution.world_instance.first_stage_tasks,
-                                           neighborhood_size=2, randomization_degree=1000,
+                                           neighborhood_size=2, randomization_degree=1,
                                            parking_nodes=solution.parking_nodes)
 
             repair = self._get_repair_operator(destroyed_solution_object=destroy,
@@ -81,8 +86,20 @@ class ALNS():
                 visited_hash_keys.add(solution.hash_key)
                 obj_val = solution.get_obj_val()
                 obj_vals.append(obj_val)
-                if obj_val > best_obj_val:
-                    best_solution = copy.deepcopy(solution)
+
+                #Add acceptance criteria
+                if obj_val > current_obj_val:
+                    if obj_val > best_obj_val:
+                        best_solution = copy.deepcopy(solution)
+                        self._update_score_adjustment_parameters(_IS_BEST, destroy, repair)
+                    else:
+                        self._update_score_adjustment_parameters(_IS_BETTER, destroy, repair)
+                else:
+                    self._update_score_adjustment_parameters(_IS_ACCEPTED, destroy, repair)
+
+                current_solution = copy.deepcopy(solution)
+
+
             it -= 1
 
         self.best_solution = best_solution
@@ -90,6 +107,8 @@ class ALNS():
         plt.plot(obj_vals)
         plt.show()
         print(best_obj_val)
+        print(self.destroy_operators)
+        print(self.repair_operators)
         best_solution.print_solution()
 
     def _get_destroy_operator(self, solution, num_first_stage_tasks, neighborhood_size, randomization_degree,
@@ -123,11 +142,39 @@ class ALNS():
         else:
             exit("Repair operator does not exist")
 
+    def _update_score_adjustment_parameters(self, operator_score, destroy, repair):
+
+        # DESTROY
+        if isinstance(destroy, RandomRemoval):
+            self.destroy_operators['random'] += operator_score
+        elif isinstance(destroy, WorstRemoval):
+            self.destroy_operators['worst'] += operator_score
+        elif isinstance(destroy, ShawRemoval):
+            self.destroy_operators['shaw'] += operator_score
+
+        # REPAIR
+        if isinstance(repair, GreedyInsertion):
+            self.repair_operators['greedy'] += operator_score
+        elif isinstance(repair, RegretInsertion):
+            if repair.regret_nr == 2:
+                self.repair_operators['regret2'] += operator_score
+            elif repair.regret_nr == 3:
+                self.repair_operators['regret3'] += operator_score
+
+
+
 if __name__ == "__main__":
-    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a"
+    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_special_case"
     alns = ALNS(filename + ".pkl")
+    print("Optimal solution")
     gi = GurobiInstance(filename + ".yaml")
     run_model(gi)
+    print("Evaluate solution")
+    gi = GurobiInstance(filename + ".yaml", employees=alns.best_solution.employees, optimize=False)
+    run_model(gi)
+
+    # TODO: check objective function
+
 
     '''
     filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_b"
