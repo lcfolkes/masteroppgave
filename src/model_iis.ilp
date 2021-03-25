@@ -1,7 +1,7 @@
 \ Model mip1_copy
 \ LP format - for model browsing. Use MPS format to capture full model detail.
 Maximize
- 
+
 Subject To
  c5[2,1]: x[1,26,1,1] + x[1,26,2,1] + x[1,26,3,1] + x[1,26,4,1]
    + x[1,27,1,1] + x[1,27,2,1] + x[1,27,3,1] + x[1,27,4,1] + x[2,26,1,1]
