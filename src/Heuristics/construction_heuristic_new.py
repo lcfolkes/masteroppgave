@@ -36,8 +36,9 @@ class ConstructionHeuristic:
 
         #self.add_car_moves_to_employees()
 
-    def get_obj_val(self):
-        return get_objective_function_val(self.parking_nodes, self.employees, self.num_scenarios)
+    def get_obj_val(self, true_objective=True, both=False):
+        return get_objective_function_val(parking_nodes=self.parking_nodes, employees=self.employees,
+                                          num_scenarios=self.num_scenarios, true_objective=true_objective, both=both)
 
     def _set_hash_key(self):
         hash_dict = {}
@@ -274,7 +275,8 @@ class ConstructionHeuristic:
         print("-------------- First stage routes --------------")
         for employee in self.employees:
             for car_move in employee.car_moves:
-                print(f"Employee: {employee.employee_id}, Task nr: {employee.car_moves.index(car_move)+1}, "
+                car_move_type = "C" if car_move.is_charging_move else "P"
+                print(f"{car_move_type}: Employee: {employee.employee_id}, Task nr: {employee.car_moves.index(car_move)+1}, "
                       + car_move.to_string() + ", "
                       + f"Start time: {employee.start_times_car_moves[employee.car_moves.index(car_move)]}, "
                       + f"Travel time to move: {round(employee.travel_times_car_moves[employee.car_moves.index(car_move)], 2)}, "
@@ -285,7 +287,8 @@ class ConstructionHeuristic:
             if any(employee.car_moves_second_stage):
                 for s in range(self.num_scenarios):
                     for car_move in employee.car_moves_second_stage[s]:
-                        print(f"employee: {employee.employee_id}, scenario: {s + 1} " + car_move.to_string())
+                        car_move_type = "C" if car_move.is_charging_move else "P"
+                        print(f"{car_move_type}: employee: {employee.employee_id}, scenario: {s + 1} " + car_move.to_string())
 
 if __name__ == "__main__":
     filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_b"

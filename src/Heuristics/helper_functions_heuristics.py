@@ -334,3 +334,40 @@ def check_all_charging_moves_completed(num_scenarios, employees, first_stage, pa
     # print(num)
     # print(sum(n.charging_state for n in self.parking_nodes))
     return min(num) == sum(n.charging_state for n in parking_nodes)
+
+
+def get_first_stage_solution(input_solution, num_first_stage_tasks):
+    removed_second_stage_moves = set()
+    first_stage_solution = {}
+    # print(self.input_solution)
+    for k, v in input_solution.items():
+        first_stage_solution[k] = set()
+        for s in range(len(input_solution[k])):
+            # For solutions where number of assigned tasks are less than the number of first stage tasks
+            for i in range(min(num_first_stage_tasks, len(input_solution[k][s]))):
+                first_stage_solution[k].add(input_solution[k][s][i])
+            for i in range(min(num_first_stage_tasks, len(input_solution[k][s])), len(input_solution[k][s])):
+                removed_second_stage_moves.add(input_solution[k][s][i])
+        first_stage_solution[k] = list(first_stage_solution[k])
+
+    removed_moves = list(removed_second_stage_moves)
+
+    return first_stage_solution, removed_moves
+
+def get_solution_list(input_solution, num_first_stage_tasks):
+    first_stage_solution = {}
+    second_stage_solution = []
+    # print(self.input_solution)
+    for k, v in input_solution.items():
+        first_stage_solution[k] = set()
+        for s in range(len(input_solution[k])):
+            second_stage_solution.append([])
+            # For solutions where number of assigned tasks are less than the number of first stage tasks
+            for i in range(min(num_first_stage_tasks, len(input_solution[k][s]))):
+                first_stage_solution[k].add(input_solution[k][s][i])
+            for i in range(min(num_first_stage_tasks, len(input_solution[k][s]), len(input_solution[k][s]))):
+                second_stage_solution[s].append(input_solution[k][s][i])
+        first_stage_solution[k] = list(first_stage_solution[k])
+
+    first_stage_solution_list = get_first_stage_solution_list_from_dict(first_stage_solution)
+    return first_stage_solution_list, second_stage_solution

@@ -5,7 +5,8 @@ from DestroyAndRepairHeuristics.destroy import Destroy, RandomRemoval, WorstRemo
 from DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretInsertion
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
-from Heuristics.helper_functions_heuristics import safe_zero_division
+from Heuristics.helper_functions_heuristics import safe_zero_division, get_solution_list
+from Heuristics.objective_function import get_obj_val_of_car_moves
 from construction_heuristic_new import ConstructionHeuristic
 from path_manager import path_to_src
 import numpy as np
@@ -59,14 +60,16 @@ class ALNS():
 
         solution = ConstructionHeuristic(self.filename)
         solution.add_car_moves_to_employees()
-        best_solution = copy.deepcopy(solution)
+        true_obj_val, best_obj_val = solution.get_obj_val(both=True)
+        current_obj_val = best_obj_val
+        true_obj_vals = [true_obj_val]
+        heuristic_obj_vals = [best_obj_val]
+        best_solution = (copy.deepcopy(solution), true_obj_val)
         current_solution = copy.deepcopy(solution)
         visited_hash_keys.add(current_solution.hash_key)
         # TODO: this is the old objective function val
-        best_obj_val = solution.get_obj_val()
-        best_solutions = [[copy.deepcopy(solution), best_obj_val]]
-        current_obj_val = best_obj_val
-        obj_vals = [best_obj_val]
+
+
         temperature = 100 # Start temperature must be set differently
         cooling_rate = 0.9 # cooling_rate in (0,1)
 
@@ -94,14 +97,14 @@ class ALNS():
                 else:
                     #update scores for repair and destroy
                     visited_hash_keys.add(solution.hash_key)
-                    current_obj_val = solution.get_obj_val()
-                    obj_vals.append(current_obj_val)
+                    true_obj_val, current_obj_val = solution.get_obj_val(both=True)
+                    heuristic_obj_vals.append(current_obj_val)
+                    true_obj_vals.append(true_obj_val)
 
                     if self._accept(current_obj_val, best_obj_val, temperature):
                         if current_obj_val > best_obj_val:
-                            best_solution = copy.deepcopy(solution)
                             best_obj_val = current_obj_val
-                            best_solutions.append([copy.deepcopy(solution), current_obj_val])
+                            best_solution = (copy.deepcopy(solution), true_obj_val)
                             self._update_weight_record(_IS_BEST, destroy, repair)
                         elif current_obj_val > current_obj_val:
                             self._update_weight_record(_IS_BETTER, destroy, repair)
@@ -119,18 +122,17 @@ class ALNS():
 
 
         self.best_solution = best_solution
-        self.best_solutions = best_solutions
         self.best_obj_val = best_obj_val
-        plt.plot(obj_vals)
+        plt.plot(heuristic_obj_vals, c="red")
+        plt.plot(true_obj_vals, c="green")
         plt.show()
-        print(obj_vals)
+        #print(obj_vals)
         print(best_obj_val)
         print(self.destroy_operators)
         print(self.repair_operators)
-        print("best solutions")
-        for s in best_solutions:
-            print(s[1])
-            print(s[0].print_solution())
+        print("best solution")
+        print("obj_val", best_solution[1])
+        best_solution[0].print_solution()
         #best_solution.print_solution()
 
     def _accept(self, current_obj_val, best_obj_val, temperature) -> bool:
@@ -217,13 +219,12 @@ class ALNS():
 
 
 if __name__ == "__main__":
-    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_d"
+    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a"
     alns = ALNS(filename + ".pkl")
 
     print("\n############## Evaluate solution ##############")
-    for s in alns.best_solutions:
-        gi = GurobiInstance(filename + ".yaml", employees=s[0].employees, optimize=False)
-        run_model(gi)
+    gi = GurobiInstance(filename + ".yaml", employees=alns.best_solution[0].employees, optimize=False)
+    run_model(gi)
     print("\n############## Optimal solution ##############")
     gi2 = GurobiInstance(filename + ".yaml")
     run_model(gi2)

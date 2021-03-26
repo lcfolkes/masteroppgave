@@ -113,7 +113,11 @@ class GreedyInsertion(Repair):
         best_obj_val = get_obj_val_of_car_moves(parking_nodes=self.parking_nodes, num_scenarios=1,
                                                 first_stage_car_moves=input_solution)
 
+        cars_used = [cm.car.car_id for cm in input_solution]
+
         for car_move in self.unused_car_moves:
+            if car_move.car.car_id in cars_used:
+                continue
             for employee, employee_moves in current_solution.items():
                 if len(employee_moves) < self.num_first_stage_tasks:
                     solution_with_move = insert_car_move(current_solution, car_move, employee.employee_id)
