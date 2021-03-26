@@ -6,7 +6,7 @@ from path_manager import path_to_src
 from abc import ABC, abstractmethod
 import copy
 from Heuristics.DestroyAndRepairHeuristics.destroy import RandomRemoval
-from Heuristics.helper_functions_heuristics import insert_car_move, get_first_stage_solution_list_from_dict
+from Heuristics.helper_functions_heuristics import insert_car_move, get_first_stage_solution_list_from_dict, remove_car_move
 from Heuristics.objective_function import get_obj_val_of_car_moves
 from Heuristics.construction_heuristic_new import ConstructionHeuristic
 
@@ -30,18 +30,6 @@ class Repair(ABC):
         used_cars = [cm.car.car_id for cm in get_first_stage_solution_list_from_dict(destroyed_solution)]
         moves = [cm for cm in moves if cm.car.car_id not in used_cars]
         return moves
-
-    @classmethod
-    def remove_car_move(cls, chosen_car_move: CarMove, car_moves: [CarMove]) -> [CarMove]:
-        """
-        Removes a car move from a list of car moves and returns the result
-        :param chosen_car_move: the car move to remove
-        :param car_moves: the list of car moves to remove a car move from
-        :return: the list of car moves without the removed move
-        """
-        car = chosen_car_move.car.car_id
-        # return list of car moves that are not associated with the car of the chosen car move
-        return [cm for cm in car_moves if cm.car.car_id != car]
 
 
     def __init__(self, destroyed_solution_object: Destroy, unused_car_moves: [[CarMove]], parking_nodes: [ParkingNode],
@@ -112,7 +100,7 @@ class GreedyInsertion(Repair):
                 break
             current_solution = insert_car_move(current_solution, best_car_move, best_employee.employee_id)
             self.feasibility_checker.is_first_stage_solution_feasible(current_solution)
-            self.unused_car_moves = Repair.remove_car_move(best_car_move, self.unused_car_moves)
+            self.unused_car_moves = remove_car_move(best_car_move, self.unused_car_moves)
             q -= 1
         self.repaired_solution = current_solution
         return current_solution
@@ -132,8 +120,8 @@ class GreedyInsertion(Repair):
         cars_used = [cm.car.car_id for cm in input_solution]
 
         for car_move in self.unused_car_moves:
-            if car_move.car.car_id in cars_used:
-                continue
+            #if car_move.car.car_id in cars_used:
+            #    continue
             for employee, employee_moves in current_solution.items():
                 if len(employee_moves) < self.num_first_stage_tasks:
                     solution_with_move = insert_car_move(current_solution, car_move, employee.employee_id)
@@ -179,7 +167,7 @@ class RegretInsertion(Repair):
                 #print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
                 break
             current_solution = insert_car_move(current_solution, best_car_move, best_employee.employee_id)
-            self.unused_car_moves = Repair.remove_car_move(best_car_move, self.unused_car_moves)
+            self.unused_car_moves = remove_car_move(best_car_move, self.unused_car_moves)
             q -= 1
         self.repaired_solution = current_solution
         return current_solution

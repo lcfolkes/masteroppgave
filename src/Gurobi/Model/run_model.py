@@ -58,8 +58,12 @@ def run_model(model, stochastic=True, reset=False):
 			elif (v.varName[0] != 'x'):
 				print('%s %g' % (v.varName, v.x))
 		'''
-
-		print('Obj: %g' % m.objVal)
+		nObjectives = m.NumObj
+		for o in range(nObjectives):
+			# Set which objective we will query
+			m.params.ObjNumber = o
+			# Query the o-th objective value
+			print('Obj: %g' % m.ObjNVal)
 
 		# print("--- ROUTES AND SCHEDULES ---")
 		# print("Number of tasks in first stage : {}".format(len(TASKS_FIRST_STAGE)))
