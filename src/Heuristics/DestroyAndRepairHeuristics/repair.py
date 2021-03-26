@@ -21,12 +21,28 @@ os.chdir(path_to_src)
 class Repair(ABC):
 
     @classmethod
-    def get_unused_moves(cls, moves_by_scenario, removed_moves):
+    def get_unused_moves(cls, destroyed_solution, moves_by_scenario, removed_moves):
         moves = set(removed_moves)
         for scenario in moves_by_scenario:
             for cm in scenario:
                 moves.add(cm)
-        return list(moves)
+
+        used_cars = [cm.car.car_id for cm in get_first_stage_solution_list_from_dict(destroyed_solution)]
+        moves = [cm for cm in moves if cm.car.car_id not in used_cars]
+        return moves
+
+    @classmethod
+    def remove_car_move(cls, chosen_car_move: CarMove, car_moves: [CarMove]) -> [CarMove]:
+        """
+        Removes a car move from a list of car moves and returns the result
+        :param chosen_car_move: the car move to remove
+        :param car_moves: the list of car moves to remove a car move from
+        :return: the list of car moves without the removed move
+        """
+        car = chosen_car_move.car.car_id
+        # return list of car moves that are not associated with the car of the chosen car move
+        return [cm for cm in car_moves if cm.car.car_id != car]
+
 
     def __init__(self, destroyed_solution_object: Destroy, unused_car_moves: [[CarMove]], parking_nodes: [ParkingNode],
                  world_instance: World) -> {int: [CarMove]}:
@@ -42,7 +58,7 @@ class Repair(ABC):
         """
         self.destroyed_solution_object = destroyed_solution_object
         self.destroyed_solution = destroyed_solution_object.destroyed_solution
-        self.unused_car_moves = Repair.get_unused_moves(unused_car_moves, destroyed_solution_object.removed_moves)
+        self.unused_car_moves = Repair.get_unused_moves(self.destroyed_solution, unused_car_moves, destroyed_solution_object.removed_moves)
         self.num_first_stage_tasks = destroyed_solution_object.num_first_stage_tasks
         self.neighborhood_size = destroyed_solution_object.neighborhood_size
         self.parking_nodes = parking_nodes
@@ -96,7 +112,7 @@ class GreedyInsertion(Repair):
                 break
             current_solution = insert_car_move(current_solution, best_car_move, best_employee.employee_id)
             self.feasibility_checker.is_first_stage_solution_feasible(current_solution)
-            self.unused_car_moves.remove(best_car_move)
+            self.unused_car_moves = Repair.remove_car_move(best_car_move, self.unused_car_moves)
             q -= 1
         self.repaired_solution = current_solution
         return current_solution
@@ -163,7 +179,7 @@ class RegretInsertion(Repair):
                 #print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
                 break
             current_solution = insert_car_move(current_solution, best_car_move, best_employee.employee_id)
-            self.unused_car_moves.remove(best_car_move)
+            self.unused_car_moves = Repair.remove_car_move(best_car_move, self.unused_car_moves)
             q -= 1
         self.repaired_solution = current_solution
         return current_solution
@@ -184,6 +200,8 @@ class RegretInsertion(Repair):
         best_car_move = None
         best_employee = None
         highest_obj_val_diff = -0.1
+        #cars_used = [cm.car.car_id for cm in current_solution]
+
         for car_move in self.unused_car_moves:
             obj_val_dict = {}
             car_move_feasible = False

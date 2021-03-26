@@ -65,12 +65,13 @@ class ALNS():
         true_obj_vals = [true_obj_val]
         heuristic_obj_vals = [best_obj_val]
         best_solution = (copy.deepcopy(solution), true_obj_val)
+        print(f"Construction heuristic obj. val {true_obj_val}")
         current_solution = copy.deepcopy(solution)
         visited_hash_keys.add(current_solution.hash_key)
         # TODO: this is the old objective function val
 
 
-        temperature = 100 # Start temperature must be set differently
+        temperature = 1000 # Start temperature must be set differently
         cooling_rate = 0.9 # cooling_rate in (0,1)
 
         # SEGMENTS
@@ -123,11 +124,14 @@ class ALNS():
 
         self.best_solution = best_solution
         self.best_obj_val = best_obj_val
-        plt.plot(heuristic_obj_vals, c="red")
-        plt.plot(true_obj_vals, c="green")
+        plt.plot(heuristic_obj_vals, c="red", label="Heuristic obj. val")
+        plt.plot(true_obj_vals, c="green", label="True obj. val")
+        plt.suptitle('Objective value comparison')
+        plt.xlabel('instance')
+        plt.ylabel('obj. val')
+        plt.legend(loc="upper right")
         plt.show()
         #print(obj_vals)
-        print(best_obj_val)
         print(self.destroy_operators)
         print(self.repair_operators)
         print("best solution")
@@ -219,7 +223,7 @@ class ALNS():
 
 
 if __name__ == "__main__":
-    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a"
+    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_c"
     alns = ALNS(filename + ".pkl")
 
     print("\n############## Evaluate solution ##############")
