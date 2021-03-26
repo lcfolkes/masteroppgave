@@ -59,11 +59,10 @@ def run_model(model, stochastic=True, reset=False):
 				print('%s %g' % (v.varName, v.x))
 		'''
 		nObjectives = m.NumObj
-		for o in range(nObjectives):
-			# Set which objective we will query
-			m.params.ObjNumber = o
-			# Query the o-th objective value
-			print('Obj: %g' % m.ObjNVal)
+		m.params.ObjNumber = 0
+		print('Charging deviation: %g' % m.ObjNVal)
+		m.params.ObjNumber = 1
+		print('Profit obj. val: %g' % m.ObjNVal)
 
 		# print("--- ROUTES AND SCHEDULES ---")
 		# print("Number of tasks in first stage : {}".format(len(TASKS_FIRST_STAGE)))
