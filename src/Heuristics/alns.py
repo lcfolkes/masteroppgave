@@ -76,9 +76,9 @@ class ALNS():
 
         # SEGMENTS
         for i in range(10):
+            print(f"Iteration {i * 10}")
+            print(f"Best objective value {best_solution[1]}")
             for j in range(10):
-                print(f"Iteration {i*10 + j}")
-                print(f"Best objective value {best_obj_val}")
 
                 solution = copy.deepcopy(current_solution)
                 destroy = self._get_destroy_operator(solution=solution.assigned_car_moves,
@@ -113,8 +113,6 @@ class ALNS():
                             self._update_weight_record(_IS_ACCEPTED, destroy, repair)
 
                         current_solution = copy.deepcopy(solution)
-                    else:
-                        print("not accepted")
 
                 temperature *= cooling_rate
 
@@ -223,12 +221,17 @@ class ALNS():
 
 
 if __name__ == "__main__":
-    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_special_case"
+    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_e"
     alns = ALNS(filename + ".pkl")
 
     print("\n############## Evaluate solution ##############")
     gi = GurobiInstance(filename + ".yaml", employees=alns.best_solution[0].employees, optimize=False)
     run_model(gi)
+
+    print("\n############## Reoptimized solution ##############")
+    gi = GurobiInstance(filename + ".yaml", employees=alns.best_solution[0].employees, optimize=True)
+    run_model(gi)
+
     print("\n############## Optimal solution ##############")
     gi2 = GurobiInstance(filename + ".yaml")
     run_model(gi2)
