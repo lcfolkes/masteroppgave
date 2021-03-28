@@ -5,6 +5,7 @@ from DestroyAndRepairHeuristics.destroy import Destroy, RandomRemoval, WorstRemo
 from DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretInsertion
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
+from Heuristics.LocalSearchOperators.local_search_operator import LocalSearchOperator, IntraMove, InterSwap
 from Heuristics.helper_functions_heuristics import safe_zero_division, get_solution_list
 from Heuristics.objective_function import get_obj_val_of_car_moves
 from construction_heuristic_new import ConstructionHeuristic
@@ -48,6 +49,11 @@ class ALNS():
         self.destroy_operators_record = OrderedDict({'random': [1.0, 0.0], 'worst': [1.0, 0.0], 'shaw': [1.0, 0.0]})
         self.repair_operators_record = OrderedDict({'greedy': [1.0, 0.0], 'regret2': [1.0, 0.0], 'regret3': [1.0, 0.0]})
 
+        self.local_search_operators = OrderedDict({'intra_move': 1.0, 'inter_swap:': 1.0})
+        self.local_search_operators_record = OrderedDict({'intra_move': [1.0, 0.0], 'inter_swap': [1.0, 0.0]})
+
+
+
         self._callbacks = {}
 
         self.best_solution = None
@@ -81,6 +87,7 @@ class ALNS():
             for j in range(10):
 
                 solution = copy.deepcopy(current_solution)
+
                 destroy = self._get_destroy_operator(solution=solution.assigned_car_moves,
                                                num_first_stage_tasks=solution.world_instance.first_stage_tasks,
                                                neighborhood_size=2, randomization_degree=1,
@@ -103,13 +110,22 @@ class ALNS():
                     true_obj_vals.append(true_obj_val)
 
                     if self._accept(current_obj_val, best_obj_val, temperature):
-                        if obj_val > best_obj_val:
-                            best_obj_val = obj_val
-                            best_solution = (copy.deepcopy(solution), true_obj_val)
-                            self._update_weight_record(_IS_BEST, destroy, repair)
-                        elif obj_val > current_obj_val:
-                            current_obj_val = obj_val
-                            self._update_weight_record(_IS_BETTER, destroy, repair)
+
+                        # IMPROVING
+                        if obj_val > current_obj_val:
+                            # NEW GLOBAL BEST
+                            if obj_val > best_obj_val:
+                                best_obj_val = obj_val
+                                best_solution = (copy.deepcopy(solution), true_obj_val)
+                                self._update_weight_record(_IS_BEST, destroy, repair)
+                            # NEW LOCAL BEST
+                            else:
+                                current_obj_val = obj_val
+                                self._update_weight_record(_IS_BETTER, destroy, repair)
+
+
+
+                        # NON-IMPROVING BUT ACCEPTED
                         else:
                             self._update_weight_record(_IS_ACCEPTED, destroy, repair)
 
@@ -151,6 +167,7 @@ class ALNS():
     def _get_destroy_operator(self, solution, num_first_stage_tasks, neighborhood_size, randomization_degree,
                              parking_nodes) -> Destroy:
         w_sum_destroy = sum(w for o, w in self.destroy_operators.items())
+        # dist = distribution
         w_dist_destroy = [w / w_sum_destroy for o, w in self.destroy_operators.items()]
         operator = random.choices(list(self.destroy_operators), w_dist_destroy)[0]
         self.destroy_operators_record[operator][1] += 1
@@ -168,6 +185,7 @@ class ALNS():
     def _get_repair_operator(self, destroyed_solution_object, unused_car_moves, parking_nodes, world_instance) \
             -> Repair:
         w_sum_repair = sum(w for o, w in self.repair_operators.items())
+        # dist = distribution
         w_dist_repair = [w / w_sum_repair for o, w in self.repair_operators.items()]
         operator = random.choices(list(self.repair_operators), w_dist_repair)[0]
         self.repair_operators_record[operator][1] += 1
@@ -181,6 +199,19 @@ class ALNS():
         else:
             exit("Repair operator does not exist")
 
+    def _get_local_search_operator(self, repaired_solution, feasibility_checker) -> LocalSearchOperator:
+        w_sum_lso = sum(w for o, w in self.local_search_operators.items())
+        # dist = distribution
+        w_dist_lso = [w / w_sum_lso for o, w in self.local_search_operators.items()]
+        operator = random.choices(list(self.local_search_operators), w_dist_lso)[0]
+        self.local_search_operators_record[operator][1] += 1
+
+        if operator == "intra_move":
+            return IntraMove(repaired_solution, feasibility_checker)
+        elif operator == "inter_swap":
+            return InterSwap(repaired_solution, feasibility_checker)
+        else:
+            exit("Local search operator does not exist")
 
 
     def _update_weight_record(self, operator_score, destroy, repair):
