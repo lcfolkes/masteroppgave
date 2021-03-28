@@ -98,16 +98,17 @@ class ALNS():
                 else:
                     #update scores for repair and destroy
                     visited_hash_keys.add(solution.hash_key)
-                    true_obj_val, current_obj_val = solution.get_obj_val(both=True)
+                    true_obj_val, obj_val = solution.get_obj_val(both=True)
                     heuristic_obj_vals.append(current_obj_val)
                     true_obj_vals.append(true_obj_val)
 
                     if self._accept(current_obj_val, best_obj_val, temperature):
-                        if current_obj_val > best_obj_val:
-                            best_obj_val = current_obj_val
+                        if obj_val > best_obj_val:
+                            best_obj_val = obj_val
                             best_solution = (copy.deepcopy(solution), true_obj_val)
                             self._update_weight_record(_IS_BEST, destroy, repair)
-                        elif current_obj_val > current_obj_val:
+                        elif obj_val > current_obj_val:
+                            current_obj_val = obj_val
                             self._update_weight_record(_IS_BETTER, destroy, repair)
                         else:
                             self._update_weight_record(_IS_ACCEPTED, destroy, repair)
@@ -221,7 +222,7 @@ class ALNS():
 
 
 if __name__ == "__main__":
-    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_e"
+    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a"
     alns = ALNS(filename + ".pkl")
 
     print("\n############## Evaluate solution ##############")
