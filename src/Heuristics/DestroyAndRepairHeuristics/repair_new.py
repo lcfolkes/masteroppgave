@@ -177,10 +177,10 @@ class RegretInsertion(Repair):
             if None in (best_car_move, best_employee):
                 # print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
                 break
-            current_solution = insert_car_move(current_solution, best_car_move, best_employee.employee_id)
+            insert_car_move_wo_deep_copy(current_solution, best_car_move, best_employee.employee_id)
             self.unused_car_moves = remove_car_move(best_car_move, self.unused_car_moves)
             q -= 1
-        self.repaired_solution = current_solution
+        #self.repaired_solution = current_solution
         return current_solution
 
     def _get_best_insertion_regret(self, current_solution: {int: [CarMove]}, regret_nr: int) -> (CarMove, int):
@@ -208,14 +208,16 @@ class RegretInsertion(Repair):
                 if len(employee_moves) < self.num_first_stage_tasks:
 
                     # TODO: representation of solution must be reconsidered here. Maybe it is not necessary to create a new object every time
-                    solution_with_move = insert_car_move(current_solution, car_move, employee.employee_id)
-                    if self.feasibility_checker.is_first_stage_solution_feasible(solution_with_move):
+                    insert_car_move_wo_deep_copy(current_solution, car_move, employee.employee_id)
+                    if self.feasibility_checker.is_first_stage_solution_feasible(current_solution):
                         car_move_feasible = True
-                        solution_with_move = get_first_stage_solution_list_from_dict(solution_with_move)
+                        solution_with_move = get_first_stage_solution_list_from_dict(current_solution)
 
                         obj_val = get_obj_val_of_car_moves(self.parking_nodes, num_scenarios=1,
                                                            first_stage_car_moves=solution_with_move)
                         obj_val_dict[employee] = obj_val
+
+                    remove_car_move_from_employee_from_solution(current_solution, car_move, employee.employee_id)
 
             if not car_move_feasible:
                 continue
@@ -252,8 +254,11 @@ if __name__ == "__main__":
     profiler = Profiler()
     profiler.start()
 
-    gi = GreedyInsertion(destroyed_solution_object=rr, unused_car_moves=ch.unused_car_moves,
-        parking_nodes=ch.parking_nodes, world_instance=ch.world_instance)
+    #gi = GreedyInsertion(destroyed_solution_object=rr, unused_car_moves=ch.unused_car_moves,
+    #    parking_nodes=ch.parking_nodes, world_instance=ch.world_instance)
+
+    gi = RegretInsertion(destroyed_solution_object=rr, unused_car_moves=ch.unused_car_moves,
+                         parking_nodes=ch.parking_nodes, world_instance=ch.world_instance, regret_nr=1)
 
     profiler.stop()
     print(profiler.output_text(unicode=True, color=True))

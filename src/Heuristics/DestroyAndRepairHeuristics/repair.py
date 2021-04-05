@@ -243,8 +243,11 @@ if __name__ == "__main__":
     profiler = Profiler()
     profiler.start()
 
-    gi = GreedyInsertion(destroyed_solution_object=rr, unused_car_moves=ch.unused_car_moves,
-                         parking_nodes=ch.parking_nodes, world_instance=ch.world_instance)
+    # gi = GreedyInsertion(destroyed_solution_object=rr, unused_car_moves=ch.unused_car_moves,
+    #    parking_nodes=ch.parking_nodes, world_instance=ch.world_instance)
+
+    gi = RegretInsertion(destroyed_solution_object=rr, unused_car_moves=ch.unused_car_moves,
+                         parking_nodes=ch.parking_nodes, world_instance=ch.world_instance, regret_nr=1)
 
     profiler.stop()
     print(profiler.output_text(unicode=True, color=True))
