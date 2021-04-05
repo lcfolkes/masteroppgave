@@ -2,7 +2,8 @@ import copy
 from collections import OrderedDict
 import random
 from DestroyAndRepairHeuristics.destroy import Destroy, RandomRemoval, WorstRemoval, ShawRemoval
-from DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretInsertion
+#from DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretInsertion
+from DestroyAndRepairHeuristics.repair_new import Repair, GreedyInsertion, RegretInsertion
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from Heuristics.LocalSearchOperators.local_search_operator import LocalSearchOperator, IntraMove, InterSwap
@@ -253,9 +254,17 @@ class ALNS():
 
 
 if __name__ == "__main__":
+    from pyinstrument import Profiler
+
+    profiler = Profiler()
+    profiler.start()
+
     filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a"
     alns = ALNS(filename + ".pkl")
 
+    profiler.stop()
+    print(profiler.output_text(unicode=True, color=True))
+    '''
     print("\n############## Evaluate solution ##############")
     gi = GurobiInstance(filename + ".yaml", employees=alns.best_solution[0].employees, optimize=False)
     run_model(gi)
@@ -266,7 +275,7 @@ if __name__ == "__main__":
 
     print("\n############## Optimal solution ##############")
     gi2 = GurobiInstance(filename + ".yaml")
-    run_model(gi2)
+    run_model(gi2)'''
 
 
     # TODO: check objective function

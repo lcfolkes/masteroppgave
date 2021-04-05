@@ -50,7 +50,6 @@ def get_second_stage_solution_list_from_dict(second_stage_solution_dict: {int: [
                 second_stage_solution[s].append(v[s][i])
     return second_stage_solution
 
-
 def insert_car_move(current_solution: {Employee: [CarMove]}, car_move: CarMove, employee_id: int) -> {Employee: [CarMove]}:
     """
     :param current_solution: dictionary with employee as key, list of first stage moves as value
@@ -58,14 +57,37 @@ def insert_car_move(current_solution: {Employee: [CarMove]}, car_move: CarMove, 
     :param employee: employee object
     :return: solution with the inserted car move
     """
-    #TODO: Kan vi representere en løsning annerledes her?
-
     solution = copy.deepcopy(current_solution)
     employee_obj = [e for e in solution.keys() if e.employee_id == employee_id][0]
     solution.get(employee_obj).append(car_move)
     car_move.set_employee(employee_obj)
     return solution
 
+
+def insert_car_move_wo_deep_copy(solution: {Employee: [CarMove]}, car_move: CarMove, employee_id: int):
+    """
+    :param current_solution: dictionary with employee as key, list of first stage moves as value
+    :param car_move: car move object
+    :param employee: employee object
+    :return: solution with the inserted car move
+    """
+    #TODO: Kan vi representere en løsning annerledes her?
+    employee_obj = [e for e in solution.keys() if e.employee_id == employee_id][0]
+    solution.get(employee_obj).append(car_move)
+    car_move.set_employee(employee_obj)
+    #return solution
+
+def remove_car_move_from_employee_from_solution(solution: {Employee: [CarMove]}, car_move: CarMove, employee_id: int):
+    """
+    :param solution: input solution with move
+    :param car_move: car move to be removed
+    :param employee_id: id of employee of whom is assigned the car move
+    :return: solution without car_move
+    """
+    employee_obj = [e for e in solution.keys() if e.employee_id == employee_id][0]
+    solution.get(employee_obj).remove(car_move)
+    car_move.remove_employee()
+    #return solution
 
 def remove_car_move(chosen_car_move: CarMove, car_moves: [CarMove]) -> [CarMove]:
     """
@@ -186,7 +208,6 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
     if first_stage:
         best_car_move_first_stage = None
         assigned_car_moves_first_stage = get_assigned_car_moves(employees)
-        longest_travel_time_first_stage = -1000
         best_obj_val_first_stage = get_obj_val_of_car_moves(parking_nodes=parking_nodes, num_scenarios=num_scenarios,
                                                             first_stage_car_moves=assigned_car_moves_first_stage, include_employee_check=False)
         #print("Iteration")
@@ -207,7 +228,6 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
         best_car_move_second_stage = [None for _ in range(num_scenarios)]
         best_obj_val_second_stage = [-1000 for _ in range(num_scenarios)]
         assigned_first_stage_car_moves = get_assigned_car_moves(employees)
-        longest_travel_time_second_stage = [0 for _ in range(num_scenarios)]
 
         for s in range(num_scenarios):
             assigned_second_stage_car_moves = get_assigned_car_moves(employees, scenario=s)
