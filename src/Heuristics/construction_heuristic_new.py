@@ -271,6 +271,7 @@ class ConstructionHeuristic:
         self._set_hash_key()
 
     def print_solution(self):
+        # TODO: make printing more compact
         print("--------CONSTRUCTION HEURISTIC SOLUTION--------")
         print("-------------- First stage routes --------------")
         for employee in self.employees:

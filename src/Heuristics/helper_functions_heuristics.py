@@ -58,6 +58,8 @@ def insert_car_move(current_solution: {Employee: [CarMove]}, car_move: CarMove, 
     :param employee: employee object
     :return: solution with the inserted car move
     """
+    #TODO: Kan vi representere en løsning annerledes her?
+
     solution = copy.deepcopy(current_solution)
     employee_obj = [e for e in solution.keys() if e.employee_id == employee_id][0]
     solution.get(employee_obj).append(car_move)

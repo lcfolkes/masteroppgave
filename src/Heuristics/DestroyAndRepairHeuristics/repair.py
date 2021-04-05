@@ -124,6 +124,7 @@ class GreedyInsertion(Repair):
             #    continue
             for employee, employee_moves in current_solution.items():
                 if len(employee_moves) < self.num_first_stage_tasks:
+                    # TODO: representation of solution must be reconsidered here. Maybe it is not necessary to create a new object every time
                     solution_with_move = insert_car_move(current_solution, car_move, employee.employee_id)
                     if self.feasibility_checker.is_first_stage_solution_feasible(solution_with_move):
                         solution_with_move = get_first_stage_solution_list_from_dict(solution_with_move)
@@ -195,6 +196,8 @@ class RegretInsertion(Repair):
             car_move_feasible = False
             for employee, employee_moves in current_solution.items():
                 if len(employee_moves) < self.num_first_stage_tasks:
+
+                    # TODO: representation of solution must be reconsidered here. Maybe it is not necessary to create a new object every time
                     solution_with_move = insert_car_move(current_solution, car_move, employee.employee_id)
                     if self.feasibility_checker.is_first_stage_solution_feasible(solution_with_move):
                         car_move_feasible = True

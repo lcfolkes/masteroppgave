@@ -16,8 +16,8 @@ class LocalSearchOperator(ABC):
 		'''
 		self.initial_solution = solution
 		self.feasibility_checker = feasibility_checker
-		self.mutated_solution = self._mutate(solution)
 		self._count = 0
+		self.mutated_solution = self._mutate(solution)
 
 	def _mutate(self, solution):
 		pass

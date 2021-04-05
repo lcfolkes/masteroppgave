@@ -7,7 +7,7 @@ os.chdir(path_to_src)
 
 TIME_CONSTANTS = read_config('InstanceGenerator/world_constants_config.yaml')['time_constants']
 
-
+# NODE OBJECT DOES NOT NEED TO BE DEEP COPIED EVERY TIME
 class Node:
     id_iter = itertools.count(start=1)
 
