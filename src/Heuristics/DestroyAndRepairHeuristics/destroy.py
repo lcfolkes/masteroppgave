@@ -4,7 +4,7 @@ import random
 import copy
 from path_manager import path_to_src
 from Heuristics.construction_heuristic_new import ConstructionHeuristic
-from Heuristics.helper_functions_heuristics import get_first_stage_solution_list_from_dict
+from Heuristics.helper_functions_heuristics import get_first_stage_solution_list_from_dict, get_first_stage_solution_and_removed_moves
 from Heuristics.objective_function import get_obj_val_of_car_moves
 
 from Heuristics.heuristics_constants import HeuristicsConstants
@@ -23,36 +23,14 @@ class Destroy(ABC):
         """
 		self.num_scenarios = len(list(solution.items())[0][1])
 		self.num_first_stage_tasks = num_first_stage_tasks
-		self.removed_moves = []
 		self.input_solution = solution
-		self.first_stage_solution = self._get_first_stage_solution()
+		self.first_stage_solution, self.removed_moves = get_first_stage_solution_and_removed_moves(solution, num_first_stage_tasks)
 		self.neighborhood_size = neighborhood_size
 		self.destroyed_solution = self._destroy()
 
 	@abstractmethod
 	def _destroy(self):
 		pass
-
-	def _get_first_stage_solution(self):
-		removed_second_stage_moves = set()
-		first_stage_solution = {}
-		#print(self.input_solution)
-		for k, v in self.input_solution.items():
-			first_stage_solution[k] = set()
-			for s in range(len(self.input_solution[k])):
-				# For solutions where number of assigned tasks are less than the number of first stage tasks
-				for i in range(min(self.num_first_stage_tasks, len(self.input_solution[k][s]))):
-					first_stage_solution[k].add(self.input_solution[k][s][i])
-				for i in range(min(self.num_first_stage_tasks, len(self.input_solution[k][s])), len(self.input_solution[k][s])):
-					removed_second_stage_moves.add(self.input_solution[k][s][i])
-			first_stage_solution[k] = list(first_stage_solution[k])
-
-		self.removed_moves = list(removed_second_stage_moves)
-
-		#print(self.input_solution)
-		#print(self.removed_moves)
-		#print(first_stage_solution)
-		return first_stage_solution
 
 	def to_string(self):
 		print("\nDESTROY")

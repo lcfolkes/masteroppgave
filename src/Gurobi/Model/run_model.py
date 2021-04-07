@@ -34,11 +34,12 @@ def run_model(model, stochastic=True, reset=False):
 
 		# for k,v in EMPLOYEE_START_LOCATION.items():
 		#    print("Employee: {}, Node: {}".format(k,v))
+		'''
 		print("\n--- RESULTS ---")
 		x_count, y_count, z_count, w_count = 1, 1, 1, 1
 		for v in m.getVars():
-			'''if(v.varName[0] == 't'):
-				print(v.varName, v.x)'''
+			if(v.varName[0] == 't'):
+				print(v.varName, v.x)
 			if (v.varName[0] == 'x' and x_count > 0):
 				print("x[k,r,m,s]: Service employee k performs car-move r as task number m in scenario s")
 				x_count = 0
@@ -56,8 +57,12 @@ def run_model(model, stochastic=True, reset=False):
 				print("{0} {1} ({2} --> {3})".format(v.varName, int(v.x), model.CARMOVE_ORIGIN[l[1]], model.CARMOVE_DESTINATION[l[1]]))
 			elif (v.varName[0] != 'x'):
 				print('%s %g' % (v.varName, v.x))
-
-		print('Obj: %g' % m.objVal)
+		'''
+		nObjectives = m.NumObj
+		m.params.ObjNumber = 0
+		print('Charging deviation: %g' % m.ObjNVal)
+		m.params.ObjNumber = 1
+		print('Profit obj. val: %g' % m.ObjNVal)
 
 		# print("--- ROUTES AND SCHEDULES ---")
 		# print("Number of tasks in first stage : {}".format(len(TASKS_FIRST_STAGE)))

@@ -7,7 +7,7 @@ os.chdir(path_to_src)
 
 TIME_CONSTANTS = read_config('InstanceGenerator/world_constants_config.yaml')['time_constants']
 
-
+# NODE OBJECT DOES NOT NEED TO BE DEEP COPIED EVERY TIME
 class Node:
     id_iter = itertools.count(start=1)
 
@@ -103,6 +103,14 @@ class CarMove:
             if not self.employee_second_stage:
                 self._initialize_second_stage(len(employee.car_moves_second_stage))
             self.employee_second_stage[scenario] = employee
+
+    def remove_employee(self, scenario=None):
+        if scenario == None:
+            self.employee = []
+        else:
+            self.employee_second_stage[scenario] = []
+
+
 
     def _initialize_second_stage(self, num_scenarios: int):
         for s in range(num_scenarios):

@@ -265,7 +265,8 @@ def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int,
         cost_travel_time_between_car_moves
 
 
-def get_objective_function_val(parking_nodes: [ParkingNode], employees: [Employee], num_scenarios: int) -> float:
+def get_objective_function_val(parking_nodes: [ParkingNode], employees: [Employee], num_scenarios: int,
+                               true_objective = True, both=False) -> float:
     """
     :param parking_nodes: list of parking node objects, [pn1, pn2]
     :param employees: list of employees, [em1, em2]
@@ -296,10 +297,27 @@ def get_objective_function_val(parking_nodes: [ParkingNode], employees: [Employe
                                                                       second_stage_car_moves=second_stage_car_moves,
                                                                       scenario=None, verbose=True)
 
-    obj_val = profit_customer_requests - cost_relocation - cost_deviation_ideal_state
-    #print(f"Objective function value: {round(obj_val, 2)}")
+    if not true_objective or both:
+        cost_deviation_charging_moves = calculate_cost_deviation_charging_moves(parking_nodes=parking_nodes,
+                                                                                first_stage_car_moves=first_stage_car_moves,
+                                                                                second_stage_car_moves=second_stage_car_moves,
+                                                                                scenario=None)
+        cost_travel_time_between_car_moves = calculate_cost_travel_time_between_car_moves(
+            first_stage_car_moves=first_stage_car_moves,
+            second_stage_car_moves=second_stage_car_moves,
+            scenario=None)
+    else:
+        cost_deviation_charging_moves = 0
+        cost_travel_time_between_car_moves = 0
 
-    return obj_val
+    if both:
+        true_obj_val = profit_customer_requests - cost_relocation - cost_deviation_ideal_state
+        heurisitc_obj_val = profit_customer_requests - cost_relocation - cost_deviation_ideal_state - cost_deviation_charging_moves - cost_travel_time_between_car_moves
+        return true_obj_val, heurisitc_obj_val
+
+    else:
+        obj_val = profit_customer_requests - cost_relocation - cost_deviation_ideal_state - cost_deviation_charging_moves - cost_travel_time_between_car_moves
+        return obj_val
 
 
 def calculate_cost_deviation_charging_moves(parking_nodes: [ParkingNode], first_stage_car_moves: [CarMove],
@@ -312,8 +330,8 @@ def calculate_cost_deviation_charging_moves(parking_nodes: [ParkingNode], first_
     num_charging_moves_second_stage = [0 for _ in range(len(second_stage_car_moves))]
     if any(second_stage_car_moves):
         for s in range(len(second_stage_car_moves)):
-            num_charging_moves_second_stage[s] = sum(
-                1 for cm in second_stage_car_moves[s] if isinstance(cm.end_node, ChargingNode))
+            num_charging_moves_second_stage[s] = sum(1 for cm in second_stage_car_moves[s]
+                                                     if isinstance(cm.end_node, ChargingNode))
 
     if scenario is None:
         num_charging_moves = num_charging_moves_first_stage + np.mean(num_charging_moves_second_stage)
@@ -336,8 +354,8 @@ def calculate_cost_travel_time_between_car_moves(first_stage_car_moves: [CarMove
                 if cm.employee not in employees:
                     employees.append(cm.employee)
         if second_stage_car_moves:
-            for scenario in second_stage_car_moves:
-                for cm in scenario:
+            for s in second_stage_car_moves:
+                for cm in s:
                     if cm.employee not in employees:
                         employees.append(cm.employee)
 
@@ -366,6 +384,16 @@ def get_travel_time_between_car_moves(employees, scenario: int = None):
                 travel_time += employee.current_time
                 for car_move in employee.car_moves:
                     travel_time -= car_move.handling_time
+                if employee.car_moves_second_stage:
+                    travel_time_second_stage = 0
+                    num_scenarios = len(employee.car_moves_second_stage)
+                    for s in range(num_scenarios):
+                        travel_time_second_stage += employee.current_time_second_stage[s]
+                        for car_move in employee.car_moves_second_stage[s]:
+                            travel_time_second_stage -= car_move.handling_time
+                    travel_time_second_stage /= num_scenarios
+                    travel_time += travel_time_second_stage
+
         else:
             for employee in employees:
                 travel_time += employee.current_time_second_stage[scenario]
