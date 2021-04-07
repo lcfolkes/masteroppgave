@@ -4,7 +4,7 @@ import random
 import copy
 from path_manager import path_to_src
 from Heuristics.construction_heuristic_new import ConstructionHeuristic
-from Heuristics.helper_functions_heuristics import get_first_stage_solution_list_from_dict, get_first_stage_solution
+from Heuristics.helper_functions_heuristics import get_first_stage_solution_list_from_dict, get_first_stage_solution_and_removed_moves
 from Heuristics.objective_function import get_obj_val_of_car_moves
 
 from Heuristics.heuristics_constants import HeuristicsConstants
@@ -24,7 +24,7 @@ class Destroy(ABC):
 		self.num_scenarios = len(list(solution.items())[0][1])
 		self.num_first_stage_tasks = num_first_stage_tasks
 		self.input_solution = solution
-		self.first_stage_solution, self.removed_moves = get_first_stage_solution(solution, num_first_stage_tasks)
+		self.first_stage_solution, self.removed_moves = get_first_stage_solution_and_removed_moves(solution, num_first_stage_tasks)
 		self.neighborhood_size = neighborhood_size
 		self.destroyed_solution = self._destroy()
 

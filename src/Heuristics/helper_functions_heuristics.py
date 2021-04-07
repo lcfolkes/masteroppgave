@@ -359,6 +359,19 @@ def check_all_charging_moves_completed(num_scenarios, employees, first_stage, pa
 
 
 def get_first_stage_solution(input_solution, num_first_stage_tasks):
+    first_stage_solution = {}
+    # print(self.input_solution)
+    for k, v in input_solution.items():
+        first_stage_solution[k] = set()
+        for s in range(len(input_solution[k])):
+            # For solutions where number of assigned tasks are less than the number of first stage tasks
+            for i in range(min(num_first_stage_tasks, len(input_solution[k][s]))):
+                first_stage_solution[k].add(input_solution[k][s][i])
+        first_stage_solution[k] = list(first_stage_solution[k])
+
+    return first_stage_solution
+
+def get_first_stage_solution_and_removed_moves(input_solution, num_first_stage_tasks):
     removed_second_stage_moves = set()
     first_stage_solution = {}
     # print(self.input_solution)

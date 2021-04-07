@@ -10,6 +10,8 @@ os.chdir(path_to_src)
 
 os.chdir(path_to_src)
 
+#TODO: I think travel times for employees can be class methods in world. this way we do not need to create new world objects nor pass them in
+
 class FeasibilityChecker():
 	def __init__(self, world_instance: World):
 		self.world_instance = world_instance

@@ -18,6 +18,7 @@ class ConstructionHeuristic:
 
         self.instance_file = instance_file
         self.world_instance = load_object_from_file(instance_file)
+        self.feasibility_checker = FeasibilityChecker(self.world_instance)
         self.num_scenarios = self.world_instance.num_scenarios
         self.employees = self.world_instance.employees
         self.parking_nodes = self.world_instance.parking_nodes
@@ -83,7 +84,6 @@ class ConstructionHeuristic:
 
     def get_best_employee(self, employees, best_car_move, first_stage, num_scenarios, world_instance,
                           car_moves_second_stage):
-        feasibility_checker = FeasibilityChecker(world_instance)
         if first_stage:
             best_employee = None
             best_travel_time_to_car_move = 100
@@ -102,7 +102,7 @@ class ConstructionHeuristic:
             # in first stage
             if first_stage == (task_num < world_instance.first_stage_tasks):
                 if first_stage:
-                    legal_move = feasibility_checker.check_legal_move(car_move=best_car_move, employee=employee)
+                    legal_move = self.feasibility_checker.check_legal_move(car_move=best_car_move, employee=employee)
                     #print(f"legal_move {legal_move}\n{best_car_move.to_string()}")
                     if legal_move:
                         best_move_not_legal = False
@@ -116,7 +116,7 @@ class ConstructionHeuristic:
                 else:
                     for s in range(num_scenarios):
                         if best_car_move[s] is not None:
-                            legal_move = feasibility_checker.check_legal_move(
+                            legal_move = self.feasibility_checker.check_legal_move(
                                 car_move=best_car_move[s], employee=employee, scenario=s)
                             #print(f"\n{best_car_move[s].to_string()}\nlegal_move {legal_move}")
 

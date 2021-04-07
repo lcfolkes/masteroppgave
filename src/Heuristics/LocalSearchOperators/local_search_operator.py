@@ -14,7 +14,7 @@ class LocalSearchOperator(ABC):
 		'''
 		:param solution: dictionary with employee object as key and a list of car moves as value
 		'''
-		self.initial_solution = solution
+		#self.initial_solution = solution
 		self.feasibility_checker = feasibility_checker
 		self._count = 0
 		self.mutated_solution = self._mutate(solution)
@@ -40,16 +40,19 @@ class IntraMove(LocalSearchOperator):
 		super().__init__(solution, feasibility_checker)
 
 	def _mutate(self, solution):
-		solution = copy.deepcopy(solution)
+		#solution = copy.deepcopy(solution)
 		employees = [k for k, v in solution.items() if len(v) > 1]
-		employee = random.choice(employees)
-		moves = solution[employee]
-		random.shuffle(moves)
-		if not self.feasibility_checker.is_first_stage_solution_feasible(solution):
-			print("IntraMove not possible")
-			if self._count < 3:
-				self._count += 1
-				self._mutate(solution)
+		try:
+			employee = random.choice(employees)
+			moves = solution[employee]
+			random.shuffle(moves)
+			if not self.feasibility_checker.is_first_stage_solution_feasible(solution):
+				#print("IntraMove not possible")
+				if self._count < 3:
+					self._count += 1
+					self._mutate(solution)
+		except:
+			pass
 		return solution
 
 
@@ -62,19 +65,22 @@ class InterSwap(LocalSearchOperator):
 		super().__init__(solution, feasibility_checker)
 
 	def _mutate(self, solution):
-		solution = copy.deepcopy(solution)
+		#solution = copy.deepcopy(solution)
 		employees = [k for k, v in solution.items() if len(v) > 0]
-		chosen_employees = random.sample(employees, 2)
-		idx_1 = random.randint(0, len(solution[chosen_employees[0]])-1)
-		idx_2 = random.randint(0, len(solution[chosen_employees[1]])-1)
-		solution[chosen_employees[1]][idx_2], solution[chosen_employees[0]][idx_1] = \
-			solution[chosen_employees[0]][idx_1], solution[chosen_employees[1]][idx_2]
+		try:
+			chosen_employees = random.sample(employees, 2)
+			idx_1 = random.randint(0, len(solution[chosen_employees[0]])-1)
+			idx_2 = random.randint(0, len(solution[chosen_employees[1]])-1)
+			solution[chosen_employees[1]][idx_2], solution[chosen_employees[0]][idx_1] = \
+				solution[chosen_employees[0]][idx_1], solution[chosen_employees[1]][idx_2]
 
-		if not self.feasibility_checker.is_first_stage_solution_feasible(solution):
-			if self._count < 3:
-				print("InterSwap not possible")
-				self._count += 1
-				self._mutate(solution)
+			if not self.feasibility_checker.is_first_stage_solution_feasible(solution):
+				if self._count < 3:
+					#print("InterSwap not possible")
+					self._count += 1
+					self._mutate(solution)
+		except:
+			pass
 
 		return solution
 
