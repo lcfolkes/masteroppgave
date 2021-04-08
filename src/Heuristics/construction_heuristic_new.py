@@ -18,6 +18,7 @@ class ConstructionHeuristic:
 
         self.instance_file = instance_file
         self.world_instance = load_object_from_file(instance_file)
+        self.feasibility_checker = FeasibilityChecker(self.world_instance)
         self.num_scenarios = self.world_instance.num_scenarios
         self.employees = self.world_instance.employees
         self.parking_nodes = self.world_instance.parking_nodes
@@ -36,8 +37,9 @@ class ConstructionHeuristic:
 
         #self.add_car_moves_to_employees()
 
-    def get_obj_val(self):
-        return get_objective_function_val(self.parking_nodes, self.employees, self.num_scenarios)
+    def get_obj_val(self, true_objective=True, both=False):
+        return get_objective_function_val(parking_nodes=self.parking_nodes, employees=self.employees,
+                                          num_scenarios=self.num_scenarios, true_objective=true_objective, both=both)
 
     def _set_hash_key(self):
         hash_dict = {}
@@ -82,7 +84,6 @@ class ConstructionHeuristic:
 
     def get_best_employee(self, employees, best_car_move, first_stage, num_scenarios, world_instance,
                           car_moves_second_stage):
-        feasibility_checker = FeasibilityChecker(world_instance)
         if first_stage:
             best_employee = None
             best_travel_time_to_car_move = 100
@@ -101,7 +102,7 @@ class ConstructionHeuristic:
             # in first stage
             if first_stage == (task_num < world_instance.first_stage_tasks):
                 if first_stage:
-                    legal_move = feasibility_checker.check_legal_move(car_move=best_car_move, employee=employee)
+                    legal_move = self.feasibility_checker.check_legal_move(car_move=best_car_move, employee=employee)
                     #print(f"legal_move {legal_move}\n{best_car_move.to_string()}")
                     if legal_move:
                         best_move_not_legal = False
@@ -115,7 +116,7 @@ class ConstructionHeuristic:
                 else:
                     for s in range(num_scenarios):
                         if best_car_move[s] is not None:
-                            legal_move = feasibility_checker.check_legal_move(
+                            legal_move = self.feasibility_checker.check_legal_move(
                                 car_move=best_car_move[s], employee=employee, scenario=s)
                             #print(f"\n{best_car_move[s].to_string()}\nlegal_move {legal_move}")
 
@@ -270,11 +271,13 @@ class ConstructionHeuristic:
         self._set_hash_key()
 
     def print_solution(self):
+        # TODO: make printing more compact
         print("--------CONSTRUCTION HEURISTIC SOLUTION--------")
         print("-------------- First stage routes --------------")
         for employee in self.employees:
             for car_move in employee.car_moves:
-                print(f"Employee: {employee.employee_id}, Task nr: {employee.car_moves.index(car_move)+1}, "
+                car_move_type = "C" if car_move.is_charging_move else "P"
+                print(f"{car_move_type}: Employee: {employee.employee_id}, Task nr: {employee.car_moves.index(car_move)+1}, "
                       + car_move.to_string() + ", "
                       + f"Start time: {employee.start_times_car_moves[employee.car_moves.index(car_move)]}, "
                       + f"Travel time to move: {round(employee.travel_times_car_moves[employee.car_moves.index(car_move)], 2)}, "
@@ -285,7 +288,8 @@ class ConstructionHeuristic:
             if any(employee.car_moves_second_stage):
                 for s in range(self.num_scenarios):
                     for car_move in employee.car_moves_second_stage[s]:
-                        print(f"employee: {employee.employee_id}, scenario: {s + 1} " + car_move.to_string())
+                        car_move_type = "C" if car_move.is_charging_move else "P"
+                        print(f"{car_move_type}: employee: {employee.employee_id}, scenario: {s + 1} " + car_move.to_string())
 
 if __name__ == "__main__":
     filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_b"

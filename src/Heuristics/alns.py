@@ -3,10 +3,15 @@ from collections import OrderedDict
 import random
 from DestroyAndRepairHeuristics.destroy import Destroy, RandomRemoval, WorstRemoval, ShawRemoval
 from DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretInsertion
+#from DestroyAndRepairHeuristics.repair_new import Repair, GreedyInsertion, RegretInsertion
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
+from Heuristics.LocalSearchOperators.local_search_operator import LocalSearchOperator, IntraMove, InterSwap
+from Heuristics.helper_functions_heuristics import safe_zero_division, get_solution_list
+from Heuristics.objective_function import get_obj_val_of_car_moves
 from construction_heuristic_new import ConstructionHeuristic
 from path_manager import path_to_src
+import numpy as np
 import os
 import matplotlib.pyplot as plt
 os.chdir(path_to_src)
@@ -42,12 +47,18 @@ class ALNS():
 
         self.destroy_operators = OrderedDict({'random': 1.0, 'worst': 1.0, 'shaw': 1.0})
         self.repair_operators = OrderedDict({'greedy': 1.0, 'regret2': 1.0, 'regret3': 1.0})
-        self.destroy_operators_record = OrderedDict({'random': [1.0, 0], 'worst': [1.0, 0], 'shaw': [1.0, 0]})
-        self.repair_operators_record = OrderedDict({'greedy': [1.0, 0], 'regret2': [1.0, 0], 'regret3': [1.0, 0]})
+        self.destroy_operators_record = OrderedDict({'random': [1.0, 0.0], 'worst': [1.0, 0.0], 'shaw': [1.0, 0.0]})
+        self.repair_operators_record = OrderedDict({'greedy': [1.0, 0.0], 'regret2': [1.0, 0.0], 'regret3': [1.0, 0.0]})
+
+        self.local_search_operators = OrderedDict({'intra_move': 1.0, 'inter_swap:': 1.0})
+        self.local_search_operators_record = OrderedDict({'intra_move': [1.0, 0.0], 'inter_swap': [1.0, 0.0]})
+
+
 
         self._callbacks = {}
 
         self.best_solution = None
+        self.best_solutions = None
         self.best_obj_val = 0
         self.run()
 
@@ -56,22 +67,28 @@ class ALNS():
 
         solution = ConstructionHeuristic(self.filename)
         solution.add_car_moves_to_employees()
-        best_solution = copy.deepcopy(solution)
+        true_obj_val, best_obj_val = solution.get_obj_val(both=True)
+        current_obj_val = best_obj_val
+        true_obj_vals = [true_obj_val]
+        heuristic_obj_vals = [best_obj_val]
+        best_solution = (copy.deepcopy(solution), true_obj_val)
+        print(f"Construction heuristic obj. val {true_obj_val}")
         current_solution = copy.deepcopy(solution)
         visited_hash_keys.add(current_solution.hash_key)
         # TODO: this is the old objective function val
-        best_obj_val = solution.get_obj_val()
-        current_obj_val = best_obj_val
-        obj_vals = [best_obj_val]
+
+
+        temperature = 1000 # Start temperature must be set differently
+        cooling_rate = 0.9 # cooling_rate in (0,1)
 
         # SEGMENTS
         for i in range(10):
-
+            print(f"Iteration {i * 10}")
+            print(f"Best objective value {best_solution[1]}")
             for j in range(10):
-                print(f"Iteration {i*100 + j}")
-                print(f"Best objective value {best_obj_val}")
 
                 solution = copy.deepcopy(current_solution)
+
                 destroy = self._get_destroy_operator(solution=solution.assigned_car_moves,
                                                num_first_stage_tasks=solution.world_instance.first_stage_tasks,
                                                neighborhood_size=2, randomization_degree=1,
@@ -89,20 +106,33 @@ class ALNS():
                 else:
                     #update scores for repair and destroy
                     visited_hash_keys.add(solution.hash_key)
-                    obj_val = solution.get_obj_val()
-                    obj_vals.append(obj_val)
+                    true_obj_val, obj_val = solution.get_obj_val(both=True)
+                    heuristic_obj_vals.append(current_obj_val)
+                    true_obj_vals.append(true_obj_val)
 
-                    #Add acceptance criteria
-                    if obj_val > current_obj_val:
-                        if obj_val > best_obj_val:
-                            best_solution = copy.deepcopy(solution)
-                            self._update_weight_record(_IS_BEST, destroy, repair)
+                    if self._accept(current_obj_val, best_obj_val, temperature):
+
+                        # IMPROVING
+                        if obj_val > current_obj_val:
+                            # NEW GLOBAL BEST
+                            if obj_val > best_obj_val:
+                                best_obj_val = obj_val
+                                best_solution = (copy.deepcopy(solution), true_obj_val)
+                                self._update_weight_record(_IS_BEST, destroy, repair)
+                            # NEW LOCAL BEST
+                            else:
+                                current_obj_val = obj_val
+                                self._update_weight_record(_IS_BETTER, destroy, repair)
+
+
+
+                        # NON-IMPROVING BUT ACCEPTED
                         else:
-                            self._update_weight_record(_IS_BETTER, destroy, repair)
-                    else:
-                        self._update_weight_record(_IS_ACCEPTED, destroy, repair)
+                            self._update_weight_record(_IS_ACCEPTED, destroy, repair)
 
-                    current_solution = copy.deepcopy(solution)
+                        current_solution = copy.deepcopy(solution)
+
+                temperature *= cooling_rate
 
 
             self._update_score_adjustment_parameters()
@@ -110,16 +140,35 @@ class ALNS():
 
         self.best_solution = best_solution
         self.best_obj_val = best_obj_val
-        plt.plot(obj_vals)
+        plt.plot(heuristic_obj_vals, c="red", label="Heuristic obj. val")
+        plt.plot(true_obj_vals, c="green", label="True obj. val")
+        plt.suptitle('Objective value comparison')
+        plt.xlabel('instance')
+        plt.ylabel('obj. val')
+        plt.legend(loc="upper right")
         plt.show()
-        print(best_obj_val)
+        #print(obj_vals)
         print(self.destroy_operators)
         print(self.repair_operators)
-        best_solution.print_solution()
+        print("best solution")
+        print("obj_val", best_solution[1])
+        best_solution[0].print_solution()
+        #best_solution.print_solution()
+
+    def _accept(self, current_obj_val, best_obj_val, temperature) -> bool:
+        if current_obj_val > best_obj_val:
+            acceptance_probability = 1
+        else:
+            p = np.exp(- (best_obj_val - current_obj_val) / temperature)
+            acceptance_probability = p
+
+        accept = acceptance_probability > random.random()
+        return accept
 
     def _get_destroy_operator(self, solution, num_first_stage_tasks, neighborhood_size, randomization_degree,
                              parking_nodes) -> Destroy:
         w_sum_destroy = sum(w for o, w in self.destroy_operators.items())
+        # dist = distribution
         w_dist_destroy = [w / w_sum_destroy for o, w in self.destroy_operators.items()]
         operator = random.choices(list(self.destroy_operators), w_dist_destroy)[0]
         self.destroy_operators_record[operator][1] += 1
@@ -137,6 +186,7 @@ class ALNS():
     def _get_repair_operator(self, destroyed_solution_object, unused_car_moves, parking_nodes, world_instance) \
             -> Repair:
         w_sum_repair = sum(w for o, w in self.repair_operators.items())
+        # dist = distribution
         w_dist_repair = [w / w_sum_repair for o, w in self.repair_operators.items()]
         operator = random.choices(list(self.repair_operators), w_dist_repair)[0]
         self.repair_operators_record[operator][1] += 1
@@ -150,6 +200,19 @@ class ALNS():
         else:
             exit("Repair operator does not exist")
 
+    def _get_local_search_operator(self, repaired_solution, feasibility_checker) -> LocalSearchOperator:
+        w_sum_lso = sum(w for o, w in self.local_search_operators.items())
+        # dist = distribution
+        w_dist_lso = [w / w_sum_lso for o, w in self.local_search_operators.items()]
+        operator = random.choices(list(self.local_search_operators), w_dist_lso)[0]
+        self.local_search_operators_record[operator][1] += 1
+
+        if operator == "intra_move":
+            return IntraMove(repaired_solution, feasibility_checker)
+        elif operator == "inter_swap":
+            return InterSwap(repaired_solution, feasibility_checker)
+        else:
+            exit("Local search operator does not exist")
 
 
     def _update_weight_record(self, operator_score, destroy, repair):
@@ -176,27 +239,43 @@ class ALNS():
 
         for k, v in self.destroy_operators.items():
             self.destroy_operators[k] = self.destroy_operators[k]*(1.0-reaction_factor) + \
-                                        (reaction_factor/self.destroy_operators_record[k][1])*self.destroy_operators_record[k][0]
+                                        safe_zero_division(reaction_factor, self.destroy_operators_record[k][1]) * \
+                                        self.destroy_operators_record[k][0]
             self.destroy_operators_record[k][0] = self.destroy_operators[k]
             self.destroy_operators_record[k][0] = 0
 
         for k, v in self.repair_operators.items():
             self.repair_operators[k] = self.repair_operators[k]*(1.0-reaction_factor) + \
-                                        (reaction_factor/self.repair_operators_record[k][1])*self.repair_operators_record[k][0]
+                                        safe_zero_division(reaction_factor, self.repair_operators_record[k][1]) * \
+                                       self.repair_operators_record[k][0]
             self.repair_operators_record[k][0] = self.repair_operators[k]
             self.repair_operators_record[k][0] = 0
 
 
+
 if __name__ == "__main__":
-    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_special_case"
+    #from pyinstrument import Profiler
+
+    #profiler = Profiler()
+    #profiler.start()
+
+    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a"
     alns = ALNS(filename + ".pkl")
 
-    print("Evaluate solution")
-    gi = GurobiInstance(filename + ".yaml", employees=alns.best_solution.employees, optimize=False)
+    #profiler.stop()
+    #print(profiler.output_text(unicode=True, color=True))
+    '''
+    print("\n############## Evaluate solution ##############")
+    gi = GurobiInstance(filename + ".yaml", employees=alns.best_solution[0].employees, optimize=False)
     run_model(gi)
-    #print("Optimal solution")
-    #gi2 = GurobiInstance(filename + ".yaml")
-    #run_model(gi2)
+
+    print("\n############## Reoptimized solution ##############")
+    gi = GurobiInstance(filename + ".yaml", employees=alns.best_solution[0].employees, optimize=True)
+    run_model(gi)
+
+    print("\n############## Optimal solution ##############")
+    gi2 = GurobiInstance(filename + ".yaml")
+    run_model(gi2)'''
 
 
     # TODO: check objective function

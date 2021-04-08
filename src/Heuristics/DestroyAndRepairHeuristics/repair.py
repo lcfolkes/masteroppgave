@@ -6,7 +6,7 @@ from path_manager import path_to_src
 from abc import ABC, abstractmethod
 import copy
 from Heuristics.DestroyAndRepairHeuristics.destroy import RandomRemoval
-from Heuristics.helper_functions_heuristics import insert_car_move, get_first_stage_solution_list_from_dict
+from Heuristics.helper_functions_heuristics import insert_car_move, get_first_stage_solution_list_from_dict, remove_car_move
 from Heuristics.objective_function import get_obj_val_of_car_moves
 from Heuristics.construction_heuristic_new import ConstructionHeuristic
 
@@ -21,12 +21,16 @@ os.chdir(path_to_src)
 class Repair(ABC):
 
     @classmethod
-    def get_unused_moves(cls, moves_by_scenario, removed_moves):
+    def get_unused_moves(cls, destroyed_solution, moves_by_scenario, removed_moves):
         moves = set(removed_moves)
         for scenario in moves_by_scenario:
             for cm in scenario:
                 moves.add(cm)
-        return list(moves)
+
+        used_cars = [cm.car.car_id for cm in get_first_stage_solution_list_from_dict(destroyed_solution)]
+        moves = [cm for cm in moves if cm.car.car_id not in used_cars]
+        return moves
+
 
     def __init__(self, destroyed_solution_object: Destroy, unused_car_moves: [[CarMove]], parking_nodes: [ParkingNode],
                  world_instance: World) -> {int: [CarMove]}:
@@ -42,7 +46,7 @@ class Repair(ABC):
         """
         self.destroyed_solution_object = destroyed_solution_object
         self.destroyed_solution = destroyed_solution_object.destroyed_solution
-        self.unused_car_moves = Repair.get_unused_moves(unused_car_moves, destroyed_solution_object.removed_moves)
+        self.unused_car_moves = Repair.get_unused_moves(self.destroyed_solution, unused_car_moves, destroyed_solution_object.removed_moves)
         self.num_first_stage_tasks = destroyed_solution_object.num_first_stage_tasks
         self.neighborhood_size = destroyed_solution_object.neighborhood_size
         self.parking_nodes = parking_nodes
@@ -96,7 +100,7 @@ class GreedyInsertion(Repair):
                 break
             current_solution = insert_car_move(current_solution, best_car_move, best_employee.employee_id)
             self.feasibility_checker.is_first_stage_solution_feasible(current_solution)
-            self.unused_car_moves.remove(best_car_move)
+            self.unused_car_moves = remove_car_move(best_car_move, self.unused_car_moves)
             q -= 1
         self.repaired_solution = current_solution
         return current_solution
@@ -113,9 +117,14 @@ class GreedyInsertion(Repair):
         best_obj_val = get_obj_val_of_car_moves(parking_nodes=self.parking_nodes, num_scenarios=1,
                                                 first_stage_car_moves=input_solution)
 
+        cars_used = [cm.car.car_id for cm in input_solution]
+
         for car_move in self.unused_car_moves:
+            #if car_move.car.car_id in cars_used:
+            #    continue
             for employee, employee_moves in current_solution.items():
                 if len(employee_moves) < self.num_first_stage_tasks:
+                    # TODO: representation of solution must be reconsidered here. Maybe it is not necessary to create a new object every time
                     solution_with_move = insert_car_move(current_solution, car_move, employee.employee_id)
                     if self.feasibility_checker.is_first_stage_solution_feasible(solution_with_move):
                         solution_with_move = get_first_stage_solution_list_from_dict(solution_with_move)
@@ -159,7 +168,7 @@ class RegretInsertion(Repair):
                 #print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
                 break
             current_solution = insert_car_move(current_solution, best_car_move, best_employee.employee_id)
-            self.unused_car_moves.remove(best_car_move)
+            self.unused_car_moves = remove_car_move(best_car_move, self.unused_car_moves)
             q -= 1
         self.repaired_solution = current_solution
         return current_solution
@@ -180,11 +189,15 @@ class RegretInsertion(Repair):
         best_car_move = None
         best_employee = None
         highest_obj_val_diff = -0.1
+        #cars_used = [cm.car.car_id for cm in current_solution]
+
         for car_move in self.unused_car_moves:
             obj_val_dict = {}
             car_move_feasible = False
             for employee, employee_moves in current_solution.items():
                 if len(employee_moves) < self.num_first_stage_tasks:
+
+                    # TODO: representation of solution must be reconsidered here. Maybe it is not necessary to create a new object every time
                     solution_with_move = insert_car_move(current_solution, car_move, employee.employee_id)
                     if self.feasibility_checker.is_first_stage_solution_feasible(solution_with_move):
                         car_move_feasible = True
@@ -224,14 +237,27 @@ if __name__ == "__main__":
     ch.add_car_moves_to_employees()
     rr = RandomRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
                        neighborhood_size=2)
-    rr.to_string()
-    gi = GreedyInsertion(destroyed_solution_object=rr, unused_car_moves=ch.unused_car_moves,
-        parking_nodes=ch.parking_nodes, world_instance=ch.world_instance)
+
+    from pyinstrument import Profiler
+
+    profiler = Profiler()
+    profiler.start()
+
+    # gi = GreedyInsertion(destroyed_solution_object=rr, unused_car_moves=ch.unused_car_moves,
+    #    parking_nodes=ch.parking_nodes, world_instance=ch.world_instance)
+
+    gi = RegretInsertion(destroyed_solution_object=rr, unused_car_moves=ch.unused_car_moves,
+                         parking_nodes=ch.parking_nodes, world_instance=ch.world_instance, regret_nr=1)
+
+    profiler.stop()
+    print(profiler.output_text(unicode=True, color=True))
+    gi.to_string()
+
 
     #gi = RegretInsertion(destroyed_solution_object=rr, unused_car_moves=ch.unused_car_moves,
     #                     parking_nodes=ch.parking_nodes, world_instance=ch.world_instance, regret_nr=1)
     #gi.to_string()
 
-    fc = FeasibilityChecker(ch.world_instance)
-    print("feasibilityChecker")
-    print(fc.is_first_stage_solution_feasible(gi.repaired_solution))
+    #fc = FeasibilityChecker(ch.world_instance)
+    #print("feasibilityChecker")
+    #print(fc.is_first_stage_solution_feasible(gi.repaired_solution))

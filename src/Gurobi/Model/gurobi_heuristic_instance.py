@@ -126,7 +126,7 @@ class GurobiInstance:
                     task += 1
                     car_move_id = car_move.car_move_id
                     krms = (employee_id, car_move_id, task, s+1)
-                    print(f"x[{krms}] ({car_move.start_node.node_id} --> {car_move.end_node.node_id})")
+                    #print(f"x[{krms}] ({car_move.start_node.node_id} --> {car_move.end_node.node_id})")
                     # x_krms, employee, car_move, task, scenario
                     initial_solution.append(krms)
         #print(initial_solution)
@@ -156,7 +156,10 @@ class GurobiInstance:
                       name="z")  # z_is, number of customer requests served in second stage in node i in scenario s
         w = m.addVars(product(self.PARKING_NODES, self.SCENARIOS), lb=0, vtype=GRB.INTEGER,
                       name="w")  # w_is, number of cars short of ideal state in node i in scenario s
-        t = m.addVars(product(self.EMPLOYEES, self.TASKS, self.SCENARIOS), vtype=GRB.CONTINUOUS, lb=0, name="t")
+        t = m.addVars(product(self.EMPLOYEES, self.TASKS, self.SCENARIOS), lb=0, vtype=GRB.CONTINUOUS, name="t")
+
+        c = m.addVars(product(self.PARKING_NODES, self.SCENARIOS), lb=0, vtype=GRB.INTEGER, name="c")
+
         # print(x)
         # print(y)
         # print(z)
@@ -164,6 +167,9 @@ class GurobiInstance:
 
         ### OBJECTIVE FUNCTION ###
         # profit from customer requests
+
+        charging_deviation = self.SCENARIO_PROBABILITY * gp.quicksum(c[(i, s)] for i in self.PARKING_NEED_CHARGING_NODES for s in self.SCENARIOS)
+
         profit_customer_requests = gp.quicksum(
             (self.PROFIT_RENTAL) * z[(i, s)] for i in self.PARKING_NODES for s in self.SCENARIOS)
 
@@ -190,7 +196,13 @@ class GurobiInstance:
         m.addConstr(cost_relocation_var == costs_relocation * self.SCENARIO_PROBABILITY)
         m.addConstr(cost_deviation_ideal_state_var == cost_deviation_ideal_state * self.SCENARIO_PROBABILITY)
 
-        m.setObjective(total_profit, GRB.MAXIMIZE)
+        # OBJECTIVE 1 - CHARGING
+        m.setObjectiveN(charging_deviation, index=0, priority=1, weight=-1, name="charging_deviation") # weight=-1 to minimize deviation
+
+        # OBJECITVE 2 - PROFIT
+        m.setObjectiveN(total_profit, index=1, priority=0, name="profit")
+
+        m.ModelSense = GRB.MAXIMIZE
 
         ### CONSTRAINTS ###
 
@@ -220,12 +232,12 @@ class GurobiInstance:
         # print("c4")
 
         # (5) All cars in need of charging must be moved to a charging station within the planning period
-        m.addConstrs(
-            ((gp.quicksum(
-                x[(k, r, m, s)] for k in self.EMPLOYEES for r in self.CHARGING_MOVES_ORIGINATING_IN_NODE[i] for m in
-                self.TASKS) == self.INITIAL_NEED_CHARGING[i])
+        m.addConstrs((c[(i, s)] == (self.INITIAL_NEED_CHARGING[i] -
+            gp.quicksum(x[(k, r, m, s)] for k in self.EMPLOYEES
+                        for r in self.CHARGING_MOVES_ORIGINATING_IN_NODE[i] for m in self.TASKS))
              for i in self.PARKING_NEED_CHARGING_NODES for s in self.SCENARIOS), name="c5"
         )
+
         # print("c5")
 
         ## Node states
@@ -237,6 +249,7 @@ class GurobiInstance:
                 self.TASKS) <= self.INITIAL_AVAILABLE_CAPACITY[i])
              for i in self.CHARGING_NODES for s in self.SCENARIOS), name="c6"
         )
+
         # print("c6")
 
         # (7) Calculate number of available cars in each parking node by the beginning of the second stage
