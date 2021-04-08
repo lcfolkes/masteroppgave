@@ -1,0 +1,27 @@
+### CONSTANTS ####
+
+#CHARGING NODES
+charging_nodes:
+  num_charging: 2
+  parking_nodes: [1, 2]
+  capacities: [2, 2]
+
+
+#NODE STATE
+# This must be replaced by estimates derived from vy data
+charging_probs:
+    0: 0.75
+    1: 0.25
+
+
+# HANDLING TIME
+time_constants:
+  handling_parking: 4
+  handling_charging: 5
+  planning_period: 60
+
+#OBJECTIVE FUNCTION
+objective_function:
+  profit_rental: 40.5
+  cost_relocation: 0.42
+  cost_deviation: 28.35

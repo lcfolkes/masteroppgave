@@ -8,6 +8,7 @@ os.chdir(path_to_src)
 TIME_CONSTANTS = read_config('InstanceGenerator/world_constants_config.yaml')['time_constants']
 
 # NODE OBJECT DOES NOT NEED TO BE DEEP COPIED EVERY TIME
+'''
 class Node:
     id_iter = itertools.count(start=1)
 
@@ -15,12 +16,16 @@ class Node:
         self.node_id = next(self.id_iter)
         self.x_coordinate = x_coordinate
         self.y_coordinate = y_coordinate
+'''
 
 
-class ParkingNode(Node):
+# class ParkingNode(Node):
+class ParkingNode:
     # Should it be possible to update parking state?
-    def __init__(self, x_coordinate: int, y_coordinate: int, parking_state: int, charging_state: int, ideal_state: int):
-        super().__init__(x_coordinate, y_coordinate)
+    # def __init__(self, x_coordinate: int, y_coordinate: int, parking_state: int, charging_state: int, ideal_state: int):
+    def __init__(self, node_id: int, parking_state: int, charging_state: int, ideal_state: int):
+        # super().__init__(x_coordinate, y_coordinate)
+        self.node_id = node_id
         self.parking_state = parking_state
         self.charging_state = charging_state
         self.ideal_state = ideal_state
@@ -34,9 +39,10 @@ class ParkingNode(Node):
         self.car_returns = value
 
 
-class ChargingNode(Node):
+# class ChargingNode(Node):
+class ChargingNode:
     def __init__(self, parking_node: ParkingNode, capacity, max_capacity: int):
-        super().__init__(parking_node.x_coordinate, parking_node.y_coordinate)
+        # super().__init__(parking_node.x_coordinate, parking_node.y_coordinate)
         self.capacity = capacity
         self.max_capacity = max_capacity
         self.parking_node = parking_node
@@ -87,7 +93,7 @@ class CarMove:
         elif isinstance(self.end_node, ChargingNode):
             self.handling_time = time + TIME_CONSTANTS['handling_charging']
 
-    def set_start_time(self, time: int, scenario = None):
+    def set_start_time(self, time: int, scenario=None):
         if not scenario:
             self.start_time = time
         else:
@@ -109,8 +115,6 @@ class CarMove:
             self.employee = []
         else:
             self.employee_second_stage[scenario] = []
-
-
 
     def _initialize_second_stage(self, num_scenarios: int):
         for s in range(num_scenarios):
@@ -149,7 +153,7 @@ class Employee:
             self.current_node = car_move.end_node
             self.car_moves.append(car_move)
             self.start_times_car_moves.append(car_move.start_time)
-            self.travel_times_car_moves.append(total_travel_time-car_move.handling_time)
+            self.travel_times_car_moves.append(total_travel_time - car_move.handling_time)
             car_move.set_employee(self)
         else:
             # zero-indexed scenario
@@ -158,7 +162,7 @@ class Employee:
             self.current_node_second_stage[scenario] = car_move.end_node
             self.car_moves_second_stage[scenario].append(car_move)
             self.start_times_car_moves_second_stage[scenario].append(car_move.start_times_second_stage[scenario])
-            self.travel_times_car_moves_second_stage[scenario].append(total_travel_time-car_move.handling_time)
+            self.travel_times_car_moves_second_stage[scenario].append(total_travel_time - car_move.handling_time)
             car_move.set_employee(self, scenario)
 
     def initialize_second_stage(self, num_scenarios: int):
@@ -179,7 +183,6 @@ class Employee:
             self.current_node = self.car_moves[-1].end_node
         except:
             self.current_node = self.start_node
-
 
     def reset(self):
         for cm in self.car_moves:
