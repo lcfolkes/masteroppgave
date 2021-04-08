@@ -1,6 +1,5 @@
 from src.HelperFiles.helper_functions import read_config
-from src.InstanceGenerator.instance_components import ParkingNode, ChargingNode, Employee, Car, CarMove, Node
-from src.DataRetrieval import google_traffic_information_retriever as gI
+from src.InstanceGenerator.instance_components import ParkingNode, ChargingNode, Employee, Car, CarMove
 import numpy as np
 import pandas as pd
 import math
@@ -123,7 +122,7 @@ class World:
 
         employee.remove_last_car_move(total_travel_time)
 
-    def get_employee_travel_time_to_node(self, start_node: Node, end_node: Node):
+    def get_employee_travel_time_to_node(self, start_node: ParkingNode, end_node: ParkingNode):
         employee_start_node = start_node.node_id - 1
         employee_end_node = end_node.node_id - 1
         return self.distances_public_bike[employee_start_node * len(self.nodes) + employee_end_node]
@@ -235,7 +234,7 @@ def create_parking_nodes(world: World, num_parking_nodes: int, time_of_day: int)
     distributions_df = pd.read_csv('./data/pickup_delivery_distributions_every_hour')
     distributions_current_time = distributions_df.loc[distributions_df.Period == time_of_day]
     distributions_next_time_step = distributions_df.loc[distributions_df.Period == time_of_day + 1]
-    all_node_ids = range(1, 255)
+    all_node_ids = [i for i in range(1, 255)]
     # deliveries_prob is the probability of having more than zero deliveries in the former time period of each chosen
     # parking node. It is used to distribute cars for parking nodes after all nodes have been chosen. High pickup
     # probability means high probability of having a parking state > 0.
@@ -246,7 +245,7 @@ def create_parking_nodes(world: World, num_parking_nodes: int, time_of_day: int)
     ideal_states = []
 
     for i in range(num_parking_nodes):
-        node_id = choice(all_node_ids)
+        node_id = np.choice(all_node_ids)
         all_node_ids.remove(node_id)
         charging_state = int(np.random.choice(charging_states, size=1, p=charging_state_probs))
 

@@ -18,7 +18,6 @@ class Node:
         self.y_coordinate = y_coordinate
 '''
 
-
 # class ParkingNode(Node):
 class ParkingNode:
     # Should it be possible to update parking state?
