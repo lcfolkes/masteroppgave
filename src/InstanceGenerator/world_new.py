@@ -67,7 +67,7 @@ class World:
     def set_num_tasks(self, n: int):
         self.tasks = n
 
-    def _set_num_first_stage_tasks(self, n: int):
+    def set_num_first_stage_tasks(self, n: int):
         self.first_stage_tasks = n
 
     def add_node(self, node):
@@ -133,13 +133,17 @@ class World:
                 for l in range(len(self.cars)):
                     for k in range(len(self.cars[l].destinations)):
                         for x in range(len(self.parking_nodes)):
-                            distances1 = self.distances_public_bike[
-                                (len(self.nodes) * (self.cars[i].destinations[j].node_id - 1)) + x]
-                            distances2 = self.distances_public_bike[
-                                (len(self.nodes) * (self.cars[l].destinations[k].node_id - 1)) + x]
-                            handling_time = self.distances_car[
-                                len(self.nodes) * (self.cars[l].parking_node.node_id - 1) + self.cars[l].destinations[
-                                    k].node_id - 1]
+                            distances1 = self.distances_public_bike[self.cars[i].destinations[j].node_id - 1][x]
+                            # distances1 = self.distances_public_bike[
+                            #    (len(self.nodes) * (self.cars[i].destinations[j].node_id - 1)) + x]
+                            distances2 = self.distances_public_bike[self.cars[l].destinations[k].node_id - 1][x]
+                            # distances2 = self.distances_public_bike[
+                            #    (len(self.nodes) * (self.cars[l].destinations[k].node_id - 1)) + x]
+                            handling_time = self.distances_car[self.cars[l].parking_node.node_id - 1][
+                                self.cars[l].destinations[k].node_id - 1]
+                            # handling_time = self.distances_car[
+                            #    len(self.nodes) * (self.cars[l].parking_node.node_id - 1) + self.cars[l].destinations[
+                            #        k].node_id - 1]
                             diff = distances1 - (distances2 + handling_time)
                             if (diff > max_diff):
                                 max_diff = diff
@@ -165,8 +169,8 @@ class World:
 ## CALCULATE DISTANCE ##
 
 def set_distances(world: World):
-    distances_car = pd.read_csv('../data/travel_times_car_all_zones.csv')
-    distances_transit_bike = pd.read_csv('../data/travel_times_non_car_all_zones.csv')
+    distances_car = pd.read_csv('../data/travel_times_car_all_zones.csv', index_col=0)
+    distances_transit_bike = pd.read_csv('../data/travel_times_non_car_all_zones.csv', index_col=0)
     parking_node_nrs = np.array([node.get_nr() for node in world.parking_nodes])
     indices_parking_nodes = parking_node_nrs - 1
     distance_matrix_parking_nodes_car = distances_car.iloc[indices_parking_nodes, indices_parking_nodes]
@@ -178,7 +182,6 @@ def set_distances(world: World):
     counter = 300  # random number > 254
     index = 0
     for node in charging_nodes_pnodes:
-        print(distance_matrix_parking_nodes_car.head(15))
         distance_matrix_parking_nodes_car[counter] = distance_matrix_parking_nodes_car[str(node)]
         distance_matrix_parking_nodes_transit_bike[counter] = distance_matrix_parking_nodes_transit_bike[str(node)]
 
@@ -210,7 +213,7 @@ def set_distances(world: World):
 # customer requests in the second stage and
 # customer deliveries/car returns in the second stage
 def set_demands(world: World, time_of_day: int):
-    distributions_df = pd.read_csv('./data/pickup_delivery_distributions_every_hour.csv', index_col=0)
+    distributions_df = pd.read_csv('../data/pickup_delivery_distributions_every_hour.csv', index_col=0)
     distributions_current_time = distributions_df.loc[distributions_df.Period == time_of_day]
 
     for i in range(len(world.parking_nodes)):
@@ -226,6 +229,7 @@ def set_demands(world: World, time_of_day: int):
 
         world.parking_nodes[i].set_customer_requests(
             np.random.choice(customer_requests, size=world.num_scenarios, p=pickup_distribution_as_list_scaled))
+        # print(world.parking_nodes[i].customer_requests)
 
         # Returns
         delivery_distribution = distributions_current_time.loc[
@@ -236,6 +240,7 @@ def set_demands(world: World, time_of_day: int):
         customer_returns = [i for i in range(len(delivery_distribution_as_list))]
 
         world.parking_nodes[i].set_car_returns(
+
             np.random.choice(customer_returns, size=world.num_scenarios, p=delivery_distribution_as_list_scaled))
 
 
@@ -397,7 +402,6 @@ def create_car_moves(world: World):
         for car_move in car.car_moves:
             start_node_index = car_move.start_node.node_id - 1
             end_node_index = car_move.end_node.node_id - 1
-            print(world.distances_car)
             travel_time = world.distances_car[start_node_index][end_node_index]
             car_move.set_travel_time(travel_time)
             world.add_car_move(car_move)
@@ -422,9 +426,16 @@ def normalize_list(probs: [int]):
 
 def scale_up_distribution(dist: [float], percentage: float):
     for i in range(len(dist)):
-        dist[i] -= dist[i] * percentage
+        frac = dist[i] * percentage
+        dist[i] -= frac
         if i == len(dist) - 1:
-            dist.append(dist[i] * percentage)
+            dist.append(frac)
         else:
-            dist[i + 1] += dist[i] * percentage
+            dist[i + 1] += frac
+    dist = np.round(np.array(dist), 2)
+    if sum(dist) > 1:
+        # Ensuring distribution adds up to one by adding to the last entry
+        dist[-1] -= np.abs(np.round((sum(dist) - 1), 2))
+    elif sum(dist) < 1:
+        dist[-1] += np.abs(np.round((sum(dist) - 1), 2))
     return dist

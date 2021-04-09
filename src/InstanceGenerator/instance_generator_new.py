@@ -1,7 +1,7 @@
-from src.InstanceGenerator.file_writer import write_to_file_yaml
+from src.InstanceGenerator.file_writer_new import write_to_file_yaml
 from src.HelperFiles.helper_functions import read_config
 from src.InstanceGenerator.world_new import World, create_parking_nodes, \
-    create_charging_nodes, create_employees, create_cars, create_car_moves, set_distances
+    create_charging_nodes, create_employees, create_cars, create_car_moves, set_distances, set_demands
 import copy
 
 
@@ -30,12 +30,12 @@ def initialize_world(world: World, instance_config: str):
 
 
 def create_instance_from_world(world: World, num_scenarios: int, num_tasks: int, num_first_stage_tasks: int,
-                               version: int) -> World:
+                               version: int, time_of_day: int) -> World:
     new_world = copy.deepcopy(world)
-    new_world.set_scenarios(n=num_scenarios)
-    new_world.set_tasks(n=num_tasks)
+    new_world.set_num_scenarios(n=num_scenarios)
+    new_world.set_num_tasks(n=num_tasks)
     new_world.set_num_first_stage_tasks(n=num_first_stage_tasks)
-    new_world.set_demands()
+    set_demands(new_world, time_of_day)
     total_moves = 0
     for j in range(len(new_world.cars)):
         total_moves += len(new_world.cars[j].destinations)
@@ -59,7 +59,8 @@ def main():
         print("Creating instance: ", i)
         world = build_world(instance_config=cf)
         create_instance_from_world(world, num_scenarios=cf['num_scenarios'], num_tasks=cf['tasks']['num_all'],
-                                   num_first_stage_tasks=cf['tasks']['num_first_stage'], version=i + 1)
+                                   num_first_stage_tasks=cf['tasks']['num_first_stage'], version=i + 1,
+                                   time_of_day=cf['time_of_day'])
         # create_instance_from_world(world, num_scenarios=1, num_tasks=cf['tasks']['num_all'],
         #                       num_first_stage_tasks=cf['tasks']['num_first_stage'], version=i+1)
         worlds.append(world)
