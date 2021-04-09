@@ -27,7 +27,7 @@ class World:
     PLANNING_PERIOD = cf['time_constants']['planning_period']
 
     # NODE STATES
-    CHARGING_STATE = cf['node_states']['charging']
+    CHARGING_STATE = cf['charging_probs']
 
     def __init__(self):
 
@@ -227,16 +227,17 @@ class World:
 ## - CREATORS - ##
 # PNODES
 
-def create_parking_nodes(world: World, num_parking_nodes: int, time_of_day: int):
+def create_parking_nodes(world: World, num_parking_nodes: int, time_of_day: int, num_cars: int):
     charging_states = [s for s in World.CHARGING_STATE]
     charging_state_probs = [World.CHARGING_STATE[s] for s in World.CHARGING_STATE]
 
-    distributions_df = pd.read_csv('./data/pickup_delivery_distributions_every_hour')
+    distributions_df = pd.read_csv('./data/pickup_delivery_distributions_every_hour', index_col=0)
     distributions_current_time = distributions_df.loc[distributions_df.Period == time_of_day]
     distributions_next_time_step = distributions_df.loc[distributions_df.Period == time_of_day + 1]
+    distributions_former_time_step = distributions_df.loc[distributions_df.Period == time_of_day - 1]
     all_node_ids = [i for i in range(1, 255)]
     # deliveries_prob is the probability of having more than zero deliveries in the former time period of each chosen
-    # parking node. It is used to distribute cars for parking nodes after all nodes have been chosen. High pickup
+    # parking node. It is used to distribute cars for parking nodes after all nodes have been chosen. High delivery
     # probability means high probability of having a parking state > 0.
     deliveries_prob = []
     chosen_ids = []
@@ -245,13 +246,38 @@ def create_parking_nodes(world: World, num_parking_nodes: int, time_of_day: int)
     ideal_states = []
 
     for i in range(num_parking_nodes):
-        node_id = np.choice(all_node_ids)
-        all_node_ids.remove(node_id)
-        charging_state = int(np.random.choice(charging_states, size=1, p=charging_state_probs))
 
-        pickup_distribution = distributions_current_time.loc[
-            distributions_current_time.Zone == node_id, 'Pickup distribution']
-        pickup_distribution_as_list = float(pickup_distribution[1:-1].split(', '))
+        node_id = np.random.choice(all_node_ids)
+        all_node_ids.remove(node_id)
+        chosen_ids.append(node_id)
+
+        ### CHARGING STATE ###
+        charging_state = int(np.random.choice(charging_states, p=charging_state_probs))
+
+        ### IDEAL STATE ###
+        # Ideal state should be the index of the element which crosses a given percentile, such as 0.9. This means that
+        # 90 percent of the time, this number of cars will be able to serve all demand in next time period, not
+        # considering customer deliveries.
+
+        pickup_distribution_next_time_step = distributions_next_time_step.loc[
+            distributions_next_time_step.Zone == node_id, 'Pickup distribution']
+
+        pickup_distribution_next_as_list = [float(i) for i in pickup_distribution_next_time_step.item()[1:-1].split(', ')]
+
+        ideal_state = get_index_of_percentile(pickup_distribution_next_as_list, 0.9)
+
+        ### PROBABILITIES OF FORMER PARKING STATE TO BE USED TO SET PARKING STATE ###
+        delivery_distribution_former_time_step = distributions_former_time_step.loc[
+            distributions_former_time_step.Zone == node_id, 'Delivery distribution']
+
+        delivery_distribution_former_as_list = \
+            [float(i) for i in delivery_distribution_former_time_step.item()[1:-1].split(', ')]
+
+        deliveries_prob.append(1 - delivery_distribution_former_as_list[0])
+
+
+    for i in range(num_cars):
+
 
 
 def create_parking_nodes(world: World, num_parking_nodes: int, num_cars):
@@ -381,15 +407,17 @@ def create_car_moves(world: World):
 def get_index_of_percentile(probs: [float], percentile: float):
     cumm_prob = 0
     for i in range(len(probs)):
-        if (probs(i) + cumm_prob) > percentile:
+        if (probs[i] + cumm_prob) >= percentile:
             return i
         else:
-            cumm_prob += probs(i)
+            cumm_prob += probs[i]
 
 
+'''
 def main():
-    a = get_index_of_percentile([0.3, 0.2, 0.5], 0.8)
+    a = get_index_of_percentile([0.3, 0.3, 0.1,0.3], 1)
     print(a)
 
 
 main()
+'''

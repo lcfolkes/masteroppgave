@@ -18,12 +18,19 @@ class Node:
         self.y_coordinate = y_coordinate
 '''
 
+
+class Node:
+    def __init__(self):
+        pass
+
+
 # class ParkingNode(Node):
-class ParkingNode:
+class ParkingNode(Node):
     # Should it be possible to update parking state?
     # def __init__(self, x_coordinate: int, y_coordinate: int, parking_state: int, charging_state: int, ideal_state: int):
     def __init__(self, node_id: int, parking_state: int, charging_state: int, ideal_state: int):
         # super().__init__(x_coordinate, y_coordinate)
+        super().__init__()
         self.node_id = node_id
         self.parking_state = parking_state
         self.charging_state = charging_state
@@ -39,8 +46,9 @@ class ParkingNode:
 
 
 # class ChargingNode(Node):
-class ChargingNode:
+class ChargingNode(Node):
     def __init__(self, parking_node: ParkingNode, capacity, max_capacity: int):
+        super().__init__()
         # super().__init__(parking_node.x_coordinate, parking_node.y_coordinate)
         self.capacity = capacity
         self.max_capacity = max_capacity
