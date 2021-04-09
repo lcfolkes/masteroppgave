@@ -20,18 +20,23 @@ class Node:
 
 
 class Node:
+    id_iter = itertools.count(start=1)
     def __init__(self):
-        pass
+        self.node_id = next(self.id_iter)
+
+    def get_id(self):
+        return self.node_id
+
 
 
 # class ParkingNode(Node):
 class ParkingNode(Node):
     # Should it be possible to update parking state?
     # def __init__(self, x_coordinate: int, y_coordinate: int, parking_state: int, charging_state: int, ideal_state: int):
-    def __init__(self, node_id: int, parking_state: int, charging_state: int, ideal_state: int):
+    def __init__(self, node_nr: int, parking_state: int, charging_state: int, ideal_state: int):
         # super().__init__(x_coordinate, y_coordinate)
         super().__init__()
-        self.node_id = node_id
+        self.node_nr = node_nr
         self.parking_state = parking_state
         self.charging_state = charging_state
         self.ideal_state = ideal_state
@@ -44,14 +49,16 @@ class ParkingNode(Node):
     def set_car_returns(self, value: [int]):
         self.car_returns = value
 
+    def get_nr(self):
+        return self.node_nr
+
 
 # class ChargingNode(Node):
 class ChargingNode(Node):
-    def __init__(self, parking_node: ParkingNode, capacity, max_capacity: int):
+    def __init__(self, parking_node: ParkingNode, capacity):
         super().__init__()
         # super().__init__(parking_node.x_coordinate, parking_node.y_coordinate)
         self.capacity = capacity
-        self.max_capacity = max_capacity
         self.parking_node = parking_node
 
 

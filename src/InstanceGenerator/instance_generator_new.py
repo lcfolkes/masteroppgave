@@ -1,23 +1,14 @@
 from src.InstanceGenerator.file_writer import write_to_file_yaml
 from src.HelperFiles.helper_functions import read_config
-from src.InstanceGenerator.world import World, create_parking_nodes, \
-    create_charging_nodes, create_employees, create_cars, create_car_moves
+from src.InstanceGenerator.world_new import World, create_parking_nodes, \
+    create_charging_nodes, create_employees, create_cars, create_car_moves, set_distances
 import copy
 
 
 def build_world(instance_config: str) -> World:
     SPREAD = True
     world = World()
-    initializeWorld(world, instance_config)
-    coordinates = []
-    if SPREAD:
-        coordinates = world.give_real_coordinates_spread()
-    # writeToFile(cords)
-    world.create_real_ideal_state()
-    # if (len(world.pNodes) > 0):
-    # world.calculateDistances()
-    # else:
-    world.calculate_real_distances(coordinates)
+    initialize_world(world, instance_config)
     print("World Initialized")
     create_cars(world=world)
     create_car_moves(world=world)
@@ -28,14 +19,14 @@ def build_world(instance_config: str) -> World:
 
 def initialize_world(world: World, instance_config: str):
     cf = instance_config
-    create_parking_nodes(world=world, parking_dim=cf['board']['parking_node_dim'])
+    create_parking_nodes(world=world, num_parking_nodes=int(cf['num_parking_nodes']), time_of_day=cf['time_of_day'], num_cars=cf['num_charged_cars'])
     create_charging_nodes(world=world, num_charging_nodes=cf['charging_nodes']['num_charging'],
                           parking_nodes=cf['charging_nodes']['parking_nodes'],
-                          capacities=cf['charging_nodes']['capacities'],
-                          max_capacities=cf['charging_nodes']['max_capacities'])
+                          capacities=cf['charging_nodes']['capacities'])
     create_employees(world=world, num_employees=cf['employees']['num_employees'],
                      start_time_employees=cf['employees']['start_time'],
                      handling_employees=cf['employees']['handling'])
+    set_distances(world=world)
 
 
 def create_instance_from_world(world: World, num_scenarios: int, num_tasks: int, num_first_stage_tasks: int,
@@ -61,12 +52,12 @@ def create_instance_from_world(world: World, num_scenarios: int, num_tasks: int,
 
 
 def main():
-    cf = read_config('./InstanceGenerator/InstanceConfigs/instance_config.yaml')
+    cf = read_config('./InstanceGenerator/InstanceConfigs/instance_config_new.yaml')
     print("\nWELCOME TO THE EXAMPLE CREATOR \n")
     worlds = []
     for i in range(cf['examples']):
         print("Creating instance: ", i)
-        world = buildWorld(instance_config=cf)
+        world = build_world(instance_config=cf)
         create_instance_from_world(world, num_scenarios=cf['num_scenarios'], num_tasks=cf['tasks']['num_all'],
                                    num_first_stage_tasks=cf['tasks']['num_first_stage'], version=i + 1)
         # create_instance_from_world(world, num_scenarios=1, num_tasks=cf['tasks']['num_all'],

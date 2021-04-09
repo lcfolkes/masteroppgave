@@ -1,20 +1,16 @@
 from src.HelperFiles.helper_functions import read_config
-from src.InstanceGenerator.instance_components import ParkingNode, ChargingNode, Employee, Car, CarMove
+from src.InstanceGenerator.instance_components import Node, ParkingNode, ChargingNode, Employee, Car, CarMove
 import numpy as np
 import pandas as pd
-import math
 import random
-import time
-import copy
 import os
 from path_manager import path_to_src
 
 os.chdir(path_to_src)
 
-DISTANCESCALE = 3
-
 
 class World:
+    '''
     cf = read_config('InstanceGenerator/world_constants_config_new.yaml')
     # COST CONSTANTS #
     PROFIT_RENTAL = cf['objective_function']['profit_rental']
@@ -28,8 +24,24 @@ class World:
 
     # NODE STATES
     CHARGING_STATE = cf['charging_probs']
+    '''
 
     def __init__(self):
+
+        cf = read_config('InstanceGenerator/world_constants_config_new.yaml')
+
+        # COST CONSTANTS #
+        self.profit_rental = cf['objective_function']['profit_rental']
+        self.cost_relocation = cf['objective_function']['cost_relocation']
+        self.cost_deviation = cf['objective_function']['cost_deviation']
+
+        # TIME CONSTANTS #
+        self.handling_time_parking = cf['time_constants']['handling_parking']
+        self.handling_time_charging = cf['time_constants']['handling_charging']
+        self.planning_period = None
+
+        # NODE STATES
+        self.charging_state = cf['charging_probs']
 
         # TASKS
         self.tasks = 0
@@ -49,46 +61,32 @@ class World:
         self.car_moves = []
         self.bigM = []
 
-    def _set_num_scenarios(self, n: int):
+    def set_num_scenarios(self, n: int):
         self.num_scenarios = n
 
-    def _set_num_tasks(self, n: int):
+    def set_num_tasks(self, n: int):
         self.tasks = n
 
     def _set_num_first_stage_tasks(self, n: int):
         self.first_stage_tasks = n
 
-    def _add_node(self, node):
+    def add_node(self, node):
         self.nodes.append(node)
 
-    def _add_parking_node(self, parking_node: ParkingNode):
+    def add_parking_node(self, parking_node: ParkingNode):
         self.parking_nodes.append(parking_node)
 
-    def _add_charging_node(self, charging_node: ChargingNode):
+    def add_charging_node(self, charging_node: ChargingNode):
         self.charging_nodes.append(charging_node)
 
-    def _add_employee(self, employee: Employee):
+    def add_employee(self, employee: Employee):
         self.employees.append(employee)
 
-    def _add_car(self, car: Car):
+    def add_car(self, car: Car):
         self.cars.append(car)
 
-    def _add_car_move(self, car_move: CarMove):
+    def add_car_move(self, car_move: CarMove):
         self.car_moves.append(car_move)
-
-    # customer requests in the second stage and
-    # customer deliveries/car returns in the second stage
-    def _set_demands(self):
-        customer_requests = [k for k in World.CUSTOMER_REQUESTS]
-        customer_requests_prob = [World.CUSTOMER_REQUESTS[k] for k in World.CUSTOMER_REQUESTS]
-        car_returns = [k for k in World.CAR_RETURNS]
-        car_returns_prob = [World.CAR_RETURNS[k] for k in World.CAR_RETURNS]
-        for i in range(len(self.parking_nodes)):
-            # np.random.seed(i)
-            self.parking_nodes[i].set_customer_requests(
-                np.random.choice(customer_requests, size=self.num_scenarios, p=customer_requests_prob))
-            self.parking_nodes[i].set_car_returns(
-                np.random.choice(car_returns, size=self.num_scenarios, p=car_returns_prob))
 
     def add_car_move_to_employee(self, car_move: CarMove, employee: Employee, scenario: int = None):
 
@@ -122,25 +120,10 @@ class World:
 
         employee.remove_last_car_move(total_travel_time)
 
-    def get_employee_travel_time_to_node(self, start_node: ParkingNode, end_node: ParkingNode):
+    def get_employee_travel_time_to_node(self, start_node: Node, end_node: Node):
         employee_start_node = start_node.node_id - 1
         employee_end_node = end_node.node_id - 1
-        return self.distances_public_bike[employee_start_node * len(self.nodes) + employee_end_node]
-
-    ## CALCULATE DISTANCE ##
-
-    def calculate_distances(self):
-
-        # TODO:Distance matrix
-        for x in range(len(self.nodes)):
-            for y in range(len(self.nodes)):
-                # Creating some distance between charging and parking nodes
-                if (int(distance) == 0 and x != y):
-                    distanceSq = 1.0
-                    distance_public_bike = 1.0
-
-                self.distances_car.append(distanceSq)
-                self.distances_public_bike.append(distance_public_bike)
+        return self.distances_public_bike[employee_start_node][employee_end_node]
 
     ## CALCULATE BIGM
     def calculate_bigM(self):
@@ -178,134 +161,149 @@ class World:
                 initial_handling[self.employees[j].start_node.node_id - 1] += 1
         return initial_theta, initial_handling
 
-    ## SCALE IDEAL STATE ##
 
-    #
-    def create_real_ideal_state(self):
-        initial_add = [0 for i in range(len(self.nodes))]
-        for j in range(len(self.employees)):
-            if (self.employees[j].handling):
-                initial_add[self.employees[j].start_node.node_id - 1] += 1
+## CALCULATE DISTANCE ##
 
-        sum_ideal_state = 0
-        sum_parking_state = 0
-        # net sum of Requests-Deliveries for each scenario
-        for i in range(len(self.parking_nodes)):
-            sum_ideal_state += self.parking_nodes[i].ideal_state
-            sum_parking_state += self.parking_nodes[i].parking_state + initial_add[i]
+def set_distances(world: World):
+    distances_car = pd.read_csv('../data/travel_times_car_all_zones.csv')
+    distances_transit_bike = pd.read_csv('../data/travel_times_non_car_all_zones.csv')
+    parking_node_nrs = np.array([node.get_nr() for node in world.parking_nodes])
+    indices_parking_nodes = parking_node_nrs - 1
+    distance_matrix_parking_nodes_car = distances_car.iloc[indices_parking_nodes, indices_parking_nodes]
+    distance_matrix_parking_nodes_transit_bike = distances_transit_bike.iloc[
+        indices_parking_nodes, indices_parking_nodes]
 
-        # ideal state should be scaled to sum of available cars in the worst case
+    charging_nodes_pnodes = [node.parking_node.get_nr() for node in world.charging_nodes]
 
-        # Setter max outflow i hver node til 1.1, for å få litt mer spennende instanser
-        max_flow = math.ceil(0.6 * len(self.parking_nodes))
-        # max_flow = (max(DEMAND)-min(DELIVERIES))*len(self.parking_nodes)
+    counter = 300  # random number > 254
+    index = 0
+    for node in charging_nodes_pnodes:
+        print(distance_matrix_parking_nodes_car.head(15))
+        distance_matrix_parking_nodes_car[counter] = distance_matrix_parking_nodes_car[str(node)]
+        distance_matrix_parking_nodes_transit_bike[counter] = distance_matrix_parking_nodes_transit_bike[str(node)]
 
-        sum_ideal_state += max_flow
-        # sum_ideal_state += int(max(netFlowScenarios))
-        sum_parking_state_after = 0
+        distance_matrix_parking_nodes_car = distance_matrix_parking_nodes_car.append(
+            distance_matrix_parking_nodes_car.iloc[index])
+        distance_matrix_parking_nodes_transit_bike = distance_matrix_parking_nodes_transit_bike.append(
+            distance_matrix_parking_nodes_transit_bike.iloc[index])
 
-        for i in range(len(self.parking_nodes)):
-            # Scale parking_state with rounded share of sum_parking_state
-            # Share of parking_state = iptate/sum_parking_state
-            self.parking_nodes[i].parking_state = int(
-                round(float(sum_ideal_state) * (float(self.parking_nodes[i].parking_state) / sum_parking_state)))
-            sum_parking_state_after += self.parking_nodes[i].parking_state
+        counter += 1
+        index += 1
 
-        # Correct for errors due to rounding
-        while (sum_parking_state_after != sum_ideal_state):
-            if (sum_parking_state_after < sum_ideal_state):
-                r = random.randint(0, len(self.parking_nodes) - 1)
-                self.parking_nodes[r].parking_state += 1
-                sum_parking_state_after += 1
-            else:
-                r = random.randint(0, len(self.parking_nodes) - 1)
-                if (self.parking_nodes[r].parking_state - initial_add[r] > 0):
-                    self.parking_nodes[r].parking_state -= 1
-                    sum_parking_state_after -= 1
+    distance_matrix_parking_nodes_car = np.array(distance_matrix_parking_nodes_car)
+    distance_matrix_parking_nodes_transit_bike = np.array(distance_matrix_parking_nodes_transit_bike)
+
+    for x in range(len(distance_matrix_parking_nodes_car)):
+        for y in range(len(distance_matrix_parking_nodes_car)):
+            # Creating some distance between charging and parking nodes
+            if distance_matrix_parking_nodes_car[x][y] == 0 and x != y:
+                distance_matrix_parking_nodes_car[x][y] = 60
+                distance_matrix_parking_nodes_transit_bike[x][y] = 60
+
+    distance_matrix_parking_nodes_car = np.round(distance_matrix_parking_nodes_car / 60, 1)
+    distance_matrix_parking_nodes_transit_bike = np.round(distance_matrix_parking_nodes_transit_bike / 60, 1)
+
+    world.distances_car = distance_matrix_parking_nodes_car
+    world.distances_public_bike = distance_matrix_parking_nodes_transit_bike
 
 
-## - CREATORS - ##
-# PNODES
+# customer requests in the second stage and
+# customer deliveries/car returns in the second stage
+def set_demands(world: World, time_of_day: int):
+    distributions_df = pd.read_csv('./data/pickup_delivery_distributions_every_hour.csv', index_col=0)
+    distributions_current_time = distributions_df.loc[distributions_df.Period == time_of_day]
+
+    for i in range(len(world.parking_nodes)):
+        node_id = world.parking_nodes[i].get_id()
+
+        # Requests
+        pickup_distribution = distributions_current_time.loc[
+            distributions_current_time.Zone == node_id, 'Pickup distribution']
+        pickup_distribution_as_list = [float(i) for i in
+                                       pickup_distribution.item()[1:-1].split(', ')]
+        pickup_distribution_as_list_scaled = scale_up_distribution(pickup_distribution_as_list, 0.2)
+        customer_requests = [i for i in range(len(pickup_distribution_as_list))]
+
+        world.parking_nodes[i].set_customer_requests(
+            np.random.choice(customer_requests, size=world.num_scenarios, p=pickup_distribution_as_list_scaled))
+
+        # Returns
+        delivery_distribution = distributions_current_time.loc[
+            distributions_current_time.Zone == node_id, 'Delivery distribution']
+        delivery_distribution_as_list = [float(i) for i in
+                                         delivery_distribution.item()[1:-1].split(', ')]
+        delivery_distribution_as_list_scaled = scale_up_distribution(delivery_distribution_as_list, 0.2)
+        customer_returns = [i for i in range(len(delivery_distribution_as_list))]
+
+        world.parking_nodes[i].set_car_returns(
+            np.random.choice(customer_returns, size=world.num_scenarios, p=delivery_distribution_as_list_scaled))
+
 
 def create_parking_nodes(world: World, num_parking_nodes: int, time_of_day: int, num_cars: int):
-    charging_states = [s for s in World.CHARGING_STATE]
-    charging_state_probs = [World.CHARGING_STATE[s] for s in World.CHARGING_STATE]
+    possible_charging_states = [s for s in world.charging_state]
+    charging_state_probs = [world.charging_state[s] for s in world.charging_state]
 
-    distributions_df = pd.read_csv('./data/pickup_delivery_distributions_every_hour', index_col=0)
-    distributions_current_time = distributions_df.loc[distributions_df.Period == time_of_day]
+    distributions_df = pd.read_csv('../data/pickup_delivery_distributions_every_hour.csv', index_col=0)
     distributions_next_time_step = distributions_df.loc[distributions_df.Period == time_of_day + 1]
     distributions_former_time_step = distributions_df.loc[distributions_df.Period == time_of_day - 1]
-    all_node_ids = [i for i in range(1, 255)]
+    all_node_nrs = [i for i in range(1, 255)]
     # deliveries_prob is the probability of having more than zero deliveries in the former time period of each chosen
     # parking node. It is used to distribute cars for parking nodes after all nodes have been chosen. High delivery
     # probability means high probability of having a parking state > 0.
     deliveries_prob = []
-    chosen_ids = []
-    parking_states = []
+    chosen_nrs = []
+    parking_states = {}
     charging_states = []
     ideal_states = []
 
     for i in range(num_parking_nodes):
+        node_nr = np.random.choice(all_node_nrs)
+        all_node_nrs.remove(node_nr)
+        chosen_nrs.append(node_nr)
 
-        node_id = np.random.choice(all_node_ids)
-        all_node_ids.remove(node_id)
-        chosen_ids.append(node_id)
+        # CHARGING STATE
+        charging_states.append(int(np.random.choice(possible_charging_states, p=charging_state_probs)))
 
-        ### CHARGING STATE ###
-        charging_state = int(np.random.choice(charging_states, p=charging_state_probs))
-
-        ### IDEAL STATE ###
+        # IDEAL STATE
         # Ideal state should be the index of the element which crosses a given percentile, such as 0.9. This means that
         # 90 percent of the time, this number of cars will be able to serve all demand in next time period, not
         # considering customer deliveries.
 
         pickup_distribution_next_time_step = distributions_next_time_step.loc[
-            distributions_next_time_step.Zone == node_id, 'Pickup distribution']
+            distributions_next_time_step.Zone == node_nr, 'Pickup distribution']
 
-        pickup_distribution_next_as_list = [float(i) for i in pickup_distribution_next_time_step.item()[1:-1].split(', ')]
+        pickup_distribution_next_as_list = [float(i) for i in
+                                            pickup_distribution_next_time_step.item()[1:-1].split(', ')]
 
-        ideal_state = get_index_of_percentile(pickup_distribution_next_as_list, 0.9)
+        ideal_states.append(get_index_of_percentile(pickup_distribution_next_as_list, 0.9))
 
-        ### PROBABILITIES OF FORMER PARKING STATE TO BE USED TO SET PARKING STATE ###
+        # PROBABILITIES OF FORMER PARKING STATE TO BE USED TO SET PARKING STATE
         delivery_distribution_former_time_step = distributions_former_time_step.loc[
-            distributions_former_time_step.Zone == node_id, 'Delivery distribution']
+            distributions_former_time_step.Zone == node_nr, 'Delivery distribution']
 
         delivery_distribution_former_as_list = \
             [float(i) for i in delivery_distribution_former_time_step.item()[1:-1].split(', ')]
 
         deliveries_prob.append(1 - delivery_distribution_former_as_list[0])
 
+    normalized_delivery_probs = normalize_list(deliveries_prob)
+
+    for i in range(num_parking_nodes):
+        parking_states[chosen_nrs[i]] = 0
 
     for i in range(num_cars):
+        node = np.random.choice(chosen_nrs, p=normalized_delivery_probs)
+        parking_states[node] += 1
 
-
-
-def create_parking_nodes(world: World, num_parking_nodes: int, num_cars):
-    charging_states = [s for s in World.CHARGING_STATE]
-    charging_state_probs = [World.CHARGING_STATE[s] for s in World.CHARGING_STATE]
-    parking_states = [s for s in World.PARKING_STATE]
-    parking_state_probs = [World.PARKING_STATE[s] for s in World.PARKING_STATE]
-    ideal_states = [s for s in World.IDEAL_STATE]
-    ideal_state_probs = [World.IDEAL_STATE[s] for s in World.IDEAL_STATE]
-    x_dim = parking_dim['x']
-    y_dim = parking_dim['y']
-    # node_id = 0
-    for i in range(y_dim):
-        x_coordinate = i
-        for j in range(x_dim):
-            charging_state = int(np.random.choice(charging_states, size=1, p=charging_state_probs))
-            parking_state = int(np.random.choice(parking_states, size=1, p=parking_state_probs))
-            ideal_state = int(np.random.choice(ideal_states, size=1, p=ideal_state_probs))
-            node = ParkingNode(parking_state=parking_state, charging_state=charging_state, ideal_state=ideal_state)
-            # , demand, deliveries)
-            world.add_nodes(node)
-            world.add_parking_nodes(node)
-    world.add_parking_dim(x_dim, y_dim)
+    for i in range(len(chosen_nrs)):
+        node = ParkingNode(node_nr=chosen_nrs[i], parking_state=parking_states[chosen_nrs[i]],
+                           charging_state=charging_states[i], ideal_state=ideal_states[i])
+        world.add_node(node)
+        world.add_parking_node(node)
 
 
 # CNODES
-def create_charging_nodes(world: World, num_charging_nodes: int, parking_nodes: [int], capacities: [int],
-                          max_capacities: [int]):
+def create_charging_nodes(world: World, num_charging_nodes: int, parking_nodes: [int], capacities: [int]):
     # node_id = len(parking_nodes)
     for i in range(num_charging_nodes):
         # node_id += 1
@@ -313,11 +311,10 @@ def create_charging_nodes(world: World, num_charging_nodes: int, parking_nodes: 
         parking_node_num = parking_nodes[i]
         parking_node = world.parking_nodes[parking_node_num - 1]
         capacity = capacities[i]
-        max_capacity = max_capacities[i]
         # charging_node = ChargingNode(node_id=node_id, parking_node=parking_node, capacity=capacity, max_capacity=max_capacity)
-        charging_node = ChargingNode(parking_node=parking_node, capacity=capacity, max_capacity=max_capacity)
-        world.add_charging_nodes(charging_node)
-        world.add_nodes(charging_node)
+        charging_node = ChargingNode(parking_node=parking_node, capacity=capacity)
+        world.add_charging_node(charging_node)
+        world.add_node(charging_node)
 
 
 # Employees
@@ -398,26 +395,36 @@ def create_car_moves(world: World):
     num_nodes = len(world.nodes)
     for car in world.cars:
         for car_move in car.car_moves:
-            index = (car_move.start_node.node_id - 1) * num_nodes + car_move.end_node.node_id - 1
-            travel_time = world.distances_car[index]
+            start_node_index = car_move.start_node.node_id - 1
+            end_node_index = car_move.end_node.node_id - 1
+            print(world.distances_car)
+            travel_time = world.distances_car[start_node_index][end_node_index]
             car_move.set_travel_time(travel_time)
             world.add_car_move(car_move)
 
 
+# HELPER FUNCTIONS
+
 def get_index_of_percentile(probs: [float], percentile: float):
-    cumm_prob = 0
+    cummulative_prob = 0
     for i in range(len(probs)):
-        if (probs[i] + cumm_prob) >= percentile:
+        if (probs[i] + cummulative_prob) >= percentile:
             return i
         else:
-            cumm_prob += probs[i]
+            cummulative_prob += probs[i]
 
 
-'''
-def main():
-    a = get_index_of_percentile([0.3, 0.3, 0.1,0.3], 1)
-    print(a)
+def normalize_list(probs: [int]):
+    probs_np = np.array(probs)
+    normalizer = np.array([np.sum(probs_np) for _ in range(len(probs_np))])
+    return probs_np / normalizer
 
 
-main()
-'''
+def scale_up_distribution(dist: [float], percentage: float):
+    for i in range(len(dist)):
+        dist[i] -= dist[i] * percentage
+        if i == len(dist) - 1:
+            dist.append(dist[i] * percentage)
+        else:
+            dist[i + 1] += dist[i] * percentage
+    return dist
