@@ -30,11 +30,12 @@ def initialize_world(world: World, instance_config: str):
 
 
 def create_instance_from_world(world: World, num_scenarios: int, num_tasks: int, num_first_stage_tasks: int,
-                               version: int, time_of_day: int) -> World:
+                               version: int, time_of_day: int, planning_period: int) -> World:
     new_world = copy.deepcopy(world)
     new_world.set_num_scenarios(n=num_scenarios)
     new_world.set_num_tasks(n=num_tasks)
     new_world.set_num_first_stage_tasks(n=num_first_stage_tasks)
+    new_world.set_planning_period(planning_period=planning_period)
     set_demands(new_world, time_of_day)
     total_moves = 0
     for j in range(len(new_world.cars)):
@@ -60,7 +61,7 @@ def main():
         world = build_world(instance_config=cf)
         create_instance_from_world(world, num_scenarios=cf['num_scenarios'], num_tasks=cf['tasks']['num_all'],
                                    num_first_stage_tasks=cf['tasks']['num_first_stage'], version=i + 1,
-                                   time_of_day=cf['time_of_day'])
+                                   time_of_day=cf['time_of_day'], planning_period=cf['planning_period'])
         # create_instance_from_world(world, num_scenarios=1, num_tasks=cf['tasks']['num_all'],
         #                       num_first_stage_tasks=cf['tasks']['num_first_stage'], version=i+1)
         worlds.append(world)

@@ -116,13 +116,12 @@ def write_to_file_yaml(world, instance_name: str):
     for i in range(len(world.cars)):
         for j in range(len(world.cars[i].destinations)):
             if world.cars[i].destinations[j].node_id > len(world.parking_nodes):
-                out_list.append(world.distances_car[
-                                  (world.cars[i].parking_node.node_id - 1) * len(world.nodes) + world.cars[i].destinations[
-                                      j].node_id - 1] + world.HANDLING_TIME_CHARGING)
+                out_list.append(
+                    world.distances_car[world.cars[i].parking_node.node_id - 1][world.cars[i].destinations[j].node_id - 1] + world.handling_time_charging)
             else:
-                out_list.append(world.distances_car[
-                                  (world.cars[i].parking_node.node_id - 1) * len(world.nodes) + world.cars[i].destinations[
-                                      j].node_id - 1] + world.HANDLING_TIME_PARKING)
+                out_list.append(
+                    world.distances_car[world.cars[i].parking_node.node_id - 1][world.cars[i].destinations[j].node_id - 1] + world.handling_time_parking)
+
 
     data['car_move_handling_time'] = out_list
 

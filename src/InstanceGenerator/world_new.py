@@ -70,6 +70,9 @@ class World:
     def set_num_first_stage_tasks(self, n: int):
         self.first_stage_tasks = n
 
+    def set_planning_period(self, planning_period: int):
+        self.planning_period = planning_period
+
     def add_node(self, node):
         self.nodes.append(node)
 
@@ -206,8 +209,8 @@ def set_distances(world: World):
     distance_matrix_parking_nodes_car = np.round(distance_matrix_parking_nodes_car / 60, 1)
     distance_matrix_parking_nodes_transit_bike = np.round(distance_matrix_parking_nodes_transit_bike / 60, 1)
 
-    world.distances_car = distance_matrix_parking_nodes_car
-    world.distances_public_bike = distance_matrix_parking_nodes_transit_bike
+    world.distances_car = distance_matrix_parking_nodes_car.tolist()
+    world.distances_public_bike = distance_matrix_parking_nodes_transit_bike.tolist()
 
 
 # customer requests in the second stage and
@@ -222,22 +225,23 @@ def set_demands(world: World, time_of_day: int):
         # Requests
         pickup_distribution = distributions_current_time.loc[
             distributions_current_time.Zone == node_id, 'Pickup distribution']
-        pickup_distribution_as_list = [float(i) for i in
+        pickup_distribution_as_list = [np.round(float(i),2) for i in
                                        pickup_distribution.item()[1:-1].split(', ')]
         pickup_distribution_as_list_scaled = scale_up_distribution(pickup_distribution_as_list, 0.2)
-        customer_requests = [i for i in range(len(pickup_distribution_as_list))]
+        customer_requests = [i for i in range(len(pickup_distribution_as_list_scaled))]
 
         world.parking_nodes[i].set_customer_requests(
             np.random.choice(customer_requests, size=world.num_scenarios, p=pickup_distribution_as_list_scaled))
-        # print(world.parking_nodes[i].customer_requests)
+
 
         # Returns
         delivery_distribution = distributions_current_time.loc[
             distributions_current_time.Zone == node_id, 'Delivery distribution']
-        delivery_distribution_as_list = [float(i) for i in
+        delivery_distribution_as_list = [np.round(float(i),2) for i in
                                          delivery_distribution.item()[1:-1].split(', ')]
         delivery_distribution_as_list_scaled = scale_up_distribution(delivery_distribution_as_list, 0.2)
-        customer_returns = [i for i in range(len(delivery_distribution_as_list))]
+
+        customer_returns = [i for i in range(len(delivery_distribution_as_list_scaled))]
 
         world.parking_nodes[i].set_car_returns(
 
@@ -424,18 +428,20 @@ def normalize_list(probs: [int]):
     return probs_np / normalizer
 
 
+# Moving a certain percentage of the probabilities upwards in order to simulate unmet demand that is not
+# seen through distributions
 def scale_up_distribution(dist: [float], percentage: float):
-    for i in range(len(dist)):
-        frac = dist[i] * percentage
-        dist[i] -= frac
-        if i == len(dist) - 1:
-            dist.append(frac)
+    dist_new = dist.copy()
+    for i in range(len(dist_new)):
+        frac = dist_new[i] * percentage
+        dist_new[i] -= frac
+        if i == len(dist_new) - 1:
+            dist_new.append(frac)
         else:
-            dist[i + 1] += frac
-    dist = np.round(np.array(dist), 2)
-    if sum(dist) > 1:
-        # Ensuring distribution adds up to one by adding to the last entry
-        dist[-1] -= np.abs(np.round((sum(dist) - 1), 2))
-    elif sum(dist) < 1:
-        dist[-1] += np.abs(np.round((sum(dist) - 1), 2))
-    return dist
+            dist_new[i + 1] += frac
+
+    dist_new = np.round(np.array(dist_new), 2)
+    # Ensuring that the array sums to one
+    dist_new[0] += 1.0 - np.sum(dist_new)
+
+    return dist_new
