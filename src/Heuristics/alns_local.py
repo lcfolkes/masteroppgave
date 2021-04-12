@@ -54,10 +54,6 @@ class ALNS():
         self.local_search_operators = OrderedDict({'intra_move': 1.0, 'inter_swap': 1.0})
         self.local_search_operators_record = OrderedDict({'intra_move': [1.0, 0.0], 'inter_swap': [1.0, 0.0]})
 
-
-
-        self._callbacks = {}
-
         self.best_solution = None
         self.best_solutions = None
         self.best_obj_val = 0
