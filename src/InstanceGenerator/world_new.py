@@ -319,6 +319,7 @@ def create_charging_nodes(world: World, num_charging_nodes: int, parking_nodes: 
         parking_node = world.parking_nodes[parking_node_num - 1]
         capacity = capacities[i]
         charging_node = ChargingNode(parking_node=parking_node, capacity=capacity)
+        charging_node.initialize_charging_node_state(world.num_scenarios)
         world.add_charging_node(charging_node)
         world.add_node(charging_node)
 

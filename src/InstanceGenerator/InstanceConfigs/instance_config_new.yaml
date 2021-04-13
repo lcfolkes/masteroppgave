@@ -7,7 +7,7 @@ time_of_day: 8
 examples: 1
 
 # SCENARIOS
-num_scenarios: 10
+num_scenarios: 2
 
 # TASKS
 tasks:
@@ -15,22 +15,22 @@ tasks:
   num_first_stage: 2
 
 # NUMBER OF PARKING NODES IN INSTANCE
-num_parking_nodes: 17
+num_parking_nodes: 4
 
 # NUMBER OF CHARGED CARS IN INSTANCE
-num_charged_cars: 20
+num_charged_cars: 2
 
 #CHARGING NODES
 charging_nodes:
   num_charging: 2
-  parking_nodes: [3, 5, 8]
-  capacities: [2, 2, 2]
+  parking_nodes: [3,4]
+  capacities: [2,2]
 
 #EMPLOYEES
 employees:
-  num_employees: 4
-  start_time: [0, 5, 0, 0, 0]
-  handling: [0, 0, 0, 0, 0]
+  num_employees: 1
+  start_time: [0]
+  handling: [0]
 
 planning_period: 60
 

@@ -76,7 +76,7 @@ class GurobiInstance:
             'travel_time_to_origin']))  # T_k^(SO), earliest start time of service employee k
         self.EMPLOYEE_START_LOCATION = dict(
             zip(self.EMPLOYEES, self.cf['start_node_employee']))  # o(k), location of employee k at time T^(SO)_k
-        self.TRAVEL_TIME = self.cf['travel_time_bike']  # T_(ij), travel times between node i and j
+        self.TRAVEL_TIME = self.cf['travel_time_bike'][0]  # T_(ij), travel times between node i and j
         self.PLANNING_PERIOD = self.cf['planning_period']  # T^bar, planning period
         self.BIGM = dict(zip(self.CARMOVES, self.cf['bigM']))
         self.scenarios = np.arange(1, self.cf['num_scenarios'] + 1)

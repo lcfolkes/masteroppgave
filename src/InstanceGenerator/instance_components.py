@@ -21,12 +21,12 @@ class Node:
 
 class Node:
     id_iter = itertools.count(start=1)
+
     def __init__(self):
         self.node_id = next(self.id_iter)
 
     def get_id(self):
         return self.node_id
-
 
 
 # class ParkingNode(Node):
@@ -59,7 +59,44 @@ class ChargingNode(Node):
         super().__init__()
         # super().__init__(parking_node.x_coordinate, parking_node.y_coordinate)
         self.capacity = capacity
+        self.capacities = None
+        self.num_charging = None
         self.parking_node = parking_node
+
+    def initialize_charging_node_state(self, num_scenarios: [int]):
+        self.num_charging = [0 for _ in range(num_scenarios)]
+        self.capacities = [self.capacity for _ in range(num_scenarios)]
+
+
+
+    def add_car(self, scenario: int = None):
+        if scenario:
+            if (self.num_charging[scenario] == self.capacity[scenario]):
+                raise Exception("No cars can be added to charging node as the capacity is reached")
+            else:
+                self.num_charging[scenario] += 1
+        else:
+            for s in range(len(self.num_charging)):
+                if (self.num_charging[s] == self.capacity[s]):
+                    raise Exception("No cars can be added to charging node as the capacity is reached")
+
+            for s in range(len(self.num_charging)):
+                self.num_charging[s] += 1
+
+    def remove_car(self, scenario: int = None):
+        if scenario:
+            if (self.num_charging[scenario] == 0):
+                raise Exception("No cars can be removed from charging node as there are no cars there")
+            else:
+                self.num_charging[scenario] -= 1
+        else:
+            for s in range(len(self.num_charging)):
+                if (self.num_charging[s] == self.capacity[s]):
+                    raise Exception("No cars can be removed from charging node as there are no cars there")
+            for s in range(len(self.num_charging)):
+                self.num_charging[s] -= 1
+
+
 
 
 class Car:

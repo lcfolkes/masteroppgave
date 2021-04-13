@@ -50,7 +50,9 @@ def get_second_stage_solution_list_from_dict(second_stage_solution_dict: {int: [
                 second_stage_solution[s].append(v[s][i])
     return second_stage_solution
 
-def insert_car_move(current_solution: {Employee: [CarMove]}, car_move: CarMove, employee_id: int) -> {Employee: [CarMove]}:
+
+def insert_car_move(current_solution: {Employee: [CarMove]}, car_move: CarMove, employee_id: int) -> {
+    Employee: [CarMove]}:
     """
     :param current_solution: dictionary with employee as key, list of first stage moves as value
     :param car_move: car move object
@@ -71,11 +73,12 @@ def insert_car_move_wo_deep_copy(solution: {Employee: [CarMove]}, car_move: CarM
     :param employee: employee object
     :return: solution with the inserted car move
     """
-    #TODO: Kan vi representere en løsning annerledes her?
+    # TODO: Kan vi representere en løsning annerledes her?
     employee_obj = [e for e in solution.keys() if e.employee_id == employee_id][0]
     solution.get(employee_obj).append(car_move)
     car_move.set_employee(employee_obj)
-    #return solution
+    # return solution
+
 
 def remove_car_move_from_employee_from_solution(solution: {Employee: [CarMove]}, car_move: CarMove, employee_id: int):
     """
@@ -87,7 +90,8 @@ def remove_car_move_from_employee_from_solution(solution: {Employee: [CarMove]},
     employee_obj = [e for e in solution.keys() if e.employee_id == employee_id][0]
     solution.get(employee_obj).remove(car_move)
     car_move.remove_employee()
-    #return solution
+    # return solution
+
 
 def remove_car_move(chosen_car_move: CarMove, car_moves: [CarMove]) -> [CarMove]:
     """
@@ -202,6 +206,7 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, prioriti
         return best_car_move_second_stage
 '''
 
+
 def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scenarios):
     # FIRST STAGE
 
@@ -209,18 +214,29 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
         best_car_move_first_stage = None
         assigned_car_moves_first_stage = get_assigned_car_moves(employees)
         best_obj_val_first_stage = get_obj_val_of_car_moves(parking_nodes=parking_nodes, num_scenarios=num_scenarios,
-                                                            first_stage_car_moves=assigned_car_moves_first_stage, include_employee_check=False)
-        #print("Iteration")
+                                                            first_stage_car_moves=assigned_car_moves_first_stage,
+                                                            include_employee_check=False)
+        # print("Iteration")
         for r in range(len(car_moves)):
             obj_val = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
                                                first_stage_car_moves=assigned_car_moves_first_stage + [
                                                    car_moves[r]], include_employee_check=False)
             if obj_val > best_obj_val_first_stage:
-                best_obj_val_first_stage = obj_val
-                best_car_move_first_stage = car_moves[r]
-                #print(f"{best_car_move_first_stage.start_node.node_id} -> {best_car_move_first_stage.end_node.node_id}, Obj val:{obj_val}")
-            #elif best_car_move_first_stage:
-                #print(f"{best_car_move_first_stage.start_node.node_id} -> {best_car_move_first_stage.end_node.node_id}, Not improving")
+                if car_moves[r].is_charging_move:
+                    # Checking if charging node has space for another car
+                    print(car_moves[r].end_node.num_charging)
+                    if car_moves[r].end_node.capacity == car_moves[r].end_node.num_charging[0]:
+                        continue
+                    else:
+                        best_obj_val_first_stage = obj_val
+                        best_car_move_first_stage = car_moves[r]
+                        car_moves[r].add_car()
+                else:
+                    best_obj_val_first_stage = obj_val
+                    best_car_move_first_stage = car_moves[r]
+                # print(f"{best_car_move_first_stage.start_node.node_id} -> {best_car_move_first_stage.end_node.node_id}, Obj val:{obj_val}")
+            # elif best_car_move_first_stage:
+            # print(f"{best_car_move_first_stage.start_node.node_id} -> {best_car_move_first_stage.end_node.node_id}, Not improving")
         return best_car_move_first_stage
 
     # SECOND STAGE
@@ -248,11 +264,21 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
                 obj_val[s] = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
                                                       first_stage_car_moves=assigned_first_stage_car_moves,
                                                       second_stage_car_moves=assigned_second_stage_car_moves +
-                                                                             [car_moves[s][r]], scenario=s, include_employee_check=False)
+                                                                             [car_moves[s][r]], scenario=s,
+                                                      include_employee_check=False)
 
                 if obj_val[s] > best_obj_val_second_stage[s]:
-                    best_obj_val_second_stage[s] = obj_val[s]
-                    best_car_move_second_stage[s] = car_moves[s][r]
+                    if car_moves[s][r].is_charging_move:
+                        # Checking if charging node has space for another car
+                        if car_moves[s][r].end_node.capacity == car_moves[s][r].end_node.num_charging[s]:
+                            continue
+                        else:
+                            best_obj_val_second_stage[s] = obj_val[s]
+                            best_car_move_second_stage[s] = car_moves[s][r]
+                            car_moves[s][r].add_car(scenario=s)
+                    else:
+                        best_obj_val_second_stage[s] = obj_val[s]
+                        best_car_move_second_stage[s] = car_moves[s][r]
 
         out_list = []
         for car_move in best_car_move_second_stage:
@@ -264,6 +290,7 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
         # print(out_list)
         # print([round(o,2) for o in best_obj_val_second_stage])
         return best_car_move_second_stage
+
 
 '''
 def get_best_employee(parking_moves, employees, best_car_move, first_stage, num_scenarios, world_instance,
@@ -336,6 +363,8 @@ def get_best_employee(parking_moves, employees, best_car_move, first_stage, num_
             return best_employee_second_stage
 
 '''
+
+
 def safe_zero_division(a, b):
     return a / b if b else 0.0
 
@@ -371,6 +400,7 @@ def get_first_stage_solution(input_solution, num_first_stage_tasks):
 
     return first_stage_solution
 
+
 def get_first_stage_solution_and_removed_moves(input_solution, num_first_stage_tasks):
     removed_second_stage_moves = set()
     first_stage_solution = {}
@@ -388,6 +418,7 @@ def get_first_stage_solution_and_removed_moves(input_solution, num_first_stage_t
     removed_moves = list(removed_second_stage_moves)
 
     return first_stage_solution, removed_moves
+
 
 def get_solution_list(input_solution, num_first_stage_tasks):
     first_stage_solution = {}
