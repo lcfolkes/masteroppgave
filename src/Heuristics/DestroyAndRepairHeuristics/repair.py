@@ -1,7 +1,7 @@
 import os
 import random
 
-from Heuristics.feasibility_checker import FeasibilityChecker
+from Heuristics.feasibility_checker_new import FeasibilityChecker
 from path_manager import path_to_src
 from abc import ABC, abstractmethod
 import copy

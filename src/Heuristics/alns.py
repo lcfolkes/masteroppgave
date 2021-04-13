@@ -35,7 +35,7 @@ _IS_REJECTED
 
 '''
 
-#TODO: Need to keep track of visited solutions by assigning a hash key to each solution and storing the key in a hash table
+# TODO: Need to keep track of visited solutions by assigning a hash key to each solution and storing the key in a hash table
 
 
 
@@ -259,7 +259,7 @@ if __name__ == "__main__":
     #profiler = Profiler()
     #profiler.start()
 
-    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a"
+    filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_a"
     alns = ALNS(filename + ".pkl")
 
     #profiler.stop()
