@@ -26,7 +26,7 @@ def initialize_world(world: World, instance_config: str):
     create_employees(world=world, num_employees=cf['employees']['num_employees'],
                      start_time_employees=cf['employees']['start_time'],
                      handling_employees=cf['employees']['handling'])
-    set_distances(world=world)
+    set_distances(world=world, parking_node_nums=cf['charging_nodes']['parking_nodes'])
 
 
 def create_instance_from_world(world: World, num_scenarios: int, num_tasks: int, num_first_stage_tasks: int,

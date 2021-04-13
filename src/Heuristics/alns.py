@@ -16,7 +16,6 @@ import os
 import matplotlib.pyplot as plt
 os.chdir(path_to_src)
 
-os.chdir(path_to_src)
 
 _IS_BEST = 3.0
 _IS_BETTER = 2.0
@@ -259,8 +258,14 @@ if __name__ == "__main__":
     #profiler = Profiler()
     #profiler.start()
 
-    filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_a"
+    filename = "InstanceGenerator/InstanceFiles/17nodes/17-10-2-1_a"
+
+
+
+    gi = GurobiInstance(filename + ".yaml")
+    run_model(gi, time_limit=120.0)
     alns = ALNS(filename + ".pkl")
+
 
     #profiler.stop()
     #print(profiler.output_text(unicode=True, color=True))

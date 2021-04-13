@@ -4,7 +4,10 @@ from gurobipy import GRB
 import numpy as np
 from itertools import product
 from src.HelperFiles.helper_functions import read_config, read_2d_array_to_dict, create_dict_of_indices, create_car_moves_origin_destination
+from path_manager import path_to_src
+import os
 
+os.chdir(path_to_src)
 
 class GurobiInstance:
     def __init__(self, filepath: str, employees=None, optimize=True):
