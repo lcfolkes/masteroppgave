@@ -152,7 +152,7 @@ class ConstructionHeuristic:
 
     def add_car_moves_to_employees(self):
         improving_car_move_exists = True
-        while self.available_employees and improving_car_move_exists:
+        while improving_car_move_exists:
             # print([cm.car_move_id for cm in self.charging_moves])
             # print([[cm.car_move_id for cm in s] for s in self.charging_moves_second_stage])
             # check if charging_moves_list is not empty
@@ -189,7 +189,8 @@ class ConstructionHeuristic:
                                                                self.first_stage, self.num_scenarios)
                 if all(cm is None for cm in best_car_move_second_stage):
                     improving_car_move_exists = False
-                #### GET BEST EMPLOYEE ###
+                    continue
+
                 best_employee_second_stage = self.get_best_employee(best_car_move=best_car_move_second_stage,
                                                                     employees=self.employees,
                                                                     first_stage=self.first_stage,
@@ -198,75 +199,65 @@ class ConstructionHeuristic:
                                                                     car_moves_second_stage=
                                                                     self.car_moves_second_stage)
                 #### ADD CAR MOVE TO EMPLOYEE ###
-                if best_employee_second_stage is not None:
+                if not all(e is None for e in best_employee_second_stage):
                     self._add_car_move_to_employee(car_moves=car_moves, best_car_move=best_car_move_second_stage,
                                                    best_employee=best_employee_second_stage)
 
 
     def _add_car_move_to_employee(self, car_moves, best_car_move, best_employee):
-        # TODO: Remove car moves that concern the same car as the one that is removed
         if self.first_stage:
-            if best_employee is not None:
-                '''
-                print('\nEmployee id', best_employee.employee_id)
-                print('Employee node before', best_employee.current_node.node_id)
-                print('Employee time before', best_employee.current_time)
-                # print('Travel time to start node', best_travel_time_to_car_move)
-                #print(best_car_move.to_string())
-                '''
-                self.world_instance.add_car_move_to_employee(best_car_move, best_employee)
-                for s in range(self.num_scenarios):
-                    self.assigned_car_moves[best_employee][s].append(best_car_move)
-                    self.unused_car_moves[s].remove(best_car_move)
-                '''
-                print('Employee node after', best_employee.current_node.node_id)
-                print('Employee time after', best_employee.current_time)
-                '''
-                self.car_moves = remove_car_move(best_car_move, car_moves)
+            '''
+            print('\nEmployee id', best_employee.employee_id)
+            print('Employee node before', best_employee.current_node.node_id)
+            print('Employee time before', best_employee.current_time)
+            # print('Travel time to start node', best_travel_time_to_car_move)
+            #print(best_car_move.to_string())
+            '''
+            self.world_instance.add_car_move_to_employee(best_car_move, best_employee)
+            for s in range(self.num_scenarios):
+                self.assigned_car_moves[best_employee][s].append(best_car_move)
+                self.unused_car_moves[s].remove(best_car_move)
+            '''
+            print('Employee node after', best_employee.current_node.node_id)
+            print('Employee time after', best_employee.current_time)
+            '''
+            self.car_moves = remove_car_move(best_car_move, car_moves)
 
-                self.first_stage = False
-                for employee in self.employees:
-                    task_num = len(employee.car_moves)
-                    if task_num < self.world_instance.first_stage_tasks:
-                        self.first_stage = True
-                if not self.first_stage:
-                    # initialize charging and parking moves for second stage
-                    self.car_moves_second_stage = [self.car_moves for s in range(self.num_scenarios)]
-            else:
-                self.available_employees = False
+            self.first_stage = False
+            for employee in self.employees:
+                task_num = len(employee.car_moves)
+                if task_num < self.world_instance.first_stage_tasks:
+                    self.first_stage = True
+            if not self.first_stage:
+                # initialize charging and parking moves for second stage
+                self.car_moves_second_stage = [self.car_moves for _ in range(self.num_scenarios)]
+
         # Second stage
         else:
             # print(best_car_move_second_stage)
             # If any employee is not note, continue
-            if not all(e is None for e in best_employee):
-                for s in range(self.num_scenarios):
-                    # print(best_employee_second_stage[s].to_string())
-                    if best_employee[s] is not None:
-                        '''
-                        print('\nEmployee id', best_employee[s].employee_id)
-                        print('Scenario', s + 1)
-                        print('Employee node before', best_employee[s].current_node_second_stage[s].node_id)
-                        print('Employee time before', best_employee[s].current_time_second_stage[s])
-                        # print('Travel time to start node', best_travel_time_to_car_move_second_stage[s])
-                        #print(best_car_move[s].to_string())
-                        '''
-                        self.world_instance.add_car_move_to_employee(best_car_move[s], best_employee[s], s)
-                        if best_car_move[s] is not None:
-                            self.assigned_car_moves[best_employee[s]][s].append(best_car_move[s])
-                            self.unused_car_moves[s].remove(best_car_move[s])
-                        '''
-                        print('Employee node after', best_employee[s].current_node_second_stage[s].node_id)
-                        print('Employee time after', best_employee[s].current_time_second_stage[s])
-                        '''
-                        # When first stage is finished, initialize car_moves to be list of copies of
-                        # car_moves (number of copies = num_scenarios)
-                        self.car_moves_second_stage[s] = remove_car_move(best_car_move[s], car_moves[s])
-
-                # print(f"car_moves: {len(car_moves[s])}")
-                if not any(self.car_moves_second_stage):
-                    self.available_employees = False
-            else:
-                self.available_employees = False
+            for s in range(self.num_scenarios):
+                # print(best_employee_second_stage[s].to_string())
+                if best_employee[s] is not None:
+                    '''
+                    print('\nEmployee id', best_employee[s].employee_id)
+                    print('Scenario', s + 1)
+                    print('Employee node before', best_employee[s].current_node_second_stage[s].node_id)
+                    print('Employee time before', best_employee[s].current_time_second_stage[s])
+                    # print('Travel time to start node', best_travel_time_to_car_move_second_stage[s])
+                    #print(best_car_move[s].to_string())
+                    '''
+                    self.world_instance.add_car_move_to_employee(best_car_move[s], best_employee[s], s)
+                    if best_car_move[s] is not None:
+                        self.assigned_car_moves[best_employee[s]][s].append(best_car_move[s])
+                        self.unused_car_moves[s].remove(best_car_move[s])
+                    '''
+                    print('Employee node after', best_employee[s].current_node_second_stage[s].node_id)
+                    print('Employee time after', best_employee[s].current_time_second_stage[s])
+                    '''
+                    # When first stage is finished, initialize car_moves to be list of copies of
+                    # car_moves (number of copies = num_scenarios)
+                    self.car_moves_second_stage[s] = remove_car_move(best_car_move[s], car_moves[s])
 
         self._set_hash_key()
 
