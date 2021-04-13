@@ -187,8 +187,6 @@ def set_distances(world: World, parking_node_nums: [int]):
     for node in charging_nodes_pnodes:
         distance_matrix_parking_nodes_car[counter] = distance_matrix_parking_nodes_car[str(node)]
         distance_matrix_parking_nodes_transit_bike[counter] = distance_matrix_parking_nodes_transit_bike[str(node)]
-        print(distance_matrix_parking_nodes_car)
-        print()
         distance_matrix_parking_nodes_car = distance_matrix_parking_nodes_car.append(
             distance_matrix_parking_nodes_car.iloc[parking_node_nums[index_counter] - 1])
         distance_matrix_parking_nodes_transit_bike = distance_matrix_parking_nodes_transit_bike.append(
@@ -199,7 +197,6 @@ def set_distances(world: World, parking_node_nums: [int]):
 
     distance_matrix_parking_nodes_car = np.array(distance_matrix_parking_nodes_car)
     distance_matrix_parking_nodes_transit_bike = np.array(distance_matrix_parking_nodes_transit_bike)
-    print(distance_matrix_parking_nodes_car)
 
     for x in range(len(distance_matrix_parking_nodes_car)):
         for y in range(len(distance_matrix_parking_nodes_car)):
@@ -210,6 +207,7 @@ def set_distances(world: World, parking_node_nums: [int]):
 
     distance_matrix_parking_nodes_car = np.round(distance_matrix_parking_nodes_car / 60, 1)
     distance_matrix_parking_nodes_transit_bike = np.round(distance_matrix_parking_nodes_transit_bike / 60, 1)
+    print(distance_matrix_parking_nodes_car.tolist())
 
     world.distances_car = distance_matrix_parking_nodes_car.tolist()
     world.distances_public_bike = distance_matrix_parking_nodes_transit_bike.tolist()

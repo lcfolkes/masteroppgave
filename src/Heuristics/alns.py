@@ -258,9 +258,14 @@ if __name__ == "__main__":
     #profiler = Profiler()
     #profiler.start()
 
-    filename = "InstanceGenerator/InstanceFiles/10nodes/10-10-2-1_d"
+    filename = "InstanceGenerator/InstanceFiles/17nodes/17-10-2-1_a"
+
+
+
+    gi = GurobiInstance(filename + ".yaml")
+    run_model(gi, time_limit=120.0)
     alns = ALNS(filename + ".pkl")
-    #gi = GurobiInstance(filename + ".pkl")
+
 
     #profiler.stop()
     #print(profiler.output_text(unicode=True, color=True))
