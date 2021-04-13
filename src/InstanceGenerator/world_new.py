@@ -171,7 +171,7 @@ class World:
 
 ## CALCULATE DISTANCE ##
 
-def set_distances(world: World):
+def set_distances(world: World, parking_node_nums: [int]):
     distances_car = pd.read_csv('../data/travel_times_car_all_zones.csv', index_col=0)
     distances_transit_bike = pd.read_csv('../data/travel_times_non_car_all_zones.csv', index_col=0)
     parking_node_nrs = np.array([node.get_nr() for node in world.parking_nodes])
@@ -183,21 +183,23 @@ def set_distances(world: World):
     charging_nodes_pnodes = [node.parking_node.get_nr() for node in world.charging_nodes]
 
     counter = 300  # random number > 254
-    index = 0
+    index_counter = 0
     for node in charging_nodes_pnodes:
         distance_matrix_parking_nodes_car[counter] = distance_matrix_parking_nodes_car[str(node)]
         distance_matrix_parking_nodes_transit_bike[counter] = distance_matrix_parking_nodes_transit_bike[str(node)]
-
+        print(distance_matrix_parking_nodes_car)
+        print()
         distance_matrix_parking_nodes_car = distance_matrix_parking_nodes_car.append(
-            distance_matrix_parking_nodes_car.iloc[index])
+            distance_matrix_parking_nodes_car.iloc[parking_node_nums[index_counter] - 1])
         distance_matrix_parking_nodes_transit_bike = distance_matrix_parking_nodes_transit_bike.append(
-            distance_matrix_parking_nodes_transit_bike.iloc[index])
+            distance_matrix_parking_nodes_transit_bike.iloc[parking_node_nums[index_counter] - 1])
 
+        index_counter += 1
         counter += 1
-        index += 1
 
     distance_matrix_parking_nodes_car = np.array(distance_matrix_parking_nodes_car)
     distance_matrix_parking_nodes_transit_bike = np.array(distance_matrix_parking_nodes_transit_bike)
+    print(distance_matrix_parking_nodes_car)
 
     for x in range(len(distance_matrix_parking_nodes_car)):
         for y in range(len(distance_matrix_parking_nodes_car)):
@@ -225,7 +227,7 @@ def set_demands(world: World, time_of_day: int):
         # Requests
         pickup_distribution = distributions_current_time.loc[
             distributions_current_time.Zone == node_id, 'Pickup distribution']
-        pickup_distribution_as_list = [np.round(float(i),2) for i in
+        pickup_distribution_as_list = [np.round(float(i), 2) for i in
                                        pickup_distribution.item()[1:-1].split(', ')]
         pickup_distribution_as_list_scaled = scale_up_distribution(pickup_distribution_as_list, 0.2)
         customer_requests = [i for i in range(len(pickup_distribution_as_list_scaled))]
@@ -233,11 +235,10 @@ def set_demands(world: World, time_of_day: int):
         world.parking_nodes[i].set_customer_requests(
             np.random.choice(customer_requests, size=world.num_scenarios, p=pickup_distribution_as_list_scaled))
 
-
         # Returns
         delivery_distribution = distributions_current_time.loc[
             distributions_current_time.Zone == node_id, 'Delivery distribution']
-        delivery_distribution_as_list = [np.round(float(i),2) for i in
+        delivery_distribution_as_list = [np.round(float(i), 2) for i in
                                          delivery_distribution.item()[1:-1].split(', ')]
         delivery_distribution_as_list_scaled = scale_up_distribution(delivery_distribution_as_list, 0.2)
 
@@ -256,6 +257,7 @@ def create_parking_nodes(world: World, num_parking_nodes: int, time_of_day: int,
     distributions_next_time_step = distributions_df.loc[distributions_df.Period == time_of_day + 1]
     distributions_former_time_step = distributions_df.loc[distributions_df.Period == time_of_day - 1]
     all_node_nrs = [i for i in range(1, 255)]
+
     # deliveries_prob is the probability of having more than zero deliveries in the former time period of each chosen
     # parking node. It is used to distribute cars for parking nodes after all nodes have been chosen. High delivery
     # probability means high probability of having a parking state > 0.
@@ -313,14 +315,11 @@ def create_parking_nodes(world: World, num_parking_nodes: int, time_of_day: int,
 
 # CNODES
 def create_charging_nodes(world: World, num_charging_nodes: int, parking_nodes: [int], capacities: [int]):
-    # node_id = len(parking_nodes)
     for i in range(num_charging_nodes):
-        # node_id += 1
         print("Creating charging node: ", i + 1)
         parking_node_num = parking_nodes[i]
         parking_node = world.parking_nodes[parking_node_num - 1]
         capacity = capacities[i]
-        # charging_node = ChargingNode(node_id=node_id, parking_node=parking_node, capacity=capacity, max_capacity=max_capacity)
         charging_node = ChargingNode(parking_node=parking_node, capacity=capacity)
         world.add_charging_node(charging_node)
         world.add_node(charging_node)
