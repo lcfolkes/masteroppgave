@@ -258,7 +258,7 @@ if __name__ == "__main__":
     #profiler = Profiler()
     #profiler.start()
 
-    filename = "InstanceGenerator/InstanceFiles/4nodes/4-2-2-1_b"
+    filename = "InstanceGenerator/InstanceFiles/25nodes/25-2-2-1_a"
 
 
 

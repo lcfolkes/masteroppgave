@@ -1,7 +1,7 @@
 import os
 import random
 
-from Heuristics.feasibility_checker import FeasibilityChecker
+from Heuristics.feasibility_checker_new import FeasibilityChecker
 from path_manager import path_to_src
 from abc import ABC, abstractmethod
 import copy
@@ -12,7 +12,7 @@ from Heuristics.objective_function import get_obj_val_of_car_moves
 from Heuristics.construction_heuristic_new import ConstructionHeuristic
 
 from InstanceGenerator.instance_components import CarMove, ParkingNode, Employee
-from InstanceGenerator.world import World
+from InstanceGenerator.world_new import World
 from Heuristics.DestroyAndRepairHeuristics.destroy import Destroy
 
 print(path_to_src)
@@ -101,10 +101,22 @@ class GreedyInsertion(Repair):
         while q > 0:
             best_car_move, best_employee = self._get_best_insertion(
                 current_solution)
+
             # Handles cases when you cannot insert q car_moves to the solution
             if None in (best_car_move, best_employee):
                 # print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
                 break
+
+            # Checks if best car move is a charging move to a node where the remaining charging capacity is zero
+            if best_car_move.is_charging_move:
+                print(best_car_move.end_node.capacities)
+                print(best_car_move.end_node.num_charging)
+                if best_car_move.end_node.capacity == best_car_move.end_node.num_charging[0]:
+                    print("hei")
+                    self.unused_car_moves = remove_car_move(
+                        best_car_move, self.unused_car_moves)
+                    continue
+
             insert_car_move_wo_deep_copy(
                 current_solution, best_car_move, best_employee.employee_id)
             self.feasibility_checker.is_first_stage_solution_feasible(
@@ -112,6 +124,11 @@ class GreedyInsertion(Repair):
             self.unused_car_moves = remove_car_move(
                 best_car_move, self.unused_car_moves)
             q -= 1
+
+            # Update charging state in end node if the chosen move is a charging move
+            if best_car_move.is_charging_move:
+                best_car_move.end_node.add_car()
+
         # self.repaired_solution = current_solution
         return current_solution
 
@@ -177,9 +194,23 @@ class RegretInsertion(Repair):
             if None in (best_car_move, best_employee):
                 # print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
                 break
+
+            # Checks if best car move is a charging move to a node where the remaining charging capacity is zero
+            if best_car_move.is_charging_move:
+                if best_car_move.end_node.capacity == best_car_move.end_node.num_charging[0]:
+                    self.unused_car_moves = remove_car_move(
+                        best_car_move, self.unused_car_moves)
+                    continue
+
             insert_car_move_wo_deep_copy(current_solution, best_car_move, best_employee.employee_id)
             self.unused_car_moves = remove_car_move(best_car_move, self.unused_car_moves)
+
+            # Update charging state in end node if the chosen move is a charging move
+            if best_car_move.is_charging_move:
+                best_car_move.end_node.add_car()
+
             q -= 1
+
         #self.repaired_solution = current_solution
         return current_solution
 

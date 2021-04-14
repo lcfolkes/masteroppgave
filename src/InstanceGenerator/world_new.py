@@ -63,6 +63,8 @@ class World:
 
     def set_num_scenarios(self, n: int):
         self.num_scenarios = n
+        for charging_node in self.charging_nodes:
+            charging_node.initialize_charging_node_state(num_scenarios=n)
 
     def set_num_tasks(self, n: int):
         self.tasks = n
@@ -207,7 +209,6 @@ def set_distances(world: World, parking_node_nums: [int]):
 
     distance_matrix_parking_nodes_car = np.round(distance_matrix_parking_nodes_car / 60, 1)
     distance_matrix_parking_nodes_transit_bike = np.round(distance_matrix_parking_nodes_transit_bike / 60, 1)
-    print(distance_matrix_parking_nodes_car.tolist())
 
     world.distances_car = distance_matrix_parking_nodes_car.tolist()
     world.distances_public_bike = distance_matrix_parking_nodes_transit_bike.tolist()
@@ -319,7 +320,7 @@ def create_charging_nodes(world: World, num_charging_nodes: int, parking_nodes: 
         parking_node = world.parking_nodes[parking_node_num - 1]
         capacity = capacities[i]
         charging_node = ChargingNode(parking_node=parking_node, capacity=capacity)
-        charging_node.initialize_charging_node_state(world.num_scenarios)
+        #charging_node.initialize_charging_node_state(world.num_scenarios)
         world.add_charging_node(charging_node)
         world.add_node(charging_node)
 

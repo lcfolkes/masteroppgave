@@ -218,25 +218,21 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
                                                             include_employee_check=False)
         # print("Iteration")
         for r in range(len(car_moves)):
+            if car_moves[r].is_charging_move:
+                # Checking if charging node has space for another car
+                if car_moves[r].end_node.capacity == car_moves[r].end_node.num_charging[0]:
+                    continue
+
             obj_val = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
                                                first_stage_car_moves=assigned_car_moves_first_stage + [
                                                    car_moves[r]], include_employee_check=False)
             if obj_val > best_obj_val_first_stage:
-                if car_moves[r].is_charging_move:
-                    # Checking if charging node has space for another car
-                    print(car_moves[r].end_node.num_charging)
-                    if car_moves[r].end_node.capacity == car_moves[r].end_node.num_charging[0]:
-                        continue
-                    else:
-                        best_obj_val_first_stage = obj_val
-                        best_car_move_first_stage = car_moves[r]
-                        car_moves[r].add_car()
-                else:
-                    best_obj_val_first_stage = obj_val
-                    best_car_move_first_stage = car_moves[r]
+                best_obj_val_first_stage = obj_val
+                best_car_move_first_stage = car_moves[r]
                 # print(f"{best_car_move_first_stage.start_node.node_id} -> {best_car_move_first_stage.end_node.node_id}, Obj val:{obj_val}")
             # elif best_car_move_first_stage:
             # print(f"{best_car_move_first_stage.start_node.node_id} -> {best_car_move_first_stage.end_node.node_id}, Not improving")
+
         return best_car_move_first_stage
 
     # SECOND STAGE
@@ -275,7 +271,7 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
                         else:
                             best_obj_val_second_stage[s] = obj_val[s]
                             best_car_move_second_stage[s] = car_moves[s][r]
-                            car_moves[s][r].add_car(scenario=s)
+                            car_moves[s][r].end_node.add_car(scenario=s)
                     else:
                         best_obj_val_second_stage[s] = obj_val[s]
                         best_car_move_second_stage[s] = car_moves[s][r]
@@ -404,6 +400,7 @@ def get_first_stage_solution(input_solution, num_first_stage_tasks):
 def get_first_stage_solution_and_removed_moves(input_solution, num_first_stage_tasks):
     removed_second_stage_moves = set()
     first_stage_solution = {}
+
     # print(self.input_solution)
     for k, v in input_solution.items():
         first_stage_solution[k] = set()

@@ -88,6 +88,8 @@ class ALNS():
         for i in range(10):
             print(f"Iteration {i * 10}")
             print(f"Best objective value {best_solution[1]}")
+            print(f"Heuristic objective value {heuristic_obj_vals[i]}")
+
             for j in range(10):
                 #print(f"current_obj_val {current_obj_val}")
                 solution = copy.deepcopy(current_solution)
@@ -98,6 +100,7 @@ class ALNS():
                     solution.rebuild(local_search_operator.mutated_solution)
 
                 elif MODE == "LNS":
+
                     destroy = self._get_destroy_operator(solution=solution.assigned_car_moves,
                                                    num_first_stage_tasks=solution.world_instance.first_stage_tasks,
                                                    neighborhood_size=2, randomization_degree=1,
@@ -287,19 +290,30 @@ class ALNS():
     """
 
 if __name__ == "__main__":
-    from pyinstrument import Profiler
 
-    profiler = Profiler()
-    profiler.start()
+
+    #from pyinstrument import Profiler
+
+    filename = "InstanceGenerator/InstanceFiles/25nodes/25-2-2-1_b"
+
+    #gi = GurobiInstance(filename + ".yaml")
+    #run_model(gi, time_limit=120.0)
+
+    #profiler = Profiler()
+    #profiler.start()
 
     # code you want to profile
 
-    filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_d"
+
+
+
     alns = ALNS(filename + ".pkl")
 
 
-    profiler.stop()
-    print(profiler.output_text(unicode=True, color=True))
+    #profiler.stop()
+    #print(profiler.output_text(unicode=True, color=True))
+
+
 
     '''
     print("\n############## Evaluate solution ##############")

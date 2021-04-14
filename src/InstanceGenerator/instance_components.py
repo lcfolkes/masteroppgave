@@ -67,17 +67,15 @@ class ChargingNode(Node):
         self.num_charging = [0 for _ in range(num_scenarios)]
         self.capacities = [self.capacity for _ in range(num_scenarios)]
 
-
-
     def add_car(self, scenario: int = None):
         if scenario:
-            if (self.num_charging[scenario] == self.capacity[scenario]):
+            if self.num_charging[scenario] == self.capacities[scenario]:
                 raise Exception("No cars can be added to charging node as the capacity is reached")
             else:
                 self.num_charging[scenario] += 1
         else:
             for s in range(len(self.num_charging)):
-                if (self.num_charging[s] == self.capacity[s]):
+                if self.num_charging[s] == self.capacities[s]:
                     raise Exception("No cars can be added to charging node as the capacity is reached")
 
             for s in range(len(self.num_charging)):
@@ -85,18 +83,17 @@ class ChargingNode(Node):
 
     def remove_car(self, scenario: int = None):
         if scenario:
-            if (self.num_charging[scenario] == 0):
+            if self.num_charging[scenario] == 0:
                 raise Exception("No cars can be removed from charging node as there are no cars there")
+
             else:
                 self.num_charging[scenario] -= 1
         else:
             for s in range(len(self.num_charging)):
-                if (self.num_charging[s] == self.capacity[s]):
+                if self.num_charging[0] == 0:
                     raise Exception("No cars can be removed from charging node as there are no cars there")
             for s in range(len(self.num_charging)):
                 self.num_charging[s] -= 1
-
-
 
 
 class Car:
