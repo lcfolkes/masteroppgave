@@ -304,6 +304,7 @@ class ConstructionHeuristic:
                         car_move_type = "C" if car_move.is_charging_move else "P"
                         print(f"{car_move_type}: employee: {employee.employee_id}, scenario: {s + 1} " + car_move.to_string())
 
+'''
 if __name__ == "__main__":
     filename = "InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_b"
     #print("\n---- GUROBI ----")
@@ -318,3 +319,4 @@ if __name__ == "__main__":
     get_objective_function_val(ch.parking_nodes, ch.employees, ch.num_scenarios)
     print(ch.assigned_car_moves)
     print(ch.unused_car_moves)
+'''

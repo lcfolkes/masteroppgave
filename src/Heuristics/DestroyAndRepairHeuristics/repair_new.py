@@ -273,7 +273,7 @@ class RegretInsertion(Repair):
         return best_car_move, best_employee
 
 
-
+'''
 if __name__ == "__main__":
     print("\n---- HEURISTIC ----")
     ch = ConstructionHeuristic("./InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_a.pkl")
@@ -302,3 +302,4 @@ if __name__ == "__main__":
     fc = FeasibilityChecker(ch.world_instance)
     print("feasibilityChecker")
     print(fc.is_first_stage_solution_feasible(gi.repaired_solution))
+'''

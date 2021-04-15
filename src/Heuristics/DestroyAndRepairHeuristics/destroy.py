@@ -229,7 +229,7 @@ class ShawRemoval(Destroy):
 
         return first_stage_solution_dict
 
-
+'''
 if __name__ == "__main__":
     from Heuristics.objective_function import get_objective_function_val
 
@@ -248,3 +248,4 @@ if __name__ == "__main__":
     sr = ShawRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
                      neighborhood_size=2, randomization_degree=10)
     sr.to_string()
+'''
