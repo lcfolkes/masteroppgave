@@ -4,7 +4,7 @@ import random
 import copy
 from Heuristics.DestroyAndRepairHeuristics.destroy import RandomRemoval
 from Heuristics.DestroyAndRepairHeuristics.repair import GreedyInsertion
-from Heuristics.construction_heuristic_new import ConstructionHeuristic
+from Heuristics.construction_heuristic import ConstructionHeuristic
 
 #TODO: can be made faster if we remove initial_solution and omit the use of copy.deepcopy()
 
@@ -17,10 +17,21 @@ class LocalSearchOperator(ABC):
 		#self.initial_solution = solution
 		self.feasibility_checker = feasibility_checker
 		self._count = 0
-		self.mutated_solution = self._mutate(solution)
+		self.solution = self._mutate(solution)
 
 	def _mutate(self, solution):
 		pass
+
+	@property
+	def hash_key(self):
+		hash_dict = {}
+		for k, v in self.solution.items():
+			emp_moves = []
+			for cm in v:
+				emp_moves.append(cm.car_move_id)
+			hash_dict[k.employee_id] = emp_moves
+
+		return hash(str(hash_dict))
 
 	def to_string(self):
 		print("Initial solution")
