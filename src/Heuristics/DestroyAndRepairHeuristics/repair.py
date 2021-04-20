@@ -186,7 +186,7 @@ class RegretInsertion(Repair):
                 # print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
                 break
 
-            insert_car_move_wo_deep_copy(current_solution, best_car_move, best_employee.employee_id, idx)
+            insert_car_move_wo_deep_copy(current_solution, best_car_move, best_employee, idx)
             self.unused_car_moves = remove_all_car_moves_of_car_in_car_move(best_car_move, self.unused_car_moves)
 
             q -= 1
