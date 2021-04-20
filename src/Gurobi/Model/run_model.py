@@ -60,9 +60,9 @@ def run_model(model, stochastic=True, time_limit=None, reset=False):
 			elif (v.varName[0] != 'x'):
 				print('%s %g' % (v.varName, v.x))
 		'''
-		nObjectives = m.NumObj
+		#nObjectives = m.NumObj
 		m.params.ObjNumber = 0
-		print('Charging deviation: %g' % m.ObjNVal)
+		print('Charging moves: %g' % m.ObjNVal)
 		m.params.ObjNumber = 1
 		print('Profit obj. val: %g' % m.ObjNVal)
 

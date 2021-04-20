@@ -216,12 +216,12 @@ class ConstructionHeuristic:
                 #print(best_car_move.to_string())
                 '''
                 self.world_instance.add_car_move_to_employee(best_car_move, best_employee)
-                if best_car_move.is_charging_move:
-                    best_car_move.end_node.add_car()
-                    '''print("Added MoveID", best_car_move.car_move_id)
-                    print("EndNode", best_car_move.end_node.node_id)
-                    print("Endnode", best_car_move.end_node)
-                    print("Num charging", best_car_move.end_node.num_charging)'''
+                #if best_car_move.is_charging_move:
+                #    best_car_move.end_node.add_car()
+                #    '''print("Added MoveID", best_car_move.car_move_id)
+                #    print("EndNode", best_car_move.end_node.node_id)
+                #    print("Endnode", best_car_move.end_node)
+                #    print("Num charging", best_car_move.end_node.num_charging)'''
                 for s in range(self.num_scenarios):
                     self.assigned_car_moves[best_employee][s].append(best_car_move)
                     self.unused_car_moves[s].remove(best_car_move)
@@ -261,13 +261,13 @@ class ConstructionHeuristic:
                         if best_car_move[s] is not None:
                             self.assigned_car_moves[best_employee[s]][s].append(best_car_move[s])
                             self.unused_car_moves[s].remove(best_car_move[s])
-                            if best_car_move[s].is_charging_move:
-                                best_car_move[s].end_node.add_car(scenario=s)
-                                print("Added MoveID", best_car_move[s].car_move_id)
-                                print("scenario", s)
-                                print("EndNode", best_car_move[s].end_node.node_id)
-                                print("Endnode", best_car_move[s].end_node)
-                                print("Num charging", best_car_move[s].end_node.num_charging)
+                            #if best_car_move[s].is_charging_move:
+                            #    best_car_move[s].end_node.add_car(scenario=s)
+                            #    print("Added MoveID", best_car_move[s].car_move_id)
+                            #    print("scenario", s)
+                            #    print("EndNode", best_car_move[s].end_node.node_id)
+                            #    print("Endnode", best_car_move[s].end_node)
+                            #    print("Num charging", best_car_move[s].end_node.num_charging)
                         '''
                         print('Employee node after', best_employee[s].current_node_second_stage[s].node_id)
                         print('Employee time after', best_employee[s].current_time_second_stage[s])
@@ -311,6 +311,8 @@ if __name__ == "__main__":
     filename = "InstanceGenerator/InstanceFiles/25nodes/25-2-2-1_a"
     ch = ConstructionHeuristic(filename + ".pkl")
     ch.add_car_moves_to_employees()
+    true_obj_val, best_obj_val = ch.get_obj_val(both=True)
+    print(f"Construction heuristic true obj. val {true_obj_val}")
     ch.print_solution()
     first_stage_solution = get_first_stage_solution(ch.assigned_car_moves, ch.world_instance.first_stage_tasks)
     for k, v in first_stage_solution.items():

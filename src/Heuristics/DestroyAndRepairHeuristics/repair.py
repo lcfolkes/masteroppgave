@@ -127,9 +127,6 @@ class GreedyInsertion(Repair):
         best_obj_val = get_obj_val_of_car_moves(parking_nodes=self.parking_nodes, num_scenarios=1,
                                                 first_stage_car_moves=input_solution)
 
-        # cars_used = [cm.car.car_id for cm in input_solution]
-        print("get_best_insertion")
-        #unused_car_moves = self.unused_car_moves
         for car_move in self.unused_car_moves:
 
             # Checks if best car move is a charging move to a node where the remaining charging capacity is zero

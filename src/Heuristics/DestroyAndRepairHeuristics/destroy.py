@@ -24,10 +24,10 @@ class Destroy(ABC):
         self.num_first_stage_tasks = num_first_stage_tasks
         #self.input_solution = solution
         self.solution, self.removed_moves = get_first_stage_solution_and_removed_moves(solution, num_first_stage_tasks)
-        self.to_string("first_stage")
+        #self.to_string("first_stage")
         self.neighborhood_size = neighborhood_size
         self._destroy()
-        print("removed moves: ", [cm.car_move_id for cm in self.removed_moves])
+        #print("removed moves: ", [cm.car_move_id for cm in self.removed_moves])
 
     @abstractmethod
     def _destroy(self):
