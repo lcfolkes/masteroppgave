@@ -71,12 +71,13 @@ class ALNS():
 		heuristic_obj_vals = [best_obj_val]
 		best_solution = (solution, true_obj_val)
 		print(f"Construction heuristic true obj. val {true_obj_val}")
+		print(f"Heuristic obj. val {heuristic_obj_vals[0]}")
 		current_solution = solution
 		visited_hash_keys.add(current_solution.hash_key)
-		MODE = "LNS"
+		MODE = "LOCAL"
 		non_improving_count = 0
 
-		temperature = 100  # Start temperature must be set differently
+		temperature = 1000  # Start temperature must be set differently. High temperature --> more randomness
 		cooling_rate = 0.5  # cooling_rate in (0,1)
 
 		# SEGMENTS
@@ -121,7 +122,7 @@ class ALNS():
 					visited_hash_keys.add(hash_key)
 					# update scores for repair and destroy
 					candidate_solution.rebuild(first_stage_solution)
-					true_obj_val, candidate_obj_val = solution.get_obj_val(both=True)
+					true_obj_val, candidate_obj_val = candidate_solution.get_obj_val(both=True)
 					true_obj_vals.append(true_obj_val)
 					# print(f"true_obj_val {true_obj_val}")
 					# print(f"\ncurrent_obj_val {current_obj_val}")
@@ -129,6 +130,9 @@ class ALNS():
 					heuristic_obj_vals.append(candidate_obj_val)
 
 					if self._accept(candidate_obj_val, current_obj_val, temperature):
+						print("current_obj_val: ", current_obj_val)
+						print("candidate_obj_val: ", candidate_obj_val)
+
 						# IMPROVING
 						if candidate_obj_val > current_obj_val:
 							# NEW GLOBAL BEST
@@ -307,9 +311,9 @@ if __name__ == "__main__":
 
 	# profiler.stop()
 	# print(profiler.output_text(unicode=True, color=True))
-	print("\n############## Optimal solution ##############")
-	gi2 = GurobiInstance(filename + ".yaml")
-	run_model(gi2)
+	#print("\n############## Optimal solution ##############")
+	#gi2 = GurobiInstance(filename + ".yaml")
+	#run_model(gi2)
 
 	'''
     print("\n############## Evaluate solution ##############")
