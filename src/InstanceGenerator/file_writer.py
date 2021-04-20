@@ -43,7 +43,7 @@ def write_to_file_yaml(world, instance_name: str):
     data['charging_slots_available'] = [cn.capacity for cn in world.charging_nodes]
 
     # Total number of charging slots (total capacity of charging node)
-    data['total_number_of_charging_slots'] = [cn.max_capacity for cn in world.charging_nodes]
+    data['total_number_of_charging_slots'] = [cn.capacity for cn in world.charging_nodes]
 
     # reward for renting out car in second stage
     data['profit_rental'] = world.PROFIT_RENTAL
@@ -70,7 +70,7 @@ def write_to_file_yaml(world, instance_name: str):
 
     data['start_time_car'] = [c.start_time for c in world.cars]
 
-    data['planning_period'] = world.PLANNING_PERIOD
+    data['planning_period'] = world.planning_period
 
     # Cars in
     data['parking_state'] = [pn.parking_state for pn in world.parking_nodes]
@@ -79,7 +79,7 @@ def write_to_file_yaml(world, instance_name: str):
     data['charging_state'] = [pn.charging_state for pn in world.parking_nodes]
 
     data['ideal_state'] = [pn.ideal_state for pn in world.parking_nodes]
-
+    #print([pn.customer_requests for pn in world.parking_nodes])
     data['customer_requests'] = [pn.customer_requests.tolist() for pn in world.parking_nodes]
 
     data['car_returns'] = [pn.car_returns.tolist() for pn in world.parking_nodes]
@@ -116,13 +116,12 @@ def write_to_file_yaml(world, instance_name: str):
     for i in range(len(world.cars)):
         for j in range(len(world.cars[i].destinations)):
             if world.cars[i].destinations[j].node_id > len(world.parking_nodes):
-                out_list.append(world.distances_car[
-                                  (world.cars[i].parking_node.node_id - 1) * len(world.nodes) + world.cars[i].destinations[
-                                      j].node_id - 1] + world.HANDLING_TIME_CHARGING)
+                out_list.append(
+                    world.distances_car[world.cars[i].parking_node.node_id - 1][world.cars[i].destinations[j].node_id - 1] + world.HANDLING_TIME_CHARGING)
             else:
-                out_list.append(world.distances_car[
-                                  (world.cars[i].parking_node.node_id - 1) * len(world.nodes) + world.cars[i].destinations[
-                                      j].node_id - 1] + world.HANDLING_TIME_PARKING)
+                out_list.append(
+                    world.distances_car[world.cars[i].parking_node.node_id - 1][world.cars[i].destinations[j].node_id - 1] + world.HANDLING_TIME_PARKING)
+
 
     data['car_move_handling_time'] = out_list
 

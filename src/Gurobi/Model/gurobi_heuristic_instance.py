@@ -76,7 +76,7 @@ class GurobiInstance:
             'travel_time_to_origin']))  # T_k^(SO), earliest start time of service employee k
         self.EMPLOYEE_START_LOCATION = dict(
             zip(self.EMPLOYEES, self.cf['start_node_employee']))  # o(k), location of employee k at time T^(SO)_k
-        self.TRAVEL_TIME = self.cf['travel_time_bike']  # T_(ij), travel times between node i and j
+        self.TRAVEL_TIME = self.cf['travel_time_bike'][0]  # T_(ij), travel times between node i and j
         self.PLANNING_PERIOD = self.cf['planning_period']  # T^bar, planning period
         self.BIGM = dict(zip(self.CARMOVES, self.cf['bigM']))
         self.scenarios = np.arange(1, self.cf['num_scenarios'] + 1)
@@ -171,7 +171,15 @@ class GurobiInstance:
         ### OBJECTIVE FUNCTION ###
         # profit from customer requests
 
-        charging_deviation = self.SCENARIO_PROBABILITY * gp.quicksum(c[(i, s)] for i in self.PARKING_NEED_CHARGING_NODES for s in self.SCENARIOS)
+        #charging_moves = self.SCENARIO_PROBABILITY * gp.quicksum(c[(i, s)] for i in self.PARKING_NEED_CHARGING_NODES for s in self.SCENARIOS)
+        charging_moves = self.SCENARIO_PROBABILITY * gp.quicksum(
+            x[(k, r, m, s)]
+            for s in self.SCENARIOS
+            for i in self.PARKING_NEED_CHARGING_NODES
+            for k in self.EMPLOYEES
+            for r in self.CHARGING_MOVES_ORIGINATING_IN_NODE[i]
+            for m in self.TASKS)
+
 
         profit_customer_requests = gp.quicksum(
             (self.PROFIT_RENTAL) * z[(i, s)] for i in self.PARKING_NODES for s in self.SCENARIOS)
@@ -200,7 +208,7 @@ class GurobiInstance:
         m.addConstr(cost_deviation_ideal_state_var == cost_deviation_ideal_state * self.SCENARIO_PROBABILITY)
 
         # OBJECTIVE 1 - CHARGING
-        m.setObjectiveN(charging_deviation, index=0, priority=1, weight=-1, name="charging_deviation") # weight=-1 to minimize deviation
+        m.setObjectiveN(charging_moves, index=0, priority=1, name="charging_moves")
 
         # OBJECITVE 2 - PROFIT
         m.setObjectiveN(total_profit, index=1, priority=0, name="profit")
@@ -233,13 +241,13 @@ class GurobiInstance:
              for k in self.EMPLOYEES for m in self.TASKS[:-1] for s in self.SCENARIOS), name="c4"
         )
         # print("c4")
-
+        '''
         # (5) All cars in need of charging must be moved to a charging station within the planning period
         m.addConstrs((c[(i, s)] == (self.INITIAL_NEED_CHARGING[i] -
             gp.quicksum(x[(k, r, m, s)] for k in self.EMPLOYEES
                         for r in self.CHARGING_MOVES_ORIGINATING_IN_NODE[i] for m in self.TASKS))
              for i in self.PARKING_NEED_CHARGING_NODES for s in self.SCENARIOS), name="c5"
-        )
+        )'''
 
         # print("c5")
 
