@@ -6,8 +6,10 @@ from src.Gurobi.Model.gurobi_instance import GurobiInstance
 from src.HelperFiles.helper_functions import write_gurobi_results_to_file
 
 
-def run_model(model, stochastic=True, reset=False):
+def run_model(model, stochastic=True, time_limit=None, reset=False):
 	m = model.m
+	if time_limit:
+		m.Params.timeLimit = time_limit
 	# Optimize Model
 	m.write("out.attr")
 	try:
@@ -58,9 +60,9 @@ def run_model(model, stochastic=True, reset=False):
 			elif (v.varName[0] != 'x'):
 				print('%s %g' % (v.varName, v.x))
 		'''
-		nObjectives = m.NumObj
+		#nObjectives = m.NumObj
 		m.params.ObjNumber = 0
-		print('Charging deviation: %g' % m.ObjNVal)
+		print('Charging moves: %g' % m.ObjNVal)
 		m.params.ObjNumber = 1
 		print('Profit obj. val: %g' % m.ObjNVal)
 

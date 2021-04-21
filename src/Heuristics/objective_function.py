@@ -261,8 +261,7 @@ def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int,
             first_stage_car_moves=first_stage_car_moves, second_stage_car_moves=second_stage_car_moves, scenario=scenario)
     else:
         cost_travel_time_between_car_moves = 0
-    return profit_customer_requests - cost_relocation - cost_deviation_ideal_state - cost_deviation_charging_moves - \
-        cost_travel_time_between_car_moves
+    return profit_customer_requests - cost_relocation - cost_deviation_ideal_state - cost_deviation_charging_moves #- cost_travel_time_between_car_moves
 
 
 def get_objective_function_val(parking_nodes: [ParkingNode], employees: [Employee], num_scenarios: int,
