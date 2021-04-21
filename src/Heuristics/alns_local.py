@@ -311,9 +311,9 @@ if __name__ == "__main__":
 
 	# profiler.stop()
 	# print(profiler.output_text(unicode=True, color=True))
-	#print("\n############## Optimal solution ##############")
-	#gi2 = GurobiInstance(filename + ".yaml")
-	#run_model(gi2)
+	print("\n############## Optimal solution ##############")
+	gi2 = GurobiInstance(filename + ".yaml")
+	run_model(gi2)
 
 	'''
     print("\n############## Evaluate solution ##############")
