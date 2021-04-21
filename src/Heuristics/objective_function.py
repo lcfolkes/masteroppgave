@@ -353,18 +353,27 @@ def calculate_cost_travel_time_between_car_moves(first_stage_car_moves: [CarMove
             for cm in first_stage_car_moves:
                 if cm.employee not in employees:
                     employees.append(cm.employee)
-        if second_stage_car_moves:
+
+        if any(second_stage_car_moves):
             for s in second_stage_car_moves:
                 for cm in s:
-                    if cm.employee not in employees:
-                        employees.append(cm.employee)
+                    print(cm.car_move_id)
+                    if cm.employee is None:
+                        print("None")
+                    else:
+                        print(cm.car_move_id)
+            for s in second_stage_car_moves:
+                    for cm in s:
+                        if cm.employee not in employees:
+
+                            employees.append(cm.employee)
 
     else:
         if first_stage_car_moves:
             for cm in first_stage_car_moves:
                 if cm.employee not in employees:
                     employees.append(cm.employee)
-        if second_stage_car_moves:
+        if any(second_stage_car_moves):
             for cm in second_stage_car_moves[scenario]:
                 if cm.employee not in employees:
                     employees.append(cm.employee)
@@ -373,18 +382,19 @@ def calculate_cost_travel_time_between_car_moves(first_stage_car_moves: [CarMove
 
     # TODO: Create parameter COST_NON_CAR_RELOCATION in generator
     # return World.COST_NON_CAR_RELOCATION*inter_move_travel_time
-    return 0.1*inter_move_travel_time
+    return 0.5*inter_move_travel_time
 
 
 def get_travel_time_between_car_moves(employees, scenario: int = None):
     travel_time = 0
     if any(emp for emp in employees):
         if scenario is None:
+            print(employees)
             for employee in employees:
                 travel_time += employee.current_time
                 for car_move in employee.car_moves:
                     travel_time -= car_move.handling_time
-                if employee.car_moves_second_stage:
+                if any(employee.car_moves_second_stage):
                     travel_time_second_stage = 0
                     num_scenarios = len(employee.car_moves_second_stage)
                     for s in range(num_scenarios):

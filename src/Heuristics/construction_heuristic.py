@@ -238,7 +238,7 @@ class ConstructionHeuristic:
                         self.first_stage = True
                 if not self.first_stage:
                     # initialize charging and parking moves for second stage
-                    self.car_moves_second_stage = [self.car_moves for s in range(self.num_scenarios)]
+                    self.car_moves_second_stage = [self.car_moves for _ in range(self.num_scenarios)]
             else:
                 self.available_employees = False
         # Second stage
@@ -257,8 +257,9 @@ class ConstructionHeuristic:
                         # print('Travel time to start node', best_travel_time_to_car_move_second_stage[s])
                         #print(best_car_move[s].to_string())
                         '''
-                        self.world_instance.add_car_move_to_employee(best_car_move[s], best_employee[s], s)
+                        #self.world_instance.add_car_move_to_employee(best_car_move[s], best_employee[s], s)
                         if best_car_move[s] is not None:
+                            self.world_instance.add_car_move_to_employee(best_car_move[s], best_employee[s], s)
                             self.assigned_car_moves[best_employee[s]][s].append(best_car_move[s])
                             self.unused_car_moves[s].remove(best_car_move[s])
                             #if best_car_move[s].is_charging_move:
@@ -308,7 +309,7 @@ class ConstructionHeuristic:
 
 
 if __name__ == "__main__":
-    filename = "InstanceGenerator/InstanceFiles/25nodes/25-2-2-1_a"
+    filename = "InstanceGenerator/InstanceFiles/30nodes/30-10-1-1_a"
     ch = ConstructionHeuristic(filename + ".pkl")
     ch.add_car_moves_to_employees()
     true_obj_val, best_obj_val = ch.get_obj_val(both=True)
