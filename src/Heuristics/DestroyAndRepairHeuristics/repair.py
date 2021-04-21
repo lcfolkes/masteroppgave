@@ -198,9 +198,9 @@ class RegretInsertion(Repair):
         """
         # For each car move, we create a list with the employees the car move can be assigned to, which is sorted so
         # that the first element in the list is the employee for which the objective function increases the most if
-        # assigned to the car move. The regret value is the difference between inserting the car move in its best
-        # position and in its kth (regret_nr) position. We do this for each car move, and then select the one with the
-        # highest regret value.
+        # assigned to the car move. The regret value is the difference between the total objective increase of
+        # inserting the car move in its best, second best, ..., (k-1)th best position, and in its kth (regret_nr)
+        # position. We do this for each car move, and then select the one with the highest regret value.
         best_car_move = None
         best_employee = None
         best_idx = None
