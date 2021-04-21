@@ -18,18 +18,20 @@ class LocalSearch:
 
 	def search(self):
 		current_obj_val = get_obj_val_of_solution_dict(self.intra_move.current_solution, self.feasibility_checker.world_instance, True)
-		print(current_obj_val)
 		for k, v in self.solution.items():
 			idx = list(range(len(v)))
 			idx_pairs = list(combinations(idx, 2))
 			for i, j in idx_pairs:
 				self.intra_move.mutate(k, i, j)
-				self.intra_move.to_string()
 				self.visited_list.append(self.intra_move.hash_key)
 				if not self.feasibility_checker.is_solution_feasible(self.intra_move.candidate_solution):
 					continue
+				self.intra_move.to_string()
 				candidate_obj_val = get_obj_val_of_solution_dict(self.intra_move.candidate_solution, self.feasibility_checker.world_instance, True)
-				print(candidate_obj_val)
+				if candidate_obj_val > current_obj_val:
+					print("new best")
+					self.intra_move.current_solution = self.intra_move.candidate_solution
+		self.intra_move.to_string()
 
 if __name__ == "__main__":
 	print("\n---- Local Search ----")

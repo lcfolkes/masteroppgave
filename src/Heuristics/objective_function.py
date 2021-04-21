@@ -400,7 +400,6 @@ def calculate_cost_travel_time_between_car_moves_from_solution_dict(solution: {E
                 travel_time[s] += emp_travel_time_to_node
                 current_node[s] = end_node
         total_travel_time += np.mean(travel_time)
-    print("new", total_travel_time)
     return 0.1*total_travel_time
 
 
