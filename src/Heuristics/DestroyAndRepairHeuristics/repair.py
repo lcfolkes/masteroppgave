@@ -170,8 +170,8 @@ class RegretInsertion(Repair):
         Assigns car moves to employees and returns the repaired solution
         :return: a repaired solution in the form of a dictionary with key: employee id and value: a list of car moves
         """
-        if self.regret_nr > len(self.solution)-1:
-            print("Regret number cannot be higher than one less than the number of employees!")
+        if self.regret_nr > len(self.solution):
+            print("Regret number cannot be higher than the number of employees!")
             exit()
 
         q = self.neighborhood_size
@@ -198,9 +198,9 @@ class RegretInsertion(Repair):
         """
         # For each car move, we create a list with the employees the car move can be assigned to, which is sorted so
         # that the first element in the list is the employee for which the objective function increases the most if
-        # assigned to the car move. The regret value is the difference between inserting the car move in its best
-        # position and in its kth (regret_nr) position. We do this for each car move, and then select the one with the
-        # highest regret value.
+        # assigned to the car move. The regret value is the difference between the total objective increase of
+        # inserting the car move in its best, second best, ..., (k-1)th best position, and in its kth (regret_nr)
+        # position. We do this for each car move, and then select the one with the highest regret value.
         best_car_move = None
         best_employee = None
         best_idx = None
@@ -237,13 +237,17 @@ class RegretInsertion(Repair):
                 continue
 
             obj_values_sorted = sorted(obj_val_dict.values(), reverse=True)
-            if (len(obj_values_sorted) > regret_nr) and ((obj_values_sorted[0] - obj_values_sorted[regret_nr]) > highest_obj_val_diff):
-                best_car_move = car_move
-                best_employees_and_idx = []
-                for key, value in obj_val_dict.items():
-                    if value == obj_values_sorted[0]:
-                        best_employees_and_idx.append(key)
-                best_employee, best_idx = random.choice(best_employees_and_idx)
+            if len(obj_values_sorted) >= regret_nr:
+                obj_val_diff = 0
+                for i in range(regret_nr-1):
+                    obj_val_diff += obj_values_sorted[i]-obj_values_sorted[regret_nr-1]
+                if obj_val_diff > highest_obj_val_diff:
+                    best_car_move = car_move
+                    best_employees_and_idx = []
+                    for key, value in obj_val_dict.items():
+                        if value == obj_values_sorted[0]:
+                            best_employees_and_idx.append(key)
+                    best_employee, best_idx = random.choice(best_employees_and_idx)
 
         return best_car_move, best_employee, best_idx
 
@@ -274,7 +278,7 @@ if __name__ == "__main__":
     #    parking_nodes=ch.parking_nodes, world_instance=ch.world_instance)
 
     gi = RegretInsertion(destroyed_solution_object=rr, unused_car_moves=ch.unused_car_moves,
-                         parking_nodes=ch.parking_nodes, world_instance=ch.world_instance, regret_nr=1)
+                         parking_nodes=ch.parking_nodes, world_instance=ch.world_instance, regret_nr=4)
 
     gi.to_string()
     '''profiler.stop()
