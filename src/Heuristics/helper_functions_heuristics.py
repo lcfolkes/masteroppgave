@@ -1,7 +1,6 @@
-import copy
 import os
 
-from Heuristics.objective_function import get_obj_val_of_car_moves
+from src.Heuristics.objective_function import get_obj_val_of_car_moves
 from path_manager import path_to_src
 from src.InstanceGenerator.instance_components import CarMove, ChargingNode, Employee
 
@@ -19,9 +18,6 @@ def get_first_stage_solution_list_from_dict(first_stage_solution: {int: [CarMove
             first_stage_solution_list.append(v[i])
     return first_stage_solution_list
 
-
-
-
 def get_second_stage_solution_dict(input_solution: {int: [[CarMove]]}, num_first_stage_tasks: int) -> {int: [CarMove]}:
     """
     :param input_solution:  dictionary with two scenarios {e1: [[cm1], [cm1, cm2]], e2: [[cm3], [cm3]]}
@@ -38,7 +34,7 @@ def get_second_stage_solution_dict(input_solution: {int: [[CarMove]]}, num_first
     return second_stage_solution
 
 
-def get_second_stage_solution_list_from_dict(second_stage_solution_dict: {int: [CarMove]}, num_scenarios: int):
+def get_second_stage_solution_list_from_dict(second_stage_solution_dict: {int: [CarMove]}, num_scenarios: int) -> [[CarMove]]:
     """
     :param second_stage_solution_dict: eg. {e1: [[], [cm2]], e2: [[], []]}
     :param num_scenarios:  integer
@@ -51,35 +47,36 @@ def get_second_stage_solution_list_from_dict(second_stage_solution_dict: {int: [
                 second_stage_solution[s].append(v[s][i])
     return second_stage_solution
 
-
-def insert_car_move(current_solution: {Employee: [CarMove]}, car_move: CarMove, employee_id: int) -> {
-    Employee: [CarMove]}:
+def get_first_and_second_stage_solution_list_from_dict(input_solution: {Employee: [CarMove]}, num_first_stage_tasks: int) -> ([CarMove], [[CarMove]]):
     """
+    :param input_solution: e.g. dictionary with two scenarios {e1: [[cm1], [cm1, cm2]], e2: [[cm3], [cm3]]}
+    :param num_first_stage_tasks: integer
+    :return: e.g. [cm1, cm3], [[], [cm2]]
+    """
+    first_stage_list = []
+    second_stage_list = []
+    for k, car_moves in input_solution.items():
+        first_stage_list += car_moves[0][:min(len(car_moves[0]), num_first_stage_tasks)]
+        for s in range(len(car_moves)):
+            try:
+                second_stage_list[s] += car_moves[s][min(len(car_moves[0]), num_first_stage_tasks):]
+            except:
+                second_stage_list.append([])
+                second_stage_list[s] += car_moves[s][min(len(car_moves[0]), num_first_stage_tasks):]
+    return first_stage_list, second_stage_list
+
+
+def insert_car_move(solution: {Employee: [CarMove]}, car_move: CarMove, employee, idx):
+    """
+    Updates state of solution. No deep copy, original object is mutated
     :param current_solution: dictionary with employee as key, list of first stage moves as value
     :param car_move: car move object
     :param employee: employee object
     :return: solution with the inserted car move
     """
-    solution = copy.deepcopy(current_solution)
-    employee_obj = [e for e in solution.keys() if e.employee_id == employee_id][0]
-    solution.get(employee_obj).append(car_move)
-    car_move.set_employee(employee_obj)
-    return solution
-
-
-def insert_car_move_wo_deep_copy(solution: {Employee: [CarMove]}, car_move: CarMove, employee, idx):
-    """
-    :param current_solution: dictionary with employee as key, list of first stage moves as value
-    :param car_move: car move object
-    :param employee: employee object
-    :return: solution with the inserted car move
-    """
-
-    #employee_obj = [e for e in solution.keys() if e.employee_id == employee_id][0]
     solution.get(employee).insert(idx, car_move)
-    car_move.set_employee(employee)
     # Update charging state in end node if the chosen move is a charging move
-    # return solution
+    car_move.set_employee(employee)
 
 
 def remove_car_move_from_employee_from_solution(solution: {Employee: [CarMove]}, car_move: CarMove, employee):
@@ -129,94 +126,6 @@ def get_assigned_car_moves(employees, scenario: int = None):
                 car_moves.append(car_move)
 
     return car_moves
-
-
-'''
-def get_best_car_move(parking_nodes, employees, car_moves, first_stage, prioritize_charging, num_scenarios):
-    # FIRST STAGE
-    if first_stage:
-        best_car_move_first_stage = None
-        assigned_car_moves_first_stage = get_assigned_car_moves(employees)
-        best_obj_val_first_stage = -1000
-        longest_travel_time_first_stage = -1000
-        if not prioritize_charging:
-            best_obj_val_first_stage = get_obj_val_of_car_moves(parking_nodes=parking_nodes, num_scenarios=num_scenarios,
-                                                                first_stage_car_moves=assigned_car_moves_first_stage)
-            for r in range(len(car_moves)):
-                obj_val = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
-                                                   first_stage_car_moves=assigned_car_moves_first_stage + [
-                                                       car_moves[r]])
-                if obj_val > best_obj_val_first_stage:
-                    best_obj_val_first_stage = obj_val
-                    best_car_move_first_stage = car_moves[r]
-        else:
-            for r in range(len(car_moves)):
-                travel_time = car_moves[r].handling_time
-                if travel_time > longest_travel_time_first_stage:
-                    longest_travel_time_first_stage = travel_time
-                    best_car_move_first_stage = car_moves[r]
-
-        # print("obj_val: ", obj_val)
-        # print("best_obj_val: ", best_obj_val_first_stage)
-        # print(f"best_car_move: {best_car_move_first_stage.car_move_id}, {best_car_move_first_stage.start_node.node_id} --> {best_car_move_first_stage.end_node.node_id}")
-        return best_car_move_first_stage
-
-    # SECOND STAGE
-    # TODO: Handle assigning charging moves in the second stage
-    else:
-        best_car_move_second_stage = [None for _ in range(num_scenarios)]
-        best_obj_val_second_stage = [-1000 for _ in range(num_scenarios)]
-        assigned_first_stage_car_moves = get_assigned_car_moves(employees)
-        longest_travel_time_second_stage = [0 for _ in range(num_scenarios)]
-
-        if not prioritize_charging:
-            for s in range(num_scenarios):
-                assigned_second_stage_car_moves = get_assigned_car_moves(employees, scenario=s)
-                best_obj_val_second_stage[s] = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
-                                                                        first_stage_car_moves=
-                                                                        assigned_first_stage_car_moves,
-                                                                        second_stage_car_moves=
-                                                                        assigned_second_stage_car_moves,
-                                                                        scenario=s)
-        # print(f"best_obj_val_second_stage {best_obj_val_second_stage}")
-        obj_val = [0 for _ in range(num_scenarios)]
-        for s in range(num_scenarios):
-            # zero indexed scenario
-            assigned_second_stage_car_moves = get_assigned_car_moves(employees, scenario=s)
-            # Parking moves second stage
-            if not prioritize_charging:
-                for r in range(len(car_moves[s])):
-                    obj_val[s] = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
-                                                          first_stage_car_moves=assigned_first_stage_car_moves,
-                                                          second_stage_car_moves=assigned_second_stage_car_moves +
-                                                                                 [car_moves[s][r]], scenario=s)
-                    # if car_moves[s][r].car_move_id == 7 and s == 0:
-                    #    print(f"car_move {car_moves[s][r].car_move_id}, s {s + 1}")
-                    #    print(f"obj_val {obj_val[s]} best_obj_val {best_obj_val_second_stage[s]}")
-
-                    if obj_val[s] > best_obj_val_second_stage[s]:
-                        best_obj_val_second_stage[s] = obj_val[s]
-                        best_car_move_second_stage[s] = car_moves[s][r]
-
-            # Charging moves second stage
-            else:
-                for r in range(len(car_moves[s])):
-                    travel_time = car_moves[s][r].handling_time
-                    if travel_time > longest_travel_time_second_stage[s]:
-                        longest_travel_time_second_stage[s] = travel_time
-                        best_car_move_second_stage[s] = car_moves[s][r]
-
-        out_list = []
-        for car_move in best_car_move_second_stage:
-            if car_move is not None:
-                out_list.append(car_move.car_move_id)
-            else:
-                out_list.append(car_move)
-
-        # print(out_list)
-        # print([round(o,2) for o in best_obj_val_second_stage])
-        return best_car_move_second_stage
-'''
 
 
 def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scenarios):
@@ -326,11 +235,36 @@ def get_first_stage_solution(input_solution, num_first_stage_tasks):
     first_stage_solution = {}
     # print(self.input_solution)
     for k, v in input_solution.items():
-        first_stage_solution[k] = []
-        # For solutions where number of assigned tasks are less than the number of first stage tasks
-        for i in range(min(num_first_stage_tasks, len(input_solution[k][0]))):
-            first_stage_solution[k].append(input_solution[k][0][i])
+        first_stage_solution[k] = input_solution[k][0][:min(num_first_stage_tasks, len(input_solution[k][0]))]
     return first_stage_solution
+
+def get_first_and_second_stage_solution(input_solution, num_first_stage_tasks):
+    first_stage_solution = {}
+    second_stage_solution = {}
+    # print(self.input_solution)
+    for k, v in input_solution.items():
+        # For solutions where number of assigned tasks are less than the number of first stage tasks
+        # First stage
+        first_stage_solution[k] = input_solution[k][0][:min(num_first_stage_tasks, len(input_solution[k][0]))]
+        # Second stage
+        second_stage_solution[k] = []
+        for s in range(len(v)):
+            second_stage_solution[k].append(input_solution[k][s][min(num_first_stage_tasks, len(v[s])):])
+
+    return first_stage_solution, second_stage_solution
+
+def reconstruct_solution_from_first_and_second_stage(first_stage, second_stage):
+    solution = {}
+    for k, scenarios in second_stage.items():
+        solution[k] = []
+        for s in range(len(scenarios)):
+            scenario_moves = []
+            for i in range(len(first_stage[k])):
+                scenario_moves.append(first_stage[k][i])
+            for i in range(len(scenarios[s])):
+                scenario_moves.append(scenarios[s][i])
+            solution[k].append(scenario_moves)
+    return solution
 
 
 def get_first_stage_solution_and_removed_moves(input_solution, num_first_stage_tasks):

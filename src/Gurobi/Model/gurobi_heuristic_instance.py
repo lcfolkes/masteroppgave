@@ -161,7 +161,7 @@ class GurobiInstance:
                       name="w")  # w_is, number of cars short of ideal state in node i in scenario s
         t = m.addVars(product(self.EMPLOYEES, self.TASKS, self.SCENARIOS), lb=0, vtype=GRB.CONTINUOUS, name="t")
 
-        c = m.addVars(product(self.PARKING_NODES, self.SCENARIOS), lb=0, vtype=GRB.INTEGER, name="c")
+        #c = m.addVars(product(self.PARKING_NODES, self.SCENARIOS), lb=0, vtype=GRB.INTEGER, name="c")
 
         # print(x)
         # print(y)
