@@ -14,6 +14,8 @@ class ConstructionHeuristic:
     # instance_file = "InstanceFiles/6nodes/6-3-1-1_d.pkl"
     # filename = "InstanceFiles/6nodes/6-3-1-1_b.yaml"
 
+    print("------- CONSTRUCTION HEURISTIC -------\n")
+
     def __init__(self, instance_file):
 
         self.instance_file = instance_file
@@ -154,6 +156,7 @@ class ConstructionHeuristic:
     def add_car_moves_to_employees(self):
         improving_car_move_exists = True
         second_stage_move_counter = 0
+        first_stage_move_counter = 0
         while self.available_employees and improving_car_move_exists:
             # print([cm.car_move_id for cm in self.charging_moves])
             # print([[cm.car_move_id for cm in s] for s in self.charging_moves_second_stage])
@@ -184,6 +187,9 @@ class ConstructionHeuristic:
                     #### ADD CAR MOVE TO EMPLOYEE ###
                     self._add_car_move_to_employee(car_moves=car_moves, best_car_move=best_car_move_first_stage,
                                                    best_employee=best_employee_first_stage)
+                    first_stage_move_counter += 1
+                    print(f"{first_stage_move_counter} first stage insertion completed\n")
+
 
             else:
                 #### GET BEST CAR MOVE ###
@@ -215,7 +221,7 @@ class ConstructionHeuristic:
                             added_scenarios.append(0)
 
                     scenarios_with_insertion = [i for i, x in enumerate(added_scenarios) if x == 1]
-                    print(f"Insertion number {second_stage_move_counter}:")
+                    print(f"Second stage insertion number {second_stage_move_counter}:")
                     print("{} second stage car moves added in scenarios {}\n".format(len(scenarios_with_insertion), ([i+1 for i in scenarios_with_insertion])))
 
 
@@ -308,10 +314,22 @@ class ConstructionHeuristic:
     def print_solution(self):
         true_obj_val, heuristic_obj_val = self.get_obj_val(both=True)
 
+        '''
+        num_charging_moves = 0
+        for emp in range(len(self.assigned_car_moves)):
+            for scenario in 
+            for cm in self.assigned_car_moves[emp]:
+                if cm.is_charging_move:
+                    num_charging_moves += 1
+                    
+        '''
+
+
         print("\n")
         print("----------- CONSTRUCTION HEURISTIC SOLUTION -----------\n")
         print(f"True objective value: {round(true_obj_val, 2)}")
-        print(f"Heuristic objective value: {round(heuristic_obj_val, 2)}\n")
+        print(f"Heuristic objective value: {round(heuristic_obj_val, 2)}")
+        #print(f"Number of cars charged: {num_charging_moves}\n")
 
         print("-------------- First stage routes --------------")
         for employee in self.employees:
@@ -320,9 +338,9 @@ class ConstructionHeuristic:
                 car_move_type = "C" if car_move.is_charging_move else "P"
                 print(f"    {car_move_type}: Employee: {employee.employee_id}, Task nr: {employee.car_moves.index(car_move)+1}, "
                       + car_move.to_string() + ", "
-                      + f"Start time: {employee.start_times_car_moves[employee.car_moves.index(car_move)]-employee.travel_times_car_moves[employee.car_moves.index(car_move)]}, "
+                      + f"Start time: {round(employee.start_times_car_moves[employee.car_moves.index(car_move)]-employee.travel_times_car_moves[employee.car_moves.index(car_move)], 2)}, "
                       + f"Travel time to move: {round(employee.travel_times_car_moves[employee.car_moves.index(car_move)], 2)}, "
-                      + f"Handling time: {employee.car_moves[employee.car_moves.index(car_move)].handling_time}, "
+                      + f"Handling time: {round(employee.car_moves[employee.car_moves.index(car_move)].handling_time, 2)}, "
                       + f"Time after: {round(car_move.start_time + car_move.handling_time, 2)}\n")
 
         print("-------------- Second stage routes --------------")
@@ -336,13 +354,13 @@ class ConstructionHeuristic:
                         #print(f"{car_move_type}: employee: {employee.employee_id}, scenario: {s + 1} " + car_move.to_string())
                         print(f"        {car_move_type}: Employee: {employee.employee_id}, Task nr: {employee.car_moves_second_stage[s].index(car_move)+1+len(employee.car_moves)}, "
                               + car_move.to_string() + ", "
-                              + f"Start time: {employee.start_times_car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)] - employee.travel_times_car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)]}, "
+                              + f"Start time: {round(employee.start_times_car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)] - employee.travel_times_car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)], 2)}, "
                               + f"Travel time to move: {round(employee.travel_times_car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)], 2)}, "
-                              + f"Handling time: {employee.car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)].handling_time}, "
+                              + f"Handling time: {round(employee.car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)].handling_time, 2)}, "
                               + f"Time after: {round(car_move.start_times_second_stage[s] + car_move.handling_time, 2)}\n")
 
 if __name__ == "__main__":
-    filename = "InstanceGenerator/InstanceFiles/60nodes/60-10-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/25nodes/25-10-2-1_a"
     ch = ConstructionHeuristic(filename + ".pkl")
     ch.add_car_moves_to_employees()
     true_obj_val, best_obj_val = ch.get_obj_val(both=True)

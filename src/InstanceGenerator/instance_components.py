@@ -189,11 +189,13 @@ class CarMove:
             self.start_times_second_stage.append(None)
 
     def to_string(self):
+        '''
         if self.is_charging_move:
             s = "C: "
         else:
             s = "P: "
-        return s + f"Car move: {self.car_move_id}, Car: {self.car.car_id}, Route: ({self.start_node.node_id} -> {self.end_node.node_id})"
+        '''
+        return f"Car move: {self.car_move_id}, Car: {self.car.car_id}, Route: ({self.start_node.node_id} -> {self.end_node.node_id})"
                    #f"" \
                    #f"Handling time: {self.handling_time}"
 
