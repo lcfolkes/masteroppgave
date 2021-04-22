@@ -15,14 +15,13 @@ class LocalSearchOperator(ABC):
 		'''
 		:param solution: dictionary with employee object as key and a list of car moves as value
 		'''
-		#self.feasibility_checker = feasibility_checker
-		self._current_solution = solution #self._mutate(solution, employee, i, j, s)
+		self._current_solution = solution
 		self._candidate_solution = None
 		self.first_stage_tasks = first_stage_tasks
-
+	'''
 	def mutate(self, solution, employee, i, j, s):
 		pass
-
+	'''
 	@property
 	def current_solution(self):
 		return self._current_solution
@@ -82,8 +81,8 @@ class IntraMove(LocalSearchOperator):
 	# first or second stage:
 	# acceptance: first best, best, simulated annealing
 
-	def __init__(self, solution, first_stage_tasks):#, feasibility_checker):
-		super().__init__(solution, first_stage_tasks)#, feasibility_checker)
+	def __init__(self, solution, first_stage_tasks):
+		super().__init__(solution, first_stage_tasks)
 
 	def mutate(self, employee, i, j, s=None):
 		# No need to copy because get_first_and_second_stage_solution() creates new dict with same elements
@@ -91,10 +90,10 @@ class IntraMove(LocalSearchOperator):
 
 		if s is None:
 			moves = first_stage[employee]
-			moves[i], moves[j] = moves[j], moves[i]
 		else:
 			moves = second_stage[employee][s]
-			moves[s][i], moves[s][j] = moves[s][j], moves[s][i]
+
+		moves[i], moves[j] = moves[j], moves[i]
 
 		self._candidate_solution = reconstruct_solution_from_first_and_second_stage(first_stage, second_stage)
 
@@ -105,28 +104,19 @@ class InterSwap(LocalSearchOperator):
     An Inter Swap LSO swaps two car-moves between two service employees.
     '''
 
-	def __init__(self, solution, feasibility_checker):
-		super().__init__(solution, feasibility_checker)
+	def __init__(self, solution, first_stage_tasks):
+		super().__init__(solution, first_stage_tasks)
 
-	def _mutate(self, solution):
-		#solution = copy.deepcopy(solution)
-		employees = [k for k, v in solution.items() if len(v) > 0]
-		try:
-			chosen_employees = random.sample(employees, 2)
-			idx_1 = random.randint(0, len(solution[chosen_employees[0]])-1)
-			idx_2 = random.randint(0, len(solution[chosen_employees[1]])-1)
-			solution[chosen_employees[1]][idx_2], solution[chosen_employees[0]][idx_1] = \
-				solution[chosen_employees[0]][idx_1], solution[chosen_employees[1]][idx_2]
+	def mutate(self, emp1, emp2, s=None):
+		e1, idx_1 = emp1
+		e2, idx_2 = emp2
+		first_stage, second_stage = get_first_and_second_stage_solution(self._current_solution, self.first_stage_tasks)
+		if s is None:
+			first_stage[e2][idx_2], first_stage[e1][idx_1] = first_stage[e1][idx_1], first_stage[e2][idx_2]
+		else:
+			first_stage[e2][s][idx_2], first_stage[e1][s][idx_1] = first_stage[e1][s][idx_1], first_stage[e2][s][idx_2]
 
-			if not self.feasibility_checker.is_first_stage_solution_feasible(solution):
-				if self._count < 3:
-					#print("InterSwap not possible")
-					self._count += 1
-					self._mutate(solution)
-		except:
-			pass
-
-		return solution
+		self._candidate_solution = reconstruct_solution_from_first_and_second_stage(first_stage, second_stage)
 
 
 class InterMove(LocalSearchOperator):

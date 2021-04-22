@@ -5,7 +5,7 @@ from DestroyAndRepairHeuristics.destroy import Destroy, RandomRemoval, WorstRemo
 from DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretInsertion
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
-from Heuristics.LocalSearchOperators.local_search_operator import LocalSearchOperator, IntraMove, InterSwap
+from Heuristics.LocalSearch.local_search_operator import LocalSearchOperator, IntraMove, InterSwap
 from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution
 from construction_heuristic import ConstructionHeuristic
 from path_manager import path_to_src
