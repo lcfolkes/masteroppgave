@@ -143,7 +143,7 @@ class CarMove:
             self.handling_time = time + TIME_CONSTANTS['handling_charging']
 
     def set_start_time(self, time: int, scenario=None):
-        if not scenario:
+        if scenario is None:
             self.start_time = time
         else:
             self.start_times_second_stage[scenario] = time
@@ -167,7 +167,7 @@ class CarMove:
                 if self.is_charging_move:
                     self.end_node.add_car()
             except:
-                self._initialize_second_stage(len(employee.car_moves_second_stage))
+                self.initialize_second_stage(num_scenarios=len(employee.car_moves_second_stage))
                 self.employee_second_stage[scenario] = employee
                 # Update charging state in end node if the chosen move is a charging move
                 if self.is_charging_move:
@@ -183,19 +183,19 @@ class CarMove:
             if self.is_charging_move:
                 self.end_node.remove_car(scenario)
 
-    def _initialize_second_stage(self, num_scenarios: int):
-        for s in range(num_scenarios):
-            self.employee_second_stage.append([])
-            self.start_times_second_stage.append([])
+    def initialize_second_stage(self, num_scenarios: int):
+        for _ in range(num_scenarios):
+            self.employee_second_stage.append(None)
+            self.start_times_second_stage.append(None)
 
     def to_string(self):
         if self.is_charging_move:
             s = "C: "
         else:
             s = "P: "
-        return s + f"Car move: {self.car_move_id}, Car: {self.car.car_id}, Route: ({self.start_node.node_id} -> {self.end_node.node_id}), " \
-                   f"" \
-                   f"Handling time: {self.handling_time}"
+        return s + f"Car move: {self.car_move_id}, Car: {self.car.car_id}, Route: ({self.start_node.node_id} -> {self.end_node.node_id})"
+                   #f"" \
+                   #f"Handling time: {self.handling_time}"
 
 
 class Employee:
@@ -224,20 +224,29 @@ class Employee:
             self.current_time += total_travel_time
             self.current_node = car_move.end_node
             self.car_moves.append(car_move)
-
             self.start_times_car_moves.append(car_move.start_time)
             self.travel_times_car_moves.append(total_travel_time - car_move.handling_time)
 
         else:
-            car_move.set_employee(self, scenario)
             # zero-indexed scenario
             self.current_time_second_stage[scenario] += total_travel_time
             # print(f"e_id: {self.employee_id}, second_current_time: {self.current_time_second_stage}")
             self.current_node_second_stage[scenario] = car_move.end_node
             self.car_moves_second_stage[scenario].append(car_move)
 
-            self.start_times_car_moves_second_stage[scenario].append(car_move.start_times_second_stage[scenario])
+            # first move in second stage in the scenario
+            if len(self.start_times_car_moves_second_stage[scenario]) == 0:
+                self.start_times_car_moves_second_stage[scenario].append(self.current_time + total_travel_time
+                                                                         - car_move.handling_time)
+
+            # not the first move in the second stage in the scenario
+            else:
+                self.start_times_car_moves_second_stage[scenario].append(
+                    self.start_times_car_moves_second_stage[scenario][-1]
+                    + self.car_moves_second_stage[scenario][-2].handling_time
+                    + total_travel_time - car_move.handling_time)
             self.travel_times_car_moves_second_stage[scenario].append(total_travel_time - car_move.handling_time)
+            car_move.set_employee(self, scenario)
 
     def initialize_second_stage(self, num_scenarios: int):
         for s in range(num_scenarios):
@@ -246,6 +255,7 @@ class Employee:
             self.car_moves_second_stage.append([])
             self.start_times_car_moves_second_stage.append([])
             self.travel_times_car_moves_second_stage.append([])
+
 
     def remove_car_move(self, total_travel_time: float):
         self.current_time -= total_travel_time
@@ -263,12 +273,12 @@ class Employee:
             for cm in scenario:
                 cm.reset_time()
         for i in range(len(self.start_times_car_moves)):
-            self.start_times_car_moves[i] = None
-            self.travel_times_car_moves[i] = None
+            self.start_times_car_moves[i] = []
+            self.travel_times_car_moves[i] = []
         for s in range(len(self.start_times_car_moves_second_stage)):
             for i in range(len(self.start_times_car_moves_second_stage[s])):
-                self.start_times_car_moves_second_stage[s][i] = None
-                self.travel_times_car_moves_second_stage[s][i] = None
+                self.start_times_car_moves_second_stage[s][i] = []
+                self.travel_times_car_moves_second_stage[s][i] = []
         self.__init__(start_node=self.start_node, start_time=self.start_time, handling=self.handling)
 
     def to_string(self):

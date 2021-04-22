@@ -1,0 +1,56 @@
+bigM: [17.3, 30.7, 17.3, 30.6, 30.7, 17.3, 30.6, 30.7, 41.4, 17.3, 30.7, 41.4, 17.3]
+car_move_cars: [1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5]
+car_move_destination: [5, 1, 3, 4, 1, 3, 4, 1, 2, 3, 1, 2, 3]
+car_move_handling_time: [19.5, 23.4, 22.6, 28.0, 23.4, 22.6, 28.0, 19.2, 26.8, 24.4,
+  19.2, 26.8, 24.4]
+car_move_origin: [1, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4]
+car_move_start_time: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+car_returns:
+- [0, 0]
+- [0, 1]
+- [0, 0]
+- [0, 0]
+cars_available_in_node: [0, 2, 0, 2]
+cars_in_need_of_charging_at_nodes: [1]
+charging_slots_available: [2]
+charging_state: [1, 0, 0, 0]
+cost_deviation: 28.35
+cost_relocation: 0.42
+customer_requests:
+- [1, 0]
+- [0, 2]
+- [0, 0]
+- [2, 0]
+handling_time_charging: 5
+handling_time_parking: 4
+ideal_state: [0, 0, 0, 1]
+nodes_with_cars_in_need_of_charging: [1]
+num_car_moves_charging: 1
+num_car_moves_parking: 12
+num_cars: 5
+num_charging_nodes: 1
+num_employees: 2
+num_first_stage_tasks: 1
+num_nodes_with_cars_in_need_of_charging: 1
+num_parking_nodes: 4
+num_scenarios: 2
+num_tasks: 5
+parking_state: [0, 2, 0, 2]
+planning_period: 60
+profit_rental: 40.5
+start_node_employee: [3, 3]
+start_time_car: [0, 0, 0, 0, 0]
+total_number_of_charging_slots: [2]
+travel_time_bike:
+- - [0.0, 53.5, 21.2, 30.9, 21.2]
+  - [56.6, 0.0, 28.3, 44.2, 28.3]
+  - [29.5, 40.1, 0.0, 35.6, 1.0]
+  - [41.3, 53.4, 38.0, 0.0, 38.0]
+  - [29.5, 40.1, 1.0, 35.6, 0.0]
+travel_time_to_origin: [0, 0]
+travel_time_vehicle:
+- - [0.0, 18.8, 14.5, 15.4, 14.5]
+  - [19.4, 0.0, 18.6, 24.0, 18.6]
+  - [14.2, 16.4, 0.0, 20.4, 1.0]
+  - [15.2, 22.8, 20.4, 0.0, 20.4]
+  - [14.2, 16.4, 1.0, 20.4, 0.0]

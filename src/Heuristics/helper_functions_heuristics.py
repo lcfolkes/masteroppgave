@@ -1,7 +1,7 @@
 import copy
 import os
 
-from Heuristics.objective_function import get_obj_val_of_car_moves
+from Heuristics.objective_function import get_obj_val_of_car_moves, get_objective_function_val
 from path_manager import path_to_src
 from src.InstanceGenerator.instance_components import CarMove, ChargingNode, Employee
 
@@ -131,79 +131,95 @@ def get_assigned_car_moves(employees, scenario: int = None):
     return car_moves
 
 
+def get_separate_assigned_car_moves(employees, num_scenarios):
+    first_stage_car_moves = []
+    second_stage_car_moves = [[] for _ in range(num_scenarios)]
+    for employee in employees:
+        for car_move in employee.car_moves:
+            if car_move not in first_stage_car_moves:
+                first_stage_car_moves.append(car_move)
+
+        for scenario in range(len(employee.car_moves_second_stage)):
+            for car_move in employee.car_moves_second_stage[scenario]:
+                if car_move not in second_stage_car_moves[scenario]:
+                    second_stage_car_moves[scenario].append(car_move)
+
+    return first_stage_car_moves, second_stage_car_moves
+
+
 '''
-def get_best_car_move(parking_nodes, employees, car_moves, first_stage, prioritize_charging, num_scenarios):
+def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scenarios):
     # FIRST STAGE
     if first_stage:
         best_car_move_first_stage = None
         assigned_car_moves_first_stage = get_assigned_car_moves(employees)
-        best_obj_val_first_stage = -1000
-        longest_travel_time_first_stage = -1000
-        if not prioritize_charging:
-            best_obj_val_first_stage = get_obj_val_of_car_moves(parking_nodes=parking_nodes, num_scenarios=num_scenarios,
-                                                                first_stage_car_moves=assigned_car_moves_first_stage)
-            for r in range(len(car_moves)):
-                obj_val = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
-                                                   first_stage_car_moves=assigned_car_moves_first_stage + [
-                                                       car_moves[r]])
-                if obj_val > best_obj_val_first_stage:
-                    best_obj_val_first_stage = obj_val
-                    best_car_move_first_stage = car_moves[r]
-        else:
-            for r in range(len(car_moves)):
-                travel_time = car_moves[r].handling_time
-                if travel_time > longest_travel_time_first_stage:
-                    longest_travel_time_first_stage = travel_time
-                    best_car_move_first_stage = car_moves[r]
+        best_obj_val_first_stage = get_obj_val_of_car_moves(parking_nodes=parking_nodes, num_scenarios=num_scenarios,
+                                                            first_stage_car_moves=assigned_car_moves_first_stage,
+                                                            include_employee_check=False)
+        # print("Iteration")
+        for r in range(len(car_moves)):
+            if car_moves[r].is_charging_move:
+                # Checking if charging node has space for another car
+                if car_moves[r].end_node.capacity == car_moves[r].end_node.num_charging[0]:
+                    continue
 
-        # print("obj_val: ", obj_val)
-        # print("best_obj_val: ", best_obj_val_first_stage)
-        # print(f"best_car_move: {best_car_move_first_stage.car_move_id}, {best_car_move_first_stage.start_node.node_id} --> {best_car_move_first_stage.end_node.node_id}")
+            obj_val = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
+                                               first_stage_car_moves=assigned_car_moves_first_stage + [
+                                                   car_moves[r]], include_employee_check=False)
+            if obj_val > best_obj_val_first_stage:
+                best_obj_val_first_stage = obj_val
+                best_car_move_first_stage = car_moves[r]
+                # print(f"{best_car_move_first_stage.start_node.node_id} -> {best_car_move_first_stage.end_node.node_id}, Obj val:{obj_val}")
+            # elif best_car_move_first_stage:
+            # print(f"{best_car_move_first_stage.start_node.node_id} -> {best_car_move_first_stage.end_node.node_id}, Not improving")
+
         return best_car_move_first_stage
 
+
     # SECOND STAGE
-    # TODO: Handle assigning charging moves in the second stage
     else:
         best_car_move_second_stage = [None for _ in range(num_scenarios)]
         best_obj_val_second_stage = [-1000 for _ in range(num_scenarios)]
         assigned_first_stage_car_moves = get_assigned_car_moves(employees)
-        longest_travel_time_second_stage = [0 for _ in range(num_scenarios)]
 
-        if not prioritize_charging:
-            for s in range(num_scenarios):
-                assigned_second_stage_car_moves = get_assigned_car_moves(employees, scenario=s)
-                best_obj_val_second_stage[s] = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
-                                                                        first_stage_car_moves=
-                                                                        assigned_first_stage_car_moves,
-                                                                        second_stage_car_moves=
-                                                                        assigned_second_stage_car_moves,
-                                                                        scenario=s)
+        for s in range(num_scenarios):
+            assigned_second_stage_car_moves = get_assigned_car_moves(employees, scenario=s)
+            best_obj_val_second_stage[s] = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
+                                                                    first_stage_car_moves=
+                                                                    assigned_first_stage_car_moves,
+                                                                    second_stage_car_moves=
+                                                                    assigned_second_stage_car_moves,
+                                                                    scenario=s, include_employee_check=False)
         # print(f"best_obj_val_second_stage {best_obj_val_second_stage}")
         obj_val = [0 for _ in range(num_scenarios)]
         for s in range(num_scenarios):
+            print("Evaluating scenario {}".format(s + 1))
             # zero indexed scenario
-            assigned_second_stage_car_moves = get_assigned_car_moves(employees, scenario=s)
+            # assigned_second_stage_car_moves = get_assigned_car_moves(employees, scenario=s)
             # Parking moves second stage
-            if not prioritize_charging:
-                for r in range(len(car_moves[s])):
-                    obj_val[s] = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
-                                                          first_stage_car_moves=assigned_first_stage_car_moves,
-                                                          second_stage_car_moves=assigned_second_stage_car_moves +
-                                                                                 [car_moves[s][r]], scenario=s)
-                    # if car_moves[s][r].car_move_id == 7 and s == 0:
-                    #    print(f"car_move {car_moves[s][r].car_move_id}, s {s + 1}")
-                    #    print(f"obj_val {obj_val[s]} best_obj_val {best_obj_val_second_stage[s]}")
 
-                    if obj_val[s] > best_obj_val_second_stage[s]:
+            for r in range(len(car_moves[s])):
+                if r % 50 == 0:
+                    print("Evaluated {} car moves in scenario {}".format(r, s + 1))
+                obj_val[s] = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
+                                                      first_stage_car_moves=assigned_first_stage_car_moves,
+                                                      second_stage_car_moves=assigned_second_stage_car_moves +
+                                                                             [car_moves[s][r]], scenario=s,
+                                                      include_employee_check=False)
+
+                if obj_val[s] > best_obj_val_second_stage[s]:
+                    if car_moves[s][r].is_charging_move:
+
+                        # Checking if charging node has space for another car
+                        if car_moves[s][r].end_node.capacity == car_moves[s][r].end_node.num_charging[s]:
+                            continue
+
+                        else:
+                            best_obj_val_second_stage[s] = obj_val[s]
+                            best_car_move_second_stage[s] = car_moves[s][r]
+                            # car_moves[s][r].end_node.add_car(scenario=s)
+                    else:
                         best_obj_val_second_stage[s] = obj_val[s]
-                        best_car_move_second_stage[s] = car_moves[s][r]
-
-            # Charging moves second stage
-            else:
-                for r in range(len(car_moves[s])):
-                    travel_time = car_moves[s][r].handling_time
-                    if travel_time > longest_travel_time_second_stage[s]:
-                        longest_travel_time_second_stage[s] = travel_time
                         best_car_move_second_stage[s] = car_moves[s][r]
 
         out_list = []
@@ -250,32 +266,33 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
     # SECOND STAGE
     else:
         best_car_move_second_stage = [None for _ in range(num_scenarios)]
-        best_obj_val_second_stage = [-1000 for _ in range(num_scenarios)]
-        assigned_first_stage_car_moves = get_assigned_car_moves(employees)
 
+        assigned_first_stage_car_moves, assigned_second_stage_car_moves = get_separate_assigned_car_moves(employees, num_scenarios)
+        best_obj_val = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
+                                                first_stage_car_moves=assigned_first_stage_car_moves,
+                                                second_stage_car_moves=assigned_second_stage_car_moves,
+                                                include_employee_check=False)
+
+        best_obj_val_second_stage = [best_obj_val for _ in range(num_scenarios)]
+
+        #obj_val = [0 for _ in range(num_scenarios)]
         for s in range(num_scenarios):
-            assigned_second_stage_car_moves = get_assigned_car_moves(employees, scenario=s)
-            best_obj_val_second_stage[s] = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
-                                                                    first_stage_car_moves=
-                                                                    assigned_first_stage_car_moves,
-                                                                    second_stage_car_moves=
-                                                                    assigned_second_stage_car_moves,
-                                                                    scenario=s, include_employee_check=False)
-        # print(f"best_obj_val_second_stage {best_obj_val_second_stage}")
-        obj_val = [0 for _ in range(num_scenarios)]
-        for s in range(num_scenarios):
+            #print("Evaluating scenario {}".format(s + 1))
             # zero indexed scenario
-            #assigned_second_stage_car_moves = get_assigned_car_moves(employees, scenario=s)
+
             # Parking moves second stage
-
             for r in range(len(car_moves[s])):
-                obj_val[s] = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
+                #if r % 50 == 0:
+                    #print("Evaluated {} car moves in scenario {}".format(r, s + 1))
+                assigned_second_stage_car_moves[s].append(car_moves[s][r])
+                obj_val = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
                                                       first_stage_car_moves=assigned_first_stage_car_moves,
-                                                      second_stage_car_moves=assigned_second_stage_car_moves +
-                                                                             [car_moves[s][r]], scenario=s,
+                                                      second_stage_car_moves=assigned_second_stage_car_moves,# +
+                                                                             #[car_moves[s][r]],
                                                       include_employee_check=False)
+                assigned_second_stage_car_moves[s].remove(car_moves[s][r])
 
-                if obj_val[s] > best_obj_val_second_stage[s]:
+                if obj_val > best_obj_val_second_stage[s]:
                     if car_moves[s][r].is_charging_move:
 
                         # Checking if charging node has space for another car
@@ -283,20 +300,20 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
                             continue
 
                         else:
-                            best_obj_val_second_stage[s] = obj_val[s]
+                            best_obj_val_second_stage[s] = obj_val
                             best_car_move_second_stage[s] = car_moves[s][r]
-                            #car_moves[s][r].end_node.add_car(scenario=s)
+                            # car_moves[s][r].end_node.add_car(scenario=s)
                     else:
-                        best_obj_val_second_stage[s] = obj_val[s]
+                        best_obj_val_second_stage[s] = obj_val
                         best_car_move_second_stage[s] = car_moves[s][r]
-
+        '''
         out_list = []
         for car_move in best_car_move_second_stage:
             if car_move is not None:
                 out_list.append(car_move.car_move_id)
             else:
                 out_list.append(car_move)
-
+        '''
         # print(out_list)
         # print([round(o,2) for o in best_obj_val_second_stage])
         return best_car_move_second_stage
