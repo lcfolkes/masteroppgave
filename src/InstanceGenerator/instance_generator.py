@@ -32,11 +32,22 @@ def initialize_world(world: World, instance_config: str):
 def create_instance_from_world(world: World, num_scenarios: int, num_tasks: int, num_first_stage_tasks: int,
                                version: int, time_of_day: int, planning_period: int) -> World:
     new_world = copy.deepcopy(world)
+    print("Setting number of scenarios...")
     new_world.set_num_scenarios(n=num_scenarios)
+    print("Number of scenarios set")
+    print("Setting number of tasks...")
     new_world.set_num_tasks(n=num_tasks)
+    print("Number of tasks set")
+    print("Setting number of first stage tasks...")
     new_world.set_num_first_stage_tasks(n=num_first_stage_tasks)
+    print("Number of first stage tasks set")
+    print("Setting planning period...")
     new_world.set_planning_period(planning_period=planning_period)
+    print("planning period set")
+    print("setting demands...")
     set_demands(new_world, time_of_day)
+    print("demands set")
+    print("Setting total moves, available cars and cars to charge")
     total_moves = 0
     for j in range(len(new_world.cars)):
         total_moves += len(new_world.cars[j].destinations)
@@ -47,6 +58,7 @@ def create_instance_from_world(world: World, num_scenarios: int, num_tasks: int,
         cars_to_charging += n.charging_state
     instance_name = str(len(new_world.parking_nodes)) + "-" + str(new_world.num_scenarios) + "-" + str(
         new_world.first_stage_tasks) + "-" + str(version)
+
     write_to_file_yaml(new_world, instance_name)
     print("Finished")
     return new_world
