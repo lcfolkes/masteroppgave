@@ -168,8 +168,8 @@ class ShawRemoval(Destroy):
             0 if car_move_i.is_charging_move == car_move_j.is_charging_move else 1)
         relatedness += HeuristicsConstants.TRAVEL_DISTANCE_WEIGHT * abs(
             car_move_i.handling_time - car_move_j.handling_time)
-        relatedness += HeuristicsConstants.START_TIME_WEIGHT * abs(
-            np.mean(car_move_i.start_time) - np.mean(car_move_j.start_time))
+        #relatedness += HeuristicsConstants.START_TIME_WEIGHT * abs(
+        #    np.mean(car_move_i.start_time) - np.mean(car_move_j.start_time))
         return relatedness
 
     def __init__(self, solution, num_first_stage_tasks, neighborhood_size, randomization_degree):
@@ -199,8 +199,7 @@ class ShawRemoval(Destroy):
             car_moves_not_removed = [cm for cm in solution_list if cm not in removed_list]
             car_moves_not_removed = sorted(
                 car_moves_not_removed,
-                key=lambda cm: ShawRemoval.relatedness_measure(cm, removed_car_move),
-                reverse=False)
+                key=lambda cm: ShawRemoval.relatedness_measure(cm, removed_car_move),reverse=False)
             # Handle randomization (y^p*|L|)
             try:
                 index = np.floor(

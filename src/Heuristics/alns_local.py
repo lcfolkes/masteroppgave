@@ -5,6 +5,7 @@ from DestroyAndRepairHeuristics.destroy import Destroy, RandomRemoval, WorstRemo
 from DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretInsertion
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
+from Heuristics.LocalSearch.local_search import LocalSearch
 from Heuristics.LocalSearch.local_search_operator import LocalSearchOperator, IntraMove, InterSwap
 from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution
 from construction_heuristic import ConstructionHeuristic
@@ -49,10 +50,8 @@ class ALNS():
 		self.destroy_operators_record = OrderedDict({'random': [1.0, 0.0], 'worst': [1.0, 0.0], 'shaw': [1.0, 0.0]})
 		self.repair_operators_record = OrderedDict({'greedy': [1.0, 0.0], 'regret2': [1.0, 0.0], 'regret3': [1.0, 0.0]})
 
-		self.local_search_operators = OrderedDict({'intra_move': 1.0, 'inter_swap': 1.0})
-		self.local_search_operators_record = OrderedDict({'intra_move': [1.0, 0.0], 'inter_swap': [1.0, 0.0]})
-
-		self._callbacks = {}
+		#self.local_search_operators = OrderedDict({'intra_move': 1.0, 'inter_swap': 1.0})
+		#self.local_search_operators_record = OrderedDict({'intra_move': [1.0, 0.0], 'inter_swap': [1.0, 0.0]})
 
 		self.best_solution = None
 		self.best_solutions = None
@@ -75,7 +74,6 @@ class ALNS():
 		current_solution = solution
 		visited_hash_keys.add(current_solution.hash_key)
 		MODE = "LOCAL"
-		non_improving_count = 0
 
 		temperature = 1000  # Start temperature must be set differently. High temperature --> more randomness
 		cooling_rate = 0.5  # cooling_rate in (0,1)
@@ -87,19 +85,22 @@ class ALNS():
 			print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
 
 			for j in range(10):
-				# print(f"current_obj_val {current_obj_val}")
 				candidate_solution = copy.deepcopy(current_solution)
 
 				if MODE == "LOCAL":
-					first_stage_solution = get_first_stage_solution(candidate_solution.assigned_car_moves,
-																	candidate_solution.world_instance.first_stage_tasks)
-					local_search_operator = self._get_local_search_operator(first_stage_solution,
-																			candidate_solution.feasibility_checker)
-					hash_key = local_search_operator.hash_key
-					first_stage_solution = local_search_operator.solution
+					print("----- LOCAL SEARCH -----")
+					local_search = LocalSearch(candidate_solution.assigned_car_moves,
+											   candidate_solution.world_instance.first_stage_tasks,
+											   candidate_solution.feasibility_checker)
+					local_search.search("best_first")
+					candidate_solution.rebuild(local_search.solution, "second_stage")
+					visited_hash_keys.update(local_search.visited_list)
+
 
 				elif MODE == "LNS":
+					print("----- LARGE NEIGHBORHOOD SEARCH -----")
 
+					#TODO: see if it is possible to do destroy and repair with no deep copy (i think it is)
 					destroy = self._get_destroy_operator(solution=candidate_solution.assigned_car_moves,
 														 num_first_stage_tasks=candidate_solution.world_instance.first_stage_tasks,
 														 neighborhood_size=2, randomization_degree=1,
@@ -113,62 +114,56 @@ class ALNS():
 
 					#repair.to_string()
 
-					hash_key = repair.hash_key
-					first_stage_solution = repair.solution
-
-				if hash_key in visited_hash_keys:
-					pass
-				else:
+					#hash_key = repair.hash_key
+					print("Destroy: ", destroy)
+					print("Repair: ", repair)
+					candidate_solution.rebuild(repair.solution)
+					hash_key = candidate_solution.hash_key
+					if hash_key in visited_hash_keys:
+						continue
 					visited_hash_keys.add(hash_key)
-					# update scores for repair and destroy
-					candidate_solution.rebuild(first_stage_solution)
-					true_obj_val, candidate_obj_val = candidate_solution.get_obj_val(both=True)
-					true_obj_vals.append(true_obj_val)
-					# print(f"true_obj_val {true_obj_val}")
-					# print(f"\ncurrent_obj_val {current_obj_val}")
-					# print(f"heuristic_obj_val {obj_val}")
-					heuristic_obj_vals.append(candidate_obj_val)
 
-					if self._accept(candidate_obj_val, current_obj_val, temperature):
-						print("current_obj_val: ", current_obj_val)
-						print("candidate_obj_val: ", candidate_obj_val)
+				true_obj_val, candidate_obj_val = candidate_solution.get_obj_val(both=True)
+				true_obj_vals.append(true_obj_val)
+				# print(f"true_obj_val {true_obj_val}")
+				# print(f"\ncurrent_obj_val {current_obj_val}")
+				# print(f"heuristic_obj_val {obj_val}")
+				heuristic_obj_vals.append(candidate_obj_val)
 
-						# IMPROVING
-						if candidate_obj_val > current_obj_val:
-							# NEW GLOBAL BEST
-							if candidate_obj_val > best_obj_val:
-								best_obj_val = candidate_obj_val
-								best_solution = (candidate_solution, true_obj_val)
-								if MODE == "LNS":
-									self._update_weight_record(_IS_BEST, destroy, repair)
-							# NEW LOCAL BEST
-							else:
-								if MODE == "LNS":
-									self._update_weight_record(_IS_BETTER, destroy, repair)
+				if self._accept(candidate_obj_val, current_obj_val, temperature):
+					print("current_obj_val: ", current_obj_val)
+					print("candidate_obj_val: ", candidate_obj_val)
 
-							MODE = "LOCAL"
-
-						# NON-IMPROVING BUT ACCEPTED
+					# IMPROVING
+					if candidate_obj_val > current_obj_val:
+						# NEW GLOBAL BEST
+						if candidate_obj_val > best_obj_val:
+							best_obj_val = candidate_obj_val
+							best_solution = (candidate_solution, true_obj_val)
+							if MODE == "LNS":
+								self._update_weight_record(_IS_BEST, destroy, repair)
+						# NEW LOCAL BEST
 						else:
 							if MODE == "LNS":
-								self._update_weight_record(_IS_ACCEPTED, destroy, repair)
-							else:
-								if non_improving_count > 10:
-									print(i * 10 + j)
-									non_improving_count = 0
-									MODE = "LNS"
-								else:
-									non_improving_count += 1
+								self._update_weight_record(_IS_BETTER, destroy, repair)
 
-						# current_solution = copy.deepcopy(solution)
-						current_obj_val = candidate_obj_val
-						current_solution = candidate_solution
+						MODE = "LOCAL"
 
+					# NON-IMPROVING BUT ACCEPTED
 					else:
-						MODE = "LNS"
-						non_improving_count = 0
+						if MODE == "LNS":
+							self._update_weight_record(_IS_ACCEPTED, destroy, repair)
+						else:
+							MODE = "LNS"
 
-				temperature *= cooling_rate
+					# current_solution = copy.deepcopy(solution)
+					current_obj_val = candidate_obj_val
+					current_solution = candidate_solution
+
+				else:
+					MODE = "LNS"
+
+			temperature *= cooling_rate
 
 			self._update_score_adjustment_parameters()
 
@@ -303,9 +298,9 @@ if __name__ == "__main__":
 
 	# profiler.stop()
 	# print(profiler.output_text(unicode=True, color=True))
-	print("\n############## Optimal solution ##############")
-	gi2 = GurobiInstance(filename + ".yaml")
-	run_model(gi2)
+	#print("\n############## Optimal solution ##############")
+	#gi2 = GurobiInstance(filename + ".yaml")
+	#run_model(gi2)
 
 	'''
     print("\n############## Evaluate solution ##############")

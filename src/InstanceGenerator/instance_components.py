@@ -68,7 +68,7 @@ class ChargingNode(Node):
 		self.capacities = [self.capacity for _ in range(num_scenarios)]
 
 	def add_car(self, scenario: int = None):
-		if scenario:
+		if scenario is not None:
 			if self.num_charging[scenario] == self.capacities[scenario]:
 				raise Exception("No cars can be added to charging node as the capacity is reached")
 			else:
@@ -82,7 +82,7 @@ class ChargingNode(Node):
 				self.num_charging[s] += 1
 
 	def remove_car(self, scenario: int = None):
-		if scenario:
+		if scenario is not None:
 			if self.num_charging[scenario] == 0:
 				raise Exception("No cars can be removed from charging node as there are no cars there")
 
@@ -90,10 +90,16 @@ class ChargingNode(Node):
 				self.num_charging[scenario] -= 1
 		else:
 			for s in range(len(self.num_charging)):
-				if self.num_charging[0] == 0:
+				if self.num_charging[s] == 0:
 					raise Exception("No cars can be removed from charging node as there are no cars there")
-			for s in range(len(self.num_charging)):
-				self.num_charging[s] -= 1
+				else:
+					self.num_charging[s] -= 1
+
+	def reset(self, scenario: int = None):
+		if scenario is not None:
+			self.num_charging[scenario] = 0
+		else:
+			self.num_charging = [0 for _ in self.num_charging]
 
 
 class Car:
@@ -147,12 +153,6 @@ class CarMove:
 		else:
 			self.start_times_second_stage[scenario] = time
 
-	def reset_start_time(self, scenario=None):
-		if not scenario:
-			self.start_time = None
-		else:
-			self.start_times_second_stage[scenario] = None
-
 	def set_employee(self, employee, scenario=None):
 		if scenario == None:
 			self.employee = employee
@@ -175,12 +175,15 @@ class CarMove:
 	def reset(self, scenario=None):
 		if scenario is None:
 			self.employee = None
+			self.start_time = None
 			if self.is_charging_move:
-				self.end_node.remove_car()
+				self.end_node.reset()
 		else:
 			self.employee_second_stage[scenario] = []
+			self.start_times_second_stage[scenario] = []
+
 			if self.is_charging_move:
-				self.end_node.remove_car(scenario)
+				self.end_node.reset(scenario)
 
 	def _initialize_second_stage(self, num_scenarios: int):
 		for s in range(num_scenarios):
@@ -254,10 +257,10 @@ class Employee:
 
 	def reset(self):
 		for cm in self.car_moves:
-			cm.reset_time()
-		for scenario in self.car_moves_second_stage:
+			cm.reset()
+		for s, scenario in enumerate(self.car_moves_second_stage):
 			for cm in scenario:
-				cm.reset_time()
+				cm.reset(scenario=s)
 		for i in range(len(self.start_times_car_moves)):
 			self.start_times_car_moves[i] = None
 			self.travel_times_car_moves[i] = None

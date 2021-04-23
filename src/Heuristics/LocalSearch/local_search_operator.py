@@ -46,8 +46,10 @@ class LocalSearchOperator(ABC):
 		for k, v in self._candidate_solution.items():
 			emp_moves = []
 			for s in v:
+				scen_moves = []
 				for cm in s:
-					emp_moves.append(cm.car_move_id)
+					scen_moves.append(cm.car_move_id)
+				emp_moves.append(scen_moves)
 			hash_dict[k.employee_id] = emp_moves
 
 		return hash(str(hash_dict))
@@ -92,7 +94,9 @@ class IntraMove(LocalSearchOperator):
 			moves = first_stage[employee]
 		else:
 			moves = second_stage[employee][s]
-
+		#print("intra_move")
+		#print(len(moves))
+		#print(f"i: {i},j: {j}")
 		moves[i], moves[j] = moves[j], moves[i]
 
 		self._candidate_solution = reconstruct_solution_from_first_and_second_stage(first_stage, second_stage)

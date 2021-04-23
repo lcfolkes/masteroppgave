@@ -204,7 +204,6 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
             else:
                 out_list.append(car_move)
 
-        # print(out_list)
         # print([round(o,2) for o in best_obj_val_second_stage])
         return best_car_move_second_stage
 
