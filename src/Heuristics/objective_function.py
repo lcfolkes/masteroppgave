@@ -434,7 +434,7 @@ def calculate_cost_travel_time_between_car_moves(first_stage_car_moves: [CarMove
 
     # TODO: Create parameter COST_NON_CAR_RELOCATION in generator
     # return World.COST_NON_CAR_RELOCATION*inter_move_travel_time
-    return 0.2 * inter_move_travel_time
+    return 0.05 * inter_move_travel_time
 
 
 def get_travel_time_between_car_moves(employees, scenario: int = None):

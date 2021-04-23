@@ -69,8 +69,9 @@ class ChargingNode(Node):
     # self.capacities = [self.capacity for _ in range(num_scenarios)]
 
     def add_car(self, scenario: int = None):
-        if scenario:
+        if scenario is not None:
             if self.num_charging[scenario] == self.capacity:  # self.capacities[scenario]:
+
                 raise Exception("No cars can be added to charging node as the capacity is reached")
             else:
                 self.num_charging[scenario] += 1
@@ -83,7 +84,7 @@ class ChargingNode(Node):
                 self.num_charging[s] += 1
 
     def remove_car(self, scenario: int = None):
-        if scenario:
+        if scenario is not None:
             if self.num_charging[scenario] == 0:
                 raise Exception("No cars can be removed from charging node as there are no cars there")
 
@@ -149,13 +150,13 @@ class CarMove:
             self.start_times_second_stage[scenario] = time
 
     def reset_start_time(self, scenario=None):
-        if not scenario:
+        if scenario is None:
             self.start_time = None
         else:
             self.start_times_second_stage[scenario] = None
 
     def set_employee(self, employee, scenario=None):
-        if scenario == None:
+        if scenario is None:
             self.employee = employee
             if self.is_charging_move:
                 self.end_node.add_car()
@@ -163,15 +164,14 @@ class CarMove:
         else:
             try:
                 self.employee_second_stage[scenario] = employee
-                # Update charging state in end node if the chosen move is a charging move
-                if self.is_charging_move:
-                    self.end_node.add_car()
+
             except:
                 self.initialize_second_stage(num_scenarios=len(employee.car_moves_second_stage))
                 self.employee_second_stage[scenario] = employee
-                # Update charging state in end node if the chosen move is a charging move
-                if self.is_charging_move:
-                    self.end_node.add_car(scenario)
+
+            # Update charging state in end node if the chosen move is a charging move
+            if self.is_charging_move:
+                self.end_node.add_car(scenario)
 
     def reset(self, scenario=None):
         if scenario is None:

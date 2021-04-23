@@ -267,7 +267,8 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
     else:
         best_car_move_second_stage = [None for _ in range(num_scenarios)]
 
-        assigned_first_stage_car_moves, assigned_second_stage_car_moves = get_separate_assigned_car_moves(employees, num_scenarios)
+        assigned_first_stage_car_moves, assigned_second_stage_car_moves = get_separate_assigned_car_moves(employees,
+                                                                                                          num_scenarios)
         best_obj_val = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
                                                 first_stage_car_moves=assigned_first_stage_car_moves,
                                                 second_stage_car_moves=assigned_second_stage_car_moves,
@@ -275,21 +276,24 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
 
         best_obj_val_second_stage = [best_obj_val for _ in range(num_scenarios)]
 
-        #obj_val = [0 for _ in range(num_scenarios)]
+        # obj_val = [0 for _ in range(num_scenarios)]
         for s in range(num_scenarios):
-            #print("Evaluating scenario {}".format(s + 1))
-            # zero indexed scenario
-
             # Parking moves second stage
             for r in range(len(car_moves[s])):
-                #if r % 50 == 0:
-                    #print("Evaluated {} car moves in scenario {}".format(r, s + 1))
+                if car_moves[s][r].is_charging_move:
+                    # Checking if charging node has space for another car
+
+                    if car_moves[s][r].end_node.capacity == car_moves[s][r].end_node.num_charging[s]:
+                        #print("HEI", car_moves[s][r].car_move_id)
+                        continue
+                #print("DER",car_moves[s][r].car_move_id)
+
                 assigned_second_stage_car_moves[s].append(car_moves[s][r])
                 obj_val = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
-                                                      first_stage_car_moves=assigned_first_stage_car_moves,
-                                                      second_stage_car_moves=assigned_second_stage_car_moves,# +
-                                                                             #[car_moves[s][r]],
-                                                      include_employee_check=False)
+                                                   first_stage_car_moves=assigned_first_stage_car_moves,
+                                                   second_stage_car_moves=assigned_second_stage_car_moves,  # +
+                                                   # [car_moves[s][r]],
+                                                   include_employee_check=False)
                 assigned_second_stage_car_moves[s].remove(car_moves[s][r])
 
                 if obj_val > best_obj_val_second_stage[s]:
