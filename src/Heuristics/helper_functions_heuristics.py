@@ -196,9 +196,7 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
                     # Checking if charging node has space for another car
 
                     if car_moves[s][r].end_node.capacity == car_moves[s][r].end_node.num_charging[s]:
-                        #print("HEI", car_moves[s][r].car_move_id)
                         continue
-                #print("DER",car_moves[s][r].car_move_id)
 
                 assigned_second_stage_car_moves[s].append(car_moves[s][r])
                 obj_val = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
