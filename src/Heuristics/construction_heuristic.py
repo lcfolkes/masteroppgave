@@ -6,6 +6,7 @@ from Heuristics.helper_functions_heuristics import remove_all_car_moves_of_car_i
 from Heuristics.objective_function import get_objective_function_val
 from src.HelperFiles.helper_functions import load_object_from_file
 from src.Gurobi.Model.run_model import run_model
+import pandas as pd
 from path_manager import path_to_src
 
 os.chdir(path_to_src)
@@ -309,6 +310,13 @@ class ConstructionHeuristic:
             if car.needs_charging:
                 cars_in_need += 1
 
+        df_firststage_routes = pd.DataFrame(
+            columns=["           Type", "  Employee", "  Task number", "  Car Move", "  Car ID", "  Employee Route", "  Start Time", "  Travel Time to Task", "  Relocation Time",
+                     "  End time"])
+        df_secondstage_routes = pd.DataFrame(
+            columns=["Scenario", "  Type", "  Employee", "  Task number", "  Car Move", "  Car ID", "  Employee Route", "  Start Time", "  Travel Time to Task", "  Relocation Time",
+                     "  End time"])
+
         print("\n")
         print("----------- CONSTRUCTION HEURISTIC SOLUTION -----------\n")
         print(f"True objective value: {round(true_obj_val, 2)}")
@@ -316,15 +324,27 @@ class ConstructionHeuristic:
         print(f"Number of charging moves performed: {num_charging_moves}/{cars_in_need}")
         # print(f"Number of cars charged: {num_charging_moves}\n")
 
-        print("-------------- First stage routes --------------")
+        #print("-------------- First stage routes --------------")
         for employee in self.employees:
-            print("---- Employee {} ----".format(employee.employee_id))
+            #print("---- Employee {} ----".format(employee.employee_id))
             for car_move in employee.car_moves:
                 car_move_type = "C" if car_move.is_charging_move else "P"
                 if employee.car_moves.index(car_move) == 0:
                     start_node_id = employee.start_node.node_id
                 else:
                     start_node_id = employee.car_moves[employee.car_moves.index(car_move)-1].end_node.node_id
+
+                first_stage_row = [car_move_type, employee.employee_id, employee.car_moves.index(car_move) + 1,
+                                   car_move.car_move_id, car_move.car.car_id,
+                                   f"{start_node_id} -> {car_move.start_node.node_id} -> {car_move.end_node.node_id}",
+                                   round(employee.start_times_car_moves[employee.car_moves.index(car_move)]
+                                         - employee.travel_times_car_moves[employee.car_moves.index(car_move)], 2),
+                                   round(employee.travel_times_car_moves[employee.car_moves.index(car_move)], 2),
+                                   round(employee.car_moves[employee.car_moves.index(car_move)].handling_time, 2),
+                                   round(car_move.start_time + car_move.handling_time, 2)
+                                   ]
+                df_firststage_routes.loc[len(df_firststage_routes)] = first_stage_row
+                '''
                 print(
                     f"    {car_move_type}: Employee: {employee.employee_id}, Task nr: {employee.car_moves.index(car_move) + 1}, "
                     + car_move.to_string() + ", "
@@ -333,28 +353,53 @@ class ConstructionHeuristic:
                     + f"Travel time to move: {round(employee.travel_times_car_moves[employee.car_moves.index(car_move)], 2)}, "
                     + f"Handling time: {round(employee.car_moves[employee.car_moves.index(car_move)].handling_time, 2)}, "
                     + f"Time after: {round(car_move.start_time + car_move.handling_time, 2)}\n")
-
-        print("-------------- Second stage routes --------------")
+                '''
+        #print("-------------- Second stage routes --------------")
         for s in range(self.num_scenarios):
-            print("---- Scenario {} ----".format(s + 1))
+            #print("---- Scenario {} ----".format(s + 1))
             for employee in self.employees:
-                if any(employee.car_moves_second_stage[s]):
-                    print("     ---- Employee {} ----".format(employee.employee_id))
-                    for car_move in employee.car_moves_second_stage[s]:
-                        car_move_type = "C" if car_move.is_charging_move else "P"
-                        # print(f"{car_move_type}: employee: {employee.employee_id}, scenario: {s + 1} " + car_move.to_string())
-                        print(
-                            f"        {car_move_type}: Employee: {employee.employee_id}, Task nr: {employee.car_moves_second_stage[s].index(car_move) + 1 + len(employee.car_moves)}, "
-                            + car_move.to_string() + ", "
-                            + f"Start node: {employee.car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)-1].end_node.node_id}, "
-                            + f"Start time: {round(employee.start_times_car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)] - employee.travel_times_car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)], 2)}, "
-                            + f"Travel time to move: {round(employee.travel_times_car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)], 2)}, "
-                            + f"Handling time: {round(employee.car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)].handling_time, 2)}, "
-                            + f"Time after: {round(car_move.start_times_second_stage[s] + car_move.handling_time, 2)}\n")
+                if employee.car_moves_second_stage:
+                    if any(employee.car_moves_second_stage[s]):
+                        #print("     ---- Employee {} ----".format(employee.employee_id))
+                        for car_move in employee.car_moves_second_stage[s]:
+                            car_move_type = "C" if car_move.is_charging_move else "P"
+                            if employee.car_moves_second_stage[s].index(car_move) == 0:
+                                start_node_id = employee.car_moves[-1].end_node.node_id
+                            else:
+                                start_node_id = employee.car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)-1].end_node.node_id
 
+                            second_stage_row = [s + 1, car_move_type, employee.employee_id, employee.car_moves_second_stage[s].index(car_move) + 1 + len(employee.car_moves),
+                                                car_move.car_move_id, car_move.car.car_id,
+                                                f"{start_node_id} -> {car_move.start_node.node_id} -> {car_move.end_node.node_id}",
+                                                round(employee.start_times_car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)]
+                                                      - employee.travel_times_car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)], 2),
+                                                round(employee.travel_times_car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)], 2),
+                                                round(employee.car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)].handling_time, 2),
+                                                round(car_move.start_times_second_stage[s] + car_move.handling_time, 2)]
+                            df_secondstage_routes.loc[len(df_secondstage_routes)] = second_stage_row
+
+                            '''
+                            # print(f"{car_move_type}: employee: {employee.employee_id}, scenario: {s + 1} " + car_move.to_string())
+                            print(
+                                f"        {car_move_type}: Employee: {employee.employee_id}, Task nr: {employee.car_moves_second_stage[s].index(car_move) + 1 + len(employee.car_moves)}, "
+                                + car_move.to_string() + ", "
+                                + f"Start node: {employee.car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)-1].end_node.node_id}, "
+                                + f"Start time: {round(employee.start_times_car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)] - employee.travel_times_car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)], 2)}, "
+                                + f"Travel time to move: {round(employee.travel_times_car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)], 2)}, "
+                                + f"Handling time: {round(employee.car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)].handling_time, 2)}, "
+                                + f"Time after: {round(car_move.start_times_second_stage[s] + car_move.handling_time, 2)}\n")
+                            '''
+
+        pd.set_option('display.width', 500)
+        pd.set_option('display.max_columns', 15)
+
+        print("--------------------------------------------------------------- FIRST STAGE ROUTES --------------------------------------------------------------")
+        print(df_firststage_routes.to_string(index=False))
+        print("\n-------------------------------------------------------------- SECOND STAGE ROUTES --------------------------------------------------------------")
+        print(df_secondstage_routes.to_string(index=False))
 
 if __name__ == "__main__":
-    filename = "InstanceGenerator/InstanceFiles/25nodes/25-10-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_e"
     ch = ConstructionHeuristic(filename + ".pkl")
     ch.add_car_moves_to_employees()
     true_obj_val, best_obj_val = ch.get_obj_val(both=True)
