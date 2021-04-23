@@ -2,6 +2,7 @@ import os
 import numpy as np
 
 from path_manager import path_to_src
+
 from src.InstanceGenerator.instance_components import ParkingNode, Employee, CarMove, ChargingNode
 from InstanceGenerator.world import World
 
@@ -82,7 +83,7 @@ def calculate_profit_customer_requests(z: {int: np.array([int])}, scenario: int 
         return World.PROFIT_RENTAL * z_sum[scenario]
 
 
-def calculate_costs_relocation(car_moves: [[CarMove]], num_scenarios: int = None,
+def calculate_costs_relocation(car_moves: [CarMove], num_scenarios: int = None,
                                individual_scenario: bool = False) -> float:
     """
     :param car_moves: list of scenarios containing car_moves, [[cm1],[cm1],[cm1, cm2]]
@@ -91,6 +92,7 @@ def calculate_costs_relocation(car_moves: [[CarMove]], num_scenarios: int = None
     :return: float with costs for relocation
     """
     # Sum of all travel times across all car moves
+
     sum_travel_time = sum(car_move.handling_time for car_move in car_moves)
     if individual_scenario:
         # print(f"individual_scenario {sum_travel_time}")
@@ -163,110 +165,6 @@ def calculate_cost_deviation_ideal_state(parking_nodes: [ParkingNode], z: {int: 
         return World.COST_DEVIATION * w_sum[scenario]
 
 
-'''
-def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int, first_stage_car_moves: [CarMove] = None,
-                             second_stage_car_moves: [[CarMove]] = None,
-                             scenario: int = None, verbose: bool = False) -> float:
-    """
-    :param parking_nodes: list of parking node objects
-    :param num_scenarios:
-    :param first_stage_car_moves: list of car_move objects for first stage, [cm1, cm2]
-    :param second_stage_car_moves: [[cm2],[cm2],[cm2, cm3]]
-    :param scenario: if None, then average for all scenario is calculated, else for a specific scenario
-    :param verbose:  True if you want to print information
-    :return: float of objective value of car_moves
-    """
-
-    # first stage
-    if scenario is None:
-        z = calculate_z(parking_nodes=parking_nodes, first_stage_car_moves=first_stage_car_moves,
-                        second_stage_car_moves=[[]])
-        profit_customer_requests = calculate_profit_customer_requests(z)
-        cost_deviation_ideal_state = calculate_cost_deviation_ideal_state(parking_nodes=parking_nodes, z=z,
-                                                                          first_stage_car_moves=first_stage_car_moves,
-                                                                          second_stage_car_moves=[[]])
-
-        first_stage_duplicate_for_scenarios = list(np.repeat(first_stage_car_moves, num_scenarios))
-        cost_relocation = calculate_costs_relocation(first_stage_duplicate_for_scenarios, num_scenarios)
-
-    else:
-        car_moves_second_stage = [[] for _ in range(num_scenarios)]
-        car_moves_second_stage[scenario] = second_stage_car_moves
-        z = calculate_z(parking_nodes=parking_nodes, first_stage_car_moves=first_stage_car_moves,
-                        second_stage_car_moves=car_moves_second_stage)  # , verbose=True)
-        profit_customer_requests = calculate_profit_customer_requests(z, scenario=scenario)
-        cost_deviation_ideal_state = calculate_cost_deviation_ideal_state(parking_nodes=parking_nodes, z=z,
-                                                                          first_stage_car_moves=first_stage_car_moves,
-                                                                          second_stage_car_moves=car_moves_second_stage,
-                                                                          scenario=scenario)
-
-        # first_stage_duplicate_for_scenarios = list(np.repeat(first_stage_car_moves, self.num_scenarios))
-        cost_relocation = calculate_costs_relocation(first_stage_car_moves + second_stage_car_moves, num_scenarios,
-                                                     individual_scenario=True)
-
-    return profit_customer_requests - cost_relocation - cost_deviation_ideal_state
-'''
-
-'''
-def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int,
-                             first_stage_car_moves: [CarMove] = None,
-                             second_stage_car_moves: [[CarMove]] = None,
-                             scenario: int = None, verbose: bool = False, include_employee_check=True) -> float:
-    """
-    :param parking_nodes: list of parking node objects
-    :param num_scenarios:
-    :param travel_time_between_car_moves: travel time between car_moves for all employees
-    :param first_stage_car_moves: list of car_move objects for first stage, [cm1, cm2]
-    :param second_stage_car_moves: [[cm2],[cm2],[cm2, cm3]]
-    :param scenario: if None, then average for all scenario is calculated, else for a specific scenario
-    :param verbose:  True if you want to print information
-    :return: float of objective value of car_moves
-    """
-
-    # first stage
-    if scenario is None:
-        z = calculate_z(parking_nodes=parking_nodes, first_stage_car_moves=first_stage_car_moves,
-                        second_stage_car_moves=[[]])
-        profit_customer_requests = calculate_profit_customer_requests(z)
-        cost_deviation_ideal_state = calculate_cost_deviation_ideal_state(parking_nodes=parking_nodes, z=z,
-                                                                          first_stage_car_moves=first_stage_car_moves,
-                                                                          second_stage_car_moves=[[]])
-
-        first_stage_duplicate_for_scenarios = list(np.repeat(first_stage_car_moves, num_scenarios))
-        cost_relocation = calculate_costs_relocation(first_stage_duplicate_for_scenarios, num_scenarios)
-        cost_deviation_charging_moves = calculate_cost_deviation_charging_moves(parking_nodes=parking_nodes,
-                                                                                first_stage_car_moves=first_stage_car_moves,
-                                                                                second_stage_car_moves=[[]])
-
-    else:
-        car_moves_second_stage = [[] for _ in range(num_scenarios)]
-        car_moves_second_stage[scenario] = second_stage_car_moves
-        z = calculate_z(parking_nodes=parking_nodes, first_stage_car_moves=first_stage_car_moves,
-                        second_stage_car_moves=car_moves_second_stage)  # , verbose=True)
-        profit_customer_requests = calculate_profit_customer_requests(z, scenario=scenario)
-        cost_deviation_ideal_state = calculate_cost_deviation_ideal_state(parking_nodes=parking_nodes, z=z,
-                                                                          first_stage_car_moves=first_stage_car_moves,
-                                                                          second_stage_car_moves=car_moves_second_stage,
-                                                                          scenario=scenario)
-
-        # first_stage_duplicate_for_scenarios = list(np.repeat(first_stage_car_moves, self.num_scenarios))
-        cost_relocation = calculate_costs_relocation(first_stage_car_moves + second_stage_car_moves, num_scenarios,
-                                                     individual_scenario=True)
-        cost_deviation_charging_moves = calculate_cost_deviation_charging_moves(parking_nodes=parking_nodes,
-                                                                                first_stage_car_moves=first_stage_car_moves,
-                                                                                second_stage_car_moves=car_moves_second_stage,
-                                                                                scenario=scenario)
-    if include_employee_check:
-        cost_travel_time_between_car_moves = calculate_cost_travel_time_between_car_moves(
-            first_stage_car_moves=first_stage_car_moves, second_stage_car_moves=second_stage_car_moves,
-            scenario=scenario)
-    else:
-        cost_travel_time_between_car_moves = 0
-    return profit_customer_requests - cost_relocation - cost_deviation_ideal_state - cost_deviation_charging_moves - \
-           cost_travel_time_between_car_moves
-'''
-
-
 def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int,
                              first_stage_car_moves: [CarMove] = None,
                              second_stage_car_moves: [[CarMove]] = None,
@@ -322,9 +220,39 @@ def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int,
             scenario=scenario)
     else:
         cost_travel_time_between_car_moves = 0
+
     return profit_customer_requests - cost_relocation - cost_deviation_ideal_state - cost_deviation_charging_moves - \
            cost_travel_time_between_car_moves
 
+
+
+def get_obj_val_of_solution_dict(solution: {Employee: [CarMove]}, world_instance, include_employee_check=True):
+    from src.Heuristics.helper_functions_heuristics import get_first_and_second_stage_solution_list_from_dict
+    parking_nodes = world_instance.parking_nodes
+    num_scenarios = world_instance.num_scenarios
+    car_moves_first_stage, car_moves_second_stage = get_first_and_second_stage_solution_list_from_dict(solution, world_instance.first_stage_tasks)
+
+
+    z = calculate_z(parking_nodes=parking_nodes, first_stage_car_moves=car_moves_first_stage,
+                    second_stage_car_moves=car_moves_second_stage)  # , verbose=True)
+    profit_customer_requests = calculate_profit_customer_requests(z)
+    cost_deviation_ideal_state = calculate_cost_deviation_ideal_state(parking_nodes=parking_nodes, z=z,
+                                                                      first_stage_car_moves=car_moves_first_stage,
+                                                                      second_stage_car_moves=car_moves_second_stage)
+
+    from itertools import chain
+    first_stage_duplicate_for_scenarios = list(np.repeat(car_moves_first_stage, num_scenarios))
+    car_moves_second_stage_flat = list(chain.from_iterable(car_moves_second_stage))
+    cost_relocation = calculate_costs_relocation(first_stage_duplicate_for_scenarios + car_moves_second_stage_flat, num_scenarios)
+    cost_deviation_charging_moves = calculate_cost_deviation_charging_moves(parking_nodes=parking_nodes,
+                                                                            first_stage_car_moves=car_moves_first_stage,
+                                                                            second_stage_car_moves=car_moves_second_stage)
+
+    if include_employee_check:
+        cost_travel_time_between_car_moves = calculate_cost_travel_time_between_car_moves_from_solution_dict(solution, world_instance)
+    else:
+        cost_travel_time_between_car_moves = 0
+    return profit_customer_requests - cost_relocation - cost_deviation_ideal_state - cost_deviation_charging_moves - cost_travel_time_between_car_moves
 
 def get_objective_function_val(parking_nodes: [ParkingNode], employees: [Employee], num_scenarios: int,
                                true_objective=True, both=False) -> float:
@@ -442,9 +370,10 @@ def get_travel_time_between_car_moves(employees, scenario: int = None):
     if any(emp for emp in employees):
         if scenario is None:
             for employee in employees:
-                travel_time += employee.current_time
+                emp_travel_time = employee.current_time
                 for car_move in employee.car_moves:
                     travel_time -= car_move.handling_time
+
                 if any(employee.car_moves_second_stage):
                     travel_time_second_stage = 0
                     num_scenarios = len(employee.car_moves_second_stage)
@@ -460,5 +389,24 @@ def get_travel_time_between_car_moves(employees, scenario: int = None):
                 travel_time += employee.current_time_second_stage[scenario]
                 for car_move in employee.car_moves_second_stage[scenario]:
                     travel_time -= car_move.handling_time
-
+                    
     return travel_time
+
+  
+def calculate_cost_travel_time_between_car_moves_from_solution_dict(solution: {Employee: [CarMove]}, world_instance):
+    total_travel_time = 0
+    for employee, car_moves in solution.items():
+        travel_time = [employee.start_time for _ in range(len(car_moves))]
+        current_node = [employee.start_node for _ in range(len(car_moves))]
+        for s in range(len(car_moves)):
+            for car_move in car_moves[s]:
+                start_node = car_move.start_node
+                end_node = car_move.end_node
+                emp_travel_time_to_node = world_instance.get_employee_travel_time_to_node(current_node[s], start_node)
+                travel_time[s] += emp_travel_time_to_node
+                current_node[s] = end_node
+        total_travel_time += np.mean(travel_time)
+    return 0.1*total_travel_time
+
+
+

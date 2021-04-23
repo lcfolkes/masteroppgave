@@ -285,14 +285,6 @@ class ALNS():
 			self.repair_operators_record[k][0] = self.repair_operators[k]
 			self.repair_operators_record[k][0] = 0
 
-	"""
-    def _mutate_solution(self, first_stage_solution, feasibility_checker):
-        first_stage_solution = get_first_stage_solution(first_stage_solution)
-        local_search_operator = self._get_local_search_operator(first_stage_solution, feasibility_checker)
-        mutated_solution = local_search_operator.mutated_solution
-        return mutated_solution
-    """
-
 
 if __name__ == "__main__":
 	# from pyinstrument import Profiler
@@ -311,9 +303,9 @@ if __name__ == "__main__":
 
 	# profiler.stop()
 	# print(profiler.output_text(unicode=True, color=True))
-	#print("\n############## Optimal solution ##############")
-	#gi2 = GurobiInstance(filename + ".yaml")
-	#run_model(gi2)
+	print("\n############## Optimal solution ##############")
+	gi2 = GurobiInstance(filename + ".yaml")
+	run_model(gi2)
 
 	'''
     print("\n############## Evaluate solution ##############")
@@ -323,7 +315,7 @@ if __name__ == "__main__":
     print("\n############## Reoptimized solution ##############")
     gi = GurobiInstance(filename + ".yaml", employees=alns.best_solution[0].employees, optimize=True)
     run_model(gi)
-    
+
     print("\n############## Optimal solution ##############")
     gi2 = GurobiInstance(filename + ".yaml")
     run_model(gi2)

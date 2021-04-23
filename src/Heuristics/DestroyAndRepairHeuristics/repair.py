@@ -5,7 +5,7 @@ from Heuristics.feasibility_checker import FeasibilityChecker
 from path_manager import path_to_src
 from abc import ABC, abstractmethod
 import copy
-from Heuristics.helper_functions_heuristics import insert_car_move_wo_deep_copy, get_first_stage_solution_list_from_dict, \
+from Heuristics.helper_functions_heuristics import insert_car_move, get_first_stage_solution_list_from_dict, \
     remove_all_car_moves_of_car_in_car_move, remove_car_move_from_employee_from_solution
 from Heuristics.objective_function import get_obj_val_of_car_moves
 from InstanceGenerator.instance_components import CarMove, ParkingNode, Employee
@@ -109,7 +109,7 @@ class GreedyInsertion(Repair):
                 # print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
                 break
 
-            insert_car_move_wo_deep_copy(current_solution, best_car_move, best_employee, best_idx)
+            insert_car_move(current_solution, best_car_move, best_employee, best_idx)
             self.unused_car_moves = remove_all_car_moves_of_car_in_car_move(best_car_move, self.unused_car_moves)
             q -= 1
         #return current_solution
@@ -138,7 +138,7 @@ class GreedyInsertion(Repair):
             for employee, employee_moves in current_solution.items():
                 if len(employee_moves) < self.num_first_stage_tasks:
                     for idx in range(len(employee_moves)+1):
-                        insert_car_move_wo_deep_copy(current_solution, car_move, employee, idx)
+                        insert_car_move(current_solution, car_move, employee, idx)
                         # the dictionary checks solution only for employee the relevant employee
                         if self.feasibility_checker.is_first_stage_solution_feasible({employee: current_solution[employee]}):
                             solution_with_move = get_first_stage_solution_list_from_dict(current_solution)
@@ -183,7 +183,7 @@ class RegretInsertion(Repair):
                 # print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
                 break
 
-            insert_car_move_wo_deep_copy(current_solution, best_car_move, best_employee, idx)
+            insert_car_move(current_solution, best_car_move, best_employee, idx)
             self.unused_car_moves = remove_all_car_moves_of_car_in_car_move(best_car_move, self.unused_car_moves)
 
             q -= 1
@@ -220,7 +220,7 @@ class RegretInsertion(Repair):
             for employee, employee_moves in current_solution.items():
                 if len(employee_moves) < self.num_first_stage_tasks:
                     for idx in range(len(employee_moves)+1):
-                        insert_car_move_wo_deep_copy(current_solution, car_move, employee, idx)
+                        insert_car_move(current_solution, car_move, employee, idx)
                         if self.feasibility_checker.is_first_stage_solution_feasible({employee: current_solution[employee]}):
                             #car_move_feasible = True
                             feasible_idx.append(idx)
