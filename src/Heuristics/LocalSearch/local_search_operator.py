@@ -129,7 +129,7 @@ class IntraMove(LocalSearchOperator):
 					#print(f"candidate_obj_val {candidate_obj_val}")
 					if candidate_obj_val > current_obj_val:
 						print("New best solution found!")
-						intra_move.to_string()
+						self.to_string()
 						current_obj_val = candidate_obj_val
 						best_solution = self._candidate_solution
 						if strategy == "best_first":
@@ -184,7 +184,7 @@ class InterSwap(LocalSearchOperator):
 
 			if candidate_obj_val > current_obj_val:
 				print("New best solution found!")
-				inter_swap.to_string()
+				self.to_string()
 				current_obj_val = candidate_obj_val
 				best_solution = self.candidate_solution
 				if strategy == "best_first":

@@ -15,86 +15,19 @@ class LocalSearch:
 		self.solution = solution
 
 	def search(self, strategy="best_first"):
+		print("\n---- Local Search ----")
 		print("IntraMove")
-		intra_move = IntraMove(self.solution, self.feasibility_checker.world_instance.first_stage_tasks)
-		solution = self._intra_move_search(intra_move, strategy)
-		inter_swap = InterSwap(solution, self.feasibility_checker.world_instance.first_stage_tasks)
+		intra_move = IntraMove(ch.assigned_car_moves, self.first_stage_tasks, self.feasibility_checker)
+		solution = intra_move.search(strategy)
+		self.visited_list += intra_move.visited_list
+
 		print("InterSwap")
-		solution = self._inter_swap_search(inter_swap, strategy)
+		inter_swap = InterSwap(solution, self.first_stage_tasks, self.feasibility_checker)
+		solution = inter_swap.search(strategy)
+		self.visited_list += inter_swap.visited_list
+
 		self.solution = solution
 		return solution
-
-	def _intra_move_search(self, intra_move, strategy, shuffle=False):
-		current_obj_val = get_obj_val_of_solution_dict(intra_move.current_solution, self.feasibility_checker.world_instance, True)
-		best_solution = intra_move.current_solution
-		for k, car_moves_scenario in intra_move.current_solution.items():
-			# TODO: fix list index out of range error
-			# only look at first stage
-			car_moves = car_moves_scenario[0]
-			if len(car_moves) > 1:
-				idx = list(range(len(car_moves)))
-				for i, j in itertools.combinations(idx, 2):
-					intra_move.mutate(k, i, j)
-					self.visited_list.append(intra_move.hash_key)
-					if not self.feasibility_checker.is_solution_feasible(intra_move.candidate_solution):
-						continue
-					#intra_move.to_string()
-					candidate_obj_val = get_obj_val_of_solution_dict(intra_move.candidate_solution, self.feasibility_checker.world_instance, True)
-					#print(f"current_obj_val {current_obj_val}")
-					#print(f"candidate_obj_val {candidate_obj_val}")
-					if candidate_obj_val > current_obj_val:
-						#intra_move.to_string()
-						current_obj_val = candidate_obj_val
-						best_solution = intra_move.candidate_solution
-						if strategy == "best_first":
-							break
-		return best_solution
-
-	def _inter_swap_search(self, inter_swap, strategy, shuffle=False):
-		# TODO: support for second stage solutions
-		current_obj_val = get_obj_val_of_solution_dict(inter_swap.current_solution, self.feasibility_checker.world_instance, True)
-		best_solution = inter_swap.current_solution
-		emp_pairs = self._get_emp_pairs_inter_swap(inter_swap.current_solution)
-
-		for emp1, emp2 in emp_pairs:
-			# TODO: fix logic for creating emp_pairs. does not work if one has only one object or zero
-			print(emp_pairs)
-			inter_swap.mutate(emp1, emp2)
-			self.visited_list.append(inter_swap.hash_key)
-			if not self.feasibility_checker.is_solution_feasible(inter_swap.candidate_solution):
-				continue
-			#inter_swap.to_string()
-			candidate_obj_val = get_obj_val_of_solution_dict(inter_swap.candidate_solution, self.feasibility_checker.world_instance, True)
-			##print(f"current_obj_val {current_obj_val}")
-			#print(f"candidate_obj_val {candidate_obj_val}")
-
-			if candidate_obj_val > current_obj_val:
-				#inter_swap.to_string()
-				current_obj_val = candidate_obj_val
-				best_solution = inter_swap.candidate_solution
-				if strategy == "best_first":
-					break
-		return best_solution
-
-	def _get_emp_pairs_inter_swap(self, solution, second_stage=False):
-		if not second_stage:
-			solution = get_first_stage_solution(solution, self.feasibility_checker.world_instance.first_stage_tasks)
-		# TODO: fix logic for creating emp_pairs. does not work if one has only one object or zero
-		emp_pair_lists = []
-		for k, v in solution.items():
-			emp = []
-			for i, cm in enumerate(v):
-				emp.append((k, i))
-			emp_pair_lists.append(emp)
-			print("--- inter_swap ---")
-			print(k)
-			print(v)
-			print(emp)
-		emp_pairs = []
-		for i, j in itertools.combinations(range(len(emp_pair_lists)), 2):
-			emp_pairs.append(itertools.product(emp_pair_lists[i], emp_pair_lists[j]))
-		emp_pairs = [emp_pair for itertools_obj in emp_pairs for emp_pair in itertools_obj]
-		return emp_pairs
 
 
 if __name__ == "__main__":
