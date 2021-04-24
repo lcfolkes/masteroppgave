@@ -79,14 +79,8 @@ class ConstructionHeuristic:
             first_stage_solution = solution
             for employee_obj, car_move_objs in first_stage_solution.items():
                 emp = employee_ids[employee_obj.employee_id]
-                print("\nEmployee: ", emp.employee_id)
                 for cm_obj in car_move_objs:
                     cm = car_move_ids[cm_obj.car_move_id]
-                    if cm.is_charging_move:
-                        print("Car_move: ", cm.car_move_id)
-                        print("End_node: ", cm.end_node.node_id)
-                        print("num_charging: ", cm.end_node.num_charging)
-
                     self._add_car_move_to_employee(car_moves=self.car_moves, best_car_move=cm, best_employee=emp)
 
         else:

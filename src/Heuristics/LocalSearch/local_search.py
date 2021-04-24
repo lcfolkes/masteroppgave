@@ -1,9 +1,9 @@
 from Heuristics.LocalSearch.local_search_operator import IntraMove, InterSwap
 from Heuristics.construction_heuristic import ConstructionHeuristic
 from Heuristics.feasibility_checker import FeasibilityChecker
-import itertools
 
-from Heuristics.helper_functions_heuristics import get_first_and_second_stage_solution_list_from_dict
+from Heuristics.helper_functions_heuristics import get_first_and_second_stage_solution_list_from_dict, \
+	get_first_stage_solution
 from Heuristics.objective_function import get_obj_val_of_solution_dict
 
 
@@ -27,24 +27,27 @@ class LocalSearch:
 	def _intra_move_search(self, intra_move, strategy, shuffle=False):
 		current_obj_val = get_obj_val_of_solution_dict(intra_move.current_solution, self.feasibility_checker.world_instance, True)
 		best_solution = intra_move.current_solution
-		for k, v in self.solution.items():
-			idx = range(len(v))
-			#TODO: add shuffle feature
-			for i, j in itertools.combinations(idx, 2):
-				intra_move.mutate(k, i, j)
-				self.visited_list.append(intra_move.hash_key)
-				if not self.feasibility_checker.is_solution_feasible(intra_move.candidate_solution):
-					continue
-				#intra_move.to_string()
-				candidate_obj_val = get_obj_val_of_solution_dict(intra_move.candidate_solution, self.feasibility_checker.world_instance, True)
-				#print(f"current_obj_val {current_obj_val}")
-				#print(f"candidate_obj_val {candidate_obj_val}")
-				if candidate_obj_val > current_obj_val:
+		for k, car_moves_scenario in intra_move.current_solution.items():
+			# TODO: fix list index out of range error
+			# only look at first stage
+			car_moves = car_moves_scenario[0]
+			if len(car_moves) > 1:
+				idx = list(range(len(car_moves)))
+				for i, j in itertools.combinations(idx, 2):
+					intra_move.mutate(k, i, j)
+					self.visited_list.append(intra_move.hash_key)
+					if not self.feasibility_checker.is_solution_feasible(intra_move.candidate_solution):
+						continue
 					#intra_move.to_string()
-					current_obj_val = candidate_obj_val
-					best_solution = intra_move.candidate_solution
-					if strategy == "best_first":
-						break
+					candidate_obj_val = get_obj_val_of_solution_dict(intra_move.candidate_solution, self.feasibility_checker.world_instance, True)
+					#print(f"current_obj_val {current_obj_val}")
+					#print(f"candidate_obj_val {candidate_obj_val}")
+					if candidate_obj_val > current_obj_val:
+						#intra_move.to_string()
+						current_obj_val = candidate_obj_val
+						best_solution = intra_move.candidate_solution
+						if strategy == "best_first":
+							break
 		return best_solution
 
 	def _inter_swap_search(self, inter_swap, strategy, shuffle=False):
@@ -54,6 +57,8 @@ class LocalSearch:
 		emp_pairs = self._get_emp_pairs_inter_swap(inter_swap.current_solution)
 
 		for emp1, emp2 in emp_pairs:
+			# TODO: fix logic for creating emp_pairs. does not work if one has only one object or zero
+			print(emp_pairs)
 			inter_swap.mutate(emp1, emp2)
 			self.visited_list.append(inter_swap.hash_key)
 			if not self.feasibility_checker.is_solution_feasible(inter_swap.candidate_solution):
@@ -72,12 +77,19 @@ class LocalSearch:
 		return best_solution
 
 	def _get_emp_pairs_inter_swap(self, solution, second_stage=False):
+		if not second_stage:
+			solution = get_first_stage_solution(solution, self.feasibility_checker.world_instance.first_stage_tasks)
+		# TODO: fix logic for creating emp_pairs. does not work if one has only one object or zero
 		emp_pair_lists = []
 		for k, v in solution.items():
 			emp = []
-			for i in range(len(v)):
+			for i, cm in enumerate(v):
 				emp.append((k, i))
 			emp_pair_lists.append(emp)
+			print("--- inter_swap ---")
+			print(k)
+			print(v)
+			print(emp)
 		emp_pairs = []
 		for i, j in itertools.combinations(range(len(emp_pair_lists)), 2):
 			emp_pairs.append(itertools.product(emp_pair_lists[i], emp_pair_lists[j]))

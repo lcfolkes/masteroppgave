@@ -47,12 +47,12 @@ class FeasibilityChecker():
 				if verbose:
 					print(f"-Emp {employee.employee_id} after: {travel_time}")
 
-				'''
+
 				# Checks if best car move is a charging move to a node where the remaining charging capacity is zero
 				if car_move.is_charging_move:
 					if car_move.end_node.capacity > car_move.end_node.num_charging[0]:
 						return False
-				'''
+
 			if travel_time > self.world_instance.planning_period:
 				return False
 
@@ -71,6 +71,10 @@ class FeasibilityChecker():
 																								   start_node)
 					travel_time[s] += emp_travel_time_to_node + car_move.handling_time
 					current_node[s] = end_node
+
+					if car_move.is_charging_move:
+						if car_move.end_node.capacity > car_move.end_node.num_charging[s]:
+							return False
 
 				if travel_time[s] > self.world_instance.planning_period:
 					return False

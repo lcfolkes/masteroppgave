@@ -230,19 +230,6 @@ class ALNS():
 		else:
 			exit("Repair operator does not exist")
 
-	def _get_local_search_operator(self, repaired_solution, feasibility_checker) -> LocalSearchOperator:
-		w_sum_lso = sum(w for o, w in self.local_search_operators.items())
-		# dist = distribution
-		w_dist_lso = [w / w_sum_lso for o, w in self.local_search_operators.items()]
-		operator = random.choices(list(self.local_search_operators), w_dist_lso)[0]
-		self.local_search_operators_record[operator][1] += 1
-
-		if operator == "intra_move":
-			return IntraMove(repaired_solution, feasibility_checker)
-		elif operator == "inter_swap":
-			return InterSwap(repaired_solution, feasibility_checker)
-		else:
-			exit("Local search operator does not exist")
 
 	def _update_weight_record(self, operator_score, destroy, repair):
 
