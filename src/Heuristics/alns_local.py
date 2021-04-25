@@ -100,7 +100,8 @@ class ALNS():
 
 				elif MODE == "LNS":
 					print("----- LARGE NEIGHBORHOOD SEARCH -----")
-
+					print("candidate_solution_alns")
+					print(candidate_solution.assigned_car_moves)
 					#TODO: see if it is possible to do destroy and repair with no deep copy (i think it is)
 					destroy = self._get_destroy_operator(solution=candidate_solution.assigned_car_moves,
 														 num_first_stage_tasks=candidate_solution.world_instance.first_stage_tasks,
@@ -116,9 +117,11 @@ class ALNS():
 					#repair.to_string()
 
 					#hash_key = repair.hash_key
-					print("Destroy: ", destroy)
-					print("Repair: ", repair)
+					print("Destroy: ", destroy, destroy.solution)
+					print("Repair: ", repair, repair.solution)
+					print("Rebuild")
 					candidate_solution.rebuild(repair.solution)
+					print(candidate_solution.assigned_car_moves)
 					hash_key = candidate_solution.hash_key
 					if hash_key in visited_hash_keys:
 						continue
@@ -282,7 +285,7 @@ if __name__ == "__main__":
 
 	# code you want to profile
 
-	#alns = ALNS(filename + ".pkl")
+	alns = ALNS(filename + ".pkl")
 
 	# profiler.stop()
 	# print(profiler.output_text(unicode=True, color=True))

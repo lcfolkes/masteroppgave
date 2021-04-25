@@ -220,7 +220,7 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
                     else:
                         best_obj_val_second_stage[s] = obj_val
                         best_car_move_second_stage[s] = car_moves[s][r]
-        '''
+
         out_list = []
         for car_move in best_car_move_second_stage:
             if car_move is not None:

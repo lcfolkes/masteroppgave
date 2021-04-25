@@ -91,17 +91,17 @@ class ChargingNode(Node):
             else:
                 self.num_charging[scenario] -= 1
         else:
-			for s in range(len(self.num_charging)):
-				if self.num_charging[s] == 0:
-					raise Exception("No cars can be removed from charging node as there are no cars there")
-				else:
-					self.num_charging[s] -= 1
+            for s in range(len(self.num_charging)):
+                if self.num_charging[s] == 0:
+                    raise Exception("No cars can be removed from charging node as there are no cars there")
+                else:
+                    self.num_charging[s] -= 1
 
-	def reset(self, scenario: int = None):
-		if scenario is not None:
-			self.num_charging[scenario] = 0
-		else:
-			self.num_charging = [0 for _ in self.num_charging]
+    def reset(self, scenario: int = None):
+        if scenario is not None:
+            self.num_charging[scenario] = 0
+        else:
+            self.num_charging = [0 for _ in self.num_charging]
 
 
 class Car:
@@ -267,7 +267,7 @@ class Employee:
             self.travel_times_car_moves_second_stage.append([])
 
 
-    def remove_car_move(self, total_travel_time: float):
+    def remove_last_car_move(self, total_travel_time: float):
         self.current_time -= total_travel_time
         cm = self.car_moves.pop()
         cm.employee = None
@@ -279,9 +279,9 @@ class Employee:
     def reset(self):
         for cm in self.car_moves:
             cm.reset()
-		for s, scenario in enumerate(self.car_moves_second_stage):
-			for cm in scenario:
-				cm.reset(scenario=s)
+        for s, scenario in enumerate(self.car_moves_second_stage):
+            for cm in scenario:
+                cm.reset(scenario=s)
         for i in range(len(self.start_times_car_moves)):
             self.start_times_car_moves[i] = []
             self.travel_times_car_moves[i] = []

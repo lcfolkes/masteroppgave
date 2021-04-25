@@ -77,7 +77,8 @@ class ConstructionHeuristic:
 
     def rebuild(self, solution, stage="first", verbose=False):
         self._initialize_for_rebuild()
-
+        print("inside_rebuild")
+        print(solution)
         if stage == "first":
             # Check if this is not necessary for LNS
             employee_ids = {e.employee_id: e for e in self.employees}
@@ -101,6 +102,8 @@ class ConstructionHeuristic:
                 self._add_car_move_to_employee_from_dict(car_moves_second_stage=self.car_moves_second_stage,
                                                          employee=employee_obj,
                                                          car_moves_scenarios=car_moves_scenarios)
+
+        #self.add_car_moves_to_employees()
 
         if verbose:
             print("\nRepaired solution")
@@ -320,7 +323,7 @@ class ConstructionHeuristic:
                 self.world_instance.add_car_move_to_employee(car_move, employee, s)
                 self.assigned_car_moves[employee][s].append(car_move)
                 self.unused_car_moves[s].remove(car_move)
-                self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(car_move[s], car_moves_second_stage[s])
+                self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(car_move, car_moves_second_stage[s])
 
     def print_solution(self):
         true_obj_val, heuristic_obj_val = self.get_obj_val(both=True)

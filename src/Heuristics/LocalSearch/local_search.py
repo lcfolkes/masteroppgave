@@ -2,10 +2,6 @@ from Heuristics.LocalSearch.local_search_operator import IntraMove, InterSwap
 from Heuristics.construction_heuristic import ConstructionHeuristic
 from Heuristics.feasibility_checker import FeasibilityChecker
 
-from Heuristics.helper_functions_heuristics import get_first_and_second_stage_solution_list_from_dict, \
-	get_first_stage_solution
-from Heuristics.objective_function import get_obj_val_of_solution_dict
-
 
 class LocalSearch:
 	def __init__(self, solution, first_stage_tasks, feasibility_checker):

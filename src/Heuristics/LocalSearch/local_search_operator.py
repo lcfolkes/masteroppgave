@@ -1,13 +1,8 @@
 from abc import ABC, abstractmethod
 
-import random
-import copy
-from Heuristics.DestroyAndRepairHeuristics.destroy import RandomRemoval
-from Heuristics.DestroyAndRepairHeuristics.repair import GreedyInsertion
 from Heuristics.construction_heuristic import ConstructionHeuristic
 from Heuristics.feasibility_checker import FeasibilityChecker
-from Heuristics.helper_functions_heuristics import get_first_and_second_stage_solution, \
-	reconstruct_solution_from_first_and_second_stage, get_first_stage_solution
+from Heuristics.helper_functions_heuristics import get_first_and_second_stage_solution, reconstruct_solution_from_first_and_second_stage, get_first_stage_solution
 from Heuristics.objective_function import get_obj_val_of_solution_dict
 import itertools
 
@@ -112,31 +107,39 @@ class IntraMove(LocalSearchOperator):
 	def search(self, strategy, shuffle=False):
 		current_obj_val = get_obj_val_of_solution_dict(self._current_solution, self.feasibility_checker.world_instance, True)
 		best_solution = self._current_solution
-		for k, car_moves_scenario in self.current_solution.items():
-			# TODO: fix list index out of range error
-			# only look at first stage
-			car_moves = car_moves_scenario[0]
-			if len(car_moves) > 1:
-				idx = list(range(len(car_moves)))
-				for i, j in itertools.combinations(idx, 2):
-					self._mutate(k, i, j)
-					self.visited_list.append(self.hash_key)
-					if not self.feasibility_checker.is_solution_feasible(self._candidate_solution):
-						continue
-					#intra_move.to_string()
-					candidate_obj_val = get_obj_val_of_solution_dict(self._candidate_solution, self.feasibility_checker.world_instance, True)
-					#print(f"current_obj_val {current_obj_val}")
-					#print(f"candidate_obj_val {candidate_obj_val}")
-					if candidate_obj_val > current_obj_val:
-						print("New best solution found!")
-						self.to_string()
-						current_obj_val = candidate_obj_val
-						best_solution = self._candidate_solution
-						if strategy == "best_first":
-							break
+
+		search_space = self._get_search_space(self._current_solution)
+
+		for k, i, j in search_space:
+			self._mutate(k, i, j)
+			self.visited_list.append(self.hash_key)
+			if not self.feasibility_checker.is_solution_feasible(self._candidate_solution):
+				continue
+			#intra_move.to_string()
+			candidate_obj_val = get_obj_val_of_solution_dict(self._candidate_solution, self.feasibility_checker.world_instance, True)
+			#print(f"current_obj_val {current_obj_val}")
+			#print(f"candidate_obj_val {candidate_obj_val}")
+			if candidate_obj_val > current_obj_val:
+				print("New best solution found!")
+				self.to_string()
+				current_obj_val = candidate_obj_val
+				best_solution = self._candidate_solution
+				if strategy == "best_first":
+					break
 		self._current_solution = best_solution
 		return best_solution
 
+	def _get_search_space(self, solution, second_stage=False):
+		if not second_stage:
+			solution = get_first_stage_solution(solution, self.feasibility_checker.world_instance.first_stage_tasks)
+		search_space = []
+		for k, car_moves in solution.items():
+			if len(car_moves) > 1:
+				idx = list(range(len(car_moves)))
+				for i, j in itertools.combinations(idx, 2):
+					search_space.append((k,i,j))
+
+		return search_space
 
 
 class InterSwap(LocalSearchOperator):
@@ -170,7 +173,7 @@ class InterSwap(LocalSearchOperator):
 		current_obj_val = get_obj_val_of_solution_dict(self._current_solution,
 													   self.feasibility_checker.world_instance, True)
 		best_solution = self._current_solution
-		emp_pairs = self._get_emp_pairs_inter_swap(self._current_solution)
+		emp_pairs = self._get_search_space(self._current_solution)
 
 		for emp1, emp2 in emp_pairs:
 			self._mutate(emp1, emp2)
@@ -192,7 +195,7 @@ class InterSwap(LocalSearchOperator):
 		self._current_solution = best_solution
 		return best_solution
 
-	def _get_emp_pairs_inter_swap(self, solution, second_stage=False):
+	def _get_search_space(self, solution, second_stage=False):
 		if not second_stage:
 			solution = get_first_stage_solution(solution, self.feasibility_checker.world_instance.first_stage_tasks)
 		emp_pair_lists = []
