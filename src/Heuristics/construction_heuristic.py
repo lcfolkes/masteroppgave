@@ -16,9 +16,9 @@ class ConstructionHeuristic:
     # instance_file = "InstanceFiles/6nodes/6-3-1-1_d.pkl"
     # filename = "InstanceFiles/6nodes/6-3-1-1_b.yaml"
 
-    print("------- CONSTRUCTION HEURISTIC -------\n")
 
     def __init__(self, instance_file):
+
 
         self.instance_file = instance_file
         self.world_instance = load_object_from_file(instance_file)
@@ -77,8 +77,6 @@ class ConstructionHeuristic:
 
     def rebuild(self, solution, stage="first", verbose=False):
         self._initialize_for_rebuild()
-        print("inside_rebuild")
-        print(solution)
         if stage == "first":
             # Check if this is not necessary for LNS
             employee_ids = {e.employee_id: e for e in self.employees}
@@ -89,6 +87,8 @@ class ConstructionHeuristic:
                 for cm_obj in car_move_objs:
                     cm = car_move_ids[cm_obj.car_move_id]
                     self._add_car_move_to_employee(car_moves=self.car_moves, best_car_move=cm, best_employee=emp)
+            self.add_car_moves_to_employees()
+
 
         else:
             first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(solution, self.world_instance.first_stage_tasks)
@@ -103,7 +103,6 @@ class ConstructionHeuristic:
                                                          employee=employee_obj,
                                                          car_moves_scenarios=car_moves_scenarios)
 
-        #self.add_car_moves_to_employees()
 
         if verbose:
             print("\nRepaired solution")
@@ -179,7 +178,9 @@ class ConstructionHeuristic:
             else:
                 return best_employee_second_stage
 
-    def add_car_moves_to_employees(self):
+    def add_car_moves_to_employees(self, verbose=False):
+        if verbose:
+            print("------- CONSTRUCTION HEURISTIC -------\n")
         improving_car_move_exists = True
         second_stage_move_counter = 0
         first_stage_move_counter = 0
@@ -210,7 +211,8 @@ class ConstructionHeuristic:
                     self._add_car_move_to_employee(car_moves=car_moves, best_car_move=best_car_move_first_stage,
                                                    best_employee=best_employee_first_stage)
                     first_stage_move_counter += 1
-                    print(f"{first_stage_move_counter} first stage insertions completed\n")
+                    if verbose:
+                        print(f"{first_stage_move_counter} first stage insertions completed\n")
 
 
             else:
@@ -244,9 +246,10 @@ class ConstructionHeuristic:
                             added_scenarios.append(0)
 
                     scenarios_with_insertion = [i for i, x in enumerate(added_scenarios) if x == 1]
-                    print(f"Second stage insertion number {second_stage_move_counter}:")
-                    print("{} second stage car moves added in scenarios {}\n".format(len(scenarios_with_insertion), (
-                        [i + 1 for i in scenarios_with_insertion])))
+                    if verbose:
+                        print(f"Second stage insertion number {second_stage_move_counter}:")
+                        print("{} second stage car moves added in scenarios {}\n".format(
+                            len(scenarios_with_insertion), ([i + 1 for i in scenarios_with_insertion])))
 
     def _add_car_move_to_employee(self, car_moves, best_car_move, best_employee):
 

@@ -43,27 +43,43 @@ class ALNS():
 
 	def __init__(self, filename):
 		self.filename = filename
-		print(filename)
 
-		self.destroy_operators = OrderedDict({'random': 1.0, 'worst': 1.0, 'shaw': 1.0})
-		self.repair_operators = OrderedDict({'greedy': 1.0, 'regret2': 1.0, 'regret3': 1.0})
-		self.destroy_operators_record = OrderedDict({'random': [1.0, 0.0], 'worst': [1.0, 0.0], 'shaw': [1.0, 0.0]})
-		self.repair_operators_record = OrderedDict({'greedy': [1.0, 0.0], 'regret2': [1.0, 0.0], 'regret3': [1.0, 0.0]})
 
-		#self.local_search_operators = OrderedDict({'intra_move': 1.0, 'inter_swap': 1.0})
-		#self.local_search_operators_record = OrderedDict({'intra_move': [1.0, 0.0], 'inter_swap': [1.0, 0.0]})
 
 		self.best_solution = None
 		self.best_solutions = None
 		self.best_obj_val = 0
-		self.run()
 
-	def run(self):
+		solution = ConstructionHeuristic(self.filename)
+		self.num_employees = len(solution.employees)
+		self.destroy_operators, self.repair_operators = self._initialize_operators()
+		self.destroy_operators_record, self.repair_operators_record = self._initialize_operator_records()
+		self.run(solution)
+
+	def _initialize_operators(self):
+		destroy_operators = OrderedDict({'random': 1.0, 'worst': 1.0, 'shaw': 1.0})
+		if self.num_employees < 3:
+			repair_operators = OrderedDict({'greedy': 1.0, 'regret2': 1.0})
+		else:
+			repair_operators = OrderedDict({'greedy': 1.0, 'regret2': 1.0, 'regret3': 1.0})
+
+		return destroy_operators, repair_operators
+
+	def _initialize_operator_records(self):
+		destroy_operators_record = OrderedDict({'random': [1.0, 0.0], 'worst': [1.0, 0.0], 'shaw': [1.0, 0.0]})
+		if self.num_employees < 3:
+			repair_operators_record = OrderedDict({'greedy': [1.0, 0.0], 'regret2': [1.0, 0.0]})
+		else:
+			repair_operators_record = OrderedDict({'greedy': [1.0, 0.0], 'regret2': [1.0, 0.0], 'regret3': [1.0, 0.0]})
+		return destroy_operators_record, repair_operators_record
+
+
+
+	def run(self, solution):
 		# TODO: in order to save time, this could be implemented as a queue (as in tabu search)
 		visited_hash_keys = set()
 
-		solution = ConstructionHeuristic(self.filename)
-		solution.add_car_moves_to_employees()
+		solution.add_car_moves_to_employees(verbose=True)
 		solution.print_solution()
 		true_obj_val, best_obj_val = solution.get_obj_val(both=True)
 		current_obj_val = best_obj_val
@@ -86,6 +102,7 @@ class ALNS():
 			print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
 
 			for j in range(10):
+				print(f"Iteration {i*10 + j}")
 				candidate_solution = copy.deepcopy(current_solution)
 
 				if MODE == "LOCAL":
@@ -100,28 +117,24 @@ class ALNS():
 
 				elif MODE == "LNS":
 					print("----- LARGE NEIGHBORHOOD SEARCH -----")
-					print("candidate_solution_alns")
-					print(candidate_solution.assigned_car_moves)
 					#TODO: see if it is possible to do destroy and repair with no deep copy (i think it is)
 					destroy = self._get_destroy_operator(solution=candidate_solution.assigned_car_moves,
 														 num_first_stage_tasks=candidate_solution.world_instance.first_stage_tasks,
 														 neighborhood_size=2, randomization_degree=1,
 														 parking_nodes=candidate_solution.parking_nodes)
 					#destroy.to_string()
+					#print("Destroy: ", destroy, destroy.solution)
+					#print(destroy)
 
 					repair = self._get_repair_operator(destroyed_solution_object=destroy,
 													   unused_car_moves=candidate_solution.unused_car_moves,
 													   parking_nodes=candidate_solution.parking_nodes,
 													   world_instance=candidate_solution.world_instance)
-
+					#print(repair)
 					#repair.to_string()
 
-					#hash_key = repair.hash_key
-					print("Destroy: ", destroy, destroy.solution)
-					print("Repair: ", repair, repair.solution)
-					print("Rebuild")
+					#print("Repair: ", repair, repair.solution)
 					candidate_solution.rebuild(repair.solution)
-					print(candidate_solution.assigned_car_moves)
 					hash_key = candidate_solution.hash_key
 					if hash_key in visited_hash_keys:
 						continue
@@ -135,11 +148,11 @@ class ALNS():
 				heuristic_obj_vals.append(candidate_obj_val)
 
 				if self._accept(candidate_obj_val, current_obj_val, temperature):
-					print("current_obj_val: ", current_obj_val)
-					print("candidate_obj_val: ", candidate_obj_val)
 
 					# IMPROVING
 					if candidate_obj_val > current_obj_val:
+						print("current_obj_val: ", current_obj_val)
+						print("candidate_obj_val: ", candidate_obj_val)
 						# NEW GLOBAL BEST
 						if candidate_obj_val > best_obj_val:
 							best_obj_val = candidate_obj_val
@@ -275,7 +288,7 @@ class ALNS():
 if __name__ == "__main__":
 	# from pyinstrument import Profiler
 
-	filename = "InstanceGenerator/InstanceFiles/8nodes/8-2-1-1_a"
+	filename = "InstanceGenerator/InstanceFiles/30nodes/30-10-1-1_a"
 
 	#gi = GurobiInstance(filename + ".yaml")
 	#run_model(gi, time_limit=10000.0)

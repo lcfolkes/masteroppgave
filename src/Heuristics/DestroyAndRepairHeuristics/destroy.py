@@ -181,17 +181,11 @@ class ShawRemoval(Destroy):
         super().__init__(solution, num_first_stage_tasks, neighborhood_size)
 
     def _destroy(self):
-        print(self.solution)
         solution_dict = self.solution
         solution_list = get_first_stage_solution_list_from_dict(solution_dict)
         #first_stage_solution_dict = copy.deepcopy(self.first_stage_solution)
         removed_list = []
-        try:
-            rand_index = random.randrange(0, len(solution_list), 1)
-        except ValueError as exp:
-            print("Error", exp)
-            print(solution_list)
-            #exit()
+        rand_index = random.randrange(0, len(solution_list), 1)
 
         # Charging node states are updated and employees are removed
         solution_list[rand_index].reset()

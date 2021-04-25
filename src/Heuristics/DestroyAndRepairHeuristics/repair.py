@@ -172,8 +172,7 @@ class RegretInsertion(Repair):
         """
         if self.regret_nr > len(self.solution):
             print("Regret number cannot be higher than the number of employees!")
-            #exit()
-            pass
+            exit()
 
         q = self.neighborhood_size
         #current_solution = copy.deepcopy(self.solution)

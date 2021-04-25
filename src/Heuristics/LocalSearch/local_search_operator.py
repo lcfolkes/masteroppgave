@@ -136,6 +136,7 @@ class IntraMove(LocalSearchOperator):
 		for k, car_moves in solution.items():
 			if len(car_moves) > 1:
 				idx = list(range(len(car_moves)))
+				#check if not e.g. 0,1 and 1,0
 				for i, j in itertools.combinations(idx, 2):
 					search_space.append((k,i,j))
 

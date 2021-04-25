@@ -11,7 +11,7 @@ class LocalSearch:
 		self.solution = solution
 
 	def search(self, strategy="best_first"):
-		print("\n---- Local Search ----")
+		#print("\n---- Local Search ----")
 		print("IntraMove")
 		intra_move = IntraMove(self.solution, self.first_stage_tasks, self.feasibility_checker)
 		solution = intra_move.search(strategy)
