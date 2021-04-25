@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 
 from Heuristics.construction_heuristic import ConstructionHeuristic
 from Heuristics.feasibility_checker import FeasibilityChecker
-from Heuristics.helper_functions_heuristics import get_first_and_second_stage_solution, reconstruct_solution_from_first_and_second_stage, get_first_stage_solution
+from Heuristics.helper_functions_heuristics import get_first_and_second_stage_solution, \
+	reconstruct_solution_from_first_and_second_stage, get_first_stage_solution, get_second_stage_solution_dict
 from Heuristics.objective_function import get_obj_val_of_solution_dict
 import itertools
 
@@ -91,27 +92,19 @@ class IntraMove(LocalSearchOperator):
 	def __init__(self, solution, first_stage_tasks, feasibility_checker):
 		super().__init__(solution, first_stage_tasks, feasibility_checker)
 
-	def _mutate(self, employee, i, j, s=None):
-		# No need to copy because get_first_and_second_stage_solution() creates new dict with same elements
-		first_stage, second_stage = get_first_and_second_stage_solution(self._current_solution, self.first_stage_tasks)
-
-		if s is None:
-			moves = first_stage[employee]
-		else:
-			moves = second_stage[employee][s]
-
-		moves[i], moves[j] = moves[j], moves[i]
-
-		self._candidate_solution = reconstruct_solution_from_first_and_second_stage(first_stage, second_stage)
-
-	def search(self, strategy, shuffle=False):
+	def search(self, strategy, first_stage, shuffle=False):
+		self.visited_list = []
 		current_obj_val = get_obj_val_of_solution_dict(self._current_solution, self.feasibility_checker.world_instance, True)
 		best_solution = self._current_solution
+		search_space = self._get_search_space(self._current_solution, first_stage)
 
-		search_space = self._get_search_space(self._current_solution)
-
-		for k, i, j in search_space:
-			self._mutate(k, i, j)
+		for neighbor in search_space:
+			if first_stage:
+				k, i, j = neighbor
+				self._mutate(k, i, j)
+			else:
+				k, i, j, s = neighbor
+				self._mutate(k, i, j, s)
 			self.visited_list.append(self.hash_key)
 			if not self.feasibility_checker.is_solution_feasible(self._candidate_solution):
 				continue
@@ -129,18 +122,41 @@ class IntraMove(LocalSearchOperator):
 		self._current_solution = best_solution
 		return best_solution
 
-	def _get_search_space(self, solution, second_stage=False):
-		if not second_stage:
-			solution = get_first_stage_solution(solution, self.feasibility_checker.world_instance.first_stage_tasks)
+	def _get_search_space(self, solution, first_stage):
 		search_space = []
-		for k, car_moves in solution.items():
-			if len(car_moves) > 1:
-				idx = list(range(len(car_moves)))
-				#check if not e.g. 0,1 and 1,0
-				for i, j in itertools.combinations(idx, 2):
-					search_space.append((k,i,j))
+		if first_stage:
+			solution = get_first_stage_solution(solution, self.feasibility_checker.world_instance.first_stage_tasks)
+			for k, car_moves in solution.items():
+				if len(car_moves) > 1:
+					idx = list(range(len(car_moves)))
+					# check if not e.g. 0,1 and 1,0
+					for i, j in itertools.combinations(idx, 2):
+						search_space.append((k, i, j))
+		else:
+			solution = get_second_stage_solution_dict(solution, self.feasibility_checker.world_instance.first_stage_tasks)
+			for k, scenarios in solution.items():
+				for s, car_moves in enumerate(scenarios):
+					if len(car_moves) > 1:
+						idx = list(range(len(car_moves)))
+						# check if not e.g. 0,1 and 1,0
+						for i, j in itertools.combinations(idx, 2):
+							search_space.append((k, i, j, s))
+
 
 		return search_space
+
+	def _mutate(self, employee, i, j, s=None):
+		# No need to copy because get_first_and_second_stage_solution() creates new dict with same elements
+		first_stage, second_stage = get_first_and_second_stage_solution(self._current_solution, self.first_stage_tasks)
+
+		if s is None:
+			moves = first_stage[employee]
+		else:
+			moves = second_stage[employee][s]
+
+		moves[i], moves[j] = moves[j], moves[i]
+
+		self._candidate_solution = reconstruct_solution_from_first_and_second_stage(first_stage, second_stage)
 
 
 class InterSwap(LocalSearchOperator):
@@ -151,65 +167,126 @@ class InterSwap(LocalSearchOperator):
 	def __init__(self, solution, first_stage_tasks, feasibility_checker):
 		super().__init__(solution, first_stage_tasks, feasibility_checker)
 
+
+
+	def search(self, strategy, first_stage, shuffle=False):
+		current_obj_val = get_obj_val_of_solution_dict(self._current_solution,
+													   self.feasibility_checker.world_instance, True)
+		best_solution = self._current_solution
+		search_space = self._get_search_space(self._current_solution, first_stage)
+
+		if first_stage:
+			for neighbor in search_space:
+				emp1, emp2 = neighbor
+				self._mutate(emp1, emp2)
+				self.visited_list.append(self.hash_key)
+				if not self.feasibility_checker.is_solution_feasible(self._candidate_solution):
+					continue
+				# inter_swap.to_string()
+				candidate_obj_val = get_obj_val_of_solution_dict(self._candidate_solution, self.feasibility_checker.world_instance, True)
+				##print(f"current_obj_val {current_obj_val}")
+				# print(f"candidate_obj_val {candidate_obj_val}")
+
+				if candidate_obj_val > current_obj_val:
+					print("New best solution found!")
+					self.to_string()
+					current_obj_val = candidate_obj_val
+					best_solution = self.candidate_solution
+					if strategy == "best_first":
+						break
+		else:
+			for s, scenario_search_space in enumerate(search_space):
+				for neighbor in scenario_search_space:
+					emp1, emp2 = neighbor
+					self._mutate(emp1, emp2, s)
+					self.visited_list.append(self.hash_key)
+					if not self.feasibility_checker.is_solution_feasible(self._candidate_solution):
+						continue
+					# inter_swap.to_string()
+					candidate_obj_val = get_obj_val_of_solution_dict(self._candidate_solution,
+																	 self.feasibility_checker.world_instance, True)
+					##print(f"current_obj_val {current_obj_val}")
+					# print(f"candidate_obj_val {candidate_obj_val}")
+
+					if candidate_obj_val > current_obj_val:
+						print("New best solution found!")
+						self.to_string()
+						current_obj_val = candidate_obj_val
+						best_solution = self.candidate_solution
+						if strategy == "best_first":
+							break
+
+		self._current_solution = best_solution
+		return best_solution
+
+	def _get_search_space(self, solution, first_stage):
+		emp_pair_lists = []
+		if first_stage:
+			solution = get_first_stage_solution(solution, self.feasibility_checker.world_instance.first_stage_tasks)
+			for k, car_moves in solution.items():
+				emp = []
+				for i, cm in enumerate(car_moves):
+					emp.append((k, i))
+				if not car_moves:
+					emp.append((k, 0))
+				emp_pair_lists.append(emp)
+			emp_pairs = []
+			for i, j in itertools.combinations(range(len(emp_pair_lists)), 2):
+				emp_pairs.append(itertools.product(emp_pair_lists[i], emp_pair_lists[j]))
+			emp_pairs = [emp_pair for itertools_obj in emp_pairs for emp_pair in itertools_obj]
+		else:
+			solution = get_second_stage_solution_dict(solution, self.feasibility_checker.world_instance.first_stage_tasks)
+			for _ in range(self.feasibility_checker.world_instance.num_scenarios):
+				emp_pair_lists.append([])
+			for k, scenarios in solution.items():
+				for s, car_moves in enumerate(scenarios):
+					emp = []
+					for i, cm in enumerate(car_moves):
+						emp.append((k, i))
+					if not car_moves:
+						emp.append((k, 0))
+					emp_pair_lists[s].append(emp)
+			emp_pairs = []
+			for s in range(len(emp_pair_lists)):
+				emp_pairs_scenario = []
+				for i, j in itertools.combinations(range(len(emp_pair_lists[s])), 2):
+					emp_pairs_scenario.append(itertools.product(emp_pair_lists[s][i], emp_pair_lists[s][j]))
+				emp_pairs_scenario = [emp_pair for itertools_obj in emp_pairs_scenario for emp_pair in itertools_obj]
+				emp_pairs.append(emp_pairs_scenario)
+		return emp_pairs
+
 	def _mutate(self, emp1, emp2, s=None):
 		e1, idx_1 = emp1
 		e2, idx_2 = emp2
 		first_stage, second_stage = get_first_and_second_stage_solution(self._current_solution, self.first_stage_tasks)
+
+
 		if s is None:
 			if first_stage[e1] and not first_stage[e2]:
-				first_stage[e2].append(first_stage[e1][idx_1])
+				car_move = first_stage[e1].pop(idx_1)
+				first_stage[e2].append(car_move)
 
 			elif first_stage[e2] and not first_stage[e1]:
-				first_stage[e1].append(first_stage[e2][idx_2])
+				car_move = first_stage[e2].pop(idx_2)
+				first_stage[e1].append(car_move)
+			elif not second_stage[e1] and not second_stage[e2]:
+				pass
 			else:
 				first_stage[e2][idx_2], first_stage[e1][idx_1] = first_stage[e1][idx_1], first_stage[e2][idx_2]
 		else:
-			second_stage[e2][s][idx_2], second_stage[e1][s][idx_1] = second_stage[e1][s][idx_1], \
-																	 second_stage[e2][s][idx_2]
+
+			if second_stage[e1][s] and not second_stage[e2][s]:
+				car_move = second_stage[e1][s].pop(idx_1)
+				second_stage[e2][s].append(car_move)
+			elif second_stage[e2][s] and not second_stage[e1][s]:
+				car_move = second_stage[e2][s].pop(idx_2)
+				second_stage[e1][s].append(car_move)
+			elif not second_stage[e1][s] and not second_stage[e2][s]:
+				pass
+			else:
+				second_stage[e2][s][idx_2], second_stage[e1][s][idx_1] = second_stage[e1][s][idx_1], second_stage[e2][s][idx_2]
 
 		self._candidate_solution = reconstruct_solution_from_first_and_second_stage(first_stage, second_stage)
-
-	def search(self, strategy, shuffle=False):
-		# TODO: support for second stage solutions
-		current_obj_val = get_obj_val_of_solution_dict(self._current_solution,
-													   self.feasibility_checker.world_instance, True)
-		best_solution = self._current_solution
-		emp_pairs = self._get_search_space(self._current_solution)
-
-		for emp1, emp2 in emp_pairs:
-			self._mutate(emp1, emp2)
-			self.visited_list.append(self.hash_key)
-			if not self.feasibility_checker.is_solution_feasible(self._candidate_solution):
-				continue
-			# inter_swap.to_string()
-			candidate_obj_val = get_obj_val_of_solution_dict(self._candidate_solution, self.feasibility_checker.world_instance, True)
-			##print(f"current_obj_val {current_obj_val}")
-			# print(f"candidate_obj_val {candidate_obj_val}")
-
-			if candidate_obj_val > current_obj_val:
-				print("New best solution found!")
-				self.to_string()
-				current_obj_val = candidate_obj_val
-				best_solution = self.candidate_solution
-				if strategy == "best_first":
-					break
-		self._current_solution = best_solution
-		return best_solution
-
-	def _get_search_space(self, solution, second_stage=False):
-		if not second_stage:
-			solution = get_first_stage_solution(solution, self.feasibility_checker.world_instance.first_stage_tasks)
-		emp_pair_lists = []
-		for k, v in solution.items():
-			emp = []
-			for i, cm in enumerate(v):
-				emp.append((k, i))
-			emp_pair_lists.append(emp)
-		emp_pairs = []
-		for i, j in itertools.combinations(range(len(emp_pair_lists)), 2):
-			emp_pairs.append(itertools.product(emp_pair_lists[i], emp_pair_lists[j]))
-		emp_pairs = [emp_pair for itertools_obj in emp_pairs for emp_pair in itertools_obj]
-		return emp_pairs
 
 
 class InterMove(LocalSearchOperator):
@@ -284,10 +361,10 @@ if __name__ == "__main__":
 
 	print("IntraMove")
 	intra_move = IntraMove(ch.assigned_car_moves, ch.world_instance.first_stage_tasks, fc)
-	solution = intra_move.search("best_first")
+	solution = intra_move.search("best_first", True)
 	print("InterSwap")
 	inter_swap = InterSwap(solution, ch.world_instance.first_stage_tasks, fc)
-	solution = inter_swap.search("best_first")
+	solution = inter_swap.search("best_first", True)
 	ch.rebuild(solution, "second_stage")
 	print(ch.get_obj_val(true_objective=True, both=True))
 

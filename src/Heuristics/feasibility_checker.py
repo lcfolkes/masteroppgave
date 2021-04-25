@@ -50,7 +50,7 @@ class FeasibilityChecker():
 
 				# Checks if best car move is a charging move to a node where the remaining charging capacity is zero
 				if car_move.is_charging_move:
-					if car_move.end_node.capacity > car_move.end_node.num_charging[0]:
+					if car_move.end_node.num_charging[0] > car_move.end_node.capacity:
 						return False
 
 			if travel_time > self.world_instance.planning_period:
@@ -73,7 +73,7 @@ class FeasibilityChecker():
 					current_node[s] = end_node
 
 					if car_move.is_charging_move:
-						if car_move.end_node.capacity > car_move.end_node.num_charging[s]:
+						if car_move.end_node.num_charging[s] > car_move.end_node.capacity:
 							return False
 
 				if travel_time[s] > self.world_instance.planning_period:
