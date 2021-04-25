@@ -75,7 +75,7 @@ class ALNS():
 		print(f"Heuristic obj. val {heuristic_obj_vals[0]}")
 		current_solution = solution
 		visited_hash_keys.add(current_solution.hash_key)
-		MODE = "LOCAL"
+		MODE = "LNS"
 		non_improving_count = 0
 
 		temperature = 1000  # Start temperature must be set differently. High temperature --> more randomness
@@ -300,13 +300,13 @@ if __name__ == "__main__":
 
 	# code you want to profile
 
-	#alns = ALNS(filename + ".pkl")
+	alns = ALNS(filename + ".pkl")
 
 	# profiler.stop()
 	# print(profiler.output_text(unicode=True, color=True))
-	print("\n############## Optimal solution ##############")
-	gi2 = GurobiInstance(filename + ".yaml")
-	run_model(gi2)
+	#print("\n############## Optimal solution ##############")
+	#gi2 = GurobiInstance(filename + ".yaml")
+	#run_model(gi2)
 
 	'''
     print("\n############## Evaluate solution ##############")
