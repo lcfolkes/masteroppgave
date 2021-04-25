@@ -64,6 +64,7 @@ class ALNS():
 
 		solution = ConstructionHeuristic(self.filename)
 		solution.add_car_moves_to_employees()
+		solution.print_solution()
 		true_obj_val, best_obj_val = solution.get_obj_val(both=True)
 		current_obj_val = best_obj_val
 		true_obj_vals = [true_obj_val]
@@ -79,7 +80,7 @@ class ALNS():
 		cooling_rate = 0.5  # cooling_rate in (0,1)
 
 		# SEGMENTS
-		for i in range(10):
+		for i in range(20):
 			print(f"Iteration {i * 10}")
 			print(f"Best objective value {best_solution[1]}")
 			print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
@@ -271,17 +272,17 @@ class ALNS():
 if __name__ == "__main__":
 	# from pyinstrument import Profiler
 
-	filename = "InstanceGenerator/InstanceFiles/25nodes/25-2-2-1_a"
+	filename = "InstanceGenerator/InstanceFiles/8nodes/8-2-1-1_a"
 
-	# gi = GurobiInstance(filename + ".yaml")
-	# run_model(gi, time_limit=120.0)
+	#gi = GurobiInstance(filename + ".yaml")
+	#run_model(gi, time_limit=10000.0)
 
 	# profiler = Profiler()
 	# profiler.start()
 
 	# code you want to profile
 
-	alns = ALNS(filename + ".pkl")
+	#alns = ALNS(filename + ".pkl")
 
 	# profiler.stop()
 	# print(profiler.output_text(unicode=True, color=True))

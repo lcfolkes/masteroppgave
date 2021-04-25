@@ -1,10 +1,12 @@
 ### CONSTANTS ####
 
 #CHARGING NODES
-charging_nodes:
-  num_charging: 2
-  parking_nodes: [1, 2]
-  capacities: [2, 2]
+
+#charging_nodes:
+#  num_charging: 2
+#  parking_nodes: [1, 2]
+#  capacities: [2, 2]
+
 
 
 #NODE STATE
@@ -18,7 +20,7 @@ charging_probs:
 time_constants:
   handling_parking: 4
   handling_charging: 5
-  planning_period: 60
+  #planning_period: 60
 
 #OBJECTIVE FUNCTION
 objective_function:

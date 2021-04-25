@@ -110,10 +110,15 @@ class World:
             # zero-indexed scenario
             travel_time_to_car_move = self.get_employee_travel_time_to_node(
                 start_node=employee.current_node_second_stage[scenario], end_node=car_move.start_node)
-            car_move_start_time = employee.current_time_second_stage[scenario] + travel_time_to_car_move
             total_travel_time = travel_time_to_car_move + car_move.handling_time
-            car_move.set_start_time(car_move_start_time)
+
+            if len(car_move.employee_second_stage) == 0:
+                car_move.initialize_second_stage(num_scenarios=self.num_scenarios)
             employee.add_car_move(total_travel_time=total_travel_time, car_move=car_move, scenario=scenario)
+
+            # Set start time of the car move in the relevant scenario
+            car_move_start_time = employee.current_time_second_stage[scenario] - car_move.handling_time
+            car_move.set_start_time(car_move_start_time, scenario=scenario)
 
     def remove_car_move_from_employee(self, car_move: CarMove, employee: Employee):
         # start_node is the end node of the car move performed before the one we want to remove.
