@@ -17,7 +17,7 @@ class LocalSearch:
 	def search(self, strategy="best_first"):
 		print("\n---- Local Search ----")
 		print("IntraMove")
-		intra_move = IntraMove(ch.assigned_car_moves, self.first_stage_tasks, self.feasibility_checker)
+		intra_move = IntraMove(self.solution, self.first_stage_tasks, self.feasibility_checker)
 		solution = intra_move.search(strategy)
 		self.visited_list += intra_move.visited_list
 
@@ -25,7 +25,6 @@ class LocalSearch:
 		inter_swap = InterSwap(solution, self.first_stage_tasks, self.feasibility_checker)
 		solution = inter_swap.search(strategy)
 		self.visited_list += inter_swap.visited_list
-
 		self.solution = solution
 		return solution
 
