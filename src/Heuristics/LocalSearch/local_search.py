@@ -14,20 +14,32 @@ class LocalSearch:
 		#print("\n---- Local Search ----")
 		print("IntraMove")
 		intra_move = IntraMove(self.solution, self.first_stage_tasks, self.feasibility_checker)
-		solution = intra_move.search(strategy)
+		solution = intra_move.search(strategy, True)
 		self.visited_list += intra_move.visited_list
 
 		print("InterSwap")
 		inter_swap = InterSwap(solution, self.first_stage_tasks, self.feasibility_checker)
-		solution = inter_swap.search(strategy)
+		solution = inter_swap.search(strategy, True)
 		self.visited_list += inter_swap.visited_list
+
+
+		print("IntraMove")
+		intra_move = IntraMove(solution, self.first_stage_tasks, self.feasibility_checker)
+		solution = intra_move.search(strategy, False)
+		self.visited_list += intra_move.visited_list
+
+		print("InterSwap")
+		inter_swap = InterSwap(solution, self.first_stage_tasks, self.feasibility_checker)
+		solution = inter_swap.search(strategy, False)
+		self.visited_list += inter_swap.visited_list
+
 		self.solution = solution
 		return solution
 
 
 if __name__ == "__main__":
 	print("\n---- Local Search ----")
-	filename = "InstanceGenerator/InstanceFiles/25nodes/25-2-2-1_a"
+	filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-1-1_a"
 	ch = ConstructionHeuristic(filename + ".pkl")
 	ch.add_car_moves_to_employees()
 	print(ch.get_obj_val(true_objective=True, both=True))

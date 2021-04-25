@@ -79,15 +79,13 @@ class ChargingNode(Node):
             for s in range(len(self.num_charging)):
                 if self.num_charging[s] == self.capacity:  # self.capacities[s]:
                     raise Exception("No cars can be added to charging node as the capacity is reached")
-
-            for s in range(len(self.num_charging)):
-                self.num_charging[s] += 1
+                else:
+                    self.num_charging[s] += 1
 
     def remove_car(self, scenario: int = None):
         if scenario is not None:
             if self.num_charging[scenario] == 0:
                 raise Exception("No cars can be removed from charging node as there are no cars there")
-
             else:
                 self.num_charging[scenario] -= 1
         else:

@@ -130,10 +130,9 @@ class ALNS():
 													   unused_car_moves=candidate_solution.unused_car_moves,
 													   parking_nodes=candidate_solution.parking_nodes,
 													   world_instance=candidate_solution.world_instance)
-					#print(repair)
-					#repair.to_string()
 
 					#print("Repair: ", repair, repair.solution)
+					#repair.to_string()
 					candidate_solution.rebuild(repair.solution)
 					hash_key = candidate_solution.hash_key
 					if hash_key in visited_hash_keys:
@@ -286,22 +285,22 @@ class ALNS():
 
 
 if __name__ == "__main__":
-	# from pyinstrument import Profiler
+	from pyinstrument import Profiler
 
-	filename = "InstanceGenerator/InstanceFiles/30nodes/30-10-1-1_a"
+	filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-1-1_a"
 
 	#gi = GurobiInstance(filename + ".yaml")
 	#run_model(gi, time_limit=10000.0)
 
-	# profiler = Profiler()
-	# profiler.start()
+	profiler = Profiler()
+	profiler.start()
 
 	# code you want to profile
 
 	alns = ALNS(filename + ".pkl")
 
-	# profiler.stop()
-	# print(profiler.output_text(unicode=True, color=True))
+	profiler.stop()
+	print(profiler.output_text(unicode=True, color=True))
 	#print("\n############## Optimal solution ##############")
 	#gi2 = GurobiInstance(filename + ".yaml")
 	#run_model(gi2)

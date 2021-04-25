@@ -81,7 +81,11 @@ class Repair(ABC):
             # print(k.employee_id)
             # print([cm.car_move_id for cm in v])
             for cm in v:
-                print(cm.to_string())
+                if cm.is_charging_move:
+                    prefix = "C: "
+                else:
+                    prefix = "P: "
+                print(prefix + cm.to_string())
         repaired_solution = get_first_stage_solution_list_from_dict(self.solution)
         print("Objective value: ", round(get_obj_val_of_car_moves(self.parking_nodes, num_scenarios=1,
                                                             first_stage_car_moves=repaired_solution), 2))
