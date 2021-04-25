@@ -17,7 +17,7 @@ def get_first_stage_solution_list_from_dict(first_stage_solution: {int: [CarMove
         for i in range(len(v)):
             first_stage_solution_list.append(v[i])
     return first_stage_solution_list
-  
+
 def get_second_stage_solution_dict(input_solution: {int: [[CarMove]]}, num_first_stage_tasks: int) -> {int: [CarMove]}:
     """
     :param input_solution:  dictionary with two scenarios {e1: [[cm1], [cm1, cm2]], e2: [[cm3], [cm3]]}
@@ -74,7 +74,7 @@ def insert_car_move(solution: {Employee: [CarMove]}, car_move: CarMove, employee
     :param employee: employee object
     :return: solution with the inserted car move
     """
-    
+
     solution.get(employee).insert(idx, car_move)
     # Update charging state in end node if the chosen move is a charging move
     car_move.set_employee(employee)
@@ -146,7 +146,7 @@ def get_separate_assigned_car_moves(employees, num_scenarios):
 
     return first_stage_car_moves, second_stage_car_moves
 
-  
+
 def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scenarios):
     # FIRST STAGE
     if first_stage:
@@ -220,15 +220,14 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
                     else:
                         best_obj_val_second_stage[s] = obj_val
                         best_car_move_second_stage[s] = car_moves[s][r]
-        '''
+
         out_list = []
         for car_move in best_car_move_second_stage:
             if car_move is not None:
                 out_list.append(car_move.car_move_id)
             else:
                 out_list.append(car_move)
-        '''
-        # print(out_list)
+
         # print([round(o,2) for o in best_obj_val_second_stage])
         return best_car_move_second_stage
 
