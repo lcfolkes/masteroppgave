@@ -6,18 +6,6 @@ from src.InstanceGenerator.instance_components import CarMove, ChargingNode, Emp
 
 os.chdir(path_to_src)
 
-
-def get_first_stage_solution_list_from_dict(first_stage_solution: {int: [CarMove]}) -> [CarMove]:
-    """
-    :param first_stage_solution: first stage solution dictionary, {e1: [cm1, cm2], e2: [cm3]}
-    :return: [cm1, cm2, cm3]
-    """
-    first_stage_solution_list = []
-    for k, v in first_stage_solution.items():
-        for i in range(len(v)):
-            first_stage_solution_list.append(v[i])
-    return first_stage_solution_list
-
 def get_second_stage_solution_dict(input_solution: {int: [[CarMove]]}, num_first_stage_tasks: int) -> {int: [CarMove]}:
     """
     :param input_solution:  dictionary with two scenarios {e1: [[cm1], [cm1, cm2]], e2: [[cm3], [cm3]]}
@@ -33,6 +21,26 @@ def get_second_stage_solution_dict(input_solution: {int: [[CarMove]]}, num_first
                 second_stage_solution[k][s].append(input_solution[k][s][i])
     return second_stage_solution
 
+def get_first_stage_solution_list_from_dict(first_stage_solution: {int: [CarMove]}) -> [CarMove]:
+    """
+    :param first_stage_solution: first stage solution dictionary, {e1: [cm1, cm2], e2: [cm3]}
+    :return: [cm1, cm2, cm3]
+    """
+    first_stage_solution_list = []
+    for k, v in first_stage_solution.items():
+        for i in range(len(v)):
+            first_stage_solution_list.append(v[i])
+    return first_stage_solution_list
+
+def get_first_stage_solution_list_from_solution(solution: {int: [[CarMove]]}, num_first_stage_tasks) -> [CarMove]:
+    """
+    :param first_stage_solution: first stage solution dictionary, {e1: [cm1, cm2], e2: [cm3]}
+    :return: [cm1, cm2, cm3]
+    """
+    first_stage_list = []
+    for k, car_moves in solution.items():
+        first_stage_list += car_moves[0][:min(len(car_moves[0]), num_first_stage_tasks)]
+    return first_stage_list
 
 def get_second_stage_solution_list_from_dict(second_stage_solution_dict: {int: [CarMove]}, num_scenarios: int) -> [[CarMove]]:
     """
@@ -47,7 +55,7 @@ def get_second_stage_solution_list_from_dict(second_stage_solution_dict: {int: [
                 second_stage_solution[s].append(v[s][i])
     return second_stage_solution
 
-def get_first_and_second_stage_solution_list_from_dict(input_solution: {Employee: [CarMove]}, num_first_stage_tasks: int) -> ([CarMove], [[CarMove]]):
+def get_first_and_second_stage_solution_list_from_dict(input_solution: {Employee: [[CarMove]]}, num_first_stage_tasks: int) -> ([CarMove], [[CarMove]]):
     """
     :param input_solution: e.g. dictionary with two scenarios {e1: [[cm1], [cm1, cm2]], e2: [[cm3], [cm3]]}
     :param num_first_stage_tasks: integer
@@ -152,6 +160,7 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
     if first_stage:
         best_car_move_first_stage = None
         assigned_car_moves_first_stage = get_assigned_car_moves(employees)
+
         best_obj_val_first_stage = get_obj_val_of_car_moves(parking_nodes=parking_nodes, num_scenarios=num_scenarios,
                                                             first_stage_car_moves=assigned_car_moves_first_stage,
                                                             include_employee_check=False)

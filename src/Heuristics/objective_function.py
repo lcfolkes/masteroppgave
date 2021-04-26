@@ -8,7 +8,6 @@ from InstanceGenerator.world import World
 
 os.chdir(path_to_src)
 
-
 # ------------------------ #
 #    OBJECTIVE FUNCTION    #
 # ------------------------ #

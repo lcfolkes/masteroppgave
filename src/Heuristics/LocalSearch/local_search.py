@@ -41,7 +41,7 @@ if __name__ == "__main__":
 	print("\n---- Local Search ----")
 	filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-1-1_a"
 	ch = ConstructionHeuristic(filename + ".pkl")
-	ch.add_car_moves_to_employees()
+	ch.construct()
 	print(ch.get_obj_val(true_objective=True, both=True))
 	#rr = RandomRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
 	#				   neighborhood_size=2)
