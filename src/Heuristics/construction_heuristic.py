@@ -82,8 +82,8 @@ class ConstructionHeuristic:
             employee_ids = {e.employee_id: e for e in self.employees}
             car_move_ids = {cm.car_move_id: cm for cm in self.car_moves}
             first_stage_solution = solution
-            print("rebuild")
-            print(first_stage_solution)
+            #print("rebuild")
+            #print(first_stage_solution)
             for employee_obj, car_move_objs in first_stage_solution.items():
                 emp = employee_ids[employee_obj.employee_id]
                 for cm_obj in car_move_objs:
