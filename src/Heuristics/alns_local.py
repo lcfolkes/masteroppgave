@@ -121,7 +121,8 @@ class ALNS():
 					destroy = self._get_destroy_operator(solution=candidate_solution.assigned_car_moves,
 														 num_first_stage_tasks=candidate_solution.world_instance.first_stage_tasks,
 														 neighborhood_size=2, randomization_degree=1,
-														 parking_nodes=candidate_solution.parking_nodes)
+														 parking_nodes=candidate_solution.parking_nodes,
+														 world_instance=candidate_solution.world_instance)
 					#destroy.to_string()
 					#print("Destroy: ", destroy, destroy.solution)
 					#print(destroy)
@@ -211,7 +212,7 @@ class ALNS():
 		return accept
 
 	def _get_destroy_operator(self, solution, num_first_stage_tasks, neighborhood_size, randomization_degree,
-							  parking_nodes) -> Destroy:
+							  parking_nodes, world_instance) -> Destroy:
 		w_sum_destroy = sum(w for o, w in self.destroy_operators.items())
 		# dist = distribution
 		w_dist_destroy = [w / w_sum_destroy for o, w in self.destroy_operators.items()]
@@ -223,7 +224,7 @@ class ALNS():
 		elif operator == "worst":
 			return WorstRemoval(solution, num_first_stage_tasks, neighborhood_size, randomization_degree, parking_nodes)
 		elif operator == "shaw":
-			return ShawRemoval(solution, num_first_stage_tasks, neighborhood_size, randomization_degree)
+			return ShawRemoval(solution, num_first_stage_tasks, neighborhood_size, randomization_degree, world_instance)
 		else:
 			exit("Destroy operator does not exist")
 
@@ -287,7 +288,7 @@ class ALNS():
 if __name__ == "__main__":
 	from pyinstrument import Profiler
 
-	filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-1-1_a"
+	filename = "InstanceGenerator/InstanceFiles/8nodes/8-2-1-1_a"
 
 	#gi = GurobiInstance(filename + ".yaml")
 	#run_model(gi, time_limit=10000.0)
@@ -301,9 +302,9 @@ if __name__ == "__main__":
 
 	profiler.stop()
 	print(profiler.output_text(unicode=True, color=True))
-	#print("\n############## Optimal solution ##############")
-	#gi2 = GurobiInstance(filename + ".yaml")
-	#run_model(gi2)
+	print("\n############## Optimal solution ##############")
+	gi2 = GurobiInstance(filename + ".yaml")
+	run_model(gi2)
 
 	'''
     print("\n############## Evaluate solution ##############")

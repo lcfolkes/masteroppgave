@@ -14,7 +14,7 @@ os.chdir(path_to_src)
 
 
 class Destroy(ABC):
-    def __init__(self, solution, num_first_stage_tasks, neighborhood_size=2):
+    def __init__(self, solution, num_first_stage_tasks, neighborhood_size):
         """
         :param solution: (s) assigned car_moves of constructed solution. solution[(k,s)], dictionary containing car_move
         assigned to employee in scenario s
@@ -53,7 +53,11 @@ class Destroy(ABC):
             # print(k.employee_id)
             # print([cm.car_move_id for cm in v])
             for cm in v:
-                print(cm.to_string())
+                if cm.is_charging_move:
+                    prefix = "C: "
+                else:
+                    prefix = "P: "
+                print(prefix + cm.to_string())
 
 
 class RandomRemoval(Destroy):
@@ -148,36 +152,15 @@ class WorstRemoval(Destroy):
 
 
 class ShawRemoval(Destroy):
-    # The relatedness measure can e.g. measure how close the the start nodes are to each other, and the same for the
-    # end nodes, when the car moves are started, and maybe whether only a few employees are able to perform both
-    # requests. It should also probably only compare parking moves with parking moves and charging moves with
-    # charging moves.
-    @classmethod
-    def relatedness_measure(cls, car_move_i: CarMove, car_move_j: CarMove):
-        '''
-		:param car_move_i: a car move object
-		:param car_move_j: another car move object
-		:return:
-		'''
-        relatedness = 0
-        relatedness += HeuristicsConstants.FROM_NODE_WEIGHT * (
-            0 if car_move_i.start_node.node_id == car_move_j.start_node.node_id else 1)
-        relatedness += HeuristicsConstants.TO_NODE_WEIGHT * (
-            0 if car_move_i.end_node.node_id == car_move_j.end_node.node_id else 1)
-        relatedness += HeuristicsConstants.IS_CHARGING_WEIGHT * (
-            0 if car_move_i.is_charging_move == car_move_j.is_charging_move else 1)
-        relatedness += HeuristicsConstants.TRAVEL_DISTANCE_WEIGHT * abs(
-            car_move_i.handling_time - car_move_j.handling_time)
-        #relatedness += HeuristicsConstants.START_TIME_WEIGHT * abs(
-        #    np.mean(car_move_i.start_time) - np.mean(car_move_j.start_time))
-        return relatedness
 
-    def __init__(self, solution, num_first_stage_tasks, neighborhood_size, randomization_degree):
+
+    def __init__(self, solution, num_first_stage_tasks, neighborhood_size, randomization_degree, world_instance):
         """
         Shaw removal removes car-moves that are somewhat similar to each other. It takes in a solution, the number of car moves to remove, and a randomness parameter p >= 1.
         :param randomization_degree: (p) parameter that determines the degree of randomization
         """
         self.randomization_degree = randomization_degree
+        self.world_instance = world_instance
         super().__init__(solution, num_first_stage_tasks, neighborhood_size)
 
     def _destroy(self):
@@ -199,7 +182,7 @@ class ShawRemoval(Destroy):
             car_moves_not_removed = [cm for cm in solution_list if cm not in removed_list]
             car_moves_not_removed = sorted(
                 car_moves_not_removed,
-                key=lambda cm: ShawRemoval.relatedness_measure(cm, removed_car_move),reverse=False)
+                key=lambda cm: self._relatedness_measure(cm, removed_car_move), reverse=False)
             # Handle randomization (y^p*|L|)
             try:
                 index = np.floor(
@@ -220,14 +203,49 @@ class ShawRemoval(Destroy):
         for employee, car_moves in solution_dict.items():
             solution_dict[employee] = [cm for cm in car_moves if cm.car_move_id not in removed_list]
 
-        #return first_stage_solution_dict
+        return solution_dict
 
-'''
+    # The relatedness measure can e.g. measure how close the the start nodes are to each other, and the same for the
+    # end nodes, when the car moves are started, and maybe whether only a few employees are able to perform both
+    # requests. It should also probably only compare parking moves with parking moves and charging moves with
+    # charging moves.
+    def _relatedness_measure(self, car_move_i: CarMove, car_move_j: CarMove):
+        '''
+        :param car_move_i: a car move object
+        :param car_move_j: another car move object
+        :return:
+        '''
+        # travel time between start nodes
+        travel_time_start_nodes = HeuristicsConstants.FROM_NODE_WEIGHT * (
+            self.world_instance.get_employee_travel_time_to_node(car_move_i.start_node, car_move_j.start_node))
+        # distance between end nodes
+        travel_time_end_nodes = HeuristicsConstants.TO_NODE_WEIGHT * (
+            self.world_instance.get_employee_travel_time_to_node(car_move_i.end_node, car_move_j.end_node))
+        # relocation time
+        relocation_time = HeuristicsConstants.TRAVEL_DISTANCE_WEIGHT * abs(
+            car_move_i.handling_time - car_move_j.handling_time)
+        # charging or parking
+        car_move_type = HeuristicsConstants.IS_CHARGING_WEIGHT * (
+            0 if car_move_i.is_charging_move == car_move_j.is_charging_move else 1)
+        # relatedness += HeuristicsConstants.START_TIME_WEIGHT * abs(
+        #    np.mean(car_move_i.start_time) - np.mean(car_move_j.start_time))
+        #print(relatedness)
+
+        relatedness = travel_time_start_nodes + travel_time_end_nodes + relocation_time + car_move_type
+        #print("travel_time_start ", round(travel_time_start_nodes/relatedness, 2))
+        #print("travel_time_end ", round(travel_time_end_nodes/relatedness, 2))
+        #print("relocation_time ", round(relocation_time/relatedness, 2))
+        #print("car_move_type ", round(car_move_type/relatedness, 2))
+        return relatedness
+
+
 if __name__ == "__main__":
     from Heuristics.objective_function import get_objective_function_val
+    from Heuristics.construction_heuristic import ConstructionHeuristic
 
     print("\n---- HEURISTIC ----")
-    ch = ConstructionHeuristic("./InstanceGenerator/InstanceFiles/6nodes/6-3-2-1_special_case.pkl")
+    ch = ConstructionHeuristic("./InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_a.pkl")
+    ch.add_car_moves_to_employees()
     ch.print_solution()
     get_objective_function_val(ch.parking_nodes, ch.employees, ch.num_scenarios)
     # rr = RandomRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
@@ -239,6 +257,5 @@ if __name__ == "__main__":
     # wr.to_string()
     print("solution\n", ch.assigned_car_moves)
     sr = ShawRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
-                     neighborhood_size=2, randomization_degree=10)
+                     neighborhood_size=2, randomization_degree=10, world_instance=ch.world_instance)
     sr.to_string()
-'''
