@@ -198,9 +198,7 @@ class ConstructionHeuristic:
             best_car_move_first_stage = None
             # TODO: Check which is faster
             assigned_car_moves_first_stage = get_assigned_car_moves(self.employees)
-            best_obj_val_first_stage = self.objective_function.get_obj_val_of_car_moves(
-                first_stage_car_moves=assigned_car_moves_first_stage,
-                include_employee_check=False)
+            best_obj_val_first_stage = self.objective_function.objective_value
 
             # print("Iteration")
             for car_move in self.car_moves:
@@ -210,8 +208,9 @@ class ConstructionHeuristic:
                         # TODO: remove car_moves with this destination
                         continue
 
-                obj_val = self.objective_function.get_obj_val_of_car_moves(first_stage_car_moves=assigned_car_moves_first_stage + [
-                                                       car_move], include_employee_check=False)
+                obj_val = self.objective_function.evaluate(added_car_moves=[car_move])
+                print(f"obj_val of adding cm {car_move.car_move_id}: {obj_val}")
+                exit()
                 #print(car_move.car_move_id, obj_val)
                 if obj_val > best_obj_val_first_stage:
                     best_obj_val_first_stage = obj_val

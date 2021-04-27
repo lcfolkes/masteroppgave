@@ -60,6 +60,8 @@ def calculate_z(parking_nodes: [ParkingNode], first_stage_car_moves: [CarMove], 
         if verbose:
             print(f"z[{n.node_id}] {z[n.node_id]}")
         '''
+        print(f"z[{n.node_id}] {z[n.node_id]}")
+
     return z
 
 
@@ -73,6 +75,7 @@ def calculate_profit_customer_requests(z: {int: np.array([int])}, scenario: int 
     """
     # sum across scenarios for all nodes
     z_sum = sum(v for k, v in z.items())
+    print("z_sum ", z_sum)
     if scenario is None:
         # print(f"z_sum {z_sum}")
         z_sum_scenario_average = np.mean(z_sum)
@@ -219,6 +222,10 @@ def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int,
             scenario=scenario)
     else:
         cost_travel_time_between_car_moves = 0
+    print("profit_customer_requests: ", profit_customer_requests)
+    print("cost_relocation: ", cost_relocation)
+    print("cost_deviation_ideal_state: ", cost_deviation_ideal_state)
+    print("cost_deviation_charging_moves: ", cost_deviation_charging_moves)
 
     return profit_customer_requests - cost_relocation - cost_deviation_ideal_state - cost_deviation_charging_moves - \
            cost_travel_time_between_car_moves

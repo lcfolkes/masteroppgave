@@ -174,6 +174,8 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
             obj_val = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
                                                first_stage_car_moves=assigned_car_moves_first_stage + [
                                                    car_moves[r]], include_employee_check=False)
+            print(f"obj_val of adding cm {car_moves[r].car_move_id}: {obj_val}")
+            exit()
             if obj_val > best_obj_val_first_stage:
                 best_obj_val_first_stage = obj_val
                 best_car_move_first_stage = car_moves[r]
