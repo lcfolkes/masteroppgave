@@ -13,7 +13,6 @@ class ObjectiveFunction():
     def __init__(self, world_instance):
         self.world_instance = world_instance
         self.parking_nodes = world_instance.parking_nodes
-        self.first_stage_cache = {}
         self.num_scenarios = world_instance.num_scenarios
         self.y = {parking_node.node_id: parking_node.parking_state for parking_node in self.parking_nodes}
         self.node_demands = {parking_node.node_id: {
@@ -26,7 +25,7 @@ class ObjectiveFunction():
 
 
     def calculate_z(self, first_stage_car_moves: [CarMove], second_stage_car_moves: [[CarMove]],
-                    verbose: bool = False) -> {int: np.array([int])}:
+                    new_car_move: CarMove = None, scenario: int = None, first_stage_hash = None, second_stage_hash = None,  verbose: bool = False) -> {int: np.array([int])}:
 
         # z is the number of customer requests served. It must be the lower of the two values
         # available cars and the number of customer requests D_is
@@ -39,7 +38,6 @@ class ObjectiveFunction():
         :return: z, dictionary with node_id as keys and a numpy array for each scenario as value,
         {node_id: np.array([0, 2, 1])}
         """
-
         start_nodes_first_stage = [car_move.start_node for car_move in first_stage_car_moves if not car_move.is_charging_move]
         end_nodes_first_stage = [car_move.end_node for car_move in first_stage_car_moves if not car_move.is_charging_move]
 
@@ -50,21 +48,24 @@ class ObjectiveFunction():
             y[n.node_id] += 1
 
         node_demands = self.node_demands.copy()
+
         z = {}
 
         start_nodes_second_stage = [
-			[car_move.start_node.node_id for car_move in scenarios if not car_move.is_charging_move]
-			for scenarios in second_stage_car_moves]
+            [car_move.start_node.node_id for car_move in scenarios if not car_move.is_charging_move]
+            for scenarios in second_stage_car_moves]
 
         # car_move.start_node should be a list of car moves with len(list) = num_scenarios
         for n in self.parking_nodes:
             second_stage_moves_out = np.array([scenario.count(n.node_id) for scenario in start_nodes_second_stage])
-            y[n.node_id] = np.maximum(y[n.node_id], 0)
+            #y[n.node_id] = np.maximum(y[n.node_id], 0)
 
             z_val = np.minimum(y[n.node_id] + node_demands[n.node_id]['car_returns'] - second_stage_moves_out,
                                node_demands[n.node_id]['customer_requests'])
             z_val = np.maximum(z_val, 0)
             z[n.node_id] = z_val
+
+
 
         return z
 
@@ -208,7 +209,8 @@ class ObjectiveFunction():
         return 1000 * (num_cars_in_need_of_charging - num_charging_moves)
 
     def get_obj_val_of_car_moves(self, first_stage_car_moves: [CarMove] = None,
-                                 second_stage_car_moves: [[CarMove]] = None, scenario: int = None, verbose: bool = False, include_employee_check=True) -> float:
+                                 second_stage_car_moves: [[CarMove]] = None, scenario: int = None,
+                                 new_car_move: CarMove = None, verbose: bool = False, include_employee_check=True) -> float:
         """
         :param parking_nodes: list of parking node objects
         :param num_scenarios:
@@ -224,12 +226,22 @@ class ObjectiveFunction():
         print(f"node_demands: {self.node_demands}")
         print(f"w: {self.w}")
         print(f"num_cars_in_need_of_charging: {self.num_cars_in_need_of_charging}")'''
+        first_stage_hash = self.get_first_stage_hash(first_stage_car_moves)
+        if first_stage_hash not in self.first_stage_hash_set:
+            first_stage_hash = None
+        second_stage_hash = self.get_second_stage_hash(second_stage_car_moves)
+        if second_stage_hash not in self.second_stage_hash_set:
+            first_stage_hash = None
+
 
         if scenario is None:
             if (second_stage_car_moves is None) or second_stage_car_moves == []:
                 second_stage_car_moves = [[]]
             z = self.calculate_z(first_stage_car_moves=first_stage_car_moves,
-                            second_stage_car_moves=second_stage_car_moves)
+                                 second_stage_car_moves=second_stage_car_moves,
+                                 new_car_move=new_car_move,
+                                 first_stage_hash=first_stage_hash,
+                                 second_stage_hash=second_stage_hash)
             profit_customer_requests = self.calculate_profit_customer_requests(z)
             cost_deviation_ideal_state = self.calculate_cost_deviation_ideal_state(z=z,
                                                                               first_stage_car_moves=first_stage_car_moves,
