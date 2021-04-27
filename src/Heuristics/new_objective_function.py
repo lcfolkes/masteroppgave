@@ -1,6 +1,8 @@
+import copy
+
 import numpy as np
 
-from Heuristics.helper_functions_heuristics import get_first_stage_solution
+from Heuristics.helper_functions_heuristics import get_first_stage_solution, copy_numpy_dict
 from InstanceGenerator.instance_components import CarMove, Node
 from InstanceGenerator.world import World
 
@@ -15,14 +17,16 @@ class ObjectiveFunction:
         self._w = self._initialize_w()
         self._charging_deviation = self._initialize_charging_deviation()
         self._relocation_time = np.array([0.0 for _ in range(self.num_scenarios)])
-        self._objective_value = np.array([0.0 for _ in range(self.num_scenarios)])
+        self._objective_value = []
+        self.update()
 
     def _initialize_z(self):
         z = {node.node_id: (node.parking_state + node.car_returns) for node in self.parking_nodes}
         return z
 
     def _initialize_w(self):
-        w = {node.node_id: (node.ideal_state - node.parking_state - node.car_returns) for node in self.parking_nodes}
+        #w = {node.node_id: (node.ideal_state - node.parking_state - node.car_returns + self._z[node.node_id]) for node in self.parking_nodes}
+        w = {node.node_id: (node.ideal_state) for node in self.parking_nodes}
         return w
 
     def _initialize_charging_deviation(self):
@@ -45,11 +49,9 @@ class ObjectiveFunction:
 
     def _get_z(self, z):
         for node in self.parking_nodes:
-            print(f"z[{node.node_id}] {z[node.node_id]}")
             z_val = np.minimum(z[node.node_id], node.customer_requests)
             z_val = np.maximum(z_val, 0)
             z[node.node_id] = z_val
-            print(f"z[{node.node_id}] {z[node.node_id]}")
         return z
 
     @property
@@ -61,12 +63,16 @@ class ObjectiveFunction:
 
     def _get_w(self, w):
       for n in self.parking_nodes:
-          w[n.node_id] = np.maximum(self._w[n.node_id], 0)
+          w[n.node_id] = np.maximum(w[n.node_id], 0)
       return w
 
     @property
     def objective_value(self):
         return np.mean(self._objective_value)
+
+    @property
+    def objective_value_scenarios(self):
+        return self._objective_value
 
     def _get_parking_nodes_in_out(self, added_car_moves: [CarMove], removed_car_moves: [CarMove]) -> ([Node], [Node]):
         """
@@ -107,15 +113,10 @@ class ObjectiveFunction:
             removed_car_moves = []
 
         nodes_in, nodes_out = self._get_parking_nodes_in_out(added_car_moves, removed_car_moves)
-
-        z = self._update_z(nodes_in, nodes_out, scenario, evaluate=True)
-
-        w = self._update_w(nodes_in, nodes_out, scenario, evaluate=True, z=z)
-
-        relocation_time = self._update_relocation_time(added_car_moves, removed_car_moves, scenario, evaluate=True)
-
-        charging_deviation = self._update_charging_deviation(added_car_moves, removed_car_moves, scenario, evaluate=True)
-
+        z, z_diff = self._update_z(nodes_in, nodes_out, scenario)
+        w = self._update_w(nodes_in, nodes_out, scenario, z=z_diff)
+        relocation_time = self._update_relocation_time(added_car_moves, removed_car_moves, scenario)
+        charging_deviation = self._update_charging_deviation(added_car_moves, removed_car_moves, scenario)
         obj_val = self._calculate_obj_val(z, w, relocation_time, charging_deviation, scenario)
 
         return obj_val
@@ -127,22 +128,23 @@ class ObjectiveFunction:
             added_car_moves = []
         if removed_car_moves is None:
             removed_car_moves = []
+
         nodes_in, nodes_out = self._get_parking_nodes_in_out(added_car_moves, removed_car_moves)
-        self._update_z(nodes_in, nodes_out, scenario)
-        self._update_w(nodes_in, nodes_out, scenario)
-        self._update_relocation_time(added_car_moves, removed_car_moves, scenario)
-        self._update_charging_deviation(added_car_moves, removed_car_moves, scenario)
+        self._z, z_diff = self._update_z(nodes_in, nodes_out, scenario)
+        self._w = self._update_w(nodes_in, nodes_out, scenario, z=z_diff)
+        self._relocation_time = self._update_relocation_time(added_car_moves, removed_car_moves, scenario)
+        self._charging_deviation = self._update_charging_deviation(added_car_moves, removed_car_moves, scenario)
 
         obj_val = self._calculate_obj_val(self.z, self.w, self._relocation_time, self._charging_deviation, scenario)
+
         if scenario is None:
-            self._objective_value = np.array([obj_val for _ in self.num_scenarios])
+            self._objective_value = np.array([obj_val for _ in range(self.num_scenarios)])
         else:
             self._objective_value[scenario] = obj_val
 
-        print("new objective value! ", self.objective_value)
 
 
-    def _update_z(self, nodes_in: [Node]=None, nodes_out: [Node]=None, scenario: int=None, evaluate=False):
+    def _update_z(self, nodes_in: [Node]=None, nodes_out: [Node]=None, scenario: int=None):
         """
         :param nodes_in: nodes with cars going into node
         :param nodes_out: nodes with cars leaving node
@@ -152,26 +154,26 @@ class ObjectiveFunction:
                  scenarios as value e.g: {node_id: np.array([0, 2, 1])}
         """
 
-        if evaluate:
-            z = self._z.copy()
-        else:
-            z = self._z
+        z = copy_numpy_dict(self._z)
+        z_diff = {n.node_id: 0 for n in self.parking_nodes}
+
 
         if scenario is None:
             for n in nodes_out:
                 z[n.node_id] -= 1
+                z_diff[n.node_id] -= 1
             for n in nodes_in:
                 z[n.node_id] += 1
+                z_diff[n.node_id] += 1
         else:
             for n in nodes_out:
                 z[n.node_id][scenario] -= 1
-
-        if evaluate:
-            return self._get_z(z)
-
+                z_diff[n.node_id][scenario] -= 1
+        return self._get_z(z), z_diff
 
 
-    def _update_w(self, nodes_in: [Node]=None, nodes_out: [Node]=None, scenario: int=None, evaluate=False, z=None):
+
+    def _update_w(self, nodes_in: [Node]=None, nodes_out: [Node]=None, scenario: int=None, z=None):
         """
         :param nodes_in: nodes with cars going into node
         :param nodes_out: nodes with cars leaving node
@@ -181,13 +183,7 @@ class ObjectiveFunction:
         :return: only if evaluate=True, else w is changed inplace.
         """
 
-        if evaluate:
-            w = self._w.copy()
-
-        else:
-            w = self._w
-            z = self.z
-
+        w = copy_numpy_dict(self._w)
         for node in self.parking_nodes:
             w[node.node_id] += z[node.node_id]
 
@@ -202,14 +198,11 @@ class ObjectiveFunction:
             for n in nodes_in:
                 w[n.node_id][scenario] -= 1
 
-        if evaluate:
-            return self._get_w(w)
+        return self._get_w(w)
 
-    def _update_relocation_time(self, added_car_moves, removed_car_moves, scenario, evaluate=False):
-        if evaluate:
-            relocation_time = self._relocation_time.copy()
-        else:
-            relocation_time = self._relocation_time
+    def _update_relocation_time(self, added_car_moves, removed_car_moves, scenario):
+
+        relocation_time = np.copy(self._relocation_time)
 
         if scenario is None:
             relocation_time += sum(car_move.handling_time for car_move in added_car_moves)
@@ -218,24 +211,20 @@ class ObjectiveFunction:
             relocation_time[scenario] += sum(car_move.handling_time for car_move in added_car_moves)
             relocation_time[scenario] -= sum(car_move.handling_time for car_move in removed_car_moves)
 
-        if evaluate:
-            return relocation_time
+        return relocation_time
 
-    def _update_charging_deviation(self, added_car_moves, removed_car_moves, scenario, evaluate=False):
+    def _update_charging_deviation(self, added_car_moves, removed_car_moves, scenario):
         num_charging_moves_added = sum(1 for cm in added_car_moves if cm.is_charging_move)
         num_charging_moves_removed = sum(1 for cm in removed_car_moves if cm.is_charging_move)
-        if evaluate:
-            charging_deviation = self._charging_deviation.copy()
-        else:
-            charging_deviation = self._charging_deviation
+        charging_deviation = np.copy(self._charging_deviation)
+
 
         if scenario is None:
             charging_deviation += num_charging_moves_removed - num_charging_moves_added
         else:
             charging_deviation[scenario] += num_charging_moves_removed - num_charging_moves_added
 
-        if evaluate:
-            return charging_deviation
+        return charging_deviation
 
     def _update_inter_move_travel_time(self):
         pass
@@ -245,14 +234,22 @@ class ObjectiveFunction:
         cost_deviation_ideal_state = self._calculate_cost_deviation_ideal_state(w, scenario)
         cost_relocation = self._calculate_costs_relocation(relocation_time, scenario)
         cost_charging_deviation = self._calculate_cost_deviation_charging_moves(charging_deviation, scenario)
-
-        print("profit_customer_requests: ", profit_customer_requests)
+        '''
+        for n in self.parking_nodes:
+            print(f"\nw[{n.node_id}] {w[n.node_id]}")
+            print(f"ideal state {n.ideal_state}")
+            print(f"initial_state {n.parking_state}")
+            print(f"car returns {n.car_returns}")
+            print(f"customer requests {n.customer_requests}")
+        '''
+        print("\nprofit_customer_requests: ", profit_customer_requests)
         print("cost_relocation: ", cost_relocation)
         print("cost_deviation_ideal_state: ", cost_deviation_ideal_state)
         print("cost_deviation_charging_moves: ", cost_charging_deviation)
 
         obj_val = profit_customer_requests - cost_deviation_ideal_state - cost_relocation - cost_charging_deviation
         return obj_val
+
 
     def _calculate_profit_customer_requests(self, z: {int: np.array([int])}, scenario: int = None) -> float:
         """
@@ -264,7 +261,6 @@ class ObjectiveFunction:
         """
         # sum across scenarios for all nodes
         z_sum = sum(v for k, v in z.items())
-        print("z_sum ", z_sum)
         if scenario is None:
             z_sum_scenario_average = np.mean(z_sum)
             return World.PROFIT_RENTAL * z_sum_scenario_average
@@ -321,6 +317,6 @@ if __name__ == "__main__":
     true_obj_val, best_obj_val = ch.get_obj_val(both=True)
     # print(f"Construction heuristic true obj. val {true_obj_val}")
     ch.print_solution()
-    first_stage_solution = get_first_stage_solution(ch.assigned_car_moves, ch.world_instance.first_stage_tasks)
-    feasibility_checker = FeasibilityChecker(ch.world_instance)
-    feasibility_checker.is_first_stage_solution_feasible(first_stage_solution, False)
+    #first_stage_solution = get_first_stage_solution(ch.assigned_car_moves, ch.world_instance.first_stage_tasks)
+    #feasibility_checker = FeasibilityChecker(ch.world_instance)
+    #feasibility_checker.is_first_stage_solution_feasible(first_stage_solution, False)

@@ -1,5 +1,7 @@
 import os
 
+import numpy as np
+
 from Heuristics.objective_function import get_obj_val_of_car_moves, get_objective_function_val
 from path_manager import path_to_src
 from src.InstanceGenerator.instance_components import CarMove, ChargingNode, Employee
@@ -164,25 +166,27 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
         best_obj_val_first_stage = get_obj_val_of_car_moves(parking_nodes=parking_nodes, num_scenarios=num_scenarios,
                                                             first_stage_car_moves=assigned_car_moves_first_stage,
                                                             include_employee_check=False)
+
         # print("Iteration")
         for r in range(len(car_moves)):
             if car_moves[r].is_charging_move:
                 # Checking if charging node has space for another car
                 if car_moves[r].end_node.capacity == car_moves[r].end_node.num_charging[0]:
                     continue
-
+            print(f"cm: {car_moves[r].car_move_id} ({car_moves[r].start_node.node_id} --> {car_moves[r].end_node.node_id})")
             obj_val = get_obj_val_of_car_moves(parking_nodes, num_scenarios,
                                                first_stage_car_moves=assigned_car_moves_first_stage + [
                                                    car_moves[r]], include_employee_check=False)
-            print(f"obj_val of adding cm {car_moves[r].car_move_id}: {obj_val}")
-            exit()
+            print(f"obj_val: {obj_val}\n")
+
             if obj_val > best_obj_val_first_stage:
                 best_obj_val_first_stage = obj_val
                 best_car_move_first_stage = car_moves[r]
                 # print(f"{best_car_move_first_stage.start_node.node_id} -> {best_car_move_first_stage.end_node.node_id}, Obj val:{obj_val}")
             # elif best_car_move_first_stage:
             # print(f"{best_car_move_first_stage.start_node.node_id} -> {best_car_move_first_stage.end_node.node_id}, Not improving")
-
+        print("exit")
+        exit()
         return best_car_move_first_stage
 
 
@@ -345,3 +349,9 @@ def get_solution_list(input_solution, num_first_stage_tasks):
 
     first_stage_solution_list = get_first_stage_solution_list_from_dict(first_stage_solution)
     return first_stage_solution_list, second_stage_solution
+
+def copy_numpy_dict(d):
+    new_dict = {}
+    for k, v in d.items():
+        new_dict[k] = np.copy(v)
+    return new_dict

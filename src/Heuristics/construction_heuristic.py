@@ -259,6 +259,8 @@ class ConstructionHeuristic:
             if best_employee is not None:
 
                 self.world_instance.add_car_move_to_employee(best_car_move, best_employee)
+                print(f"add car_move {best_car_move.car_move_id} to employee {best_employee.employee_id}")
+                print("best_obj_val_first: ", self.get_obj_val(False, False))
 
                 for s in range(self.num_scenarios):
                     self.assigned_car_moves[best_employee][s].append(best_car_move)
@@ -446,7 +448,7 @@ class ConstructionHeuristic:
 if __name__ == "__main__":
     from pyinstrument import Profiler
 
-    filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_a"
+    filename = "InstanceGenerator/InstanceFiles/4nodes/4-2-1-1_a"
     ch = ConstructionHeuristic(filename + ".pkl")
     profiler = Profiler()
     profiler.start()
