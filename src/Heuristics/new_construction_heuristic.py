@@ -208,7 +208,8 @@ class ConstructionHeuristic:
                         # TODO: remove car_moves with this destination
                         continue
 
-                print(f"cm: {car_move.car_move_id} ({car_move.start_node.node_id} --> {car_move.end_node.node_id})")
+                suffix = "C" if car_move.is_charging_move else "P"
+                print(f"{suffix} cm: {car_move.car_move_id} ({car_move.start_node.node_id} --> {car_move.end_node.node_id})")
                 obj_val = self.objective_function.evaluate(added_car_moves=[car_move])
                 print(f"obj_val: {obj_val}\n")
 

@@ -33,14 +33,15 @@ def calculate_z(parking_nodes: [ParkingNode], first_stage_car_moves: [CarMove], 
                              isinstance(car_move.end_node, ParkingNode)]
 
     y = {parking_node.node_id: parking_node.parking_state for parking_node in parking_nodes}
+    print(f"y: {y}")
+
     for n in start_nodes_first_stage:
         y[n.node_id] -= 1
     for n in end_nodes_first_stage:
         y[n.node_id] += 1
 
-    node_demands = {parking_node.node_id: {'customer_requests': parking_node.customer_requests,
-                                           'car_returns': parking_node.car_returns} for parking_node in parking_nodes}
 
+    print(f"y: {y}")
     z = {}
 
     start_nodes_second_stage = [[car_move.start_node.node_id for car_move in scenarios
@@ -51,16 +52,20 @@ def calculate_z(parking_nodes: [ParkingNode], first_stage_car_moves: [CarMove], 
     for n in parking_nodes:
         second_stage_moves_out = np.array([scenario.count(n.node_id) for scenario in start_nodes_second_stage])
         y[n.node_id] = np.maximum(y[n.node_id], 0)
+        print("\nnode ", n.node_id)
+        print("pstate ", n.node_id)
+        print("return ", n.car_returns)
+        print("requests ",n.customer_requests)
+        z_val = np.minimum(y[n.node_id] + n.car_returns - second_stage_moves_out,
+                           n.customer_requests)
 
-        z_val = np.minimum(y[n.node_id] + node_demands[n.node_id]['car_returns'] - second_stage_moves_out,
-                           node_demands[n.node_id]['customer_requests'])
         z_val = np.maximum(z_val, 0)
         z[n.node_id] = z_val
         '''
         if verbose:
             print(f"z[{n.node_id}] {z[n.node_id]}")
         '''
-
+    print(f"z: {z}")
     return z
 
 
