@@ -33,7 +33,6 @@ def calculate_z(parking_nodes: [ParkingNode], first_stage_car_moves: [CarMove], 
                              isinstance(car_move.end_node, ParkingNode)]
 
     y = {parking_node.node_id: parking_node.parking_state for parking_node in parking_nodes}
-    print(f"y: {y}")
 
     for n in start_nodes_first_stage:
         y[n.node_id] -= 1
@@ -41,7 +40,6 @@ def calculate_z(parking_nodes: [ParkingNode], first_stage_car_moves: [CarMove], 
         y[n.node_id] += 1
 
 
-    print(f"y: {y}")
     z = {}
 
     start_nodes_second_stage = [[car_move.start_node.node_id for car_move in scenarios
@@ -52,10 +50,6 @@ def calculate_z(parking_nodes: [ParkingNode], first_stage_car_moves: [CarMove], 
     for n in parking_nodes:
         second_stage_moves_out = np.array([scenario.count(n.node_id) for scenario in start_nodes_second_stage])
         y[n.node_id] = np.maximum(y[n.node_id], 0)
-        print("\nnode ", n.node_id)
-        print("pstate ", n.node_id)
-        print("return ", n.car_returns)
-        print("requests ",n.customer_requests)
         z_val = np.minimum(y[n.node_id] + n.car_returns - second_stage_moves_out,
                            n.customer_requests)
 
@@ -65,7 +59,6 @@ def calculate_z(parking_nodes: [ParkingNode], first_stage_car_moves: [CarMove], 
         if verbose:
             print(f"z[{n.node_id}] {z[n.node_id]}")
         '''
-    print(f"z: {z}")
     return z
 
 
@@ -152,13 +145,13 @@ def calculate_cost_deviation_ideal_state(parking_nodes: [ParkingNode], z: {int: 
         w[n.node_id] = np.maximum(w[n.node_id], 0)
 
         '''
-        print(f"\nw[{n.node_id}] {w[n.node_id]}")
-        print(f"ideal state {n.ideal_state}")
-        print(f"initial_state {n.parking_state}")
-        print(f"car returns {n.car_returns}")
-        print(f"customer requests {n.customer_requests}")
-        '''
+        print(f"\n{w[n.node_id]} w[{n.node_id}]")
+        print(f"{[n.ideal_state for _ in range(len(w[1]))]} ideal state")
+        print(f"{[n.parking_state for _ in range(len(w[1]))]} initial_state ")
+        print(f"{n.car_returns} car returns ")
+        print(f"{n.customer_requests} customer requests ")'''
 
+    #print(f"\nw {w}")
     w_sum = sum(v for k, v in w.items())
 
     if scenario is None:
@@ -225,12 +218,12 @@ def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int,
             scenario=scenario)
     else:
         cost_travel_time_between_car_moves = 0
-
+    '''
     print("\nprofit_customer_requests: ", profit_customer_requests)
     print("cost_relocation: ", cost_relocation)
     print("cost_deviation_ideal_state: ", cost_deviation_ideal_state)
     print("cost_deviation_charging_moves: ", cost_deviation_charging_moves)
-
+    '''
     return profit_customer_requests - cost_relocation - cost_deviation_ideal_state - cost_deviation_charging_moves - \
            cost_travel_time_between_car_moves
 
