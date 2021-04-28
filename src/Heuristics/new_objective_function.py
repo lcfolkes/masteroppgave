@@ -17,8 +17,9 @@ class ObjectiveFunction:
         self._w = self._initialize_w()
         self._charging_deviation = self._initialize_charging_deviation()
         self._relocation_time = np.array([0.0 for _ in range(self.num_scenarios)])
-        self._objective_value = []
-        self.update(initialize=True)
+        self._heuristic_objective_value = []
+        self._true_objective_value = []
+        self.update()
 
     def _initialize_z(self):
         z = {node.node_id: (node.parking_state + node.car_returns) for node in self.parking_nodes}
@@ -70,12 +71,20 @@ class ObjectiveFunction:
         return new_w
 
     @property
-    def objective_value(self):
-        return np.mean(self._objective_value)
+    def heuristic_objective_value(self):
+        return np.mean(self._heuristic_objective_value)
 
     @property
-    def objective_value_scenarios(self):
-        return self._objective_value
+    def true_objective_value(self):
+        return np.mean(self._true_objective_value)
+
+    @property
+    def heuristic_objective_value_scenarios(self):
+        return self._heuristic_objective_value
+
+    @property
+    def true_objective_value_scenarios(self):
+        return self._true_objective_value
 
     def _get_parking_nodes_in_out(self, added_car_moves: [CarMove], removed_car_moves: [CarMove]) -> ([Node], [Node]):
         """
@@ -123,12 +132,12 @@ class ObjectiveFunction:
         w = self._update_w(nodes_in, nodes_out, scenario, z=z)
         relocation_time = self._update_relocation_time(added_car_moves, removed_car_moves, scenario)
         charging_deviation = self._update_charging_deviation(added_car_moves, removed_car_moves, scenario)
-        #print(f"w: {w}")
+        #print(f"w: {w}
         w = self._get_w(w)
         #print(f"w: {w}")
-        obj_val = self._calculate_obj_val(z, w, relocation_time, charging_deviation, scenario)
+        heuristic_obj_val, true_obj_val = self._calculate_obj_val(z, w, relocation_time, charging_deviation, scenario)
 
-        return obj_val
+        return heuristic_obj_val
 
 
     def _get_z_diff(self, z):
@@ -138,7 +147,7 @@ class ObjectiveFunction:
          return z_diff
 
 
-    def update(self, added_car_moves: [CarMove]=None, removed_car_moves: [CarMove]=None, scenario: int=None, initialize=False):
+    def update(self, added_car_moves: [CarMove]=None, removed_car_moves: [CarMove]=None, scenario: int=None):
         if added_car_moves is None:
             added_car_moves = []
         if removed_car_moves is None:
@@ -147,16 +156,19 @@ class ObjectiveFunction:
         nodes_in, nodes_out = self._get_parking_nodes_in_out(added_car_moves, removed_car_moves)
         z = self._update_z(nodes_in, nodes_out, scenario, update=True)
         z = self._get_z(z)
-        w = self._update_w(nodes_in, nodes_out, scenario, z=z, update=True, initialize=initialize)
+        w = self._update_w(nodes_in, nodes_out, scenario, z=z)
         relocation_time = self._update_relocation_time(added_car_moves, removed_car_moves, scenario, update=True)
         charging_deviation = self._update_charging_deviation(added_car_moves, removed_car_moves, scenario, update=True)
         w = self._get_w(w)
-        obj_val = self._calculate_obj_val(z, w, relocation_time, charging_deviation, scenario)
+        heuristic_obj_val, true_obj_val = self._calculate_obj_val(z, w, relocation_time, charging_deviation, scenario)
 
         if scenario is None:
-            self._objective_value = np.array([obj_val for _ in range(self.num_scenarios)])
+            self._heuristic_objective_value = np.array([heuristic_obj_val for _ in range(self.num_scenarios)])
+            self._true_objective_value = np.array([true_obj_val for _ in range(self.num_scenarios)])
         else:
-            self._objective_value[scenario] = obj_val
+            self._heuristic_objective_value[scenario] = heuristic_obj_val
+            self._true_objective_value[scenario] = true_obj_val
+
 
 
 
@@ -188,7 +200,7 @@ class ObjectiveFunction:
 
 
 
-    def _update_w(self, nodes_in: [Node]=None, nodes_out: [Node]=None, scenario: int=None, z=None, update=False, initialize=False):
+    def _update_w(self, nodes_in: [Node]=None, nodes_out: [Node]=None, scenario: int=None, z=None):
         """
         :param nodes_in: nodes with cars going into node
         :param nodes_out: nodes with cars leaving node
@@ -214,9 +226,6 @@ class ObjectiveFunction:
                 w[n.node_id][scenario] += 1
             for n in nodes_in:
                 w[n.node_id][scenario] -= 1
-
-        #if update and not initialize:
-        #    self._w = w
 
         return w
 
@@ -266,15 +275,16 @@ class ObjectiveFunction:
             print(f"initial_state {n.parking_state}")
             print(f"car returns {n.car_returns}")
             print(f"customer requests {n.customer_requests}")
-        '''
+        
         print("\nprofit_customer_requests: ", profit_customer_requests)
         print("cost_relocation: ", cost_relocation)
         print("cost_deviation_ideal_state: ", cost_deviation_ideal_state)
         print("cost_deviation_charging_moves: ", cost_charging_deviation)
+        '''
 
-
-        obj_val = profit_customer_requests - cost_deviation_ideal_state - cost_relocation - cost_charging_deviation
-        return obj_val
+        true_obj_val = profit_customer_requests - cost_deviation_ideal_state - cost_relocation
+        heuristic_obj_val = true_obj_val - cost_charging_deviation
+        return heuristic_obj_val, true_obj_val
 
 
     def _calculate_profit_customer_requests(self, z: {int: np.array([int])}, scenario: int = None) -> float:

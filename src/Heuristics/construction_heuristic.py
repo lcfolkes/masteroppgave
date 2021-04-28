@@ -299,6 +299,11 @@ class ConstructionHeuristic:
                         # self.world_instance.add_car_move_to_employee(best_car_move[s], best_employee[s], s)
                         if best_car_move[s] is not None:
                             self.world_instance.add_car_move_to_employee(best_car_move[s], best_employee[s], s)
+                            print(f"########################################################")
+                            print(f"\tadd car_move {best_car_move[s].car_move_id} to employee {best_employee[s].employee_id} in scenario {s}")
+                            print("\tbest_obj_val_first: ", self.get_obj_val(True, False))
+                            print(f"########################################################")
+
                             self.assigned_car_moves[best_employee[s]][s].append(best_car_move[s])
                             self.unused_car_moves[s].remove(best_car_move[s])
                             # print("start times emp {}:".format(best_employee[s].employee_id), best_employee[s].start_times_car_moves_second_stage)
@@ -450,7 +455,7 @@ class ConstructionHeuristic:
 if __name__ == "__main__":
     from pyinstrument import Profiler
 
-    filename = "InstanceGenerator/InstanceFiles/4nodes/4-2-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/8nodes/8-2-1-1_a"
     ch = ConstructionHeuristic(filename + ".pkl")
     profiler = Profiler()
     profiler.start()
@@ -460,3 +465,7 @@ if __name__ == "__main__":
     true_obj_val, best_obj_val = ch.get_obj_val(both=True)
     # print(f"Construction heuristic true obj. val {true_obj_val}")
     ch.print_solution()
+
+    print("\n############## Evaluate solution ##############")
+    gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)
+    run_model(gi)

@@ -195,8 +195,9 @@ def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int,
                                                                                 second_stage_car_moves=second_stage_car_moves)
 
     else:
+
         car_moves_second_stage = [[] for _ in range(num_scenarios)]
-        car_moves_second_stage[scenario] = second_stage_car_moves
+        car_moves_second_stage[scenario] = second_stage_car_moves[scenario]
         z = calculate_z(parking_nodes=parking_nodes, first_stage_car_moves=first_stage_car_moves,
                         second_stage_car_moves=car_moves_second_stage)  # , verbose=True)
         profit_customer_requests = calculate_profit_customer_requests(z, scenario=scenario)
@@ -206,7 +207,7 @@ def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int,
                                                                           scenario=scenario)
 
         # first_stage_duplicate_for_scenarios = list(np.repeat(first_stage_car_moves, self.num_scenarios))
-        cost_relocation = calculate_costs_relocation(first_stage_car_moves + second_stage_car_moves, num_scenarios,
+        cost_relocation = calculate_costs_relocation(first_stage_car_moves + second_stage_car_moves[scenario], num_scenarios,
                                                      individual_scenario=True)
         cost_deviation_charging_moves = calculate_cost_deviation_charging_moves(parking_nodes=parking_nodes,
                                                                                 first_stage_car_moves=first_stage_car_moves,
@@ -218,12 +219,12 @@ def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int,
             scenario=scenario)
     else:
         cost_travel_time_between_car_moves = 0
-
+    '''
     print("\nprofit_customer_requests: ", profit_customer_requests)
     print("cost_relocation: ", cost_relocation)
     print("cost_deviation_ideal_state: ", cost_deviation_ideal_state)
     print("cost_deviation_charging_moves: ", cost_deviation_charging_moves)
-
+    '''
     return profit_customer_requests - cost_relocation - cost_deviation_ideal_state - cost_deviation_charging_moves - \
            cost_travel_time_between_car_moves
 
