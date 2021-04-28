@@ -185,8 +185,7 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
                 # print(f"{best_car_move_first_stage.start_node.node_id} -> {best_car_move_first_stage.end_node.node_id}, Obj val:{obj_val}")
             # elif best_car_move_first_stage:
             # print(f"{best_car_move_first_stage.start_node.node_id} -> {best_car_move_first_stage.end_node.node_id}, Not improving")
-        print("exit")
-        exit()
+
         return best_car_move_first_stage
 
 

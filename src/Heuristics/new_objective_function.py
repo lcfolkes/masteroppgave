@@ -215,8 +215,8 @@ class ObjectiveFunction:
             for n in nodes_in:
                 w[n.node_id][scenario] -= 1
 
-        if update and not initialize:
-            self._w = w
+        #if update and not initialize:
+        #    self._w = w
 
         return w
 
@@ -266,12 +266,12 @@ class ObjectiveFunction:
             print(f"initial_state {n.parking_state}")
             print(f"car returns {n.car_returns}")
             print(f"customer requests {n.customer_requests}")
-        
+        '''
         print("\nprofit_customer_requests: ", profit_customer_requests)
         print("cost_relocation: ", cost_relocation)
         print("cost_deviation_ideal_state: ", cost_deviation_ideal_state)
         print("cost_deviation_charging_moves: ", cost_charging_deviation)
-        '''
+
 
         obj_val = profit_customer_requests - cost_deviation_ideal_state - cost_relocation - cost_charging_deviation
         return obj_val
