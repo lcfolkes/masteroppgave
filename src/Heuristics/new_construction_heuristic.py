@@ -11,6 +11,9 @@ from src.HelperFiles.helper_functions import load_object_from_file
 from src.Gurobi.Model.run_model import run_model
 import pandas as pd
 from path_manager import path_to_src
+import numpy as np
+
+
 import time
 
 os.chdir(path_to_src)
@@ -372,8 +375,11 @@ class ConstructionHeuristic:
 
                             print(f"########################################################")
                             print(f"\tadd car_move {best_car_move[s].car_move_id} to employee {best_employee[s].employee_id} in scenario {s}")
-                            print("\tbest_obj_val_second_old: ", self.get_obj_val(True, False))
-                            print("\tbest_obj_val_second_new: ", self.objective_function.true_objective_value)
+                            old_obj_val = self.get_obj_val(True, False)
+                            print("\tbest_obj_val_second_old: ", old_obj_val)
+                            new_obj_val = self.objective_function.true_objective_value
+                            print("\tbest_obj_val_second_new: ", new_obj_val)
+                            print(f"\tnew obj_val correct: {np.testing.assert_almost_equal(old_obj_val, new_obj_val)}")
                             print(f"########################################################")
 
                             self.assigned_car_moves[best_employee[s]][s].append(best_car_move[s])
