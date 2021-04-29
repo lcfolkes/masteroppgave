@@ -200,7 +200,6 @@ def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int,
         car_moves_second_stage[scenario] = second_stage_car_moves[scenario]
         z = calculate_z(parking_nodes=parking_nodes, first_stage_car_moves=first_stage_car_moves,
                         second_stage_car_moves=car_moves_second_stage)  # , verbose=True)
-        print(f"z: {z}")
         profit_customer_requests = calculate_profit_customer_requests(z, scenario=scenario)
         cost_deviation_ideal_state = calculate_cost_deviation_ideal_state(parking_nodes=parking_nodes, z=z,
                                                                           first_stage_car_moves=first_stage_car_moves,

@@ -381,7 +381,7 @@ class ConstructionHeuristic:
                             new_obj_val = self.objective_function.true_objective_value
                             print("\tbest_obj_val_second_new: ", new_obj_val)
                             print(f"########################################################")
-                            print(f"\tnew obj_val correct: {np.testing.assert_almost_equal(new_obj_val, old_obj_val)}")
+                            #print(f"\tnew obj_val correct: {np.testing.assert_almost_equal(new_obj_val, old_obj_val)}")
 
 
                             self.assigned_car_moves[best_employee[s]][s].append(best_car_move[s])

@@ -19,7 +19,6 @@ class ObjectiveFunction:
         self._relocation_time = np.array([0.0 for _ in range(self.num_scenarios)])
         self._heuristic_objective_value = []
         self._true_objective_value = []
-        self._node_state = {n.node_id: np.array([0 for _ in range(self.num_scenarios)]) for n in self.parking_nodes}
         self.update()
 
     def _initialize_z(self):
@@ -113,18 +112,6 @@ class ObjectiveFunction:
 
         return nodes_in, nodes_out
 
-    def _update_node_state(self, nodes_in: [Node]=[], nodes_out: [Node]=[], scenario: int = None):
-        if scenario is None:
-            for n in nodes_in:
-                self._node_state[n.node_id] += 1
-            for n in nodes_out:
-                self._node_state[n.node_id] -= 1
-        else:
-            for n in nodes_in:
-                self._node_state[n.node_id][scenario] += 1
-            for n in nodes_out:
-                self._node_state[n.node_id][scenario] -= 1
-
     def _get_z_diff(self, z):
         z_diff = {}
         for n in self.parking_nodes:
@@ -165,7 +152,6 @@ class ObjectiveFunction:
             removed_car_moves = []
 
         nodes_in, nodes_out = self._get_parking_nodes_in_out(added_car_moves, removed_car_moves)
-        self._update_node_state(nodes_in, nodes_out, scenario)
         z = self._update_z(nodes_in, nodes_out, scenario, update=True)
         z = self._get_z(z)
         w = self._update_w(nodes_in, nodes_out, scenario, z=z, update=True)
@@ -224,7 +210,6 @@ class ObjectiveFunction:
         """
         # Does not work for the second stage
         w = copy_numpy_dict(self._w)
-        print("w:", w)
 
         if scenario is None:
             for n in nodes_out:
@@ -241,10 +226,8 @@ class ObjectiveFunction:
             print("update")
             self._w = copy_numpy_dict(w)
 
-        #print(f"node_state: ", self._node_state)
         for node in self.parking_nodes:
             w[node.node_id] += z[node.node_id]
-            # w[node.node_id] -= self._node_state[node.node_id]
 
         return w
 
