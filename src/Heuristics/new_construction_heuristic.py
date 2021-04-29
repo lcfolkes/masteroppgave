@@ -11,10 +11,6 @@ from src.HelperFiles.helper_functions import load_object_from_file
 from src.Gurobi.Model.run_model import run_model
 import pandas as pd
 from path_manager import path_to_src
-import numpy as np
-
-
-import time
 
 os.chdir(path_to_src)
 
@@ -185,9 +181,6 @@ class ConstructionHeuristic:
                         print("{} second stage car moves added in scenarios {}\n".format(
                             len(scenarios_with_insertion), ([i + 1 for i in scenarios_with_insertion])))
 
-
-
-        # self._set_hash_key()
     def _get_best_car_move(self):
         # FIRST STAGE
         if self.first_stage:
@@ -202,18 +195,12 @@ class ConstructionHeuristic:
                         # TODO: remove car_moves with this destination
                         continue
 
-                #suffix = "C" if car_move.is_charging_move else "P"
-                #print(f"{suffix} cm: {car_move.car_move_id} ({car_move.start_node.node_id} --> {car_move.end_node.node_id})")
                 obj_val = self.objective_function.evaluate(added_car_moves=[car_move])
-                #print(f"obj_val: {obj_val}\n")
 
-                #print(car_move.car_move_id, obj_val)
                 if obj_val > best_obj_val_first_stage:
                     best_obj_val_first_stage = obj_val
                     best_car_move_first_stage = car_move
-                # print(f"{best_car_move_first_stage.start_node.node_id} -> {best_car_move_first_stage.end_node.node_id}, Obj val:{obj_val}")
-                # elif best_car_move_first_stage:
-                # print(f"{best_car_move_first_stage.start_node.node_id} -> {best_car_move_first_stage.end_node.node_id}, Not improving")
+
             return best_car_move_first_stage
 
 
@@ -234,9 +221,7 @@ class ConstructionHeuristic:
 
                     obj_val = self.objective_function.evaluate(added_car_moves=[self.car_moves_second_stage[s][r]],
                                                                scenario=s)
-                    print(f"\ncm: {self.car_moves_second_stage[s][r].car_move_id}, s: {s}, obj_val: {obj_val}")
-                    print(f"current_obj_val heur: ", self.objective_function.heuristic_objective_value_scenarios)
-                    print(f"current_obj_val true: ", self.objective_function.true_objective_value_scenarios)
+
 
 
                     if obj_val > best_obj_val_second_stage[s]:
@@ -326,17 +311,6 @@ class ConstructionHeuristic:
             if best_employee is not None:
 
                 self.world_instance.add_car_move_to_employee(best_car_move, best_employee)
-
-                print("best_obj_val_eval: ", self.objective_function.evaluate([best_car_move]))
-                self.objective_function.update(added_car_moves=[best_car_move])
-                print(f"########################################################")
-                print(f"\tadd car_move {best_car_move.car_move_id} to employee {best_employee.employee_id}")
-                print("\tbest_obj_val_first_old: ", self.get_obj_val(True, False))
-                print("\tbest_obj_val_first_new: ", self.objective_function.true_objective_value)
-                print(f"########################################################")
-
-
-
                 for s in range(self.num_scenarios):
                     self.assigned_car_moves[best_employee][s].append(best_car_move)
                     self.unused_car_moves[s].remove(best_car_move)
@@ -361,43 +335,14 @@ class ConstructionHeuristic:
                 for s in range(self.num_scenarios):
                     # print(best_employee_second_stage[s].to_string())
                     if best_employee[s] is not None:
-                        '''
-                        print('\nEmployee id', best_employee[s].employee_id)
-                        print('Scenario', s + 1)
-                        print('Employee node before', best_employee[s].current_node_second_stage[s].node_id)
-                        print('Employee time before', best_employee[s].current_time_second_stage[s])
-                        # print('Travel time to start node', best_travel_time_to_car_move_second_stage[s])
-                        #print(best_car_move[s].to_string())
-                        '''
-                        # self.world_instance.add_car_move_to_employee(best_car_move[s], best_employee[s], s)
                         if best_car_move[s] is not None:
                             self.world_instance.add_car_move_to_employee(best_car_move[s], best_employee[s], s)
+
                             self.objective_function.update(added_car_moves=[best_car_move[s]], scenario=s)
-
-                            print(f"########################################################")
-                            print(f"\tadd car_move {best_car_move[s].car_move_id} to employee {best_employee[s].employee_id} in scenario {s}")
-                            old_obj_val = self.get_obj_val(True, False)
-                            print("\tbest_obj_val_second_old: ", old_obj_val)
-                            new_obj_val = self.objective_function.true_objective_value
-                            print("\tbest_obj_val_second_new: ", new_obj_val)
-                            print(f"########################################################")
-                            #print(f"\tnew obj_val correct: {np.testing.assert_almost_equal(new_obj_val, old_obj_val)}")
-
 
                             self.assigned_car_moves[best_employee[s]][s].append(best_car_move[s])
                             self.unused_car_moves[s].remove(best_car_move[s])
-                            # print("start times emp {}:".format(best_employee[s].employee_id), best_employee[s].start_times_car_moves_second_stage)
-                            # if best_car_move[s].is_charging_move:
-                            #    best_car_move[s].end_node.add_car(scenario=s)
-                            #    print("Added MoveID", best_car_move[s].car_move_id)
-                            #    print("scenario", s)
-                            #    print("EndNode", best_car_move[s].end_node.node_id)
-                            #    print("Endnode", best_car_move[s].end_node)
-                            #    print("Num charging", best_car_move[s].end_node.num_charging)
-                        '''
-                        print('Employee node after', best_employee[s].current_node_second_stage[s].node_id)
-                        print('Employee time after', best_employee[s].current_time_second_stage[s])
-                        '''
+
                         # When first stage is finished, initialize car_moves to be list of copies of
                         # car_moves (number of copies = num_scenarios)
                         self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(best_car_move[s], self.car_moves_second_stage[s])
@@ -545,3 +490,7 @@ if __name__ == "__main__":
     true_obj_val, best_obj_val = ch.get_obj_val(both=True)
     # print(f"Construction heuristic true obj. val {true_obj_val}")
     ch.print_solution()
+
+    print("\n############## Evaluate solution ##############")
+    gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)
+    run_model(gi)

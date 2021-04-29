@@ -72,6 +72,7 @@ def calculate_profit_customer_requests(z: {int: np.array([int])}, scenario: int 
     """
     # sum across scenarios for all nodes
     z_sum = sum(v for k, v in z.items())
+
     if scenario is None:
         # print(f"z_sum {z_sum}")
         z_sum_scenario_average = np.mean(z_sum)
@@ -92,6 +93,7 @@ def calculate_costs_relocation(car_moves: [CarMove], num_scenarios: int = None,
     # Sum of all travel times across all car moves
 
     sum_travel_time = sum(car_move.handling_time for car_move in car_moves)
+
     if individual_scenario:
         # print(f"individual_scenario {sum_travel_time}")
         return World.COST_RELOCATION * sum_travel_time
@@ -151,7 +153,6 @@ def calculate_cost_deviation_ideal_state(parking_nodes: [ParkingNode], z: {int: 
         print(f"{n.car_returns} car returns ")
         print(f"{n.customer_requests} customer requests ")'''
 
-    #print(f"\nw {w}")
     w_sum = sum(v for k, v in w.items())
 
     if scenario is None:
@@ -213,10 +214,7 @@ def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int,
                                                                                 first_stage_car_moves=first_stage_car_moves,
                                                                                 second_stage_car_moves=car_moves_second_stage,
                                                                                 scenario=scenario)
-        print("\nprofit_customer_requests: ", profit_customer_requests)
-        print("cost_relocation: ", cost_relocation)
-        print("cost_deviation_ideal_state: ", cost_deviation_ideal_state)
-        print("cost_deviation_charging_moves: ", cost_deviation_charging_moves)
+
     if include_employee_check:
         cost_travel_time_between_car_moves = calculate_cost_travel_time_between_car_moves(
             first_stage_car_moves=first_stage_car_moves, second_stage_car_moves=second_stage_car_moves,
@@ -291,6 +289,7 @@ def get_objective_function_val(parking_nodes: [ParkingNode], employees: [Employe
                                                                       second_stage_car_moves=second_stage_car_moves,
                                                                       scenario=None, verbose=True)
 
+
     if not true_objective or both:
         cost_deviation_charging_moves = calculate_cost_deviation_charging_moves(parking_nodes=parking_nodes,
                                                                                 first_stage_car_moves=first_stage_car_moves,
@@ -335,6 +334,7 @@ def calculate_cost_deviation_charging_moves(parking_nodes: [ParkingNode], first_
         # print(f"w_sum[{scenario+1}] {w_sum[scenario]}")
 
     # return World.COST_DEVIATION_CHARGING * (num_cars_in_need_of_charging - num_charging_moves)
+
     return 1000 * (num_cars_in_need_of_charging - num_charging_moves)
 
 

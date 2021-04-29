@@ -259,10 +259,6 @@ class ConstructionHeuristic:
             if best_employee is not None:
 
                 self.world_instance.add_car_move_to_employee(best_car_move, best_employee)
-                print(f"########################################################")
-                print(f"\tadd car_move {best_car_move.car_move_id} to employee {best_employee.employee_id}")
-                print("\tbest_obj_val_first: ", self.get_obj_val(True, False))
-                print(f"########################################################")
 
                 for s in range(self.num_scenarios):
                     self.assigned_car_moves[best_employee][s].append(best_car_move)
@@ -288,36 +284,12 @@ class ConstructionHeuristic:
                 for s in range(self.num_scenarios):
                     # print(best_employee_second_stage[s].to_string())
                     if best_employee[s] is not None:
-                        '''
-                        print('\nEmployee id', best_employee[s].employee_id)
-                        print('Scenario', s + 1)
-                        print('Employee node before', best_employee[s].current_node_second_stage[s].node_id)
-                        print('Employee time before', best_employee[s].current_time_second_stage[s])
-                        # print('Travel time to start node', best_travel_time_to_car_move_second_stage[s])
-                        #print(best_car_move[s].to_string())
-                        '''
-                        # self.world_instance.add_car_move_to_employee(best_car_move[s], best_employee[s], s)
+
                         if best_car_move[s] is not None:
                             self.world_instance.add_car_move_to_employee(best_car_move[s], best_employee[s], s)
-                            print(f"########################################################")
-                            print(f"\tadd car_move {best_car_move[s].car_move_id} to employee {best_employee[s].employee_id} in scenario {s}")
-                            print("\tbest_obj_val_first: ", self.get_obj_val(True, False))
-                            print(f"########################################################")
-
                             self.assigned_car_moves[best_employee[s]][s].append(best_car_move[s])
                             self.unused_car_moves[s].remove(best_car_move[s])
-                            # print("start times emp {}:".format(best_employee[s].employee_id), best_employee[s].start_times_car_moves_second_stage)
-                            # if best_car_move[s].is_charging_move:
-                            #    best_car_move[s].end_node.add_car(scenario=s)
-                            #    print("Added MoveID", best_car_move[s].car_move_id)
-                            #    print("scenario", s)
-                            #    print("EndNode", best_car_move[s].end_node.node_id)
-                            #    print("Endnode", best_car_move[s].end_node)
-                            #    print("Num charging", best_car_move[s].end_node.num_charging)
-                        '''
-                        print('Employee node after', best_employee[s].current_node_second_stage[s].node_id)
-                        print('Employee time after', best_employee[s].current_time_second_stage[s])
-                        '''
+
                         # When first stage is finished, initialize car_moves to be list of copies of
                         # car_moves (number of copies = num_scenarios)
                         self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(best_car_move[s],
