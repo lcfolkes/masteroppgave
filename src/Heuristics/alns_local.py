@@ -79,7 +79,7 @@ class ALNS():
 		# TODO: in order to save time, this could be implemented as a queue (as in tabu search)
 		visited_hash_keys = set()
 
-		solution.add_car_moves_to_employees(verbose=True)
+		solution.construct(verbose=True)
 		solution.print_solution()
 		true_obj_val, best_obj_val = solution.get_obj_val(both=True)
 		current_obj_val = best_obj_val

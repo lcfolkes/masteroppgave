@@ -83,7 +83,7 @@ class FeasibilityChecker():
 
 
 
-	def check_legal_move(self, car_move: CarMove, employee: Employee, scenario: int = None):  # return total travel time
+	def check_legal_move(self, car_move: CarMove, employee: Employee, scenario: int = None, get_employee_travel_time=False):  # return total travel time
 		start_node = car_move.start_node
 		if scenario is None:
 			current_time = employee.current_time
@@ -118,10 +118,15 @@ class FeasibilityChecker():
 			print(f"node after: {car_move.end_node.node_id}")
 			print(f"total time: {total_time}")
 			'''
-			return True
+			legal_move = True
 		else:
 			# print("Car move exceeds planning period")
-			return False
+			legal_move = False
+
+		if get_employee_travel_time:
+			return legal_move, employee_travel_time
+		else:
+			return legal_move
 
 
 

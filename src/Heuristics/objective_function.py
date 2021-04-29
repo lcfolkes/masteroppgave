@@ -8,7 +8,6 @@ from InstanceGenerator.world import World
 
 os.chdir(path_to_src)
 
-
 # ------------------------ #
 #    OBJECTIVE FUNCTION    #
 # ------------------------ #
@@ -34,13 +33,12 @@ def calculate_z(parking_nodes: [ParkingNode], first_stage_car_moves: [CarMove], 
                              isinstance(car_move.end_node, ParkingNode)]
 
     y = {parking_node.node_id: parking_node.parking_state for parking_node in parking_nodes}
+
     for n in start_nodes_first_stage:
         y[n.node_id] -= 1
     for n in end_nodes_first_stage:
         y[n.node_id] += 1
 
-    node_demands = {parking_node.node_id: {'customer_requests': parking_node.customer_requests,
-                                           'car_returns': parking_node.car_returns} for parking_node in parking_nodes}
 
     z = {}
 
@@ -52,9 +50,9 @@ def calculate_z(parking_nodes: [ParkingNode], first_stage_car_moves: [CarMove], 
     for n in parking_nodes:
         second_stage_moves_out = np.array([scenario.count(n.node_id) for scenario in start_nodes_second_stage])
         y[n.node_id] = np.maximum(y[n.node_id], 0)
+        z_val = np.minimum(y[n.node_id] + n.car_returns - second_stage_moves_out,
+                           n.customer_requests)
 
-        z_val = np.minimum(y[n.node_id] + node_demands[n.node_id]['car_returns'] - second_stage_moves_out,
-                           node_demands[n.node_id]['customer_requests'])
         z_val = np.maximum(z_val, 0)
         z[n.node_id] = z_val
         '''
@@ -74,6 +72,7 @@ def calculate_profit_customer_requests(z: {int: np.array([int])}, scenario: int 
     """
     # sum across scenarios for all nodes
     z_sum = sum(v for k, v in z.items())
+
     if scenario is None:
         # print(f"z_sum {z_sum}")
         z_sum_scenario_average = np.mean(z_sum)
@@ -94,6 +93,7 @@ def calculate_costs_relocation(car_moves: [CarMove], num_scenarios: int = None,
     # Sum of all travel times across all car moves
 
     sum_travel_time = sum(car_move.handling_time for car_move in car_moves)
+
     if individual_scenario:
         # print(f"individual_scenario {sum_travel_time}")
         return World.COST_RELOCATION * sum_travel_time
@@ -147,12 +147,11 @@ def calculate_cost_deviation_ideal_state(parking_nodes: [ParkingNode], z: {int: 
         w[n.node_id] = np.maximum(w[n.node_id], 0)
 
         '''
-        if verbose:
-            print(f"\nw[{n.node_id}] {w[n.node_id]}")
-            print(f"ideal state {n.ideal_state}")
-            print(f"initial_state {n.parking_state}")
-            print(f"car returns {n.car_returns}")
-            print(f"customer requests {n.customer_requests}")'''
+        print(f"\n{w[n.node_id]} w[{n.node_id}]")
+        print(f"{[n.ideal_state for _ in range(len(w[1]))]} ideal state")
+        print(f"{[n.parking_state for _ in range(len(w[1]))]} initial_state ")
+        print(f"{n.car_returns} car returns ")
+        print(f"{n.customer_requests} customer requests ")'''
 
     w_sum = sum(v for k, v in w.items())
 
@@ -197,8 +196,9 @@ def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int,
                                                                                 second_stage_car_moves=second_stage_car_moves)
 
     else:
+
         car_moves_second_stage = [[] for _ in range(num_scenarios)]
-        car_moves_second_stage[scenario] = second_stage_car_moves
+        car_moves_second_stage[scenario] = second_stage_car_moves[scenario]
         z = calculate_z(parking_nodes=parking_nodes, first_stage_car_moves=first_stage_car_moves,
                         second_stage_car_moves=car_moves_second_stage)  # , verbose=True)
         profit_customer_requests = calculate_profit_customer_requests(z, scenario=scenario)
@@ -208,18 +208,21 @@ def get_obj_val_of_car_moves(parking_nodes: [ParkingNode], num_scenarios: int,
                                                                           scenario=scenario)
 
         # first_stage_duplicate_for_scenarios = list(np.repeat(first_stage_car_moves, self.num_scenarios))
-        cost_relocation = calculate_costs_relocation(first_stage_car_moves + second_stage_car_moves, num_scenarios,
+        cost_relocation = calculate_costs_relocation(first_stage_car_moves + second_stage_car_moves[scenario], num_scenarios,
                                                      individual_scenario=True)
         cost_deviation_charging_moves = calculate_cost_deviation_charging_moves(parking_nodes=parking_nodes,
                                                                                 first_stage_car_moves=first_stage_car_moves,
                                                                                 second_stage_car_moves=car_moves_second_stage,
                                                                                 scenario=scenario)
+
     if include_employee_check:
         cost_travel_time_between_car_moves = calculate_cost_travel_time_between_car_moves(
             first_stage_car_moves=first_stage_car_moves, second_stage_car_moves=second_stage_car_moves,
             scenario=scenario)
     else:
         cost_travel_time_between_car_moves = 0
+
+
 
     return profit_customer_requests - cost_relocation - cost_deviation_ideal_state - cost_deviation_charging_moves - \
            cost_travel_time_between_car_moves
@@ -286,6 +289,7 @@ def get_objective_function_val(parking_nodes: [ParkingNode], employees: [Employe
                                                                       second_stage_car_moves=second_stage_car_moves,
                                                                       scenario=None, verbose=True)
 
+
     if not true_objective or both:
         cost_deviation_charging_moves = calculate_cost_deviation_charging_moves(parking_nodes=parking_nodes,
                                                                                 first_stage_car_moves=first_stage_car_moves,
@@ -330,6 +334,7 @@ def calculate_cost_deviation_charging_moves(parking_nodes: [ParkingNode], first_
         # print(f"w_sum[{scenario+1}] {w_sum[scenario]}")
 
     # return World.COST_DEVIATION_CHARGING * (num_cars_in_need_of_charging - num_charging_moves)
+
     return 1000 * (num_cars_in_need_of_charging - num_charging_moves)
 
 

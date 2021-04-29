@@ -354,7 +354,7 @@ if __name__ == "__main__":
 	print("\n---- Construction Heuristic ----")
 	filename = "InstanceGenerator/InstanceFiles/25nodes/25-2-2-1_a"
 	ch = ConstructionHeuristic(filename + ".pkl")
-	ch.add_car_moves_to_employees()
+	ch.construct()
 	print(ch.get_obj_val(true_objective=True, both=True))
 	fc = FeasibilityChecker(ch.world_instance)
 	print("\n---- Local Search ----")
