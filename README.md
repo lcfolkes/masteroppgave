@@ -1,7 +1,8 @@
 # Master Thesis
 This is a repository for the master thesis of Lars Folkestad and Mathias Klev optimizing staff-based relocation of
 an electric car-sharing system under demand uncertainty. 
-##Setup
+
+## Setup
 
 ### Gurobi
 This project uses gurobi as a solver for the optimization problem. To use gurobi we need a license file and the program
