@@ -222,8 +222,6 @@ class ConstructionHeuristic:
                     obj_val = self.objective_function.evaluate(added_car_moves=[self.car_moves_second_stage[s][r]],
                                                                scenario=s)
 
-
-
                     if obj_val > best_obj_val_second_stage[s]:
                         if self.car_moves_second_stage[s][r].is_charging_move:
 
@@ -311,6 +309,8 @@ class ConstructionHeuristic:
             if best_employee is not None:
 
                 self.world_instance.add_car_move_to_employee(best_car_move, best_employee)
+                self.objective_function.update(added_car_moves=[best_car_move])
+
                 for s in range(self.num_scenarios):
                     self.assigned_car_moves[best_employee][s].append(best_car_move)
                     self.unused_car_moves[s].remove(best_car_move)
@@ -396,9 +396,14 @@ class ConstructionHeuristic:
 
         print("\n")
         print("----------- CONSTRUCTION HEURISTIC SOLUTION -----------\n")
+        print("OLD")
         print(f"True objective value: {round(true_obj_val, 2)}")
         print(f"Heuristic objective value: {round(heuristic_obj_val, 2)}")
-        print(f"Number of charging moves performed: {num_charging_moves}/{cars_in_need}")
+        print("\nNEW")
+
+        print(f"True objective value: {round(self.objective_function.true_objective_value, 2)}")
+        print(f"Heuristic objective value: {round(self.objective_function.heuristic_objective_value, 2)}")
+        print(f"\nNumber of charging moves performed: {num_charging_moves}/{cars_in_need}")
         # print(f"Number of cars charged: {num_charging_moves}\n")
 
         #print("-------------- First stage routes --------------")
@@ -478,7 +483,7 @@ class ConstructionHeuristic:
 if __name__ == "__main__":
     from pyinstrument import Profiler
 
-    filename = "InstanceGenerator/InstanceFiles/8nodes/8-2-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-1-1_a"
     ch = ConstructionHeuristic(filename + ".pkl")
     profiler = Profiler()
     profiler.start()
