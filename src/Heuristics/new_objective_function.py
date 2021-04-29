@@ -19,6 +19,7 @@ class ObjectiveFunction:
         self._relocation_time = np.array([0.0 for _ in range(self.num_scenarios)])
         self._heuristic_objective_value = []
         self._true_objective_value = []
+        self._node_state = {n.node_id: np.array([0 for _ in range(self.num_scenarios)]) for n in self.parking_nodes}
         self.update()
 
     def _initialize_z(self):
@@ -112,6 +113,24 @@ class ObjectiveFunction:
 
         return nodes_in, nodes_out
 
+    def _update_node_state(self, nodes_in: [Node]=[], nodes_out: [Node]=[], scenario: int = None):
+        if scenario is None:
+            for n in nodes_in:
+                self._node_state[n.node_id] += 1
+            for n in nodes_out:
+                self._node_state[n.node_id] -= 1
+        else:
+            for n in nodes_in:
+                self._node_state[n.node_id][scenario] += 1
+            for n in nodes_out:
+                self._node_state[n.node_id][scenario] -= 1
+
+    def _get_z_diff(self, z):
+        z_diff = {}
+        for n in self.parking_nodes:
+            z_diff[n.node_id] = z[n.node_id] - self._z[n.node_id]
+        return z_diff
+
     def evaluate(self, added_car_moves: [CarMove]=None, removed_car_moves: [CarMove]=None, scenario: int=None):
         """
         :param added_car_moves: list of car moves, e.g: [cm1, cm2]
@@ -139,14 +158,6 @@ class ObjectiveFunction:
 
         return heuristic_obj_val
 
-
-    def _get_z_diff(self, z):
-         z_diff = {}
-         for n in self.parking_nodes:
-             z_diff[n.node_id] = z[n.node_id] - self._z[n.node_id]
-         return z_diff
-
-
     def update(self, added_car_moves: [CarMove]=None, removed_car_moves: [CarMove]=None, scenario: int=None):
         if added_car_moves is None:
             added_car_moves = []
@@ -154,9 +165,10 @@ class ObjectiveFunction:
             removed_car_moves = []
 
         nodes_in, nodes_out = self._get_parking_nodes_in_out(added_car_moves, removed_car_moves)
+        self._update_node_state(nodes_in, nodes_out, scenario)
         z = self._update_z(nodes_in, nodes_out, scenario, update=True)
         z = self._get_z(z)
-        w = self._update_w(nodes_in, nodes_out, scenario, z=z)
+        w = self._update_w(nodes_in, nodes_out, scenario, z=z, update=True)
         relocation_time = self._update_relocation_time(added_car_moves, removed_car_moves, scenario, update=True)
         charging_deviation = self._update_charging_deviation(added_car_moves, removed_car_moves, scenario, update=True)
         w = self._get_w(w)
@@ -200,7 +212,8 @@ class ObjectiveFunction:
 
 
 
-    def _update_w(self, nodes_in: [Node]=None, nodes_out: [Node]=None, scenario: int=None, z=None):
+
+    def _update_w(self, nodes_in: [Node]=None, nodes_out: [Node]=None, scenario: int=None, z=None, update=False):
         """
         :param nodes_in: nodes with cars going into node
         :param nodes_out: nodes with cars leaving node
@@ -209,12 +222,9 @@ class ObjectiveFunction:
         :param z: if you want to evaluate a solution, you must provide a z value, else the instance's z value is used
         :return: only if evaluate=True, else w is changed inplace.
         """
-        # TODO: Find out how to calculate w. I think some part of z is added multiple times.
-        # TODO: perhaps keep track of moves in out instead of z?
+        # Does not work for the second stage
         w = copy_numpy_dict(self._w)
-
-        for node in self.parking_nodes:
-            w[node.node_id] += z[node.node_id]
+        print("w:", w)
 
         if scenario is None:
             for n in nodes_out:
@@ -226,6 +236,15 @@ class ObjectiveFunction:
                 w[n.node_id][scenario] += 1
             for n in nodes_in:
                 w[n.node_id][scenario] -= 1
+
+        if update:
+            print("update")
+            self._w = copy_numpy_dict(w)
+
+        #print(f"node_state: ", self._node_state)
+        for node in self.parking_nodes:
+            w[node.node_id] += z[node.node_id]
+            # w[node.node_id] -= self._node_state[node.node_id]
 
         return w
 
@@ -275,12 +294,13 @@ class ObjectiveFunction:
             print(f"initial_state {n.parking_state}")
             print(f"car returns {n.car_returns}")
             print(f"customer requests {n.customer_requests}")
-        
-        print("\nprofit_customer_requests: ", profit_customer_requests)
-        print("cost_relocation: ", cost_relocation)
-        print("cost_deviation_ideal_state: ", cost_deviation_ideal_state)
-        print("cost_deviation_charging_moves: ", cost_charging_deviation)
         '''
+        if scenario is not None:
+            print("\nprofit_customer_requests: ", profit_customer_requests)
+            print("cost_relocation: ", cost_relocation)
+            print("cost_deviation_ideal_state: ", cost_deviation_ideal_state)
+            print("cost_deviation_charging_moves: ", cost_charging_deviation)
+
 
         true_obj_val = profit_customer_requests - cost_deviation_ideal_state - cost_relocation
         heuristic_obj_val = true_obj_val - cost_charging_deviation
@@ -347,7 +367,7 @@ if __name__ == "__main__":
     from Heuristics.new_construction_heuristic import ConstructionHeuristic
     from Heuristics.feasibility_checker import FeasibilityChecker
 
-    filename = "InstanceGenerator/InstanceFiles/4nodes/4-2-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/8nodes/8-2-1-1_a"
     ch = ConstructionHeuristic(filename + ".pkl")
     ch.construct()
     true_obj_val, best_obj_val = ch.get_obj_val(both=True)
