@@ -1,4 +1,7 @@
 import itertools
+
+import numpy as np
+
 from src.HelperFiles.helper_functions import read_config
 import os
 from path_manager import path_to_src
@@ -43,10 +46,10 @@ class ParkingNode(Node):
         self.customer_requests = None
         self.car_returns = None
 
-    def set_customer_requests(self, value: [int]):
+    def set_customer_requests(self, value: np.array([int])):
         self.customer_requests = value
 
-    def set_car_returns(self, value: [int]):
+    def set_car_returns(self, value: np.array([int])):
         self.car_returns = value
 
     def get_nr(self):

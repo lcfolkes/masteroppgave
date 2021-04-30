@@ -346,5 +346,6 @@ def get_solution_list(input_solution, num_first_stage_tasks):
 def copy_numpy_dict(d):
     new_dict = {}
     for k, v in d.items():
-        new_dict[k] = np.copy(v)
+        #new_dict[k] = np.copy(v)
+        new_dict[k] = np.array(v)
     return new_dict
