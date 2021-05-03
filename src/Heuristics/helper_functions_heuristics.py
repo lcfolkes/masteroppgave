@@ -76,7 +76,7 @@ def get_first_and_second_stage_solution_list_from_dict(input_solution: {Employee
     return first_stage_list, second_stage_list
 
 
-def insert_car_move(solution: {Employee: [CarMove]}, car_move: CarMove, employee, idx):
+def insert_car_move(solution: {Employee: [CarMove]}, car_move: CarMove, employee, idx=None):
     """
     Updates state of solution. No deep copy, original object is mutated
     :param current_solution: dictionary with employee as key, list of first stage moves as value
@@ -84,8 +84,10 @@ def insert_car_move(solution: {Employee: [CarMove]}, car_move: CarMove, employee
     :param employee: employee object
     :return: solution with the inserted car move
     """
-
-    solution.get(employee).insert(idx, car_move)
+    if idx is None:
+        solution.get(employee).append(car_move)
+    else:
+        solution.get(employee).insert(idx, car_move)
     # Update charging state in end node if the chosen move is a charging move
     car_move.set_employee(employee)
 

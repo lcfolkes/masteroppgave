@@ -1,11 +1,9 @@
 from abc import ABC, abstractmethod
 import os
 import random
-import copy
 from path_manager import path_to_src
 from Heuristics.helper_functions_heuristics import get_first_stage_solution_list_from_dict, \
     get_first_stage_solution_and_removed_moves
-from Heuristics.objective_function import get_obj_val_of_car_moves
 from Heuristics.heuristics_constants import HeuristicsConstants
 import numpy as np
 from src.InstanceGenerator.instance_components import CarMove
@@ -22,18 +20,13 @@ class Destroy(ABC):
         """
         self.num_scenarios = world_instance.num_scenarios
         self.solution, self.removed_moves = get_first_stage_solution_and_removed_moves(solution, world_instance.first_stage_tasks)
-        self.objective_function = self._initialize_objective_function(world_instance)
         self.neighborhood_size = neighborhood_size
-        self._destroy()
+        #self._destroy()
 
     @abstractmethod
-    def _destroy(self):
+    def destroy(self):
         pass
 
-    def _initialize_objective_function(self, world_instance):
-        objective_function = ObjectiveFunction(world_instance)
-        objective_function.update(added_car_moves=get_first_stage_solution_list_from_dict(self.solution))
-        return objective_function
 
     def to_string(self, solution_type=None):
         '''print("\nDESTROY")
@@ -46,7 +39,8 @@ class Destroy(ABC):
         if solution_type == "first_stage":
             print("input first stage solution")
         else:
-            print("destroyed solution")
+            print("\nDESTROY")
+            print(f"\ndestroyed solution: {type(self)}")
         #print(self.solution)
         for k, v in self.solution.items():
             print(k.employee_id)
@@ -64,11 +58,10 @@ class Destroy(ABC):
 
 class RandomRemoval(Destroy):
 
-    def __init__(self, solution, num_first_stage_tasks, neighborhood_size):
-        super().__init__(solution, num_first_stage_tasks, neighborhood_size)
+    def __init__(self, solution, world_instance, neighborhood_size):
+        super().__init__(solution,  world_instance, neighborhood_size)
 
-    def _destroy(self):
-        #solution = copy.deepcopy(self.first_stage_solution)
+    def destroy(self):
         solution = self.solution
 
         n_size = self.neighborhood_size
@@ -85,9 +78,6 @@ class RandomRemoval(Destroy):
             n_size -= 1
 
 
-
-
-
 class WorstRemoval(Destroy):
 
     def __init__(self, solution, world_instance, neighborhood_size, randomization_degree):
@@ -99,8 +89,16 @@ class WorstRemoval(Destroy):
 		'''
         self.randomization_degree = randomization_degree
         super().__init__(solution, world_instance, neighborhood_size)
+        self.objective_function = self._initialize_objective_function(world_instance)
 
-    def _destroy(self):
+
+    def _initialize_objective_function(self, world_instance):
+        objective_function = ObjectiveFunction(world_instance)
+        objective_function.update(added_car_moves=get_first_stage_solution_list_from_dict(self.solution))
+        return objective_function
+
+
+    def destroy(self):
         solution_dict = self.solution
         solution_list = get_first_stage_solution_list_from_dict(solution_dict)
 
@@ -108,11 +106,12 @@ class WorstRemoval(Destroy):
 
         for i in range(len(solution_list)):
             #solution_copy = solution_list[:i] + solution_list[i + 1:]
-            if i == 0:
-                obj_val_remove_cm = self.objective_function.evaluate(removed_car_moves=[solution_list[i]])
+            obj_val_remove_cm = self.objective_function.evaluate(removed_car_moves=[solution_list[i]])
+            '''
             else:
                 obj_val_remove_cm = self.objective_function.evaluate(added_car_moves=[solution_list[i-1]],
                                                                      removed_car_moves=[solution_list[i]])
+            '''
             print(f"cm: {solution_list[i].car_move_id}, obj_val: {obj_val_remove_cm}")
             '''
             obj_val_remove_cm = get_obj_val_of_car_moves(parking_nodes=self.parking_nodes,
@@ -162,16 +161,16 @@ class WorstRemoval(Destroy):
 class ShawRemoval(Destroy):
 
 
-    def __init__(self, solution, num_first_stage_tasks, neighborhood_size, randomization_degree, world_instance):
+    def __init__(self, solution, world_instance, neighborhood_size, randomization_degree):
         """
         Shaw removal removes car-moves that are somewhat similar to each other. It takes in a solution, the number of car moves to remove, and a randomness parameter p >= 1.
         :param randomization_degree: (p) parameter that determines the degree of randomization
         """
         self.randomization_degree = randomization_degree
         self.world_instance = world_instance
-        super().__init__(solution, num_first_stage_tasks, neighborhood_size)
+        super().__init__(solution, world_instance, neighborhood_size)
 
-    def _destroy(self):
+    def destroy(self):
         solution_dict = self.solution
         solution_list = get_first_stage_solution_list_from_dict(solution_dict)
         #first_stage_solution_dict = copy.deepcopy(self.first_stage_solution)

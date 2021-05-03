@@ -119,23 +119,22 @@ class ALNS():
 				elif MODE == "LNS":
 					print("----- LARGE NEIGHBORHOOD SEARCH -----")
 					#TODO: see if it is possible to do destroy and repair with no deep copy (i think it is)
-					destroy = self._get_destroy_operator(solution=candidate_solution.assigned_car_moves,
-														 num_first_stage_tasks=candidate_solution.world_instance.first_stage_tasks,
+					destroy_heuristic = self._get_destroy_operator(solution=candidate_solution.assigned_car_moves,
 														 neighborhood_size=2, randomization_degree=1,
-														 parking_nodes=candidate_solution.parking_nodes,
 														 world_instance=candidate_solution.world_instance)
+					destroy_heuristic.destroy()
 					#destroy.to_string()
 					#print("Destroy: ", destroy, destroy.solution)
 					#print(destroy)
 
-					repair = self._get_repair_operator(destroyed_solution_object=destroy,
+					repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
 													   unused_car_moves=candidate_solution.unused_car_moves,
-													   parking_nodes=candidate_solution.parking_nodes,
 													   world_instance=candidate_solution.world_instance)
+					repair_heuristic.repair()
 
 					#print("Repair: ", repair, repair.solution)
 					#repair.to_string()
-					candidate_solution.rebuild(repair.solution)
+					candidate_solution.rebuild(repair_heuristic.solution)
 					hash_key = candidate_solution.hash_key
 					if hash_key in visited_hash_keys:
 						continue
@@ -159,18 +158,18 @@ class ALNS():
 							best_obj_val = candidate_obj_val
 							best_solution = (candidate_solution, true_obj_val)
 							if MODE == "LNS":
-								self._update_weight_record(_IS_BEST, destroy, repair)
+								self._update_weight_record(_IS_BEST, destroy_heuristic, repair_heuristic)
 						# NEW LOCAL BEST
 						else:
 							if MODE == "LNS":
-								self._update_weight_record(_IS_BETTER, destroy, repair)
+								self._update_weight_record(_IS_BETTER, destroy_heuristic, repair_heuristic)
 
 						MODE = "LOCAL"
 
 					# NON-IMPROVING BUT ACCEPTED
 					else:
 						if MODE == "LNS":
-							self._update_weight_record(_IS_ACCEPTED, destroy, repair)
+							self._update_weight_record(_IS_ACCEPTED, destroy_heuristic, repair_heuristic)
 						else:
 							MODE = "LNS"
 
@@ -212,8 +211,7 @@ class ALNS():
 		accept = acceptance_probability > random.random()
 		return accept
 
-	def _get_destroy_operator(self, solution, num_first_stage_tasks, neighborhood_size, randomization_degree,
-							  parking_nodes, world_instance) -> Destroy:
+	def _get_destroy_operator(self, solution, neighborhood_size, randomization_degree, world_instance) -> Destroy:
 		w_sum_destroy = sum(w for o, w in self.destroy_operators.items())
 		# dist = distribution
 		w_dist_destroy = [w / w_sum_destroy for o, w in self.destroy_operators.items()]
@@ -221,16 +219,15 @@ class ALNS():
 		self.destroy_operators_record[operator][1] += 1
 
 		if operator == "random":
-			return RandomRemoval(solution, num_first_stage_tasks, neighborhood_size)
+			return RandomRemoval(solution, world_instance, neighborhood_size)
 		elif operator == "worst":
-			return WorstRemoval(solution, num_first_stage_tasks, neighborhood_size, randomization_degree, parking_nodes)
+			return WorstRemoval(solution, world_instance, neighborhood_size, randomization_degree)
 		elif operator == "shaw":
-			return ShawRemoval(solution, num_first_stage_tasks, neighborhood_size, randomization_degree, world_instance)
+			return ShawRemoval(solution, world_instance, neighborhood_size, randomization_degree)
 		else:
 			exit("Destroy operator does not exist")
 
-	def _get_repair_operator(self, destroyed_solution_object, unused_car_moves, parking_nodes, world_instance) \
-			-> Repair:
+	def _get_repair_operator(self, destroyed_solution_object, unused_car_moves, world_instance) -> Repair:
 		w_sum_repair = sum(w for o, w in self.repair_operators.items())
 		# dist = distribution
 		w_dist_repair = [w / w_sum_repair for o, w in self.repair_operators.items()]
@@ -238,13 +235,11 @@ class ALNS():
 		self.repair_operators_record[operator][1] += 1
 
 		if operator == "greedy":
-			return GreedyInsertion(destroyed_solution_object, unused_car_moves, parking_nodes, world_instance)
+			return GreedyInsertion(destroyed_solution_object, unused_car_moves, world_instance)
 		elif operator == "regret2":
-			return RegretInsertion(destroyed_solution_object, unused_car_moves, parking_nodes, world_instance,
-								   regret_nr=2)
+			return RegretInsertion(destroyed_solution_object, unused_car_moves, world_instance, regret_nr=2)
 		elif operator == "regret3":
-			return RegretInsertion(destroyed_solution_object, unused_car_moves, parking_nodes, world_instance,
-								   regret_nr=3)
+			return RegretInsertion(destroyed_solution_object, unused_car_moves, world_instance, regret_nr=3)
 		else:
 			exit("Repair operator does not exist")
 

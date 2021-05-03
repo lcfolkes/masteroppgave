@@ -27,8 +27,10 @@ class FeasibilityChecker():
 		pass
 
 	# check charging capacity constraint
-	def is_first_stage_solution_feasible(self, solution: {Employee: [CarMove]}, verbose=False):
+	def is_first_stage_solution_feasible(self, solution: {Employee: [CarMove]}, return_inter_node_travel_time=False, verbose=False):
 		#employees = self._initialize_employees()
+		if return_inter_node_travel_time:
+			inter_node_travel_time = 0
 		for employee, car_moves in solution.items():
 			travel_time = employee.start_time
 			current_node = employee.start_node
@@ -38,6 +40,8 @@ class FeasibilityChecker():
 				start_node = car_move.start_node
 				end_node = car_move.end_node
 				emp_travel_time_to_node = self.world_instance.get_employee_travel_time_to_node(current_node, start_node)
+				if return_inter_node_travel_time:
+					inter_node_travel_time += emp_travel_time_to_node
 				if verbose:
 					print(f"Car_move: {car_move.car_move_id}")
 					print(f"-Employee travel time from {current_node.node_id} to {start_node.node_id}: {emp_travel_time_to_node}")
@@ -47,15 +51,17 @@ class FeasibilityChecker():
 				if verbose:
 					print(f"-Emp {employee.employee_id} after: {travel_time}")
 
-
 				# Checks if best car move is a charging move to a node where the remaining charging capacity is zero
 				if car_move.is_charging_move:
 					if car_move.end_node.num_charging[0] > car_move.end_node.capacity:
 						return False
 
 			if travel_time > self.world_instance.planning_period:
+				if return_inter_node_travel_time:
+					return False, inter_node_travel_time
 				return False
-
+		if return_inter_node_travel_time:
+			return True, inter_node_travel_time
 		return True
 
 	# check charging capacity constraint
