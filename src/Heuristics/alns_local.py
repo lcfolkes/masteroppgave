@@ -1,4 +1,5 @@
 import copy
+import sys
 from collections import OrderedDict
 import random
 from DestroyAndRepairHeuristics.destroy import Destroy, RandomRemoval, WorstRemoval, ShawRemoval
@@ -14,6 +15,8 @@ from path_manager import path_to_src
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+from tqdm import tqdm
+
 
 os.chdir(path_to_src)
 
@@ -97,109 +100,119 @@ class ALNS():
 		cooling_rate = 0.5  # cooling_rate in (0,1)
 
 		# SEGMENTS
-		for i in range(20):
-			print(f"Iteration {i * 10}")
-			print(f"Best objective value {best_solution[1]}")
-			print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
+		try:
+			for i in range(20):
+				#print(f"Iteration {i * 10}")
+				#print(f"Best objective value {best_solution[1]}")
+				#print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
+				loop = tqdm(range(10), total=10, leave=False)
+				for j in loop:
+					#print(f"Iteration {i*10 + j}")
+					candidate_solution = copy.deepcopy(current_solution)
 
-			for j in range(10):
-				print(f"Iteration {i*10 + j}")
-				candidate_solution = copy.deepcopy(current_solution)
-
-				if MODE == "LOCAL":
-					print("----- LOCAL SEARCH -----")
-					local_search = LocalSearch(candidate_solution.assigned_car_moves,
-											   candidate_solution.world_instance.first_stage_tasks,
-											   candidate_solution.feasibility_checker)
-					local_search.search("best_first")
-					candidate_solution.rebuild(local_search.solution, "second_stage")
-					visited_hash_keys.update(local_search.visited_list)
+					if MODE == "LOCAL":
+						print("\n----- LOCAL SEARCH -----")
+						local_search = LocalSearch(candidate_solution.assigned_car_moves,
+												   candidate_solution.world_instance.first_stage_tasks,
+												   candidate_solution.feasibility_checker)
+						local_search.search("best_first")
+						candidate_solution.rebuild(local_search.solution, "second_stage")
+						visited_hash_keys.update(local_search.visited_list)
 
 
-				elif MODE == "LNS":
-					print("----- LARGE NEIGHBORHOOD SEARCH -----")
-					#TODO: see if it is possible to do destroy and repair with no deep copy (i think it is)
-					destroy_heuristic = self._get_destroy_operator(solution=candidate_solution.assigned_car_moves,
-														 neighborhood_size=2, randomization_degree=1,
-														 world_instance=candidate_solution.world_instance)
-					destroy_heuristic.destroy()
-					#destroy.to_string()
-					#print("Destroy: ", destroy, destroy.solution)
-					#print(destroy)
+					elif MODE == "LNS":
+						print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
+						#TODO: see if it is possible to do destroy and repair with no deep copy (i think it is)
+						destroy_heuristic = self._get_destroy_operator(solution=candidate_solution.assigned_car_moves,
+															 neighborhood_size=2, randomization_degree=1,
+															 world_instance=candidate_solution.world_instance)
+						destroy_heuristic.destroy()
+						#destroy.to_string()
+						#print("Destroy: ", destroy, destroy.solution)
+						#print(destroy)
 
-					repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
-													   unused_car_moves=candidate_solution.unused_car_moves,
-													   world_instance=candidate_solution.world_instance)
-					repair_heuristic.repair()
+						repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
+														   unused_car_moves=candidate_solution.unused_car_moves,
+														   world_instance=candidate_solution.world_instance)
+						repair_heuristic.repair()
 
-					#print("Repair: ", repair, repair.solution)
-					#repair.to_string()
-					candidate_solution.rebuild(repair_heuristic.solution)
-					hash_key = candidate_solution.hash_key
-					if hash_key in visited_hash_keys:
-						continue
-					visited_hash_keys.add(hash_key)
+						#print("Repair: ", repair, repair.solution)
+						#repair.to_string()
+						candidate_solution.rebuild(repair_heuristic.solution)
+						hash_key = candidate_solution.hash_key
+						if hash_key in visited_hash_keys:
+							continue
+						visited_hash_keys.add(hash_key)
 
-				true_obj_val, candidate_obj_val = candidate_solution.get_obj_val(both=True)
-				true_obj_vals.append(true_obj_val)
-				# print(f"true_obj_val {true_obj_val}")
-				# print(f"\ncurrent_obj_val {current_obj_val}")
-				# print(f"heuristic_obj_val {obj_val}")
-				heuristic_obj_vals.append(candidate_obj_val)
+					true_obj_val, candidate_obj_val = candidate_solution.get_obj_val(both=True)
+					true_obj_vals.append(true_obj_val)
+					# print(f"true_obj_val {true_obj_val}")
+					# print(f"\ncurrent_obj_val {current_obj_val}")
+					# print(f"heuristic_obj_val {obj_val}")
+					heuristic_obj_vals.append(candidate_obj_val)
 
-				if self._accept(candidate_obj_val, current_obj_val, temperature):
+					if self._accept(candidate_obj_val, current_obj_val, temperature):
 
-					# IMPROVING
-					if candidate_obj_val > current_obj_val:
-						print("current_obj_val: ", current_obj_val)
-						print("candidate_obj_val: ", candidate_obj_val)
-						# NEW GLOBAL BEST
-						if candidate_obj_val > best_obj_val:
-							best_obj_val = candidate_obj_val
-							best_solution = (candidate_solution, true_obj_val)
-							if MODE == "LNS":
-								self._update_weight_record(_IS_BEST, destroy_heuristic, repair_heuristic)
-						# NEW LOCAL BEST
+						# IMPROVING
+						if candidate_obj_val > current_obj_val:
+							#print("current_obj_val: ", current_obj_val)
+							#print("candidate_obj_val: ", candidate_obj_val)
+							# NEW GLOBAL BEST
+							if candidate_obj_val > best_obj_val:
+								best_obj_val = candidate_obj_val
+								best_solution = (candidate_solution, true_obj_val)
+								if MODE == "LNS":
+									self._update_weight_record(_IS_BEST, destroy_heuristic, repair_heuristic)
+							# NEW LOCAL BEST
+							else:
+								if MODE == "LNS":
+									self._update_weight_record(_IS_BETTER, destroy_heuristic, repair_heuristic)
+
+							MODE = "LOCAL"
+
+						# NON-IMPROVING BUT ACCEPTED
 						else:
 							if MODE == "LNS":
-								self._update_weight_record(_IS_BETTER, destroy_heuristic, repair_heuristic)
+								self._update_weight_record(_IS_ACCEPTED, destroy_heuristic, repair_heuristic)
+							else:
+								MODE = "LNS"
 
-						MODE = "LOCAL"
+						# current_solution = copy.deepcopy(solution)
+						current_obj_val = candidate_obj_val
+						current_solution = candidate_solution
 
-					# NON-IMPROVING BUT ACCEPTED
 					else:
-						if MODE == "LNS":
-							self._update_weight_record(_IS_ACCEPTED, destroy_heuristic, repair_heuristic)
-						else:
-							MODE = "LNS"
+						MODE = "LNS"
 
-					# current_solution = copy.deepcopy(solution)
-					current_obj_val = candidate_obj_val
-					current_solution = candidate_solution
+					# print statistics
+					loop.set_description(f"Segment[{i}/{20}]")
+					loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val, best_true_obj_val=best_solution[1])
 
-				else:
-					MODE = "LNS"
+				temperature *= cooling_rate
+				self._update_score_adjustment_parameters()
 
-			temperature *= cooling_rate
-
-			self._update_score_adjustment_parameters()
-
-		self.best_solution = best_solution
-		self.best_obj_val = best_obj_val
-		plt.plot(heuristic_obj_vals, c="red", label="Heuristic obj. val")
-		plt.plot(true_obj_vals, c="green", label="True obj. val")
-		plt.suptitle('Objective value comparison')
-		plt.xlabel('solution')
-		plt.ylabel('obj. val')
-		plt.legend(bbox_to_anchor=(.75, 1.0))
-		plt.show()
-		# print(obj_vals)
-		print(self.destroy_operators)
-		print(self.repair_operators)
-		print("best solution")
-		print("obj_val", best_solution[1])
-		best_solution[0].print_solution()
-		# best_solution.print_solution()
+		except KeyboardInterrupt:
+			print("Keyboard Interrupt")
+		except:
+			print("Unexpected error:", sys.exc_info()[0])
+			raise
+		finally:
+			self.best_solution = best_solution
+			self.best_obj_val = best_obj_val
+			plt.plot(heuristic_obj_vals, c="red", label="Heuristic obj. val")
+			plt.plot(true_obj_vals, c="green", label="True obj. val")
+			plt.suptitle('Objective value comparison')
+			plt.xlabel('solution')
+			plt.ylabel('obj. val')
+			plt.legend(bbox_to_anchor=(.75, 1.0))
+			plt.show()
+			# print(obj_vals)
+			print(self.destroy_operators)
+			print(self.repair_operators)
+			print("best solution")
+			print("obj_val", best_solution[1])
+			best_solution[0].print_solution()
+			# best_solution.print_solution()
 
 	def _accept(self, new_obj_val, current_obj_val, temperature) -> bool:
 		if new_obj_val > current_obj_val:
@@ -284,7 +297,7 @@ class ALNS():
 if __name__ == "__main__":
 	from pyinstrument import Profiler
 
-	filename = "InstanceGenerator/InstanceFiles/8nodes/8-2-1-1_a"
+	filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_a"
 
 	#gi = GurobiInstance(filename + ".yaml")
 	#run_model(gi, time_limit=10000.0)
@@ -293,8 +306,14 @@ if __name__ == "__main__":
 	profiler.start()
 
 	# code you want to profile
-
-	alns = ALNS(filename + ".pkl")
+	try:
+		alns = ALNS(filename + ".pkl")
+	except KeyboardInterrupt:
+		print('Interrupted')
+		try:
+			sys.exit(0)
+		except SystemExit:
+			os._exit(0)
 
 	profiler.stop()
 	print(profiler.output_text(unicode=True, color=True))

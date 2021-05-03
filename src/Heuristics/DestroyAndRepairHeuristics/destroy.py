@@ -112,7 +112,7 @@ class WorstRemoval(Destroy):
                 obj_val_remove_cm = self.objective_function.evaluate(added_car_moves=[solution_list[i-1]],
                                                                      removed_car_moves=[solution_list[i]])
             '''
-            print(f"cm: {solution_list[i].car_move_id}, obj_val: {obj_val_remove_cm}")
+            #print(f"cm: {solution_list[i].car_move_id}, obj_val: {obj_val_remove_cm}")
             '''
             obj_val_remove_cm = get_obj_val_of_car_moves(parking_nodes=self.parking_nodes,
                                                          num_scenarios=self.num_scenarios,
