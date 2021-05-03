@@ -1,8 +1,11 @@
 import os
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Heuristics.feasibility_checker import FeasibilityChecker
-from Heuristics.helper_functions_heuristics import remove_all_car_moves_of_car_in_car_move, get_best_car_move, \
-    get_first_stage_solution_and_removed_moves, get_first_stage_solution, get_first_and_second_stage_solution
+from Heuristics.helper_functions_heuristics import remove_all_car_moves_of_car_in_car_move, \
+    get_first_stage_solution_and_removed_moves, get_first_stage_solution, get_first_and_second_stage_solution, \
+    get_assigned_car_moves, get_first_stage_solution_list_from_dict, get_separate_assigned_car_moves, \
+    get_first_stage_solution_list_from_solution
+from Heuristics.new_objective_function import ObjectiveFunction
 from Heuristics.objective_function import get_objective_function_val
 from src.HelperFiles.helper_functions import load_object_from_file
 from src.Gurobi.Model.run_model import run_model
@@ -22,9 +25,11 @@ class ConstructionHeuristic:
 
         self.instance_file = instance_file
         self.world_instance = load_object_from_file(instance_file)
+        self.objective_function = ObjectiveFunction(self.world_instance)
         # self.world_instance.planning_period = 100
         self.feasibility_checker = FeasibilityChecker(self.world_instance)
         self.num_scenarios = self.world_instance.num_scenarios
+        self.num_first_stage_tasks = self.world_instance.first_stage_tasks
         self.employees = self.world_instance.employees
         self.parking_nodes = self.world_instance.parking_nodes
         self.cars = self.world_instance.cars
@@ -59,6 +64,8 @@ class ConstructionHeuristic:
         self._initialize_car_moves()
         self.available_employees = True
         self.first_stage = True
+        self.objective_function = ObjectiveFunction(self.world_instance)
+
 
     @property
     def hash_key(self):
@@ -89,7 +96,7 @@ class ConstructionHeuristic:
                 for cm_obj in car_move_objs:
                     cm = car_move_ids[cm_obj.car_move_id]
                     self._add_car_move_to_employee(car_moves=self.car_moves, best_car_move=cm, best_employee=emp)
-            self.add_car_moves_to_employees()
+            self.construct()
 
         else:
             first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(solution, self.world_instance.first_stage_tasks)
@@ -107,7 +114,7 @@ class ConstructionHeuristic:
 
         if verbose:
             print("\nRepaired solution")
-            self.print_solution()
+            self.z_diff_solution()
 
     def _initialize_car_moves(self):
         for car in self.world_instance.cars:
@@ -116,70 +123,7 @@ class ConstructionHeuristic:
                 for s in range(self.num_scenarios):
                     self.unused_car_moves[s].append(car_move)
 
-    def get_best_employee(self, employees, best_car_move, first_stage, num_scenarios, world_instance,
-                          car_moves_second_stage):
-        if first_stage:
-            best_employee = None
-            best_travel_time_to_car_move = 100
-            end_node = best_car_move.start_node
-        else:
-            best_employee_second_stage = [None for _ in range(num_scenarios)]
-            best_travel_time_to_car_move_second_stage = [100 for _ in range(num_scenarios)]
-            end_node = [(cm.start_node if cm is not None else cm) for cm in best_car_move]
-
-        best_move_not_legal = True
-
-        for employee in employees:
-            task_num = len(employee.car_moves)
-            # if first stage and the number of completed task for employee is below the number of tasks in first stage,
-            # or if second stage and the number of completed tasks are the same or larger than the number of tasks
-            # in first stage
-            if first_stage == (task_num < world_instance.first_stage_tasks):
-                if first_stage:
-                    legal_move = self.feasibility_checker.check_legal_move(car_move=best_car_move, employee=employee)
-                    # print(f"legal_move {legal_move}\n{best_car_move.to_string()}")
-                    if legal_move:
-                        best_move_not_legal = False
-                        start_node = employee.current_node
-                        travel_time_to_car_move = world_instance.get_employee_travel_time_to_node(start_node,
-                                                                                                  end_node)
-                        if travel_time_to_car_move < best_travel_time_to_car_move:
-                            best_travel_time_to_car_move = travel_time_to_car_move
-                            best_employee = employee
-
-                else:
-                    for s in range(num_scenarios):
-                        if best_car_move[s] is not None:
-                            legal_move = self.feasibility_checker.check_legal_move(
-                                car_move=best_car_move[s], employee=employee, scenario=s)
-
-                            if legal_move:
-                                best_move_not_legal = False
-                                start_node = employee.current_node_second_stage[s]
-
-                                travel_time_to_car_move = world_instance.get_employee_travel_time_to_node(
-                                    start_node, end_node[s])
-                                if travel_time_to_car_move < best_travel_time_to_car_move_second_stage[s]:
-                                    best_travel_time_to_car_move_second_stage[s] = travel_time_to_car_move
-                                    best_employee_second_stage[s] = employee
-
-        # Remove best move if not legal. Else return best employee
-        if first_stage:
-            if best_move_not_legal:
-                self.car_moves.remove(best_car_move)
-                return
-            else:
-                return best_employee
-        else:
-            if best_move_not_legal:
-                for s in range(num_scenarios):
-                    self.car_moves_second_stage[s] = [cm for cm in car_moves_second_stage[s] if
-                                                      cm != best_car_move[s]]
-                return
-            else:
-                return best_employee_second_stage
-
-    def add_car_moves_to_employees(self, verbose=False):
+    def construct(self, verbose=False):
         if verbose:
             print("------- CONSTRUCTION HEURISTIC -------\n")
         improving_car_move_exists = True
@@ -188,29 +132,19 @@ class ConstructionHeuristic:
         while self.available_employees and improving_car_move_exists:
 
             if self.first_stage:
-                car_moves = self.car_moves
-            else:
-                car_moves = self.car_moves_second_stage
-
-            if self.first_stage:
                 #### GET BEST CAR MOVE ###
 
-                best_car_move_first_stage = get_best_car_move(self.parking_nodes, self.employees, car_moves,
-                                                              self.first_stage, self.num_scenarios)
+                best_car_move_first_stage = self._get_best_car_move()
+
                 if best_car_move_first_stage is None:
                     improving_car_move_exists = False
                     continue
                 #### GET BEST EMPLOYEE ###
-                best_employee_first_stage = self.get_best_employee(best_car_move=best_car_move_first_stage,
-                                                                   employees=self.employees,
-                                                                   first_stage=self.first_stage,
-                                                                   num_scenarios=self.num_scenarios,
-                                                                   world_instance=self.world_instance,
-                                                                   car_moves_second_stage=
-                                                                   self.car_moves_second_stage)
+                best_employee_first_stage = self._get_best_employee(best_car_move_first_stage)
+
                 if best_employee_first_stage is not None:
                     ### ADD CAR MOVE TO EMPLOYEE ###
-                    self._add_car_move_to_employee(car_moves=car_moves, best_car_move=best_car_move_first_stage,
+                    self._add_car_move_to_employee(best_car_move=best_car_move_first_stage,
                                                    best_employee=best_employee_first_stage)
                     first_stage_move_counter += 1
                     if verbose:
@@ -220,22 +154,16 @@ class ConstructionHeuristic:
             else:
 
                 ### GET BEST CAR MOVE ###
-                best_car_move_second_stage = get_best_car_move(self.parking_nodes, self.employees, car_moves,
-                                                               self.first_stage, self.num_scenarios)
+                best_car_move_second_stage = self._get_best_car_move()
+                #print(f"Best car_move second stage: {[cm.car_move_id for cm in best_car_move_second_stage]}")
                 if all(cm is None for cm in best_car_move_second_stage):
                     improving_car_move_exists = False
 
                 ### GET BEST EMPLOYEE ###
-                best_employee_second_stage = self.get_best_employee(best_car_move=best_car_move_second_stage,
-                                                                    employees=self.employees,
-                                                                    first_stage=self.first_stage,
-                                                                    num_scenarios=self.num_scenarios,
-                                                                    world_instance=self.world_instance,
-                                                                    car_moves_second_stage=
-                                                                    self.car_moves_second_stage)
+                best_employee_second_stage = self._get_best_employee(best_car_move=best_car_move_second_stage)
                 ### ADD CAR MOVE TO EMPLOYEE ###
                 if best_employee_second_stage is not None:
-                    self._add_car_move_to_employee(car_moves=car_moves, best_car_move=best_car_move_second_stage,
+                    self._add_car_move_to_employee(best_car_move=best_car_move_second_stage,
                                                    best_employee=best_employee_second_stage)
 
                     # Visual feedback for construction process
@@ -253,18 +181,141 @@ class ConstructionHeuristic:
                         print("{} second stage car moves added in scenarios {}\n".format(
                             len(scenarios_with_insertion), ([i + 1 for i in scenarios_with_insertion])))
 
-    def _add_car_move_to_employee(self, car_moves, best_car_move, best_employee):
+    def _get_best_car_move(self):
+        # FIRST STAGE
+        if self.first_stage:
+            best_car_move_first_stage = None
+            best_obj_val_first_stage = self.objective_function.heuristic_objective_value
+
+            # print("Iteration")
+            for car_move in self.car_moves:
+                if car_move.is_charging_move:
+                    # Checking if charging node has space for another car
+                    if car_move.end_node.capacity == car_move.end_node.num_charging[0]:
+                        # TODO: remove car_moves with this destination
+                        continue
+
+                obj_val = self.objective_function.evaluate(added_car_moves=[car_move])
+
+                if obj_val > best_obj_val_first_stage:
+                    best_obj_val_first_stage = obj_val
+                    best_car_move_first_stage = car_move
+
+            return best_car_move_first_stage
+
+
+        # SECOND STAGE
+        else:
+            best_car_move_second_stage = [None for _ in range(self.num_scenarios)]
+            best_obj_val_second_stage = list(self.objective_function.heuristic_objective_value_scenarios)
+
+            for s in range(self.num_scenarios):
+                # Parking moves second stage
+                for r in range(len(self.car_moves_second_stage[s])):
+                    if self.car_moves_second_stage[s][r].is_charging_move:
+                        # Checking if charging node has space for another car
+
+                        if self.car_moves_second_stage[s][r].end_node.capacity == self.car_moves_second_stage[s][r].end_node.num_charging[s]:
+                            # TODO: remove car_moves with this destination for this scenario
+                            continue
+
+                    obj_val = self.objective_function.evaluate(added_car_moves=[self.car_moves_second_stage[s][r]],
+                                                               scenario=s)
+
+                    if obj_val > best_obj_val_second_stage[s]:
+                        if self.car_moves_second_stage[s][r].is_charging_move:
+
+                            # Checking if charging node has space for another car
+                            if self.car_moves_second_stage[s][r].end_node.capacity == self.car_moves_second_stage[s][r].end_node.num_charging[s]:
+                                continue
+
+                            else:
+                                best_obj_val_second_stage[s] = obj_val
+                                best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
+                                # car_moves[s][r].end_node.add_car(scenario=s)
+                        else:
+                            best_obj_val_second_stage[s] = obj_val
+                            best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
+
+            out_list = []
+            for car_move in best_car_move_second_stage:
+                if car_move is not None:
+                    out_list.append(car_move.car_move_id)
+                else:
+                    out_list.append(car_move)
+
+            # print([round(o,2) for o in best_obj_val_second_stage])
+            return best_car_move_second_stage
+
+    def _get_best_employee(self, best_car_move):
+        if self.first_stage:
+            best_employee = None
+            best_travel_time_to_car_move = 100
+        else:
+            best_employee_second_stage = [None for _ in range(self.num_scenarios)]
+            best_travel_time_to_car_move_second_stage = [100 for _ in range(self.num_scenarios)]
+
+        best_move_not_legal = True
+
+        for employee in self.employees:
+            task_num = len(employee.car_moves)
+            # if first stage and the number of completed task for employee is below the number of tasks in first stage,
+            # or if second stage and the number of completed tasks are the same or larger than the number of tasks
+            # in first stage
+            if self.first_stage == (task_num < self.world_instance.first_stage_tasks):
+                if self.first_stage:
+                    legal_move, travel_time_to_car_move = self.feasibility_checker.check_legal_move(car_move=best_car_move, employee=employee, get_employee_travel_time=True)
+                    # print(f"legal_move {legal_move}\n{best_car_move.to_string()}")
+                    if legal_move and travel_time_to_car_move < best_travel_time_to_car_move:
+                        best_move_not_legal = False
+                        best_travel_time_to_car_move = travel_time_to_car_move
+                        best_employee = employee
+
+                else:
+                    for s in range(self.num_scenarios):
+                        if best_car_move[s] is not None:
+                            legal_move, travel_time_to_car_move = self.feasibility_checker.check_legal_move(
+                                car_move=best_car_move[s], employee=employee, scenario=s, get_employee_travel_time=True)
+
+                            if legal_move and travel_time_to_car_move < best_travel_time_to_car_move_second_stage[s]:
+                                best_move_not_legal = False
+                                best_travel_time_to_car_move_second_stage[s] = travel_time_to_car_move
+                                best_employee_second_stage[s] = employee
+
+        # Remove best move if not legal. Else return best employee
+        if self.first_stage:
+            if best_move_not_legal:
+                self.car_moves.remove(best_car_move)
+                return
+            else:
+                return best_employee
+        else:
+            if best_move_not_legal:
+                for s in range(self.num_scenarios):
+                    #self.car_moves_second_stage[s] = [cm for cm in self.car_moves_second_stage[s] if cm != best_car_move[s]]
+                    try:
+                        self.car_moves_second_stage[s].remove(best_car_move[s])
+                    except:
+                        pass
+                return
+            else:
+                return best_employee_second_stage
+
+
+
+    def _add_car_move_to_employee(self, best_car_move, best_employee):
 
         if self.first_stage:
             if best_employee is not None:
 
                 self.world_instance.add_car_move_to_employee(best_car_move, best_employee)
+                self.objective_function.update(added_car_moves=[best_car_move])
 
                 for s in range(self.num_scenarios):
                     self.assigned_car_moves[best_employee][s].append(best_car_move)
                     self.unused_car_moves[s].remove(best_car_move)
 
-                self.car_moves = remove_all_car_moves_of_car_in_car_move(best_car_move, car_moves)
+                self.car_moves = remove_all_car_moves_of_car_in_car_move(best_car_move, self.car_moves)
 
                 self.first_stage = False
                 for employee in self.employees:
@@ -284,16 +335,17 @@ class ConstructionHeuristic:
                 for s in range(self.num_scenarios):
                     # print(best_employee_second_stage[s].to_string())
                     if best_employee[s] is not None:
-
                         if best_car_move[s] is not None:
                             self.world_instance.add_car_move_to_employee(best_car_move[s], best_employee[s], s)
+
+                            self.objective_function.update(added_car_moves=[best_car_move[s]], scenario=s)
+
                             self.assigned_car_moves[best_employee[s]][s].append(best_car_move[s])
                             self.unused_car_moves[s].remove(best_car_move[s])
 
                         # When first stage is finished, initialize car_moves to be list of copies of
                         # car_moves (number of copies = num_scenarios)
-                        self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(best_car_move[s],
-                                                                                                 car_moves[s])
+                        self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(best_car_move[s], self.car_moves_second_stage[s])
 
                 # print(f"car_moves: {len(car_moves[s])}")
                 if not any(self.car_moves_second_stage):
@@ -301,12 +353,11 @@ class ConstructionHeuristic:
             else:
                 self.available_employees = False
 
-        # self._set_hash_key()
-
     def _add_car_move_to_employee_from_dict(self, car_moves_second_stage, employee, car_moves_scenarios):
         for s, car_moves in enumerate(car_moves_scenarios):
             for car_move in car_moves:
                 self.world_instance.add_car_move_to_employee(car_move, employee, s)
+                self.objective_function.update(added_car_moves=[car_move], scenario=s)
                 self.assigned_car_moves[employee][s].append(car_move)
                 self.unused_car_moves[s].remove(car_move)
                 self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(car_move, car_moves_second_stage[s])
@@ -345,9 +396,14 @@ class ConstructionHeuristic:
 
         print("\n")
         print("----------- CONSTRUCTION HEURISTIC SOLUTION -----------\n")
+        print("OLD")
         print(f"True objective value: {round(true_obj_val, 2)}")
         print(f"Heuristic objective value: {round(heuristic_obj_val, 2)}")
-        print(f"Number of charging moves performed: {num_charging_moves}/{cars_in_need}")
+        print("\nNEW")
+
+        print(f"True objective value: {round(self.objective_function.true_objective_value, 2)}")
+        print(f"Heuristic objective value: {round(self.objective_function.heuristic_objective_value, 2)}")
+        print(f"\nNumber of charging moves performed: {num_charging_moves}/{cars_in_need}")
         # print(f"Number of cars charged: {num_charging_moves}\n")
 
         #print("-------------- First stage routes --------------")
@@ -431,7 +487,9 @@ if __name__ == "__main__":
     ch = ConstructionHeuristic(filename + ".pkl")
     profiler = Profiler()
     profiler.start()
-    ch.add_car_moves_to_employees()
+
+    ch.construct()
+
     profiler.stop()
     print(profiler.output_text(unicode=True, color=True))
     true_obj_val, best_obj_val = ch.get_obj_val(both=True)

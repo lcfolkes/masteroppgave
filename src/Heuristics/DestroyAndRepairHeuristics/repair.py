@@ -81,7 +81,11 @@ class Repair(ABC):
             # print(k.employee_id)
             # print([cm.car_move_id for cm in v])
             for cm in v:
-                print(cm.to_string())
+                if cm.is_charging_move:
+                    prefix = "C: "
+                else:
+                    prefix = "P: "
+                print(prefix + cm.to_string())
         repaired_solution = get_first_stage_solution_list_from_dict(self.solution)
         print("Objective value: ", round(get_obj_val_of_car_moves(self.parking_nodes, num_scenarios=1,
                                                             first_stage_car_moves=repaired_solution), 2))
@@ -262,7 +266,7 @@ if __name__ == "__main__":
     filename = "InstanceGenerator/InstanceFiles/25nodes/25-2-2-1_a.pkl"
 
     ch = ConstructionHeuristic(filename)
-    ch.add_car_moves_to_employees()
+    ch.construct()
     first_stage_solution, ch_removed_moves = get_first_stage_solution_and_removed_moves(ch.assigned_car_moves, ch.world_instance.first_stage_tasks)
     feasibility_checker = FeasibilityChecker(ch.world_instance)
     print("input solution")

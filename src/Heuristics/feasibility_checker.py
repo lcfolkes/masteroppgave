@@ -47,12 +47,12 @@ class FeasibilityChecker():
 				if verbose:
 					print(f"-Emp {employee.employee_id} after: {travel_time}")
 
-				'''
+
 				# Checks if best car move is a charging move to a node where the remaining charging capacity is zero
 				if car_move.is_charging_move:
-					if car_move.end_node.capacity > car_move.end_node.num_charging[0]:
+					if car_move.end_node.num_charging[0] > car_move.end_node.capacity:
 						return False
-				'''
+
 			if travel_time > self.world_instance.planning_period:
 				return False
 
@@ -72,6 +72,10 @@ class FeasibilityChecker():
 					travel_time[s] += emp_travel_time_to_node + car_move.handling_time
 					current_node[s] = end_node
 
+					if car_move.is_charging_move:
+						if car_move.end_node.num_charging[s] > car_move.end_node.capacity:
+							return False
+
 				if travel_time[s] > self.world_instance.planning_period:
 					return False
 		return True
@@ -79,7 +83,7 @@ class FeasibilityChecker():
 
 
 
-	def check_legal_move(self, car_move: CarMove, employee: Employee, scenario: int = None):  # return total travel time
+	def check_legal_move(self, car_move: CarMove, employee: Employee, scenario: int = None, get_employee_travel_time=False):  # return total travel time
 		start_node = car_move.start_node
 		if scenario is None:
 			current_time = employee.current_time
@@ -114,10 +118,15 @@ class FeasibilityChecker():
 			print(f"node after: {car_move.end_node.node_id}")
 			print(f"total time: {total_time}")
 			'''
-			return True
+			legal_move = True
 		else:
 			# print("Car move exceeds planning period")
-			return False
+			legal_move = False
+
+		if get_employee_travel_time:
+			return legal_move, employee_travel_time
+		else:
+			return legal_move
 
 
 
