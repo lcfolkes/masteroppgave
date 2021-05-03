@@ -94,7 +94,8 @@ class IntraMove(LocalSearchOperator):
 
 	def search(self, strategy, first_stage, shuffle=False):
 		self.visited_list = []
-		current_obj_val = get_obj_val_of_solution_dict(self._current_solution, self.feasibility_checker.world_instance, True)
+		#current_obj_val = get_obj_val_of_solution_dict(self._current_solution, self.feasibility_checker.world_instance, True)
+		_, current_inter_node_travel_time = self.feasibility_checker.is_solution_feasible(self._current_solution, return_inter_node_travel_time=True)
 		best_solution = self._current_solution
 		search_space = self._get_search_space(self._current_solution, first_stage)
 
@@ -106,16 +107,17 @@ class IntraMove(LocalSearchOperator):
 				k, i, j, s = neighbor
 				self._mutate(k, i, j, s)
 			self.visited_list.append(self.hash_key)
-			if not self.feasibility_checker.is_solution_feasible(self._candidate_solution):
+			feasible, candidate_inter_node_travel_time = self.feasibility_checker.is_solution_feasible(self._candidate_solution, return_inter_node_travel_time=True)
+			if not feasible:
 				continue
 			#intra_move.to_string()
-			candidate_obj_val = get_obj_val_of_solution_dict(self._candidate_solution, self.feasibility_checker.world_instance, True)
+			#candidate_obj_val = get_obj_val_of_solution_dict(self._candidate_solution, self.feasibility_checker.world_instance, True)
 			#print(f"current_obj_val {current_obj_val}")
 			#print(f"candidate_obj_val {candidate_obj_val}")
-			if candidate_obj_val > current_obj_val:
+			if candidate_inter_node_travel_time < current_inter_node_travel_time:
 				print("New best solution found!")
 				self.to_string()
-				current_obj_val = candidate_obj_val
+				current_inter_node_travel_time = candidate_inter_node_travel_time
 				best_solution = self._candidate_solution
 				if strategy == "best_first":
 					break
@@ -170,8 +172,8 @@ class InterSwap(LocalSearchOperator):
 
 
 	def search(self, strategy, first_stage, shuffle=False):
-		current_obj_val = get_obj_val_of_solution_dict(self._current_solution,
-													   self.feasibility_checker.world_instance, True)
+		_, current_inter_node_travel_time = self.feasibility_checker.is_solution_feasible(self._current_solution, return_inter_node_travel_time=True)
+
 		best_solution = self._current_solution
 		search_space = self._get_search_space(self._current_solution, first_stage)
 
@@ -180,17 +182,16 @@ class InterSwap(LocalSearchOperator):
 				emp1, emp2 = neighbor
 				self._mutate(emp1, emp2)
 				self.visited_list.append(self.hash_key)
-				if not self.feasibility_checker.is_solution_feasible(self._candidate_solution):
-					continue
-				# inter_swap.to_string()
-				candidate_obj_val = get_obj_val_of_solution_dict(self._candidate_solution, self.feasibility_checker.world_instance, True)
-				##print(f"current_obj_val {current_obj_val}")
-				# print(f"candidate_obj_val {candidate_obj_val}")
+				feasible, candidate_inter_node_travel_time = self.feasibility_checker.is_solution_feasible(
+					self._candidate_solution, return_inter_node_travel_time=True)
 
-				if candidate_obj_val > current_obj_val:
+				if not feasible:
+					continue
+
+				if candidate_inter_node_travel_time < current_inter_node_travel_time:
 					print("New best solution found!")
 					self.to_string()
-					current_obj_val = candidate_obj_val
+					current_inter_node_travel_time = candidate_inter_node_travel_time
 					best_solution = self.candidate_solution
 					if strategy == "best_first":
 						break
@@ -200,18 +201,16 @@ class InterSwap(LocalSearchOperator):
 					emp1, emp2 = neighbor
 					self._mutate(emp1, emp2, s)
 					self.visited_list.append(self.hash_key)
-					if not self.feasibility_checker.is_solution_feasible(self._candidate_solution):
-						continue
-					# inter_swap.to_string()
-					candidate_obj_val = get_obj_val_of_solution_dict(self._candidate_solution,
-																	 self.feasibility_checker.world_instance, True)
-					##print(f"current_obj_val {current_obj_val}")
-					# print(f"candidate_obj_val {candidate_obj_val}")
+					feasible, candidate_inter_node_travel_time = self.feasibility_checker.is_solution_feasible(
+						self._candidate_solution, return_inter_node_travel_time=True)
 
-					if candidate_obj_val > current_obj_val:
+					if not feasible:
+						continue
+
+					if candidate_inter_node_travel_time < current_inter_node_travel_time:
 						print("New best solution found!")
 						self.to_string()
-						current_obj_val = candidate_obj_val
+						current_inter_node_travel_time = candidate_inter_node_travel_time
 						best_solution = self.candidate_solution
 						if strategy == "best_first":
 							break

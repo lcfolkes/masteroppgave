@@ -6,7 +6,6 @@ from Heuristics.helper_functions_heuristics import remove_all_car_moves_of_car_i
     get_assigned_car_moves, get_first_stage_solution_list_from_dict, get_separate_assigned_car_moves, \
     get_first_stage_solution_list_from_solution
 from Heuristics.new_objective_function import ObjectiveFunction
-from Heuristics.objective_function import get_objective_function_val
 from src.HelperFiles.helper_functions import load_object_from_file
 from src.Gurobi.Model.run_model import run_model
 import pandas as pd
@@ -49,13 +48,23 @@ class ConstructionHeuristic:
         # self.add_car_moves_to_employees()
 
     def get_obj_val(self, true_objective=True, both=False):
-        return get_objective_function_val(parking_nodes=self.parking_nodes, employees=self.employees,
-                                          num_scenarios=self.num_scenarios, true_objective=true_objective, both=both)
+        #return get_objective_function_val(parking_nodes=self.parking_nodes, employees=self.employees,
+        #                                  num_scenarios=self.num_scenarios, true_objective=true_objective, both=both)
+        if both:
+            return self.objective_function.true_objective_value, self.objective_function.heuristic_objective_value
+        if true_objective:
+            return self.objective_function.true_objective_value
+        else:
+            return self.objective_function.heuristic_objective_value
+
 
     def _initialize_for_rebuild(self):
         self.unused_car_moves = [[] for _ in range(
             self.num_scenarios)]  # [beta] list of unused car_moves for scenario s (zero index)
         for k in self.employees:
+            print(f"emp {k.employee_id}")
+            print([cm.car_move_id for cm in k.car_moves])
+            print(k.car_moves_second_stage)
             k.reset()
         self.assigned_car_moves = {k: [[] for _ in range(self.num_scenarios)] for k in self.employees}  # [gamma_k] dictionary containing ordered list of car_moves,
         # assigned to employee k in scenario s
@@ -83,33 +92,34 @@ class ConstructionHeuristic:
         return hash(str(hash_dict))
 
     def rebuild(self, solution, stage="first", verbose=False):
+        print("\n --- REBUILD ---")
         self._initialize_for_rebuild()
+
         if stage == "first":
             # Check if this is not necessary for LNS
             employee_ids = {e.employee_id: e for e in self.employees}
             car_move_ids = {cm.car_move_id: cm for cm in self.car_moves}
             first_stage_solution = solution
-            #print("rebuild")
             #print(first_stage_solution)
             for employee_obj, car_move_objs in first_stage_solution.items():
                 emp = employee_ids[employee_obj.employee_id]
                 for cm_obj in car_move_objs:
                     cm = car_move_ids[cm_obj.car_move_id]
-                    self._add_car_move_to_employee(car_moves=self.car_moves, best_car_move=cm, best_employee=emp)
+                    cm.reset()
+                    if cm.is_charging_move:
+                        print(f"cm: {cm.car_move_id}, ({cm.start_node.node_id}  --> {cm.end_node.node_id}), {cm.end_node.num_charging} / {cm.end_node.capacity}")
+                    self._add_car_move_to_employee(best_car_move=cm, best_employee=emp)
+            print("construct from repaired solution")
             self.construct()
 
         else:
             first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(solution, self.world_instance.first_stage_tasks)
             for employee_obj, car_move_objs in first_stage_solution.items():
                 for cm_obj in car_move_objs:
-                    self._add_car_move_to_employee(car_moves=self.car_moves,
-                                                   best_car_move=cm_obj,
-                                                   best_employee=employee_obj)
+                    self._add_car_move_to_employee(best_car_move=cm_obj, best_employee=employee_obj)
 
             for employee_obj, car_moves_scenarios in second_stage_solution.items():
-                self._add_car_move_to_employee_from_dict(car_moves_second_stage=self.car_moves_second_stage,
-                                                         employee=employee_obj,
-                                                         car_moves_scenarios=car_moves_scenarios)
+                self._add_car_move_to_employee_from_dict(employee=employee_obj, car_moves_scenarios=car_moves_scenarios)
 
 
         if verbose:
@@ -353,14 +363,14 @@ class ConstructionHeuristic:
             else:
                 self.available_employees = False
 
-    def _add_car_move_to_employee_from_dict(self, car_moves_second_stage, employee, car_moves_scenarios):
+    def _add_car_move_to_employee_from_dict(self, employee, car_moves_scenarios):
         for s, car_moves in enumerate(car_moves_scenarios):
             for car_move in car_moves:
                 self.world_instance.add_car_move_to_employee(car_move, employee, s)
                 self.objective_function.update(added_car_moves=[car_move], scenario=s)
                 self.assigned_car_moves[employee][s].append(car_move)
                 self.unused_car_moves[s].remove(car_move)
-                self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(car_move, car_moves_second_stage[s])
+                self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(car_move, self.car_moves_second_stage[s])
 
     def print_solution(self):
         true_obj_val, heuristic_obj_val = self.get_obj_val(both=True)
@@ -483,7 +493,7 @@ class ConstructionHeuristic:
 if __name__ == "__main__":
     from pyinstrument import Profiler
 
-    filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_c"
     ch = ConstructionHeuristic(filename + ".pkl")
     profiler = Profiler()
     profiler.start()
