@@ -7,16 +7,13 @@ from DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretIns
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from Heuristics.LocalSearch.local_search import LocalSearch
-from Heuristics.LocalSearch.local_search_operator import LocalSearchOperator, IntraMove, InterSwap
 from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution
 from new_construction_heuristic import ConstructionHeuristic
-from new_objective_function import ObjectiveFunction
 from path_manager import path_to_src
 import numpy as np
 import os
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-
 
 os.chdir(path_to_src)
 
@@ -25,7 +22,6 @@ os.chdir(path_to_src)
 _IS_BEST = 3.0
 _IS_BETTER = 2.0
 _IS_ACCEPTED = 1.0
-_IS_REJECTED = 0.0
 
 '''
 
@@ -47,8 +43,6 @@ class ALNS():
 
 	def __init__(self, filename):
 		self.filename = filename
-
-
 
 		self.best_solution = None
 		self.best_solutions = None
@@ -77,8 +71,6 @@ class ALNS():
 			repair_operators_record = OrderedDict({'greedy': [1.0, 0.0], 'regret2': [1.0, 0.0], 'regret3': [1.0, 0.0]})
 		return destroy_operators_record, repair_operators_record
 
-
-
 	def run(self, solution):
 		# TODO: in order to save time, this could be implemented as a queue (as in tabu search)
 		visited_hash_keys = set()
@@ -102,16 +94,16 @@ class ALNS():
 		# SEGMENTS
 		try:
 			for i in range(20):
-				#print(f"Iteration {i * 10}")
-				#print(f"Best objective value {best_solution[1]}")
-				#print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
+				# print(f"Iteration {i * 10}")
+				# print(f"Best objective value {best_solution[1]}")
+				# print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
 				loop = tqdm(range(10), total=10, leave=False)
 				for j in loop:
-					#print(f"Iteration {i*10 + j}")
+					# print(f"Iteration {i*10 + j}")
 					candidate_solution = copy.deepcopy(current_solution)
 
 					if MODE == "LOCAL":
-						print("\n----- LOCAL SEARCH -----")
+						#print("\n----- LOCAL SEARCH -----")
 						local_search = LocalSearch(candidate_solution.assigned_car_moves,
 												   candidate_solution.world_instance.first_stage_tasks,
 												   candidate_solution.feasibility_checker)
@@ -121,23 +113,22 @@ class ALNS():
 
 
 					elif MODE == "LNS":
-						print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
-						#TODO: see if it is possible to do destroy and repair with no deep copy (i think it is)
+						#print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
 						destroy_heuristic = self._get_destroy_operator(solution=candidate_solution.assigned_car_moves,
-															 neighborhood_size=2, randomization_degree=1,
-															 world_instance=candidate_solution.world_instance)
+																	   neighborhood_size=2, randomization_degree=1,
+																	   world_instance=candidate_solution.world_instance)
 						destroy_heuristic.destroy()
-						#destroy.to_string()
-						#print("Destroy: ", destroy, destroy.solution)
-						#print(destroy)
+						print("Destroy: ", destroy_heuristic, destroy_heuristic.solution)
+						destroy_heuristic.to_string()
+						# print(destroy)
 
 						repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
-														   unused_car_moves=candidate_solution.unused_car_moves,
-														   world_instance=candidate_solution.world_instance)
+																	 unused_car_moves=candidate_solution.unused_car_moves,
+																	 world_instance=candidate_solution.world_instance)
 						repair_heuristic.repair()
 
-						#print("Repair: ", repair, repair.solution)
-						#repair.to_string()
+						print("Repair: ", repair_heuristic, repair_heuristic.solution)
+						repair_heuristic.to_string()
 						candidate_solution.rebuild(repair_heuristic.solution)
 						hash_key = candidate_solution.hash_key
 						if hash_key in visited_hash_keys:
@@ -155,8 +146,8 @@ class ALNS():
 
 						# IMPROVING
 						if candidate_obj_val > current_obj_val:
-							#print("current_obj_val: ", current_obj_val)
-							#print("candidate_obj_val: ", candidate_obj_val)
+							# print("current_obj_val: ", current_obj_val)
+							# print("candidate_obj_val: ", candidate_obj_val)
 							# NEW GLOBAL BEST
 							if candidate_obj_val > best_obj_val:
 								best_obj_val = candidate_obj_val
@@ -186,7 +177,8 @@ class ALNS():
 
 					# print statistics
 					loop.set_description(f"Segment[{i}/{20}]")
-					loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val, best_true_obj_val=best_solution[1])
+					loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val,
+									 best_true_obj_val=best_solution[1])
 
 				temperature *= cooling_rate
 				self._update_score_adjustment_parameters()
@@ -202,7 +194,7 @@ class ALNS():
 			plt.plot(heuristic_obj_vals, c="red", label="Heuristic obj. val")
 			plt.plot(true_obj_vals, c="green", label="True obj. val")
 			plt.suptitle('Objective value comparison')
-			plt.xlabel('solution')
+			plt.xlabel('iteration')
 			plt.ylabel('obj. val')
 			plt.legend(bbox_to_anchor=(.75, 1.0))
 			plt.show()
@@ -212,7 +204,7 @@ class ALNS():
 			print("best solution")
 			print("obj_val", best_solution[1])
 			best_solution[0].print_solution()
-			# best_solution.print_solution()
+		# best_solution.print_solution()
 
 	def _accept(self, new_obj_val, current_obj_val, temperature) -> bool:
 		if new_obj_val > current_obj_val:
@@ -256,7 +248,6 @@ class ALNS():
 		else:
 			exit("Repair operator does not exist")
 
-
 	def _update_weight_record(self, operator_score, destroy, repair):
 
 		# DESTROY
@@ -299,8 +290,8 @@ if __name__ == "__main__":
 
 	filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_a"
 
-	#gi = GurobiInstance(filename + ".yaml")
-	#run_model(gi, time_limit=10000.0)
+	# gi = GurobiInstance(filename + ".yaml")
+	# run_model(gi, time_limit=10000.0)
 
 	profiler = Profiler()
 	profiler.start()

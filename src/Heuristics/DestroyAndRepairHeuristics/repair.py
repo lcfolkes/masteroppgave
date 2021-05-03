@@ -82,11 +82,12 @@ class Repair(ABC):
             # print([cm.car_move_id for cm in v])
             for cm in v:
                 if cm.is_charging_move:
-                    prefix = "C: "
+                    prefix = f"C: {cm.end_node.num_charging}/{cm.end_node.capacity} "
                 else:
                     prefix = "P: "
                 print(prefix + cm.to_string())
-        print("Objective value: ", round(self.objective_function.heuristic_objective_value, 2))
+
+        #print("Objective value: ", round(self.objective_function.heuristic_objective_value, 2))
 
 
 class GreedyInsertion(Repair):
@@ -111,6 +112,7 @@ class GreedyInsertion(Repair):
                 break
 
             insert_car_move(current_solution, best_car_move, best_employee)
+
             self.objective_function.update(added_car_moves=[best_car_move])
             self.unused_car_moves = remove_all_car_moves_of_car_in_car_move(best_car_move, self.unused_car_moves)
             q -= 1

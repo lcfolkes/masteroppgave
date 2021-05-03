@@ -1,6 +1,8 @@
 import os
 import copy
 
+import numpy as np
+
 from InstanceGenerator.world import World
 from path_manager import path_to_src
 from InstanceGenerator.instance_components import CarMove, Employee
@@ -65,7 +67,9 @@ class FeasibilityChecker():
 		return True
 
 	# check charging capacity constraint
-	def is_solution_feasible(self, solution: {Employee: [CarMove]}):
+	def is_solution_feasible(self, solution: {Employee: [CarMove]}, return_inter_node_travel_time=False):
+		if return_inter_node_travel_time:
+			inter_node_travel_time = [0 for _ in range(self.world_instance.num_scenarios)]
 		for employee, car_moves in solution.items():
 			travel_time = [employee.start_time for _ in range(len(car_moves))]
 			current_node = [employee.start_node for _ in range(len(car_moves))]
@@ -75,6 +79,8 @@ class FeasibilityChecker():
 					end_node = car_move.end_node
 					emp_travel_time_to_node = self.world_instance.get_employee_travel_time_to_node(current_node[s],
 																								   start_node)
+					if return_inter_node_travel_time:
+						inter_node_travel_time[s]+=emp_travel_time_to_node
 					travel_time[s] += emp_travel_time_to_node + car_move.handling_time
 					current_node[s] = end_node
 
@@ -83,7 +89,11 @@ class FeasibilityChecker():
 							return False
 
 				if travel_time[s] > self.world_instance.planning_period:
+					if return_inter_node_travel_time:
+						return False, np.mean(inter_node_travel_time)
 					return False
+		if return_inter_node_travel_time:
+			return True, np.mean(inter_node_travel_time)
 		return True
 
 
