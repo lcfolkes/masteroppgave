@@ -93,7 +93,7 @@ class ALNS():
 
 		# SEGMENTS
 		try:
-			for i in range(20):
+			for i in range(8):
 				# print(f"Iteration {i * 10}")
 				# print(f"Best objective value {best_solution[1]}")
 				# print(f"Best heuristic objective value {max(heuristic_obj_vals)}")

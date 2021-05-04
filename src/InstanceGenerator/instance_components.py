@@ -85,9 +85,11 @@ class ChargingNode(Node):
                 else:
                     self.num_charging[s] += 1
 
+
     def remove_car(self, scenario: int = None):
         if scenario is not None:
             if self.num_charging[scenario] == 0:
+                #print(f"Car move {} can not be removed from node {} as there are no cars there")
                 raise Exception("No cars can be removed from charging node as there are no cars there")
             else:
                 self.num_charging[scenario] -= 1
@@ -97,6 +99,7 @@ class ChargingNode(Node):
                     raise Exception("No cars can be removed from charging node as there are no cars there")
                 else:
                     self.num_charging[s] -= 1
+
 
     def reset(self, scenario: int = None):
         if scenario is not None:
@@ -182,13 +185,13 @@ class CarMove:
 
     def reset(self, scenario=None):
         if scenario is None:
-            if self.is_charging_move and self.end_node.num_charging[0]>0:
+            if self.is_charging_move and self.end_node.num_charging[0] > 0:
                 self.end_node.remove_car()
             self.employee = None
             self.start_time = None
 
         else:
-            if self.is_charging_move:
+            if self.is_charging_move and self.end_node.num_charging[scenario] > 0:
                 self.end_node.remove_car(scenario)
             self.employee_second_stage[scenario] = []
             self.start_times_second_stage[scenario] = []

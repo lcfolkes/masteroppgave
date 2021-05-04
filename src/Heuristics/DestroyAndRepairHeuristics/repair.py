@@ -131,7 +131,10 @@ class GreedyInsertion(Repair):
         for car_move in self.unused_car_moves:
             # Checks if best car move is a charging move to a node where the remaining charging capacity is zero
             if car_move.is_charging_move:
+                print(f"car move {car_move.car_move_id} cap", car_move.end_node.capacity)
+                print(f"car move {car_move.car_move_id} num c", car_move.end_node.num_charging[0])
                 if car_move.end_node.capacity == car_move.end_node.num_charging[0]:
+                    print("HALLO", car_move.car_move_id)
                     self.unused_car_moves.remove(car_move)
                     continue
 
