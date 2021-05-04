@@ -93,7 +93,7 @@ class ALNS():
 
 		# SEGMENTS
 		try:
-			for i in range(8):
+			for i in range(5):
 				# print(f"Iteration {i * 10}")
 				# print(f"Best objective value {best_solution[1]}")
 				# print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
@@ -288,15 +288,16 @@ class ALNS():
 if __name__ == "__main__":
 	from pyinstrument import Profiler
 
-	filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_a"
+	filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-2-1_a"
 
 	# gi = GurobiInstance(filename + ".yaml")
 	# run_model(gi, time_limit=10000.0)
 
-	profiler = Profiler()
-	profiler.start()
+	#profiler = Profiler()
+	#profiler.start()
 
 	# code you want to profile
+	'''
 	try:
 		alns = ALNS(filename + ".pkl")
 	except KeyboardInterrupt:
@@ -305,12 +306,12 @@ if __name__ == "__main__":
 			sys.exit(0)
 		except SystemExit:
 			os._exit(0)
-
-	profiler.stop()
-	print(profiler.output_text(unicode=True, color=True))
+	'''
+	#profiler.stop()
+	#print(profiler.output_text(unicode=True, color=True))
 	print("\n############## Optimal solution ##############")
 	gi2 = GurobiInstance(filename + ".yaml")
-	run_model(gi2)
+	run_model(gi2, time_limit=150)
 
 	'''
     print("\n############## Evaluate solution ##############")

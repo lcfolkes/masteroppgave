@@ -126,6 +126,11 @@ class ConstructionHeuristic:
                 for cm_obj in car_move_objs:
                     cm_obj.reset()
 
+            for employee_obj, car_moves_scenarios in second_stage_solution.items():
+                for scenario in car_moves_scenarios:
+                    for car_move in scenario:
+                        car_move.reset(scenario=car_moves_scenarios.index(car_move))
+
             for employee_obj, car_move_objs in first_stage_solution.items():
                 for cm_obj in car_move_objs:
                     self._add_car_move_to_employee(best_car_move=cm_obj, best_employee=employee_obj)
