@@ -115,7 +115,7 @@ class ALNS():
 					elif MODE == "LNS":
 						#print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
 						destroy_heuristic = self._get_destroy_operator(solution=candidate_solution.assigned_car_moves,
-																	   neighborhood_size=3, randomization_degree=40,
+																	   neighborhood_size=1, randomization_degree=40,
 																	   world_instance=candidate_solution.world_instance)
 						destroy_heuristic.destroy()
 						#print("Destroy: ", destroy_heuristic, destroy_heuristic.solution)
@@ -298,7 +298,7 @@ if __name__ == "__main__":
 	#profiler.start()
 
 	# code you want to profile
-	'''
+
 	try:
 		alns = ALNS(filename + ".pkl")
 	except KeyboardInterrupt:
@@ -307,7 +307,7 @@ if __name__ == "__main__":
 			sys.exit(0)
 		except SystemExit:
 			os._exit(0)
-	'''
+
 	#profiler.stop()
 	#print(profiler.output_text(unicode=True, color=True))
 	print("\n############## Optimal solution ##############")
