@@ -93,7 +93,7 @@ class ALNS():
 
 		# SEGMENTS
 		try:
-			for i in range(5):
+			for i in range(20):
 				# print(f"Iteration {i * 10}")
 				# print(f"Best objective value {best_solution[1]}")
 				# print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
@@ -115,11 +115,11 @@ class ALNS():
 					elif MODE == "LNS":
 						#print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
 						destroy_heuristic = self._get_destroy_operator(solution=candidate_solution.assigned_car_moves,
-																	   neighborhood_size=2, randomization_degree=1,
+																	   neighborhood_size=3, randomization_degree=40,
 																	   world_instance=candidate_solution.world_instance)
 						destroy_heuristic.destroy()
-						print("Destroy: ", destroy_heuristic, destroy_heuristic.solution)
-						destroy_heuristic.to_string()
+						#print("Destroy: ", destroy_heuristic, destroy_heuristic.solution)
+						#destroy_heuristic.to_string()
 						# print(destroy)
 
 						repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
@@ -127,8 +127,8 @@ class ALNS():
 																	 world_instance=candidate_solution.world_instance)
 						repair_heuristic.repair()
 
-						print("Repair: ", repair_heuristic, repair_heuristic.solution)
-						repair_heuristic.to_string()
+						#print("Repair: ", repair_heuristic, repair_heuristic.solution)
+						#repair_heuristic.to_string()
 						candidate_solution.rebuild(repair_heuristic.solution)
 						hash_key = candidate_solution.hash_key
 						if hash_key in visited_hash_keys:
@@ -165,6 +165,7 @@ class ALNS():
 						else:
 							if MODE == "LNS":
 								self._update_weight_record(_IS_ACCEPTED, destroy_heuristic, repair_heuristic)
+								MODE = "LOCAL"
 							else:
 								MODE = "LNS"
 
@@ -288,7 +289,7 @@ class ALNS():
 if __name__ == "__main__":
 	from pyinstrument import Profiler
 
-	filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-2-1_a"
+	filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
 
 	# gi = GurobiInstance(filename + ".yaml")
 	# run_model(gi, time_limit=10000.0)
@@ -311,7 +312,7 @@ if __name__ == "__main__":
 	#print(profiler.output_text(unicode=True, color=True))
 	print("\n############## Optimal solution ##############")
 	gi2 = GurobiInstance(filename + ".yaml")
-	run_model(gi2, time_limit=150)
+	run_model(gi2, time_limit=250)
 
 	'''
     print("\n############## Evaluate solution ##############")

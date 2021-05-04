@@ -59,9 +59,11 @@ class ConstructionHeuristic:
         self.unused_car_moves = [[] for _ in range(
             self.num_scenarios)]  # [beta] list of unused car_moves for scenario s (zero index)
         for k in self.employees:
+            '''
             print(f"emp {k.employee_id}")
             print([cm.car_move_id for cm in k.car_moves])
             print(k.car_moves_second_stage)
+            '''
             k.reset()
         self.assigned_car_moves = {k: [[] for _ in range(self.num_scenarios)] for k in
                                    self.employees}  # [gamma_k] dictionary containing ordered list of car_moves,
@@ -89,7 +91,7 @@ class ConstructionHeuristic:
         return hash(str(hash_dict))
 
     def rebuild(self, solution, stage="first", verbose=False):
-        print("\n --- REBUILD ---")
+        #print("\n --- REBUILD ---")
         self._initialize_for_rebuild()
 
         if stage == "first":
@@ -110,12 +112,13 @@ class ConstructionHeuristic:
                 emp = employee_ids[employee_obj.employee_id]
                 for cm_obj in car_move_objs:
                     cm = car_move_ids[cm_obj.car_move_id]
+                    '''
                     if cm.is_charging_move:
                         print(
                             f"cm: {cm.car_move_id}, ({cm.start_node.node_id}  --> {cm.end_node.node_id}), "
                             f"{cm.end_node.num_charging} / {cm.end_node.capacity}")
+                    '''
                     self._add_car_move_to_employee(best_car_move=cm, best_employee=emp)
-            self.construct()
 
         else:
             first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(solution,
@@ -129,7 +132,7 @@ class ConstructionHeuristic:
             for employee_obj, car_moves_scenarios in second_stage_solution.items():
                 for scenario in car_moves_scenarios:
                     for car_move in scenario:
-                        car_move.reset(scenario=car_moves_scenarios.index(car_move))
+                        car_move.reset(scenario=car_moves_scenarios.index(scenario))
 
             for employee_obj, car_move_objs in first_stage_solution.items():
                 for cm_obj in car_move_objs:
@@ -137,6 +140,9 @@ class ConstructionHeuristic:
 
             for employee_obj, car_moves_scenarios in second_stage_solution.items():
                 self._add_car_move_to_employee_from_dict(employee=employee_obj, car_moves_scenarios=car_moves_scenarios)
+
+        self.construct()
+
         if verbose:
             print("\nRepaired solution")
             self.z_diff_solution()

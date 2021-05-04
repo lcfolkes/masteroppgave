@@ -21,7 +21,7 @@ class Destroy(ABC):
         self.num_scenarios = world_instance.num_scenarios
         self.solution, self.removed_moves = get_first_stage_solution_and_removed_moves(solution, world_instance.first_stage_tasks)
         self.neighborhood_size = neighborhood_size
-        self.to_string()
+        #self.to_string()
         #self._destroy()
 
     @abstractmethod
@@ -43,6 +43,7 @@ class Destroy(ABC):
             print("\nDESTROY")
             print(f"\ndestroyed solution: {type(self)}")
         #print(self.solution)
+
         for k, v in self.solution.items():
             print(k.employee_id)
             print([cm.car_move_id for cm in v])

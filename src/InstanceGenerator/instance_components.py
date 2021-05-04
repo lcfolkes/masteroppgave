@@ -185,7 +185,7 @@ class CarMove:
 
     def reset(self, scenario=None):
         if scenario is None:
-            if self.is_charging_move and self.end_node.num_charging[0] > 0:
+            if self.is_charging_move and all(i > 0 for i in self.end_node.num_charging):
                 self.end_node.remove_car()
             self.employee = None
             self.start_time = None
