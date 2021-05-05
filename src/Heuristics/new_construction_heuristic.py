@@ -59,11 +59,11 @@ class ConstructionHeuristic:
         self.unused_car_moves = [[] for _ in range(
             self.num_scenarios)]  # [beta] list of unused car_moves for scenario s (zero index)
         for k in self.employees:
-
+            '''
             print(f"emp {k.employee_id}")
             print([cm.car_move_id for cm in k.car_moves])
             print([[cm.car_move_id for cm in scenario] for scenario in k.car_moves_second_stage])
-
+            '''
             k.reset()
         self.assigned_car_moves = {k: [[] for _ in range(self.num_scenarios)] for k in
                                    self.employees}  # [gamma_k] dictionary containing ordered list of car_moves,
@@ -91,7 +91,7 @@ class ConstructionHeuristic:
         return hash(str(hash_dict))
 
     def rebuild(self, solution, stage="first", verbose=False):
-        print("\n --- REBUILD ---")
+        #print("\n --- REBUILD ---")
         self._initialize_for_rebuild()
 
         if stage == "first":

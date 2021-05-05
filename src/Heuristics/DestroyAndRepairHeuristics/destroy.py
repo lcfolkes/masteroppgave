@@ -8,6 +8,7 @@ from Heuristics.heuristics_constants import HeuristicsConstants
 import numpy as np
 from src.InstanceGenerator.instance_components import CarMove
 from Heuristics.new_objective_function import ObjectiveFunction
+
 os.chdir(path_to_src)
 
 
@@ -19,15 +20,15 @@ class Destroy(ABC):
         :param neighborhood_size: (q) number of car_moves to remove
         """
         self.num_scenarios = world_instance.num_scenarios
-        self.solution, self.removed_moves = get_first_stage_solution_and_removed_moves(solution, world_instance.first_stage_tasks)
+        self.solution, self.removed_moves = get_first_stage_solution_and_removed_moves(solution,
+                                                                                       world_instance.first_stage_tasks)
         self.neighborhood_size = neighborhood_size
-        self.to_string()
-        #self._destroy()
+        #self.to_string()
+        # self._destroy()
 
     @abstractmethod
     def destroy(self):
         pass
-
 
     def to_string(self, solution_type=None):
         '''print("\nDESTROY")
@@ -42,7 +43,7 @@ class Destroy(ABC):
         else:
             print("\nDESTROY")
             print(f"\ndestroyed solution: {type(self)}")
-        #print(self.solution)
+        # print(self.solution)
 
         for k, v in self.solution.items():
             print(k.employee_id)
@@ -62,7 +63,7 @@ class Destroy(ABC):
 class RandomRemoval(Destroy):
 
     def __init__(self, solution, world_instance, neighborhood_size):
-        super().__init__(solution,  world_instance, neighborhood_size)
+        super().__init__(solution, world_instance, neighborhood_size)
 
     def destroy(self):
         solution = self.solution
@@ -94,12 +95,10 @@ class WorstRemoval(Destroy):
         super().__init__(solution, world_instance, neighborhood_size)
         self.objective_function = self._initialize_objective_function(world_instance)
 
-
     def _initialize_objective_function(self, world_instance):
         objective_function = ObjectiveFunction(world_instance)
         objective_function.update(added_car_moves=get_first_stage_solution_list_from_dict(self.solution))
         return objective_function
-
 
     def destroy(self):
         solution_dict = self.solution
@@ -108,14 +107,14 @@ class WorstRemoval(Destroy):
         obj_val = {}  # {index: obj val}
 
         for i in range(len(solution_list)):
-            #solution_copy = solution_list[:i] + solution_list[i + 1:]
+            # solution_copy = solution_list[:i] + solution_list[i + 1:]
             obj_val_remove_cm = self.objective_function.evaluate(removed_car_moves=[solution_list[i]])
             '''
             else:
                 obj_val_remove_cm = self.objective_function.evaluate(added_car_moves=[solution_list[i-1]],
                                                                      removed_car_moves=[solution_list[i]])
             '''
-            #print(f"cm: {solution_list[i].car_move_id}, obj_val: {obj_val_remove_cm}")
+            # print(f"cm: {solution_list[i].car_move_id}, obj_val: {obj_val_remove_cm}")
             '''
             obj_val_remove_cm = get_obj_val_of_car_moves(parking_nodes=self.parking_nodes,
                                                          num_scenarios=self.num_scenarios,
@@ -156,13 +155,12 @@ class WorstRemoval(Destroy):
 
         for employee, car_moves in solution_dict.items():
             solution_dict[employee] = [cm for cm in car_moves if cm.car_move_id
-                                            not in removed_car_moves_by_id]
+                                       not in removed_car_moves_by_id]
         # print(first_stage_solution_dict)
-        #return first_stage_solution_dict
+        # return first_stage_solution_dict
 
 
 class ShawRemoval(Destroy):
-
 
     def __init__(self, solution, world_instance, neighborhood_size, randomization_degree):
         """
@@ -176,7 +174,7 @@ class ShawRemoval(Destroy):
     def destroy(self):
         solution_dict = self.solution
         solution_list = get_first_stage_solution_list_from_dict(solution_dict)
-        #first_stage_solution_dict = copy.deepcopy(self.first_stage_solution)
+        # first_stage_solution_dict = copy.deepcopy(self.first_stage_solution)
         removed_list = []
         rand_index = random.randrange(0, len(solution_list), 1)
 
@@ -239,14 +237,51 @@ class ShawRemoval(Destroy):
             0 if car_move_i.is_charging_move == car_move_j.is_charging_move else 1)
         # relatedness += HeuristicsConstants.START_TIME_WEIGHT * abs(
         #    np.mean(car_move_i.start_time) - np.mean(car_move_j.start_time))
-        #print(relatedness)
+        # print(relatedness)
 
         relatedness = travel_time_start_nodes + travel_time_end_nodes + relocation_time + car_move_type
-        #print("travel_time_start ", round(travel_time_start_nodes/relatedness, 2))
-        #print("travel_time_end ", round(travel_time_end_nodes/relatedness, 2))
-        #print("relocation_time ", round(relocation_time/relatedness, 2))
-        #print("car_move_type ", round(car_move_type/relatedness, 2))
+        # print("travel_time_start ", round(travel_time_start_nodes/relatedness, 2))
+        # print("travel_time_end ", round(travel_time_end_nodes/relatedness, 2))
+        # print("relocation_time ", round(relocation_time/relatedness, 2))
+        # print("car_move_type ", round(car_move_type/relatedness, 2))
         return relatedness
+
+
+class ChargeRemoval(Destroy):
+
+    def __init__(self, solution, world_instance, neighborhood_size):
+        """
+        ChargeRemoval removes random charging moves from the solution
+        """
+        super().__init__(solution, world_instance, neighborhood_size)
+        self.removed_moves_in_this_operation = []
+    def destroy(self):
+        solution_dict = self.solution
+        solution_list = get_first_stage_solution_list_from_dict(solution_dict)
+        charging_moves_in_solution = []
+        for cm in solution_list:
+            if cm.is_charging_move:
+                charging_moves_in_solution.append(cm)
+
+        n_size = self.neighborhood_size
+
+        removed_car_moves_by_id = []
+        removed_car_moves = []
+        while n_size > 0 and len(charging_moves_in_solution) > 0:
+            random_charging_move = random.choice(charging_moves_in_solution)
+            removed_car_moves.append(random_charging_move)
+            removed_car_moves_by_id.append(random_charging_move.car_move_id)
+            charging_moves_in_solution.remove(random_charging_move)
+            random_charging_move.end_node.remove_car()
+
+            n_size -= 1
+
+        self.removed_moves += removed_car_moves
+        self.removed_moves_in_this_operation = removed_car_moves
+
+        for employee, car_moves in solution_dict.items():
+            solution_dict[employee] = [cm for cm in car_moves if cm.car_move_id
+                                       not in removed_car_moves_by_id]
 
 
 if __name__ == "__main__":
@@ -262,9 +297,10 @@ if __name__ == "__main__":
     #				   neighborhood_size=1)
     # rr.to_string()
 
-    wr = WorstRemoval(solution=ch.assigned_car_moves, world_instance=ch.world_instance, neighborhood_size=2, randomization_degree=10)
+    wr = WorstRemoval(solution=ch.assigned_car_moves, world_instance=ch.world_instance, neighborhood_size=2,
+                      randomization_degree=10)
     wr.to_string()
     print("solution\n", ch.assigned_car_moves)
-    #sr = ShawRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
+    # sr = ShawRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
     #                 neighborhood_size=2, randomization_degree=10, world_instance=ch.world_instance)
-    #sr.to_string()
+    # sr.to_string()

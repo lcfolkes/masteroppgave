@@ -88,8 +88,10 @@ class ALNS():
 		visited_hash_keys.add(current_solution.hash_key)
 		MODE = "LOCAL"
 
-		temperature = 1000  # Start temperature must be set differently. High temperature --> more randomness
-		cooling_rate = 0.5  # cooling_rate in (0,1)
+		#temperature = 1000  # Start temperature must be set differently. High temperature --> more randomness
+		temperature = (-heuristic_obj_vals[0]*0.05)/np.log(0.5)
+		#cooling_rate = 0.5  # cooling_rate in (0,1)
+		cooling_rate = np.exp(np.log(0.002)/200)
 
 		# SEGMENTS
 		try:

@@ -117,7 +117,7 @@ class IntraMove(LocalSearchOperator):
 			#print(f"candidate_obj_val {candidate_obj_val}")
 			if candidate_inter_node_travel_time < current_inter_node_travel_time:
 				new_solution_found = True
-				print("New best solution found!")
+				#print("New best solution found!")
 				#self.to_string()
 				current_inter_node_travel_time = candidate_inter_node_travel_time
 				best_solution = self._candidate_solution
@@ -192,7 +192,7 @@ class InterSwap(LocalSearchOperator):
 					continue
 
 				if candidate_inter_node_travel_time < current_inter_node_travel_time:
-					print("New best solution found!")
+					#print("New best solution found!")
 					new_solution_found = True
 					#self.to_string()
 					current_inter_node_travel_time = candidate_inter_node_travel_time
@@ -212,7 +212,7 @@ class InterSwap(LocalSearchOperator):
 						continue
 
 					if candidate_inter_node_travel_time < current_inter_node_travel_time:
-						print("New best solution found!")
+						#print("New best solution found!")
 						new_solution_found = True
 						#self.to_string()
 						current_inter_node_travel_time = candidate_inter_node_travel_time
