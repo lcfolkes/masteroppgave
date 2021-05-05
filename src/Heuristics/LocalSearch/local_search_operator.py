@@ -291,7 +291,89 @@ class InterSwap(LocalSearchOperator):
 				second_stage[e2][s][idx_2], second_stage[e1][s][idx_1] = second_stage[e1][s][idx_1], second_stage[e2][s][idx_2]
 
 		self._candidate_solution = reconstruct_solution_from_first_and_second_stage(first_stage, second_stage)
+	'''
+	class EjectionReplaceCharging(LocalSearchOperator):
+		
+		An Ejection Replace Charging LSO replaces a charging move from gamma with a charging move from beta
+		
+		# first or second stage:
+		# acceptance: first best, best, simulated annealing
 
+		def __init__(self, solution, first_stage_tasks, feasibility_checker):
+			super().__init__(solution, first_stage_tasks, feasibility_checker)
+
+		ch = ConstructionHeuristic()
+
+		def search(self, strategy, first_stage, shuffle=False):
+			self.visited_list = []
+			new_solution_found = False
+			#current_obj_val = get_obj_val_of_solution_dict(self._current_solution, self.feasibility_checker.world_instance, True)
+			_, current_inter_node_travel_time = self.feasibility_checker.is_solution_feasible(self._current_solution, return_inter_node_travel_time=True)
+			best_solution = self._current_solution
+			search_space = self._get_search_space(self._current_solution, first_stage)
+
+			for neighbor in search_space:
+				if first_stage:
+					k, i, j = neighbor
+					self._mutate(k, i, j)
+				else:
+					k, i, j, s = neighbor
+					self._mutate(k, i, j, s)
+				self.visited_list.append(self.hash_key)
+				feasible, candidate_inter_node_travel_time = self.feasibility_checker.is_solution_feasible(self._candidate_solution, return_inter_node_travel_time=True)
+				if not feasible:
+					continue
+				#intra_move.to_string()
+				#candidate_obj_val = get_obj_val_of_solution_dict(self._candidate_solution, self.feasibility_checker.world_instance, True)
+				#print(f"current_obj_val {current_obj_val}")
+				#print(f"candidate_obj_val {candidate_obj_val}")
+				if candidate_inter_node_travel_time < current_inter_node_travel_time:
+					new_solution_found = True
+					print("New best solution found!")
+					#self.to_string()
+					current_inter_node_travel_time = candidate_inter_node_travel_time
+					best_solution = self._candidate_solution
+					if strategy == "best_first":
+						break
+			self._current_solution = best_solution
+			return best_solution, new_solution_found
+
+		def _get_search_space(self, solution, first_stage):
+			search_space = []
+			if first_stage:
+				solution = get_first_stage_solution(solution, self.feasibility_checker.world_instance.first_stage_tasks)
+				for k, car_moves in solution.items():
+					if len(car_moves) > 1:
+						idx = list(range(len(car_moves)))
+						# check if not e.g. 0,1 and 1,0
+						for i, j in itertools.combinations(idx, 2):
+							search_space.append((k, i, j))
+			else:
+				solution = get_second_stage_solution_dict(solution, self.feasibility_checker.world_instance.first_stage_tasks)
+				for k, scenarios in solution.items():
+					for s, car_moves in enumerate(scenarios):
+						if len(car_moves) > 1:
+							idx = list(range(len(car_moves)))
+							# check if not e.g. 0,1 and 1,0
+							for i, j in itertools.combinations(idx, 2):
+								search_space.append((k, i, j, s))
+
+
+			return search_space
+
+		def _mutate(self, employee, c_move_in, c_move_out, s=None):
+			# No need to copy because get_first_and_second_stage_solution() creates new dict with same elements
+			first_stage, _ = get_first_and_second_stage_solution(self._current_solution, self.first_stage_tasks)
+
+
+			moves = first_stage[employee]
+			idx = moves.index(c_move_out)
+			moves.remove(moves[idx])
+			moves.insert(idx, c_move_in)
+
+
+			self._candidate_solution = reconstruct_solution_from_first_and_second_stage(first_stage, second_stage)
+	'''
 
 class InterMove(LocalSearchOperator):
 	'''

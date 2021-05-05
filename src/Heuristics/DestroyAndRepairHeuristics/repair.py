@@ -4,15 +4,13 @@ import random
 from Heuristics.feasibility_checker import FeasibilityChecker
 from path_manager import path_to_src
 from abc import ABC, abstractmethod
-import copy
-from Heuristics.helper_functions_heuristics import insert_car_move, get_first_stage_solution_list_from_dict, \
-    remove_all_car_moves_of_car_in_car_move, remove_car_move_from_employee_from_solution
-from Heuristics.objective_function import get_obj_val_of_car_moves
+from Heuristics.helper_functions_heuristics import insert_car_move, remove_all_car_moves_of_car_in_car_move, \
+    get_first_stage_solution_list_from_dict
 from Heuristics.new_objective_function import ObjectiveFunction
 
-from InstanceGenerator.instance_components import CarMove, ParkingNode, Employee
+from InstanceGenerator.instance_components import CarMove, Employee
 from InstanceGenerator.world import World
-from Heuristics.DestroyAndRepairHeuristics.destroy import Destroy, RandomRemoval
+from Heuristics.DestroyAndRepairHeuristics.destroy import Destroy
 
 print(path_to_src)
 os.chdir(path_to_src)
@@ -176,7 +174,7 @@ class RegretInsertion(Repair):
         while q > 0:
             best_car_move, best_employee, idx = self._get_best_insertion(current_solution, self.regret_nr)
             if None in (best_car_move, best_employee):
-                # print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
+                print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
                 break
 
             insert_car_move(current_solution, best_car_move, best_employee, idx)
@@ -201,6 +199,7 @@ class RegretInsertion(Repair):
         best_employee = None
         best_idx = None
         highest_obj_val_diff = -0.1
+        highest_obj_val_alternative = float('-inf')
         # cars_used = [cm.car.car_id for cm in current_solution]
 
         for car_move in self.unused_car_moves:
@@ -241,6 +240,28 @@ class RegretInsertion(Repair):
                 if obj_val_diff > highest_obj_val_diff:
                     best_car_move = car_move
                     best_employees_and_idx = []
+                    highest_obj_val_diff = obj_val_diff
+                    for key, value in obj_val_dict.items():
+                        if value == obj_values_sorted[0]:
+                            best_employees_and_idx.append(key)
+                    best_employee, best_idx = random.choice(best_employees_and_idx)
+            elif len(obj_values_sorted) > 1:
+                obj_val_diff = 0
+                for i in range(len(obj_values_sorted)-1):
+                    obj_val_diff += obj_values_sorted[i]-obj_values_sorted[-1]
+                if obj_val_diff > highest_obj_val_diff:
+                    best_car_move = car_move
+                    best_employees_and_idx = []
+                    highest_obj_val_diff = obj_val_diff
+                    for key, value in obj_val_dict.items():
+                        if value == obj_values_sorted[0]:
+                            best_employees_and_idx.append(key)
+                    best_employee, best_idx = random.choice(best_employees_and_idx)
+            elif len(obj_values_sorted) == 1:
+                if obj_values_sorted[0] > highest_obj_val_alternative:
+                    best_car_move = car_move
+                    best_employees_and_idx = []
+                    highest_obj_val_alternative = obj_values_sorted[0]
                     for key, value in obj_val_dict.items():
                         if value == obj_values_sorted[0]:
                             best_employees_and_idx.append(key)
@@ -256,24 +277,27 @@ if __name__ == "__main__":
         get_first_stage_solution_and_removed_moves
 
     print("\n---- HEURISTIC ----")
-    filename = "InstanceGenerator/InstanceFiles/25nodes/25-2-2-1_a.pkl"
+    filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a.pkl"
 
     ch = ConstructionHeuristic(filename)
     ch.construct()
+    ch.print_solution()
     first_stage_solution, ch_removed_moves = get_first_stage_solution_and_removed_moves(ch.assigned_car_moves, ch.world_instance.first_stage_tasks)
     feasibility_checker = FeasibilityChecker(ch.world_instance)
     #print("input solution")
     #feasibility_checker.is_first_stage_solution_feasible(first_stage_solution, True)
-    rr = RandomRemoval(solution=ch.assigned_car_moves, world_instance=ch.world_instance, neighborhood_size=2)
+    rr = RandomRemoval(solution=ch.assigned_car_moves, world_instance=ch.world_instance, neighborhood_size=1)
+    rr.destroy()
     rr.to_string()
-    '''from pyinstrument import Profiler
+    '''
+    from pyinstrument import Profiler
     profiler = Profiler()
     profiler.start()
     '''
     #gi = GreedyInsertion(destroyed_solution_object=rr, unused_car_moves=ch.unused_car_moves, world_instance=ch.world_instance)
 
     gi = RegretInsertion(destroyed_solution_object=rr, unused_car_moves=ch.unused_car_moves, world_instance=ch.world_instance, regret_nr=3)
-
+    gi.repair()
     gi.to_string()
     '''profiler.stop()
     print(profiler.output_text(unicode=True, color=True))

@@ -19,8 +19,8 @@ os.chdir(path_to_src)
 
 os.chdir(path_to_src)
 
-_IS_BEST = 3.0
-_IS_BETTER = 2.0
+_IS_BEST = 33.0
+_IS_BETTER = 13.0
 _IS_ACCEPTED = 1.0
 
 '''
@@ -119,7 +119,7 @@ class ALNS():
 																	   world_instance=candidate_solution.world_instance)
 						destroy_heuristic.destroy()
 						#print("Destroy: ", destroy_heuristic, destroy_heuristic.solution)
-						#destroy_heuristic.to_string()
+						destroy_heuristic.to_string()
 						# print(destroy)
 
 						repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
@@ -128,7 +128,7 @@ class ALNS():
 						repair_heuristic.repair()
 
 						#print("Repair: ", repair_heuristic, repair_heuristic.solution)
-						#repair_heuristic.to_string()
+						repair_heuristic.to_string()
 						candidate_solution.rebuild(repair_heuristic.solution)
 						hash_key = candidate_solution.hash_key
 						if hash_key in visited_hash_keys:
@@ -312,7 +312,7 @@ if __name__ == "__main__":
 	#print(profiler.output_text(unicode=True, color=True))
 	print("\n############## Optimal solution ##############")
 	gi2 = GurobiInstance(filename + ".yaml")
-	run_model(gi2, time_limit=250)
+	run_model(gi2, time_limit=100)
 
 	'''
     print("\n############## Evaluate solution ##############")

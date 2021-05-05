@@ -59,11 +59,11 @@ class ConstructionHeuristic:
         self.unused_car_moves = [[] for _ in range(
             self.num_scenarios)]  # [beta] list of unused car_moves for scenario s (zero index)
         for k in self.employees:
-            '''
+
             print(f"emp {k.employee_id}")
             print([cm.car_move_id for cm in k.car_moves])
-            print(k.car_moves_second_stage)
-            '''
+            print([[cm.car_move_id for cm in scenario] for scenario in k.car_moves_second_stage])
+
             k.reset()
         self.assigned_car_moves = {k: [[] for _ in range(self.num_scenarios)] for k in
                                    self.employees}  # [gamma_k] dictionary containing ordered list of car_moves,
@@ -91,7 +91,7 @@ class ConstructionHeuristic:
         return hash(str(hash_dict))
 
     def rebuild(self, solution, stage="first", verbose=False):
-        #print("\n --- REBUILD ---")
+        print("\n --- REBUILD ---")
         self._initialize_for_rebuild()
 
         if stage == "first":
@@ -234,11 +234,12 @@ class ConstructionHeuristic:
 
                 # La til dette 4 mai - mathias
                 # For at den skal velge minst tidkrevende charging moves
+                '''
                 elif obj_val == best_obj_val_first_stage:
                     if car_move.handling_time < best_car_move_first_stage.handling_time:
                         best_obj_val_first_stage = obj_val
                     best_car_move_first_stage = car_move
-
+                '''
             return best_car_move_first_stage
 
 
@@ -276,7 +277,7 @@ class ConstructionHeuristic:
                         else:
                             best_obj_val_second_stage[s] = obj_val
                             best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
-
+                    '''
                     elif obj_val == best_obj_val_second_stage[s]:
                         if self.car_moves_second_stage[s][r].is_charging_move:
 
@@ -292,7 +293,7 @@ class ConstructionHeuristic:
                         elif self.car_moves_second_stage[s][r].handling_time < best_car_move_second_stage[s].handling_time:
                             best_obj_val_second_stage[s] = obj_val
                             best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
-
+                    '''
             out_list = []
             for car_move in best_car_move_second_stage:
                 if car_move is not None:
