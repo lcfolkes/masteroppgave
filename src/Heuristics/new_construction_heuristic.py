@@ -18,9 +18,7 @@ class ConstructionHeuristic:
     # instance_file = "InstanceFiles/6nodes/6-3-1-1_d.pkl"
     # filename = "InstanceFiles/6nodes/6-3-1-1_b.yaml"
 
-
     def __init__(self, instance_file):
-
 
         self.instance_file = instance_file
         self.world_instance = load_object_from_file(instance_file)
@@ -48,7 +46,7 @@ class ConstructionHeuristic:
         # self.add_car_moves_to_employees()
 
     def get_obj_val(self, true_objective=True, both=False):
-        #return get_objective_function_val(parking_nodes=self.parking_nodes, employees=self.employees,
+        # return get_objective_function_val(parking_nodes=self.parking_nodes, employees=self.employees,
         #                                  num_scenarios=self.num_scenarios, true_objective=true_objective, both=both)
         if both:
             return self.objective_function.true_objective_value, self.objective_function.heuristic_objective_value
@@ -57,16 +55,18 @@ class ConstructionHeuristic:
         else:
             return self.objective_function.heuristic_objective_value
 
-
     def _initialize_for_rebuild(self):
         self.unused_car_moves = [[] for _ in range(
             self.num_scenarios)]  # [beta] list of unused car_moves for scenario s (zero index)
         for k in self.employees:
+            '''
             print(f"emp {k.employee_id}")
             print([cm.car_move_id for cm in k.car_moves])
-            print(k.car_moves_second_stage)
+            print([[cm.car_move_id for cm in scenario] for scenario in k.car_moves_second_stage])
+            '''
             k.reset()
-        self.assigned_car_moves = {k: [[] for _ in range(self.num_scenarios)] for k in self.employees}  # [gamma_k] dictionary containing ordered list of car_moves,
+        self.assigned_car_moves = {k: [[] for _ in range(self.num_scenarios)] for k in
+                                   self.employees}  # [gamma_k] dictionary containing ordered list of car_moves,
         # assigned to employee k in scenario s
         self.car_moves = []  # self.world_instance.car_moves
         self.car_moves_second_stage = []
@@ -74,7 +74,6 @@ class ConstructionHeuristic:
         self.available_employees = True
         self.first_stage = True
         self.objective_function = ObjectiveFunction(self.world_instance)
-
 
     @property
     def hash_key(self):
@@ -92,7 +91,7 @@ class ConstructionHeuristic:
         return hash(str(hash_dict))
 
     def rebuild(self, solution, stage="first", verbose=False):
-        print("\n --- REBUILD ---")
+        #print("\n --- REBUILD ---")
         self._initialize_for_rebuild()
 
         if stage == "first":
@@ -100,20 +99,41 @@ class ConstructionHeuristic:
             employee_ids = {e.employee_id: e for e in self.employees}
             car_move_ids = {cm.car_move_id: cm for cm in self.car_moves}
             first_stage_solution = solution
-            #print(first_stage_solution)
+            # print(first_stage_solution)
+
+            # We have to reset all car moves before we begin adding new ones
             for employee_obj, car_move_objs in first_stage_solution.items():
                 emp = employee_ids[employee_obj.employee_id]
                 for cm_obj in car_move_objs:
                     cm = car_move_ids[cm_obj.car_move_id]
                     cm.reset()
+
+            for employee_obj, car_move_objs in first_stage_solution.items():
+                emp = employee_ids[employee_obj.employee_id]
+                for cm_obj in car_move_objs:
+                    cm = car_move_ids[cm_obj.car_move_id]
+                    '''
                     if cm.is_charging_move:
-                        print(f"cm: {cm.car_move_id}, ({cm.start_node.node_id}  --> {cm.end_node.node_id}), {cm.end_node.num_charging} / {cm.end_node.capacity}")
+                        print(
+                            f"cm: {cm.car_move_id}, ({cm.start_node.node_id}  --> {cm.end_node.node_id}), "
+                            f"{cm.end_node.num_charging} / {cm.end_node.capacity}")
+                    '''
                     self._add_car_move_to_employee(best_car_move=cm, best_employee=emp)
-            print("construct from repaired solution")
-            self.construct()
 
         else:
-            first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(solution, self.world_instance.first_stage_tasks)
+            first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(solution,
+                                                                                              self.world_instance.
+                                                                                              first_stage_tasks)
+
+            for employee_obj, car_move_objs in first_stage_solution.items():
+                for cm_obj in car_move_objs:
+                    cm_obj.reset()
+
+            for employee_obj, car_moves_scenarios in second_stage_solution.items():
+                for scenario in car_moves_scenarios:
+                    for car_move in scenario:
+                        car_move.reset(scenario=car_moves_scenarios.index(scenario))
+
             for employee_obj, car_move_objs in first_stage_solution.items():
                 for cm_obj in car_move_objs:
                     self._add_car_move_to_employee(best_car_move=cm_obj, best_employee=employee_obj)
@@ -121,6 +141,7 @@ class ConstructionHeuristic:
             for employee_obj, car_moves_scenarios in second_stage_solution.items():
                 self._add_car_move_to_employee_from_dict(employee=employee_obj, car_moves_scenarios=car_moves_scenarios)
 
+        self.construct()
 
         if verbose:
             print("\nRepaired solution")
@@ -165,7 +186,7 @@ class ConstructionHeuristic:
 
                 ### GET BEST CAR MOVE ###
                 best_car_move_second_stage = self._get_best_car_move()
-                #print(f"Best car_move second stage: {[cm.car_move_id for cm in best_car_move_second_stage]}")
+                # print(f"Best car_move second stage: {[cm.car_move_id for cm in best_car_move_second_stage]}")
                 if all(cm is None for cm in best_car_move_second_stage):
                     improving_car_move_exists = False
 
@@ -211,6 +232,14 @@ class ConstructionHeuristic:
                     best_obj_val_first_stage = obj_val
                     best_car_move_first_stage = car_move
 
+                # La til dette 4 mai - mathias
+                # For at den skal velge minst tidkrevende charging moves
+                '''
+                elif obj_val == best_obj_val_first_stage:
+                    if car_move.handling_time < best_car_move_first_stage.handling_time:
+                        best_obj_val_first_stage = obj_val
+                    best_car_move_first_stage = car_move
+                '''
             return best_car_move_first_stage
 
 
@@ -225,7 +254,8 @@ class ConstructionHeuristic:
                     if self.car_moves_second_stage[s][r].is_charging_move:
                         # Checking if charging node has space for another car
 
-                        if self.car_moves_second_stage[s][r].end_node.capacity == self.car_moves_second_stage[s][r].end_node.num_charging[s]:
+                        if self.car_moves_second_stage[s][r].end_node.capacity == \
+                                self.car_moves_second_stage[s][r].end_node.num_charging[s]:
                             # TODO: remove car_moves with this destination for this scenario
                             continue
 
@@ -236,7 +266,8 @@ class ConstructionHeuristic:
                         if self.car_moves_second_stage[s][r].is_charging_move:
 
                             # Checking if charging node has space for another car
-                            if self.car_moves_second_stage[s][r].end_node.capacity == self.car_moves_second_stage[s][r].end_node.num_charging[s]:
+                            if self.car_moves_second_stage[s][r].end_node.capacity == \
+                                    self.car_moves_second_stage[s][r].end_node.num_charging[s]:
                                 continue
 
                             else:
@@ -246,7 +277,23 @@ class ConstructionHeuristic:
                         else:
                             best_obj_val_second_stage[s] = obj_val
                             best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
+                    '''
+                    elif obj_val == best_obj_val_second_stage[s]:
+                        if self.car_moves_second_stage[s][r].is_charging_move:
 
+                            # Checking if charging node has space for another car
+                            if self.car_moves_second_stage[s][r].end_node.capacity == \
+                                    self.car_moves_second_stage[s][r].end_node.num_charging[s]:
+                                continue
+
+                            elif self.car_moves_second_stage[s][r].handling_time < best_car_move_second_stage.handling_time:
+                                best_obj_val_second_stage[s] = obj_val
+                                best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
+                                # car_moves[s][r].end_node.add_car(scenario=s)
+                        elif self.car_moves_second_stage[s][r].handling_time < best_car_move_second_stage[s].handling_time:
+                            best_obj_val_second_stage[s] = obj_val
+                            best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
+                    '''
             out_list = []
             for car_move in best_car_move_second_stage:
                 if car_move is not None:
@@ -274,7 +321,8 @@ class ConstructionHeuristic:
             # in first stage
             if self.first_stage == (task_num < self.world_instance.first_stage_tasks):
                 if self.first_stage:
-                    legal_move, travel_time_to_car_move = self.feasibility_checker.check_legal_move(car_move=best_car_move, employee=employee, get_employee_travel_time=True)
+                    legal_move, travel_time_to_car_move = self.feasibility_checker.check_legal_move(
+                        car_move=best_car_move, employee=employee, get_employee_travel_time=True)
                     # print(f"legal_move {legal_move}\n{best_car_move.to_string()}")
                     if legal_move and travel_time_to_car_move < best_travel_time_to_car_move:
                         best_move_not_legal = False
@@ -302,7 +350,7 @@ class ConstructionHeuristic:
         else:
             if best_move_not_legal:
                 for s in range(self.num_scenarios):
-                    #self.car_moves_second_stage[s] = [cm for cm in self.car_moves_second_stage[s] if cm != best_car_move[s]]
+                    # self.car_moves_second_stage[s] = [cm for cm in self.car_moves_second_stage[s] if cm != best_car_move[s]]
                     try:
                         self.car_moves_second_stage[s].remove(best_car_move[s])
                     except:
@@ -310,8 +358,6 @@ class ConstructionHeuristic:
                 return
             else:
                 return best_employee_second_stage
-
-
 
     def _add_car_move_to_employee(self, best_car_move, best_employee):
 
@@ -355,7 +401,9 @@ class ConstructionHeuristic:
 
                         # When first stage is finished, initialize car_moves to be list of copies of
                         # car_moves (number of copies = num_scenarios)
-                        self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(best_car_move[s], self.car_moves_second_stage[s])
+                        self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(best_car_move[s],
+                                                                                                 self.car_moves_second_stage[
+                                                                                                     s])
 
                 # print(f"car_moves: {len(car_moves[s])}")
                 if not any(self.car_moves_second_stage):
@@ -370,7 +418,8 @@ class ConstructionHeuristic:
                 self.objective_function.update(added_car_moves=[car_move], scenario=s)
                 self.assigned_car_moves[employee][s].append(car_move)
                 self.unused_car_moves[s].remove(car_move)
-                self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(car_move, self.car_moves_second_stage[s])
+                self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(car_move,
+                                                                                         self.car_moves_second_stage[s])
 
     def print_solution(self):
         true_obj_val, heuristic_obj_val = self.get_obj_val(both=True)
@@ -398,10 +447,12 @@ class ConstructionHeuristic:
                 cars_in_need += 1
 
         df_firststage_routes = pd.DataFrame(
-            columns=["           Type", "  Employee", "  Task number", "  Car Move", "  Car ID", "  Employee Route", "  Start Time", "  Travel Time to Task", "  Relocation Time",
+            columns=["           Type", "  Employee", "  Task number", "  Car Move", "  Car ID", "  Employee Route",
+                     "  Start Time", "  Travel Time to Task", "  Relocation Time",
                      "  End time"])
         df_secondstage_routes = pd.DataFrame(
-            columns=["Scenario", "  Type", "  Employee", "  Task number", "  Car Move", "  Car ID", "  Employee Route", "  Start Time", "  Travel Time to Task", "  Relocation Time",
+            columns=["Scenario", "  Type", "  Employee", "  Task number", "  Car Move", "  Car ID", "  Employee Route",
+                     "  Start Time", "  Travel Time to Task", "  Relocation Time",
                      "  End time"])
 
         print("\n")
@@ -416,15 +467,15 @@ class ConstructionHeuristic:
         print(f"\nNumber of charging moves performed: {num_charging_moves}/{cars_in_need}")
         # print(f"Number of cars charged: {num_charging_moves}\n")
 
-        #print("-------------- First stage routes --------------")
+        # print("-------------- First stage routes --------------")
         for employee in self.employees:
-            #print("---- Employee {} ----".format(employee.employee_id))
+            # print("---- Employee {} ----".format(employee.employee_id))
             for car_move in employee.car_moves:
                 car_move_type = "C" if car_move.is_charging_move else "P"
                 if employee.car_moves.index(car_move) == 0:
                     start_node_id = employee.start_node.node_id
                 else:
-                    start_node_id = employee.car_moves[employee.car_moves.index(car_move)-1].end_node.node_id
+                    start_node_id = employee.car_moves[employee.car_moves.index(car_move) - 1].end_node.node_id
 
                 first_stage_row = [car_move_type, employee.employee_id, employee.car_moves.index(car_move) + 1,
                                    car_move.car_move_id, car_move.car.car_id,
@@ -446,27 +497,35 @@ class ConstructionHeuristic:
                     + f"Handling time: {round(employee.car_moves[employee.car_moves.index(car_move)].handling_time, 2)}, "
                     + f"Time after: {round(car_move.start_time + car_move.handling_time, 2)}\n")
                 '''
-        #print("-------------- Second stage routes --------------")
+        # print("-------------- Second stage routes --------------")
         for s in range(self.num_scenarios):
-            #print("---- Scenario {} ----".format(s + 1))
+            # print("---- Scenario {} ----".format(s + 1))
             for employee in self.employees:
                 if employee.car_moves_second_stage:
                     if any(employee.car_moves_second_stage[s]):
-                        #print("     ---- Employee {} ----".format(employee.employee_id))
+                        # print("     ---- Employee {} ----".format(employee.employee_id))
                         for car_move in employee.car_moves_second_stage[s]:
                             car_move_type = "C" if car_move.is_charging_move else "P"
                             if employee.car_moves_second_stage[s].index(car_move) == 0:
                                 start_node_id = employee.car_moves[-1].end_node.node_id
                             else:
-                                start_node_id = employee.car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)-1].end_node.node_id
+                                start_node_id = employee.car_moves_second_stage[s][
+                                    employee.car_moves_second_stage[s].index(car_move) - 1].end_node.node_id
 
-                            second_stage_row = [s + 1, car_move_type, employee.employee_id, employee.car_moves_second_stage[s].index(car_move) + 1 + len(employee.car_moves),
+                            second_stage_row = [s + 1, car_move_type, employee.employee_id,
+                                                employee.car_moves_second_stage[s].index(car_move) + 1 + len(
+                                                    employee.car_moves),
                                                 car_move.car_move_id, car_move.car.car_id,
                                                 f"{start_node_id} -> {car_move.start_node.node_id} -> {car_move.end_node.node_id}",
-                                                round(employee.start_times_car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)]
-                                                      - employee.travel_times_car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)], 2),
-                                                round(employee.travel_times_car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)], 2),
-                                                round(employee.car_moves_second_stage[s][employee.car_moves_second_stage[s].index(car_move)].handling_time, 2),
+                                                round(employee.start_times_car_moves_second_stage[s][
+                                                          employee.car_moves_second_stage[s].index(car_move)]
+                                                      - employee.travel_times_car_moves_second_stage[s][
+                                                          employee.car_moves_second_stage[s].index(car_move)], 2),
+                                                round(employee.travel_times_car_moves_second_stage[s][
+                                                          employee.car_moves_second_stage[s].index(car_move)], 2),
+                                                round(employee.car_moves_second_stage[s][
+                                                          employee.car_moves_second_stage[s].index(
+                                                              car_move)].handling_time, 2),
                                                 round(car_move.start_times_second_stage[s] + car_move.handling_time, 2)]
                             df_secondstage_routes.loc[len(df_secondstage_routes)] = second_stage_row
 
@@ -485,10 +544,13 @@ class ConstructionHeuristic:
         pd.set_option('display.width', 500)
         pd.set_option('display.max_columns', 15)
 
-        print("--------------------------------------------------------------- FIRST STAGE ROUTES --------------------------------------------------------------")
+        print(
+            "--------------------------------------------------------------- FIRST STAGE ROUTES --------------------------------------------------------------")
         print(df_firststage_routes.to_string(index=False))
-        print("\n-------------------------------------------------------------- SECOND STAGE ROUTES --------------------------------------------------------------")
+        print(
+            "\n-------------------------------------------------------------- SECOND STAGE ROUTES --------------------------------------------------------------")
         print(df_secondstage_routes.to_string(index=False))
+
 
 if __name__ == "__main__":
     from pyinstrument import Profiler

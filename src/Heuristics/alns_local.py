@@ -19,8 +19,8 @@ os.chdir(path_to_src)
 
 os.chdir(path_to_src)
 
-_IS_BEST = 3.0
-_IS_BETTER = 2.0
+_IS_BEST = 33.0
+_IS_BETTER = 13.0
 _IS_ACCEPTED = 1.0
 
 '''
@@ -88,8 +88,10 @@ class ALNS():
 		visited_hash_keys.add(current_solution.hash_key)
 		MODE = "LOCAL"
 
-		temperature = 1000  # Start temperature must be set differently. High temperature --> more randomness
-		cooling_rate = 0.5  # cooling_rate in (0,1)
+		#temperature = 1000  # Start temperature must be set differently. High temperature --> more randomness
+		temperature = (-heuristic_obj_vals[0]*0.05)/np.log(0.5)
+		#cooling_rate = 0.5  # cooling_rate in (0,1)
+		cooling_rate = np.exp(np.log(0.002)/200)
 
 		# SEGMENTS
 		try:
@@ -115,10 +117,10 @@ class ALNS():
 					elif MODE == "LNS":
 						#print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
 						destroy_heuristic = self._get_destroy_operator(solution=candidate_solution.assigned_car_moves,
-																	   neighborhood_size=2, randomization_degree=1,
+																	   neighborhood_size=1, randomization_degree=40,
 																	   world_instance=candidate_solution.world_instance)
 						destroy_heuristic.destroy()
-						print("Destroy: ", destroy_heuristic, destroy_heuristic.solution)
+						#print("Destroy: ", destroy_heuristic, destroy_heuristic.solution)
 						destroy_heuristic.to_string()
 						# print(destroy)
 
@@ -127,7 +129,7 @@ class ALNS():
 																	 world_instance=candidate_solution.world_instance)
 						repair_heuristic.repair()
 
-						print("Repair: ", repair_heuristic, repair_heuristic.solution)
+						#print("Repair: ", repair_heuristic, repair_heuristic.solution)
 						repair_heuristic.to_string()
 						candidate_solution.rebuild(repair_heuristic.solution)
 						hash_key = candidate_solution.hash_key
@@ -165,6 +167,7 @@ class ALNS():
 						else:
 							if MODE == "LNS":
 								self._update_weight_record(_IS_ACCEPTED, destroy_heuristic, repair_heuristic)
+								MODE = "LOCAL"
 							else:
 								MODE = "LNS"
 
@@ -288,15 +291,16 @@ class ALNS():
 if __name__ == "__main__":
 	from pyinstrument import Profiler
 
-	filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_a"
+	filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
 
 	# gi = GurobiInstance(filename + ".yaml")
 	# run_model(gi, time_limit=10000.0)
 
-	profiler = Profiler()
-	profiler.start()
+	#profiler = Profiler()
+	#profiler.start()
 
 	# code you want to profile
+
 	try:
 		alns = ALNS(filename + ".pkl")
 	except KeyboardInterrupt:
@@ -306,11 +310,11 @@ if __name__ == "__main__":
 		except SystemExit:
 			os._exit(0)
 
-	profiler.stop()
-	print(profiler.output_text(unicode=True, color=True))
+	#profiler.stop()
+	#print(profiler.output_text(unicode=True, color=True))
 	print("\n############## Optimal solution ##############")
 	gi2 = GurobiInstance(filename + ".yaml")
-	run_model(gi2)
+	run_model(gi2, time_limit=100)
 
 	'''
     print("\n############## Evaluate solution ##############")

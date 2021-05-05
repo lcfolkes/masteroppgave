@@ -108,7 +108,7 @@ def remove_car_move_from_employee_from_solution(solution: {Employee: [CarMove]},
 '''
 def remove_car_move(chosen_car_move: CarMove, car_moves: [CarMove]) -> [CarMove]:
     """
-    Removes a car move from a list of car moves and returns the result
+    removes a car move from a list of car moves and returns the result
     :param chosen_car_move: the car move to remove
     :param car_moves: the list of car moves to remove a car move from
     :return: the list of car moves without the removed move
