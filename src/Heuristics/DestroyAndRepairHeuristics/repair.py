@@ -275,17 +275,19 @@ class RegretInsertion(Repair):
 class ChargeInsertion(Repair):
 
     def __init__(self, destroyed_solution_object: Destroy, unused_car_moves: [[CarMove]], world_instance: World,
-                 moves_not_insert):
+                 moves_not_insert=[]):
         super().__init__(destroyed_solution_object, unused_car_moves, world_instance)
 
+        if moves_not_insert is None:
+            moves_not_insert = [None]
         self.moves_not_insert = moves_not_insert
+
     def repair(self) -> {Employee: [CarMove]}:
         """
         Inserts random charging moves into the first stage
         """
         q = self.neighborhood_size
         current_solution = self.solution
-
 
         unused_moves = self.unused_car_moves
         unused_charging_moves = []
@@ -298,15 +300,17 @@ class ChargeInsertion(Repair):
                                                                                      unused_charging_moves)
             if random_charging_move is None or best_employee is None or best_idx is None:
                 break
+            if random_charging_move.end_node.num_charging[0] == random_charging_move.end_node.capacity:
+                continue
             insert_car_move(current_solution, random_charging_move, best_employee, best_idx)
-            #random_charging_move.end_node.add_car()
+            # random_charging_move.end_node.add_car()
             self.unused_car_moves = remove_all_car_moves_of_car_in_car_move(random_charging_move, self.unused_car_moves)
 
             self.objective_function.update(added_car_moves=[random_charging_move])
             q -= 1
 
     def _get_best_insertion(self, current_solution: {Employee: [CarMove]}, unused_charging_moves) -> (
-    CarMove, Employee):
+            CarMove, Employee):
         random_charging_move = random.choice(unused_charging_moves)
         while random_charging_move.end_node.num_charging[0] == random_charging_move.end_node.capacity:
             random_charging_move = random.choice(unused_charging_moves)
@@ -368,7 +372,7 @@ if __name__ == "__main__":
     # gi = GreedyInsertion(destroyed_solution_object=rr, unused_car_moves=ch.unused_car_moves, world_instance=ch.world_instance)
     moves_removed_by_removal = rr.removed_moves_in_this_operation
     gi = ChargeInsertion(destroyed_solution_object=rr, unused_car_moves=ch.unused_car_moves,
-                         world_instance=ch.world_instance, moves_not_insert = moves_removed_by_removal)
+                         world_instance=ch.world_instance, moves_not_insert=moves_removed_by_removal)
     gi.repair()
     gi.to_string()
 

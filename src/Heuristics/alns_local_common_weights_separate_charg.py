@@ -24,7 +24,6 @@ _IS_BEST = 33.0
 _IS_BETTER = 13.0
 _IS_ACCEPTED = 1.0
 
-
 '''
 
 _IS_BEST (sigma_1): The last remove-insert operation resulted in a new global best solution
@@ -39,8 +38,6 @@ _IS_REJECTED
 
 
 # TODO: Need to keep track of visited solutions by assigning a hash key to each solution and storing the key in a hash table
-
-
 
 
 class ALNS():
@@ -61,26 +58,56 @@ class ALNS():
     def _initialize_operators(self):
         if self.num_employees < 3:
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_regret2': 1.0, 'worst_greedy': 1.0, 'worst_regret2': 1.0,
-                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'charge': 1.0})
+                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_charge': 3.0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_charge': 3.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_charge': 20.0})
+        elif self.num_employees < 4:
+            operators = OrderedDict(
+                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': 3.0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_charge': 3.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_charge': 20.0})
         else:
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'worst_greedy': 1.0,
-                 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'shaw_greedy': 1.0, 'shaw_regret2': 1.0,
-                 'shaw_regret3': 1.0, 'charge': 1.0})
+                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0,
+                 'random_charge': 3.0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0,
+                 'worst_charge': 3.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0,
+                 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_regret4': 3.0,
+                 'charge_charge': 20.0})
 
         return operators
 
     def _initialize_operator_records(self):
         if self.num_employees < 3:
             operators_record = OrderedDict(
-                {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'worst_greedy': [1.0, 0],
-                 'worst_regret2': [1.0, 0], 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'charge': [1.0, 0]})
+                {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'random_charge': [1.0, 0],
+                 'worst_greedy': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_charge': [1.0, 0],
+                 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_charge': [1.0, 0],
+                 'charge_greedy': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_charge': [1.0, 0]})
+        elif self.num_employees < 4:
+            operators_record = OrderedDict(
+                {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'random_regret3': [1.0, 0],
+                 'random_charge': [1.0, 0],
+                 'worst_greedy': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_regret3': [1.0, 0],
+                 'worst_charge': [1.0, 0],
+                 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_regret3': [1.0, 0],
+                 'shaw_charge': [1.0, 0],
+                 'charge_greedy': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_regret3': [1.0, 0],
+                 'charge_charge': [1.0, 0]})
         else:
             operators_record = OrderedDict(
                 {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'random_regret3': [1.0, 0],
+                 'random_regret4': [1.0, 0], 'random_charge': [1.0, 0],
                  'worst_greedy': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_regret3': [1.0, 0],
-                 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_regret3': [1.0, 0], 'charge': [1.0, 0]})
+                 'worst_regret4': [1.0, 0], 'worst_charge': [1.0, 0],
+                 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_regret3': [1.0, 0], 'shaw_regret4': [1.0, 0],
+                 'shaw_charge': [1.0, 0],
+                 'charge_greedy': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_regret3': [1.0, 0],
+                 'charge_regret4': [1.0, 0], 'charge_charge': [1.0, 0]})
 
         return operators_record
 
@@ -102,34 +129,45 @@ class ALNS():
         visited_hash_keys.add(current_solution.hash_key)
         MODE = "LOCAL"
 
-        #temperature = 1000  # Start temperature must be set differently. High temperature --> more randomness
-        temperature = (-heuristic_obj_vals[0]*0.05)/np.log(0.5)
-        #cooling_rate = 0.5  # cooling_rate in (0,1)
-        cooling_rate = np.exp(np.log(0.002)/200)
+        # temperature = 1000  # Start temperature must be set differently. High temperature --> more randomness
+        temperature = (-np.abs(heuristic_obj_vals[0])) * 0.05 / np.log(0.5)
+        # cooling_rate = 0.5  # cooling_rate in (0,1)
+        cooling_rate = np.exp(np.log(0.002) / 200)
 
         # SEGMENTS
         try:
-            for i in range(20):
-                #print(i)
+            for i in range(50):
+                # print(i)
 
                 # print(f"Iteration {i * 10}")
                 # print(f"Best objective value {best_solution[1]}")
                 # print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
                 loop = tqdm(range(10), total=10, leave=True)
-                loop.set_description(f"Segment[{i}/{100}]")
+                loop.set_description(f"Segment[{i}/{50}]")
                 loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val,
                                  best_true_obj_val=best_solution[1])
+                output_text = "\n"
+                counter = 1
 
                 for j in loop:
                     # print(f"Iteration {i*10 + j}")
                     candidate_solution = copy.deepcopy(current_solution)
 
-                    if MODE == "LOCAL":
-                        # print("\n----- LOCAL SEARCH -----")
+                    if MODE == "LOCAL_FIRST":
+                        print("\n----- LOCAL SEARCH FIRST BEST -----")
                         local_search = LocalSearch(candidate_solution.assigned_car_moves,
                                                    candidate_solution.world_instance.first_stage_tasks,
                                                    candidate_solution.feasibility_checker)
                         local_search.search("best_first")
+                        candidate_solution.rebuild(local_search.solution, "second_stage")
+                        visited_hash_keys.update(local_search.visited_list)
+
+                    elif MODE == "LOCAL_FULL":
+                        print("\n----- LOCAL SEARCH FULL -----")
+                        local_search = LocalSearch(candidate_solution.assigned_car_moves,
+                                                   candidate_solution.world_instance.first_stage_tasks,
+                                                   candidate_solution.feasibility_checker)
+                        local_search.search("full")
                         candidate_solution.rebuild(local_search.solution, "second_stage")
                         visited_hash_keys.update(local_search.visited_list)
 
@@ -142,7 +180,7 @@ class ALNS():
                             world_instance=candidate_solution.world_instance)
                         destroy_heuristic.destroy()
                         # print("Destroy: ", destroy_heuristic, destroy_heuristic.solution)
-                        #destroy_heuristic.to_string()
+                        # destroy_heuristic.to_string()
                         # print(destroy)
 
                         repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
@@ -153,12 +191,13 @@ class ALNS():
                         repair_heuristic.repair()
 
                         # print("Repair: ", repair_heuristic, repair_heuristic.solution)
-                        #repair_heuristic.to_string()
+                        # repair_heuristic.to_string()
                         hash_key = repair_heuristic.hash_key
                         if hash_key in visited_hash_keys:
+                            output_text += str(counter) + " Already visited solution\n"
+                            counter += 1
                             continue
                         visited_hash_keys.add(hash_key)
-
                         candidate_solution.rebuild(repair_heuristic.solution)
                         '''
                         hash_key = candidate_solution.hash_key
@@ -184,20 +223,28 @@ class ALNS():
                             if candidate_obj_val > best_obj_val:
                                 best_obj_val = candidate_obj_val
                                 best_solution = (candidate_solution, true_obj_val)
+                                output_text += str(counter) + f" New best solution globally: {candidate_obj_val}\n"
+                                counter += 1
                                 if MODE == "LNS":
                                     self._update_weight_record(_IS_BEST, destroy_heuristic, repair_heuristic)
                             # NEW LOCAL BEST
                             else:
+                                output_text += str(counter) + f" New local best solution locally: {candidate_obj_val}\n"
+                                counter += 1
                                 if MODE == "LNS":
                                     self._update_weight_record(_IS_BETTER, destroy_heuristic, repair_heuristic)
 
-                            MODE = "LOCAL"
+                            MODE = "LOCAL_FULL"
 
                         # NON-IMPROVING BUT ACCEPTED
                         else:
+                            p = np.exp(- (current_obj_val - candidate_obj_val) / temperature)
+                            output_text += str(
+                                counter) + f" New accepted solution: {candidate_obj_val}, acceptance probability was {p}, temperature was {temperature} \n"
+                            counter += 1
                             if MODE == "LNS":
                                 self._update_weight_record(_IS_ACCEPTED, destroy_heuristic, repair_heuristic)
-                                MODE = "LOCAL"
+                                MODE = "LOCAL_FIRST"
                             else:
                                 MODE = "LNS"
 
@@ -206,12 +253,15 @@ class ALNS():
                         current_solution = candidate_solution
 
                     else:
+                        output_text += str(counter) + " Not accepted solution\n"
+                        counter += 1
                         MODE = "LNS"
+                print(output_text)
 
                 # print statistics
-                #loop.set_description(f"Segment[{i}/{100}]")
+                # loop.set_description(f"Segment[{i}/{100}]")
                 loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val,
-                                     best_true_obj_val=best_solution[1])
+                                 best_true_obj_val=best_solution[1])
 
                 temperature *= cooling_rate
                 self._update_score_adjustment_parameters()
@@ -232,8 +282,8 @@ class ALNS():
             plt.legend(bbox_to_anchor=(.75, 1.0))
             plt.show()
             # print(obj_vals)
-            #print(self.operators_pairs)
-            #print(self.repair_operators)
+            # print(self.operators_pairs)
+            # print(self.repair_operators)
             print(self.operator_pairs)
             print("best solution")
             print("obj_val", best_solution[1])
@@ -259,13 +309,18 @@ class ALNS():
         operator_pair = random.choices(list(self.operator_pairs), w_dist)[0]
         self.operators_record[operator_pair][1] += 1
 
-        if operator_pair == "random_greedy" or operator_pair == "random_regret2" or operator_pair == "random_regret3":
+        if operator_pair == "random_greedy" or operator_pair == "random_regret2" or operator_pair == "random_regret3" \
+                or operator_pair == "random_regret4" or operator_pair == "random_charge":
             return RandomRemoval(solution, world_instance, neighborhood_size), operator_pair
-        elif operator_pair == "worst_greedy" or operator_pair == "worst_regret2" or operator_pair == "worst_regret3":
+        elif operator_pair == "worst_greedy" or operator_pair == "worst_regret2" or operator_pair == "worst_regret3" \
+                or operator_pair == "worst_regret4" or operator_pair == "worst_charge":
             return WorstRemoval(solution, world_instance, neighborhood_size, randomization_degree), operator_pair
-        elif operator_pair == "shaw_greedy" or operator_pair == "shaw_regret2" or operator_pair == "shaw_regret3":
+        elif operator_pair == "shaw_greedy" or operator_pair == "shaw_regret2" or operator_pair == "shaw_regret3" \
+                or operator_pair == "shaw_regret4" or operator_pair == "shaw_charge":
             return ShawRemoval(solution, world_instance, neighborhood_size, randomization_degree), operator_pair
-        elif operator_pair == "charge":
+        elif operator_pair == "charge_greedy" or operator_pair == "charge_regret2" or \
+                operator_pair == "charge_regret3" or operator_pair == "charge_regret4" \
+                or operator_pair == "charge_charge":
             return ChargeRemoval(solution, world_instance, neighborhood_size), operator_pair
         else:
             exit("Destroy operator does not exist")
@@ -273,17 +328,25 @@ class ALNS():
     def _get_repair_operator(self, destroyed_solution_object, unused_car_moves, world_instance, operator_pair) \
             -> Repair:
 
-        if operator_pair == "random_greedy" or operator_pair == "worst_greedy" or operator_pair == "shaw_greedy":
+        if operator_pair == "random_greedy" or operator_pair == "worst_greedy" or operator_pair == "shaw_greedy" or \
+                operator_pair == "charge_greedy":
             return GreedyInsertion(destroyed_solution_object, unused_car_moves, world_instance)
-        elif operator_pair == "random_regret2" or operator_pair == "worst_regret2" or operator_pair == "shaw_regret2":
+        elif operator_pair == "random_regret2" or operator_pair == "worst_regret2" or operator_pair == "shaw_regret2" \
+                or operator_pair == "charge_regret2":
             return RegretInsertion(destroyed_solution_object, unused_car_moves, world_instance, regret_nr=2)
-        elif operator_pair == "random_regret3" or operator_pair == "worst_regret3" or operator_pair == "shaw_regret3":
+        elif operator_pair == "random_regret3" or operator_pair == "worst_regret3" or operator_pair == "shaw_regret3" \
+                or operator_pair == "charge_regret3":
             return RegretInsertion(destroyed_solution_object, unused_car_moves, world_instance, regret_nr=3)
-        elif operator_pair == "charge":
-            return ChargeInsertion(destroyed_solution_object, unused_car_moves,world_instance,
+        elif operator_pair == "random_regret4" or operator_pair == "worst_regret4" or operator_pair == "shaw_regret4" \
+                or operator_pair == "charge_regret4":
+            return RegretInsertion(destroyed_solution_object, unused_car_moves, world_instance, regret_nr=4)
+        elif operator_pair == "random_charge" or operator_pair == 'worst_charge' or operator_pair == 'shaw_charge':
+            return ChargeInsertion(destroyed_solution_object, unused_car_moves, world_instance)
+        elif operator_pair == 'charge_charge':
+            return ChargeInsertion(destroyed_solution_object, unused_car_moves, world_instance,
                                    moves_not_insert=destroyed_solution_object.removed_moves_in_this_operation)
         else:
-            exit("Repair operator does not exist")
+            exit(f"Repair operator {operator_pair} does not exist")
 
     def _update_weight_record(self, operator_score, destroy, repair):
 
@@ -296,6 +359,9 @@ class ALNS():
                     self.operators_record['worst_regret2'][0] += operator_score
                 elif isinstance(destroy, ShawRemoval):
                     self.operators_record['shaw_regret2'][0] += operator_score
+                elif isinstance(destroy, ChargeRemoval):
+                    self.operators_record['charge_regret2'][0] += operator_score
+
             elif repair.regret_nr == 3:
                 if isinstance(destroy, RandomRemoval):
                     self.operators_record['random_regret3'][0] += operator_score
@@ -303,6 +369,18 @@ class ALNS():
                     self.operators_record['worst_regret3'][0] += operator_score
                 elif isinstance(destroy, ShawRemoval):
                     self.operators_record['shaw_regret3'][0] += operator_score
+                elif isinstance(destroy, ChargeRemoval):
+                    self.operators_record['charge_regret3'][0] += operator_score
+
+            elif repair.regret_nr == 4:
+                if isinstance(destroy, RandomRemoval):
+                    self.operators_record['random_regret4'][0] += operator_score
+                elif isinstance(destroy, WorstRemoval):
+                    self.operators_record['worst_regret4'][0] += operator_score
+                elif isinstance(destroy, ShawRemoval):
+                    self.operators_record['shaw_regret4'][0] += operator_score
+                elif isinstance(destroy, ChargeRemoval):
+                    self.operators_record['charge_regret4'][0] += operator_score
 
         elif isinstance(repair, GreedyInsertion):
             if isinstance(destroy, RandomRemoval):
@@ -311,9 +389,18 @@ class ALNS():
                 self.operators_record['worst_greedy'][0] += operator_score
             elif isinstance(destroy, ShawRemoval):
                 self.operators_record['shaw_greedy'][0] += operator_score
+            elif isinstance(destroy, ChargeRemoval):
+                self.operators_record['charge_greedy'][0] += operator_score
 
-        elif isinstance(destroy, ChargeRemoval) and isinstance(repair, ChargeInsertion):
-            self.operators_record['charge'][0] += operator_score
+        elif isinstance(repair, ChargeRemoval):
+            if isinstance(destroy, RandomRemoval):
+                self.operators_record['random_charge'][0] += operator_score
+            elif isinstance(destroy, WorstRemoval):
+                self.operators_record['worst_charge'][0] += operator_score
+            elif isinstance(destroy, ShawRemoval):
+                self.operators_record['shaw_charge'][0] += operator_score
+            elif isinstance(destroy, ChargeRemoval):
+                self.operators_record['charge_charge'][0] += operator_score
 
     def _update_score_adjustment_parameters(self):
         reaction_factor = 0.1
@@ -329,7 +416,17 @@ class ALNS():
 if __name__ == "__main__":
     from pyinstrument import Profiler
 
-    filename = "InstanceGenerator/InstanceFiles/32nodes/32-10-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/25nodes/25-10-1-1_a"
+
+    profiler = Profiler()
+    profiler.start()
+
+    ch = ConstructionHeuristic(filename + ".pkl")
+    ch.construct()
+    ch.print_solution()
+
+    profiler.stop()
+    print(profiler.output_text(unicode=True, color=True))
 
     # gi = GurobiInstance(filename + ".yaml")
     # run_model(gi, time_limit=10000.0)
@@ -338,7 +435,7 @@ if __name__ == "__main__":
     # profiler.start()
 
     # code you want to profile
-
+    '''
     try:
         alns = ALNS(filename + ".pkl")
     except KeyboardInterrupt:
@@ -347,10 +444,9 @@ if __name__ == "__main__":
             sys.exit(0)
         except SystemExit:
             os._exit(0)
-
+    '''
     # profiler.stop()
     # print(profiler.output_text(unicode=True, color=True))
-    #print("\n############## Optimal solution ##############")
-    gi2 = GurobiInstance(filename + ".yaml")
-    run_model(gi2, time_limit=100)
-
+    # print("\n############## Optimal solution ##############")
+    # gi2 = GurobiInstance(filename + ".yaml")
+    # run_model(gi2, time_limit=300)

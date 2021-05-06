@@ -103,7 +103,6 @@ class ConstructionHeuristic:
 
             # We have to reset all car moves before we begin adding new ones
             for employee_obj, car_move_objs in first_stage_solution.items():
-                emp = employee_ids[employee_obj.employee_id]
                 for cm_obj in car_move_objs:
                     cm = car_move_ids[cm_obj.car_move_id]
                     cm.reset()
