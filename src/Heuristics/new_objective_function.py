@@ -1,5 +1,4 @@
 import copy
-
 import numpy as np
 
 from Heuristics.helper_functions_heuristics import get_first_stage_solution, copy_numpy_dict
@@ -12,6 +11,7 @@ class ObjectiveFunction:
     def __init__(self, world_instance):
         self.world_instance = world_instance
         self.parking_nodes = world_instance.parking_nodes
+        self.parking_node_ids = [n.node_id for n in world_instance.parking_nodes]
         self.num_scenarios = world_instance.num_scenarios
         self._z = self._initialize_z()
         self._w = self._initialize_w()
@@ -20,55 +20,6 @@ class ObjectiveFunction:
         self._heuristic_objective_value = None
         self._true_objective_value = None
         self.update()
-
-    def _initialize_z(self):
-        z = {node.node_id: (node.parking_state + node.car_returns) for node in self.parking_nodes}
-        return z
-
-    def _initialize_w(self):
-        #w = {node.node_id: (node.ideal_state - node.parking_state - node.car_returns - self.z[node.node_id]) for node in self.parking_nodes}
-        w = {node.node_id: (node.ideal_state - node.parking_state - node.car_returns) for node in self.parking_nodes}
-        #w = {node.node_id: (node.ideal_state) for node in self.parking_nodes}
-        return w
-
-    def _initialize_charging_deviation(self):
-        num_cars_in_need_of_charging = sum(pnode.charging_state for pnode in self.parking_nodes)
-        return np.array([num_cars_in_need_of_charging for _ in range(self.num_scenarios)])
-
-    @property
-    def z(self):
-        """
-        z is the number of customer requests served. It must be the lower of the two values
-        available cars and the number of customer requests D_is
-        :return: z, dictionary with node_id as keys and a numpy array for each scenario as value, {node_id: np.array([0, 2, 1])}
-        """
-        z = {}
-        for node in self.parking_nodes:
-            z_val = np.minimum(self._z[node.node_id], node.customer_requests)
-            z_val = np.maximum(z_val, 0)
-            z[node.node_id] = z_val
-        return z
-
-    def _get_z(self, z):
-        new_z = {}
-        for node in self.parking_nodes:
-            z_val = np.minimum(z[node.node_id], node.customer_requests)
-            z_val = np.maximum(z_val, 0)
-            new_z[node.node_id] = z_val
-        return new_z
-
-    @property
-    def w(self):
-        w = {}
-        for n in self.parking_nodes:
-            w[n.node_id] = np.maximum(self._w[n.node_id], 0)
-        return w
-
-    def _get_w(self, w):
-        new_w = {}
-        for n in self.parking_nodes:
-            new_w[n.node_id] = np.maximum(w[n.node_id], 0)
-        return new_w
 
     @property
     def heuristic_objective_value(self):
@@ -85,6 +36,34 @@ class ObjectiveFunction:
     @property
     def true_objective_value_scenarios(self):
         return self._true_objective_value
+
+    def _initialize_z(self):
+        z = {node.node_id: (node.parking_state + node.car_returns) for node in self.parking_nodes}
+        return z
+
+    def _initialize_w(self):
+        #w = {node.node_id: (node.ideal_state - node.parking_state - node.car_returns - self.z[node.node_id]) for node in self.parking_nodes}
+        w = {node.node_id: (node.ideal_state - node.parking_state - node.car_returns) for node in self.parking_nodes}
+        #w = {node.node_id: (node.ideal_state) for node in self.parking_nodes}
+        return w
+
+    def _initialize_charging_deviation(self):
+        num_cars_in_need_of_charging = sum(pnode.charging_state for pnode in self.parking_nodes)
+        return np.array([num_cars_in_need_of_charging for _ in range(self.num_scenarios)])
+
+    def _get_constrained_z(self, z):
+        new_z = {}
+        for node in self.parking_nodes:
+            z_val = np.minimum(z[node.node_id], node.customer_requests)
+            z_val = np.maximum(z_val, 0)
+            new_z[node.node_id] = z_val
+        return new_z
+
+    def _get_constrained_w(self, w):
+        new_w = {}
+        for n in self.parking_nodes:
+            new_w[n.node_id] = np.maximum(w[n.node_id], 0)
+        return new_w
 
     def _get_parking_nodes_in_out(self, added_car_moves: [CarMove], removed_car_moves: [CarMove]) -> ([Node], [Node]):
         """
@@ -112,13 +91,7 @@ class ObjectiveFunction:
 
         return nodes_in, nodes_out
 
-    def _get_z_diff(self, z):
-        z_diff = {}
-        for n in self.parking_nodes:
-            z_diff[n.node_id] = z[n.node_id] - self._z[n.node_id]
-        return z_diff
-
-    def evaluate(self, added_car_moves: [CarMove]=None, removed_car_moves: [CarMove]=None, scenario: int=None):
+    def evaluate(self, added_car_moves: [CarMove] = None, removed_car_moves: [CarMove] = None, scenario: int = None):
         """
         :param added_car_moves: list of car moves, e.g: [cm1, cm2]
         :param removed_car_moves: list of car moves, e.g: [cm1, cm2]
@@ -132,37 +105,31 @@ class ObjectiveFunction:
 
         nodes_in, nodes_out = self._get_parking_nodes_in_out(added_car_moves, removed_car_moves)
         z = self._update_z(nodes_in, nodes_out, scenario)
-        #z_diff = self._get_z_diff(z)
-        #print(f"z_diff: {z_diff}")
-        z = self._get_z(z)
         w = self._update_w(nodes_in, nodes_out, scenario, z=z)
         relocation_time = self._update_relocation_time(added_car_moves, removed_car_moves, scenario)
         charging_deviation = self._update_charging_deviation(added_car_moves, removed_car_moves, scenario)
-        #print(f"w: {w}
-        w = self._get_w(w)
-        #print(f"w: {w}")
-        heuristic_obj_val, true_obj_val = self._calculate_obj_val(z, w, relocation_time, charging_deviation)
+        heuristic_obj_val, _ = self._calculate_obj_val(z, w, relocation_time, charging_deviation)
 
         if scenario is not None:
             return heuristic_obj_val[scenario]
         else:
             return np.mean(heuristic_obj_val)
 
-    def update(self, added_car_moves: [CarMove]=[], removed_car_moves: [CarMove]=[], scenario: int=None):
-        '''
+    def update(self, added_car_moves: [CarMove] = None, removed_car_moves: [CarMove] = None, scenario: int = None):
+
+        if added_car_moves is None:
+            added_car_moves = []
         if added_car_moves is None:
             added_car_moves = []
         if removed_car_moves is None:
             removed_car_moves = []
-        '''
+
         nodes_in, nodes_out = self._get_parking_nodes_in_out(added_car_moves, removed_car_moves)
         z = self._update_z(nodes_in, nodes_out, scenario, update=True)
-        z_new = self._get_z(z)
-        w = self._update_w(nodes_in, nodes_out, scenario, z=z_new, update=True)
+        w = self._update_w(nodes_in, nodes_out, scenario, z=z, update=True)
         relocation_time = self._update_relocation_time(added_car_moves, removed_car_moves, scenario, update=True)
         charging_deviation = self._update_charging_deviation(added_car_moves, removed_car_moves, scenario, update=True)
-        w = self._get_w(w)
-        self._heuristic_objective_value, self._true_objective_value = self._calculate_obj_val(z_new, w, relocation_time, charging_deviation)
+        self._heuristic_objective_value, self._true_objective_value = self._calculate_obj_val(z, w, relocation_time, charging_deviation)
 
 
     def _update_z(self, nodes_in: [Node]=None, nodes_out: [Node]=None, scenario: int=None, update=False):
@@ -189,7 +156,8 @@ class ObjectiveFunction:
         if update:
             self._z = z
 
-        return z
+        return self._get_constrained_z(z)
+
 
 
     def _update_w(self, nodes_in: [Node]=None, nodes_out: [Node]=None, scenario: int=None, z=None, update=False):
@@ -201,7 +169,6 @@ class ObjectiveFunction:
         :param z: if you want to evaluate a solution, you must provide a z value, else the instance's z value is used
         :return: only if evaluate=True, else w is changed inplace.
         """
-        # Does not work for the second stage
         w = copy_numpy_dict(self._w)
 
         if scenario is None:
@@ -221,11 +188,12 @@ class ObjectiveFunction:
         for node in self.parking_nodes:
             w[node.node_id] += z[node.node_id]
 
-        return w
+        return self._get_constrained_w(w)
 
     def _update_relocation_time(self, added_car_moves, removed_car_moves, scenario, update=False):
 
-        relocation_time = np.copy(self._relocation_time)
+        #relocation_time = np.copy(self._relocation_time)
+        relocation_time = np.array(self._relocation_time) #np.array is faster than np.copy and also makes a copy
 
         if scenario is None:
             relocation_time += sum(car_move.handling_time for car_move in added_car_moves)
@@ -241,7 +209,9 @@ class ObjectiveFunction:
     def _update_charging_deviation(self, added_car_moves, removed_car_moves, scenario, update=False):
         num_charging_moves_added = sum(1 for cm in added_car_moves if cm.is_charging_move)
         num_charging_moves_removed = sum(1 for cm in removed_car_moves if cm.is_charging_move)
-        charging_deviation = np.copy(self._charging_deviation)
+        #charging_deviation = np.copy(self._charging_deviation)
+        charging_deviation = np.array(self._charging_deviation)
+
 
 
         if scenario is None:
@@ -322,15 +292,24 @@ class ObjectiveFunction:
 
 
 if __name__ == "__main__":
-    from Heuristics.new_construction_heuristic import ConstructionHeuristic
-    from Heuristics.feasibility_checker import FeasibilityChecker
+    from pyinstrument import Profiler
+    from src.Gurobi.Model.run_model import run_model
+    from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
+    from new_construction_heuristic import ConstructionHeuristic
 
-    filename = "InstanceGenerator/InstanceFiles/8nodes/8-2-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_c"
     ch = ConstructionHeuristic(filename + ".pkl")
+    profiler = Profiler()
+    profiler.start()
+
     ch.construct()
+
+    profiler.stop()
+    print(profiler.output_text(unicode=True, color=True))
     true_obj_val, best_obj_val = ch.get_obj_val(both=True)
     # print(f"Construction heuristic true obj. val {true_obj_val}")
     ch.print_solution()
-    #first_stage_solution = get_first_stage_solution(ch.assigned_car_moves, ch.world_instance.first_stage_tasks)
-    #feasibility_checker = FeasibilityChecker(ch.world_instance)
-    #feasibility_checker.is_first_stage_solution_feasible(first_stage_solution, False)
+
+    print("\n############## Evaluate solution ##############")
+    gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)
+    run_model(gi)

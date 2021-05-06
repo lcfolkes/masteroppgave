@@ -1,4 +1,7 @@
 import itertools
+
+import numpy as np
+
 from src.HelperFiles.helper_functions import read_config
 import os
 from path_manager import path_to_src
@@ -43,10 +46,10 @@ class ParkingNode(Node):
         self.customer_requests = None
         self.car_returns = None
 
-    def set_customer_requests(self, value: [int]):
+    def set_customer_requests(self, value: np.array([int])):
         self.customer_requests = value
 
-    def set_car_returns(self, value: [int]):
+    def set_car_returns(self, value: np.array([int])):
         self.car_returns = value
 
     def get_nr(self):
@@ -82,9 +85,11 @@ class ChargingNode(Node):
                 else:
                     self.num_charging[s] += 1
 
+
     def remove_car(self, scenario: int = None):
         if scenario is not None:
             if self.num_charging[scenario] == 0:
+                #print(f"Car move {} can not be removed from node {} as there are no cars there")
                 raise Exception("No cars can be removed from charging node as there are no cars there")
             else:
                 self.num_charging[scenario] -= 1
@@ -94,6 +99,7 @@ class ChargingNode(Node):
                     raise Exception("No cars can be removed from charging node as there are no cars there")
                 else:
                     self.num_charging[s] -= 1
+
 
     def reset(self, scenario: int = None):
         if scenario is not None:
@@ -179,15 +185,18 @@ class CarMove:
 
     def reset(self, scenario=None):
         if scenario is None:
+            if self.is_charging_move and all(i > 0 for i in self.end_node.num_charging):
+                self.end_node.remove_car()
             self.employee = None
             self.start_time = None
-            if self.is_charging_move:
-                self.end_node.reset()
+
         else:
+            if self.is_charging_move and self.end_node.num_charging[scenario] > 0:
+                self.end_node.remove_car(scenario)
             self.employee_second_stage[scenario] = []
             self.start_times_second_stage[scenario] = []
-            if self.is_charging_move:
-                self.end_node.reset(scenario)
+
+
 
     def initialize_second_stage(self, num_scenarios: int):
         for _ in range(num_scenarios):
@@ -280,6 +289,7 @@ class Employee:
         for s, scenario in enumerate(self.car_moves_second_stage):
             for cm in scenario:
                 cm.reset(scenario=s)
+        '''        
         for i in range(len(self.start_times_car_moves)):
             self.start_times_car_moves[i] = []
             self.travel_times_car_moves[i] = []
@@ -287,7 +297,17 @@ class Employee:
             for i in range(len(self.start_times_car_moves_second_stage[s])):
                 self.start_times_car_moves_second_stage[s][i] = []
                 self.travel_times_car_moves_second_stage[s][i] = []
-        self.__init__(start_node=self.start_node, start_time=self.start_time, handling=self.handling)
+        '''
+        self.current_node = self.start_node
+        self.current_node_second_stage = []
+        self.current_time = self.start_time
+        self.current_time_second_stage = []
+        self.car_moves = []
+        self.start_times_car_moves = []
+        self.travel_times_car_moves = []
+        self.car_moves_second_stage = []
+        self.start_times_car_moves_second_stage = []
+        self.travel_times_car_moves_second_stage = []
 
     def to_string(self):
         return f"employee_id: {self.employee_id}\t start_node: {self.start_node.node_id}\t current_node: {self.current_node.node_id}" \
