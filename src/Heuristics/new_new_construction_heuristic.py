@@ -225,8 +225,7 @@ class ConstructionHeuristic:
                         # TODO: remove car_moves with this destination
                         continue
 
-                obj_val = self.objective_function.evaluate(added_car_moves=[car_move])
-
+                obj_val = self.objective_function.evaluate(added_car_moves=[car_move], both="heuristic")
                 if obj_val > best_obj_val_first_stage:
                     best_obj_val_first_stage = obj_val
                     best_car_move_first_stage = car_move

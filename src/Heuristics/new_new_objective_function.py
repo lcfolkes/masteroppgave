@@ -6,6 +6,7 @@ from InstanceGenerator.instance_components import CarMove, Node
 from InstanceGenerator.world import World
 
 
+
 class ObjectiveFunction:
 
     def __init__(self, world_instance):
@@ -16,7 +17,6 @@ class ObjectiveFunction:
 
         self._z = self._initialize_z()
         self._w = self._initialize_w()
-        print("W", self._w)
         self._charging_deviation = self._initialize_charging_deviation()
         self._relocation_time = np.array([0.0 for _ in range(self.num_scenarios)])
 
@@ -36,13 +36,12 @@ class ObjectiveFunction:
         return self._true_objective_value
 
     def _initialize_z(self):
-        z = {node.node_id: [(np.minimum((node.parking_state + node.car_returns), node.customer_requests) for _ in range(self.num_scenarios)] for node
-             in self.parking_nodes}
+        z = {node.node_id: np.minimum((node.parking_state + node.car_returns), node.customer_requests) for node in self.parking_nodes}
 
         return z
 
     def _initialize_w(self):
-        w = {node.node_id: [np.max((node.ideal_state - node.parking_state + self._z[node.node_id][s] - node.car_returns), 0) for s in range(self.num_scenarios)]
+        w = {node.node_id: np.maximum((node.ideal_state - node.parking_state + self._z[node.node_id] - node.car_returns), 0)
              for node in self.parking_nodes}
 
         return w
@@ -51,7 +50,7 @@ class ObjectiveFunction:
         num_cars_in_need_of_charging = sum(pnode.charging_state for pnode in self.parking_nodes)
         return np.array([num_cars_in_need_of_charging for _ in range(self.num_scenarios)])
 
-    def evaluate(self, added_car_moves: [CarMove] = None, removed_car_moves: [CarMove] = None, scenario: int = None):
+    def evaluate(self, added_car_moves: [CarMove] = None, removed_car_moves: [CarMove] = None, scenario: int = None, both = "both"):
         """
         :param added_car_moves: list of car moves, e.g: [cm1, cm2]
         :param removed_car_moves: list of car moves, e.g: [cm1, cm2]
@@ -69,15 +68,20 @@ class ObjectiveFunction:
         self._update_relocation_time(added_car_moves, removed_car_moves, scenario)
         self._update_charging_deviation(added_car_moves, removed_car_moves, scenario)
 
-        true_objective_value = self._true_objective_value
-        heuristic_objective_value = self._heuristic_objective_value
+        true_objective_value = copy.copy(self._true_objective_value)
+        heuristic_objective_value = copy.copy(self._heuristic_objective_value)
 
         self._update_z(nodes_out, nodes_in, scenario)
         self._update_w(nodes_out, nodes_in, scenario)
         self._update_relocation_time(removed_car_moves, added_car_moves, scenario)
         self._update_charging_deviation(removed_car_moves, added_car_moves, scenario)
 
-        return true_objective_value, heuristic_objective_value
+        if both == "both":
+            return true_objective_value, heuristic_objective_value
+        elif both == "true":
+            return true_objective_value
+        elif both == "heuristic":
+            return heuristic_objective_value
 
     def update(self, added_car_moves: [CarMove] = None, removed_car_moves: [CarMove] = None, scenario: int = None):
 
@@ -101,9 +105,11 @@ class ObjectiveFunction:
 
         if scenario is None:
             for n in nodes_out:
-                self._z[n.node_id] -= 1
-                self._true_objective_value -= World.PROFIT_RENTAL
-                self._heuristic_objective_value -= World.PROFIT_RENTAL
+                for z in self._z[n.node_id]:
+                    if z != 0:
+                        z -= 1
+                        self._true_objective_value -= World.PROFIT_RENTAL / self.num_scenarios
+                        self._heuristic_objective_value -= World.PROFIT_RENTAL / self.num_scenarios
             for n in nodes_in:
                 for s in range(self.num_scenarios):
                     if self._z[n.node_id][s] < n.customer_requests[s]:
@@ -130,7 +136,8 @@ class ObjectiveFunction:
 
         if scenario is None:
             for n in nodes_out:
-                self._w[n.node_id] += 1
+                for w in self._w[n.node_id]:
+                    w += 1
                 self._true_objective_value -= World.COST_DEVIATION
                 self._heuristic_objective_value -= World.COST_DEVIATION
             for n in nodes_in:
@@ -224,7 +231,7 @@ if __name__ == "__main__":
     from pyinstrument import Profiler
     from src.Gurobi.Model.run_model import run_model
     from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
-    from new_construction_heuristic import ConstructionHeuristic
+    from new_new_construction_heuristic import ConstructionHeuristic
 
     filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_c"
     ch = ConstructionHeuristic(filename + ".pkl")
