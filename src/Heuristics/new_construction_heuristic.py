@@ -507,14 +507,14 @@ if __name__ == "__main__":
 
     ch.construct()
     finish = time.perf_counter()
-    print(f"Finished in {round(finish - start, 2)} seconds(s)")
+
 
     #profiler.stop()
     #print(profiler.output_text())#unicode=True, color=True))
     true_obj_val, best_obj_val = ch.get_obj_val(both=True)
     # print(f"Construction heuristic true obj. val {true_obj_val}")
     ch.print_solution()
-
-    print("\n############## Evaluate solution ##############")
-    gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)
-    run_model(gi)
+    print(f"Finished in {round(finish - start, 2)} seconds(s)")
+    #print("\n############## Evaluate solution ##############")
+    #gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)
+    #run_model(gi)
