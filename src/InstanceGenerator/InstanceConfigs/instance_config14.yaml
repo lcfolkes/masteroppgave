@@ -1,13 +1,13 @@
 ### INSTANCE ###
 
 #TIME OF DAY
-time_of_day: 7
+time_of_day: 16
 
 # NUMBER OF EXAMPLES TO CREATE #
 examples: 1
 
 # SCENARIOS
-num_scenarios: 10
+num_scenarios: 25
 
 # TASKS
 tasks:
@@ -15,16 +15,16 @@ tasks:
   num_first_stage: 1
 
 # NUMBER OF PARKING NODES IN INSTANCE
-num_parking_nodes: 14
+num_parking_nodes: 26
 
 # NUMBER OF AVAILABLE/CHARGED CARS IN INSTANCE
 num_charged_cars: 13
 
 #CHARGING NODES
 charging_nodes:
-  num_charging: 2
-  parking_nodes: [3,12]
-  capacities: [2,2]
+  num_charging: 4
+  parking_nodes: [3,5,10,12]
+  capacities: [2,2,2,2]
 
 #EMPLOYEES
 employees:
