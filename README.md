@@ -40,7 +40,7 @@ This is a nice command to make a alias for.
 ssh solstorm-login.iot.ntnu.no -l <username>
 ```
 
-### Pull from github in Solstorm login node
+### Pull from github in Solstorm login node or screen
 ```
 cd /storage/users/<username>/masteroppgave
 git pull
