@@ -17,7 +17,7 @@ class ObjectiveFunction:
         self._z = self._initialize_z()
         self._w = self._initialize_w()
         self._charging_deviation = self._initialize_charging_deviation()
-        self._relocation_time = np.array([0.0 for _ in range(self.num_scenarios)])
+        #self._relocation_time = np.array([0.0 for _ in range(self.num_scenarios)])
         self._true_objective_value = \
             World.PROFIT_RENTAL * np.sum([np.sum([np.min(scenario) for scenario in node]) for node in self._z]) / self.num_scenarios \
             - World.COST_DEVIATION * np.sum([np.sum([np.maximum(w, 0) for w in node]) for node in self._w]) / self.num_scenarios
@@ -117,7 +117,7 @@ class ObjectiveFunction:
                 for s in range(self.num_scenarios):
                     self._z[n.node_id-1][s][0] += 1
                     self._w[n.node_id-1][s] -= 1
-                    if self._z[n.node_id-1][s][0] < self._z[n.node_id-1][s][1]:
+                    if self._z[n.node_id-1][s][0] <= self._z[n.node_id-1][s][1]:
                         self._true_objective_value += World.PROFIT_RENTAL / self.num_scenarios
                         self._heuristic_objective_value += World.PROFIT_RENTAL / self.num_scenarios
                     elif self._w[n.node_id-1][s] >= 0 and self._w[n.node_id-1][s] <= n.ideal_state:
@@ -137,7 +137,7 @@ class ObjectiveFunction:
             for n in nodes_in:
                 self._z[n.node_id-1][scenario][0] += 1
                 self._w[n.node_id-1][scenario] -= 1
-                if self._z[n.node_id-1][scenario][0] < self._z[n.node_id-1][scenario][1]:
+                if self._z[n.node_id-1][scenario][0] <= self._z[n.node_id-1][scenario][1]:
                     self._true_objective_value += World.PROFIT_RENTAL / self.num_scenarios
                     self._heuristic_objective_value += World.PROFIT_RENTAL / self.num_scenarios
                 elif self._w[n.node_id-1][scenario] >= 0 and self._w[n.node_id-1][scenario] <= n.ideal_state:
@@ -179,26 +179,27 @@ class ObjectiveFunction:
     def _update_relocation_time(self, added_car_moves, removed_car_moves, scenario):
 
         if scenario is None:
-            self._relocation_time += sum(car_move.handling_time for car_move in added_car_moves)
-            self._relocation_time -= sum(car_move.handling_time for car_move in removed_car_moves)
-            self._true_objective_value += World.COST_RELOCATION * (np.sum(car_move.handling_time for car_move in
-                                                                       removed_car_moves) - np.sum(car_move.handling_time
+            #self._relocation_time += sum(car_move.handling_time for car_move in added_car_moves)
+            #self._relocation_time -= sum(car_move.handling_time for car_move in removed_car_moves)
+            self._true_objective_value += World.COST_RELOCATION * (sum(car_move.handling_time for car_move in
+                                                                       removed_car_moves) - sum(car_move.handling_time
                                                                                                 for car_move in
                                                                                                 added_car_moves))
-            self._heuristic_objective_value += World.COST_RELOCATION * (np.sum(car_move.handling_time for car_move in
-                                                                            removed_car_moves) - np.sum(car_move.
+            self._heuristic_objective_value += World.COST_RELOCATION * (sum(car_move.handling_time for car_move in
+                                                                            removed_car_moves) - sum(car_move.
                                                                                                      handling_time for
                                                                                                      car_move in
                                                                                                      added_car_moves))
         else:
-            self._relocation_time[scenario] += sum(car_move.handling_time for car_move in added_car_moves)
-            self._relocation_time[scenario] -= sum(car_move.handling_time for car_move in removed_car_moves)
-            self._true_objective_value += World.COST_RELOCATION * ((np.sum(car_move.handling_time for car_move in
-                                                                       removed_car_moves) - np.sum(car_move.handling_time
+            #self._relocation_time[scenario] += sum(car_move.handling_time for car_move in added_car_moves)
+            #self._relocation_time[scenario] -= sum(car_move.handling_time for car_move in removed_car_moves)
+
+            self._true_objective_value += World.COST_RELOCATION * ((sum(car_move.handling_time for car_move in
+                                                                       removed_car_moves) - sum(car_move.handling_time
                                                                                                 for car_move in
                                                                                                 added_car_moves)) / self.num_scenarios)
-            self._heuristic_objective_value += World.COST_RELOCATION * ((np.sum(car_move.handling_time for car_move in
-                                                                            removed_car_moves) - np.sum(car_move.
+            self._heuristic_objective_value += World.COST_RELOCATION * ((sum(car_move.handling_time for car_move in
+                                                                            removed_car_moves) - sum(car_move.
                                                                                                      handling_time for
                                                                                                      car_move in
                                                                                                      added_car_moves)) / self.num_scenarios)
@@ -249,14 +250,17 @@ if __name__ == "__main__":
     from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
     from new_new_construction_heuristic import ConstructionHeuristic
 
-    filename = "InstanceGenerator/InstanceFiles/2nodes/2-2-1-1_a"
-    profiler = Profiler()
-    profiler.start()
+    filename = "InstanceGenerator/InstanceFiles/40nodes/40-10-1-1_a"
+
 
     ch = ConstructionHeuristic(filename + ".pkl")
+    profiler = Profiler()
+    profiler.start()
     ch.construct()
-    print(ch.objective_function.heuristic_objective_value)
+    #print(ch.objective_function.heuristic_objective_value)
     ch.print_solution()
+    profiler.stop()
+    print(profiler.output_text(unicode=True, color=True))
     '''
     nodes_in, nodes_out = get_parking_nodes_in_out([ch.car_moves[0]], [])
     print(ch.objective_function.heuristic_objective_value)
@@ -282,11 +286,10 @@ if __name__ == "__main__":
 
     #ch.construct()
 
-    profiler.stop()
-    print(profiler.output_text(unicode=True, color=True))
+
 
     # print(f"Construction heuristic true obj. val {true_obj_val}")
-    ch.print_solution()
+    #ch.print_solution()
 
     print("\n############## Evaluate solution ##############")
     #gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)

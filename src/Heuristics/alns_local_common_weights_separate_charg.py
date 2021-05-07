@@ -417,10 +417,17 @@ if __name__ == "__main__":
     from pyinstrument import Profiler
     from new_new_objective_function import get_parking_nodes_in_out
 
-    filename = "InstanceGenerator/InstanceFiles/2nodes/2-2-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/40nodes/40-10-1-1_a"
     ch = ConstructionHeuristic(filename + ".pkl")
+    profiler = Profiler()
+    profiler.start()
+
     ch.construct()
+
     ch.print_solution()
+
+    profiler.stop()
+    print(profiler.output_text(unicode=True, color=True))
     '''
     nodes_in, nodes_out = get_parking_nodes_in_out([ch.car_moves[0]], [])
     true = ch.objective_function.evaluate([ch.car_moves[0]])
