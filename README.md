@@ -35,6 +35,7 @@ To remove packages just remove it from the packages.yml and run the same command
 This is a nice command to make a alias for.
 
 ## Solstorm
+
 ### Login
 ```
 ssh solstorm-login.iot.ntnu.no -l <username>
@@ -45,6 +46,13 @@ ssh solstorm-login.iot.ntnu.no -l <username>
 cd /storage/users/<username>/masteroppgave
 git pull
 ```
+
+### Setup
+```
+cd /storage/users/<username>/masteroppgave
+pip install -r requirements.txt
+```
+
 
 ### Screen
 To run from a compute node one must first connect to a *screen*.
