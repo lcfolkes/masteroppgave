@@ -4,7 +4,7 @@ import random
 from Heuristics.feasibility_checker import FeasibilityChecker
 from path_manager import path_to_src
 from abc import ABC, abstractmethod
-from Heuristics.helper_functions_heuristics import insert_car_move, remove_all_car_moves_of_car_in_car_move
+from Heuristics.helper_functions_heuristics import insert_car_move, remove_all_car_moves_of_car_in_car_move, get_first_stage_solution_list_from_dict
 from Heuristics.new_objective_function import ObjectiveFunction
 
 from InstanceGenerator.instance_components import CarMove, Employee
