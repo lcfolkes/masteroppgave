@@ -2,10 +2,12 @@ import os
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Heuristics.feasibility_checker import FeasibilityChecker
 from Heuristics.helper_functions_heuristics import remove_all_car_moves_of_car_in_car_move, \
-    get_first_and_second_stage_solution
-from Heuristics.new_objective_function import ObjectiveFunction
-from HelperFiles.helper_functions import load_object_from_file
-from Gurobi.Model.run_model import run_model
+    get_first_stage_solution_and_removed_moves, get_first_stage_solution, get_first_and_second_stage_solution, \
+    get_assigned_car_moves, get_first_stage_solution_list_from_dict, get_separate_assigned_car_moves, \
+    get_first_stage_solution_list_from_solution
+from Heuristics.new_new_objective_function import ObjectiveFunction
+from src.HelperFiles.helper_functions import load_object_from_file
+from src.Gurobi.Model.run_model import run_model
 import pandas as pd
 from path_manager import path_to_src
 
@@ -223,8 +225,7 @@ class ConstructionHeuristic:
                         # TODO: remove car_moves with this destination
                         continue
 
-                obj_val = self.objective_function.evaluate(added_car_moves=[car_move])
-
+                obj_val = self.objective_function.evaluate(added_car_moves=[car_move], both="heuristic")
                 if obj_val > best_obj_val_first_stage:
                     best_obj_val_first_stage = obj_val
                     best_car_move_first_stage = car_move
@@ -243,7 +244,7 @@ class ConstructionHeuristic:
         # SECOND STAGE
         else:
             best_car_move_second_stage = [None for _ in range(self.num_scenarios)]
-            best_obj_val_second_stage = list(self.objective_function.heuristic_objective_value_scenarios)
+            best_obj_val_second_stage = [self.objective_function.heuristic_objective_value for _ in range(self.num_scenarios)]
 
             for s in range(self.num_scenarios):
                 # Parking moves second stage
@@ -559,12 +560,13 @@ if __name__ == "__main__":
 
     ch.construct()
 
-    profiler.stop()
-    print(profiler.output_text(unicode=True, color=True))
-    true_obj_val, best_obj_val = ch.get_obj_val(both=True)
-    # print(f"Construction heuristic true obj. val {true_obj_val}")
     ch.print_solution()
 
-    print("\n############## Evaluate solution ##############")
-    gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)
-    run_model(gi)
+    profiler.stop()
+    print(profiler.output_text(unicode=True, color=True))
+    # print(f"Construction heuristic true obj. val {true_obj_val}")
+
+
+    #print("\n############## Evaluate solution ##############")
+    #gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)
+    #run_model(gi)
