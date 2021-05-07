@@ -34,6 +34,7 @@ class ConstructionHeuristic:
         self.assigned_car_moves = {k: [[] for _ in range(self.num_scenarios)] for k in
                                    self.employees}  # [gamma_k] dictionary containing ordered list of car_moves,
         # assigned to employee k in scenario s
+        self.car_moves_dict = {}
         self.car_moves = []  # self.world_instance.car_moves
         self.car_moves_second_stage = []
         self._initialize_car_moves()
@@ -149,6 +150,7 @@ class ConstructionHeuristic:
         for car in self.world_instance.cars:
             for car_move in car.car_moves:
                 self.car_moves.append(car_move)
+                self.car_moves_dict[car_move.car_move_id] = car_move
                 for s in range(self.num_scenarios):
                     self.unused_car_moves[s].append(car_move)
 
@@ -242,12 +244,17 @@ class ConstructionHeuristic:
             return self._get_best_car_move_process(self.car_moves)
         # SECOND STAGE
         else:
-            #best_car_move_second_stage = [None for _ in range(self.num_scenarios)]
             args = ((self.car_moves_second_stage[s], s) for s in range(self.num_scenarios))
-            #for s in range(self.num_scenarios):
-            #    best_car_move_second_stage[s] = self._get_best_car_move_process(car_moves=self.car_moves_second_stage[s], scenario=s)
             with mp.Pool() as pool:
                 best_car_move_second_stage = pool.starmap(self._get_best_car_move_process, args)
+            best_car_move_second_stage = [self.car_moves_dict[cm.car_move_id] if cm is not None else None for cm in best_car_move_second_stage]
+            #print(f"parallel: {best_car_move_second_stage}")
+
+            #best_car_move_second_stage = [None for _ in range(self.num_scenarios)]
+            #for s in range(self.num_scenarios):
+            #    best_car_move_second_stage[s] = self._get_best_car_move_process(car_moves=self.car_moves_second_stage[s], scenario=s)
+            #print(f"sequential: {best_car_move_second_stage}")
+
             return best_car_move_second_stage
 
     def _get_best_employee(self, best_car_move):
@@ -509,7 +516,7 @@ if __name__ == "__main__":
     ch.construct()
 
     profiler.stop()
-    print(profiler.output_text(unicode=True, color=True))
+    print(profiler.output_text())#unicode=True, color=True))
     true_obj_val, best_obj_val = ch.get_obj_val(both=True)
     # print(f"Construction heuristic true obj. val {true_obj_val}")
     ch.print_solution()
