@@ -34,17 +34,20 @@ conda env update --prefix ./env --file environment.yml  --prune
 To remove packages just remove it from the packages.yml and run the same command. 
 This is a nice command to make a alias for.
 
-## Testing
-To run all tests run the following command in the root directory of the project
+## Run from terminal
+To run a file from the terminal one must first set the <code>PYTHONPATH</code>. First, navigate to the root directory.
 ```
-python -m unittest discover
+cd masteroppgave/src
 ```
-To run only test for a specific module, run:
+Then update <code>PYTHONPATH</code> with the following command:
 ```
-python -m unittest discover <module_name>
+export PYTHONPATH="$PWD"
 ```
-e.g.:
+To confirm that the root directory is added to <code>PYTHONPATH</code>, type:
 ```
-python -m unittest discover system_simulation
+echo $PYTHONPATH
 ```
-
+When <code>PYTHONPATH</code> is set correctly, simply run the file. Remember to specify path relative to <code>/src</code>. E.g.:
+```
+python Heuristics/main.py
+```
