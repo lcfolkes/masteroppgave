@@ -232,12 +232,12 @@ class ConstructionHeuristic:
 
                 # La til dette 4 mai - mathias
                 # For at den skal velge minst tidkrevende charging moves
-                '''
+
                 elif obj_val == best_obj_val_first_stage:
                     if car_move.handling_time < best_car_move_first_stage.handling_time:
                         best_obj_val_first_stage = obj_val
                     best_car_move_first_stage = car_move
-                '''
+
             return best_car_move_first_stage
 
 
@@ -258,7 +258,7 @@ class ConstructionHeuristic:
                             continue
 
                     obj_val = self.objective_function.evaluate(added_car_moves=[self.car_moves_second_stage[s][r]],
-                                                               scenario=s)
+                                                               scenario=s, both="heuristic")
 
                     if obj_val > best_obj_val_second_stage[s]:
                         if self.car_moves_second_stage[s][r].is_charging_move:

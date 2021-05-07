@@ -136,13 +136,13 @@ class ALNS():
 
         # SEGMENTS
         try:
-            for i in range(50):
+            for i in range(100):
                 # print(i)
 
                 # print(f"Iteration {i * 10}")
                 # print(f"Best objective value {best_solution[1]}")
                 # print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
-                loop = tqdm(range(10), total=10, leave=True)
+                loop = tqdm(range(100), total=10, leave=True)
                 loop.set_description(f"Segment[{i}/{50}]")
                 loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val,
                                  best_true_obj_val=best_solution[1])
@@ -415,16 +415,38 @@ class ALNS():
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
+    from new_new_objective_function import get_parking_nodes_in_out
 
-    filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_c"
-
+    filename = "InstanceGenerator/InstanceFiles/2nodes/2-2-1-1_a"
+    ch = ConstructionHeuristic(filename + ".pkl")
+    ch.construct()
+    ch.print_solution()
+    '''
+    nodes_in, nodes_out = get_parking_nodes_in_out([ch.car_moves[0]], [])
+    true = ch.objective_function.evaluate([ch.car_moves[0]])
+    print(true)
+    #print(heur)
+    ch.objective_function.update([ch.car_moves[2]])
+    print(ch.objective_function.heuristic_objective_value)
+    '''
+    '''
     profiler = Profiler()
     profiler.start()
 
     ch = ConstructionHeuristic(filename + ".pkl")
-    #ch.construct()
+    ch.construct()
     ch.print_solution()
-
+    
+    nodes_in, nodes_out = get_parking_nodes_in_out([ch.car_moves[0]], [])
+    ch.objective_function._update_z(nodes_in, nodes_out)
+    print("CM1 in")
+    print("z", ch.objective_function._z)
+    print("w", ch.objective_function._w)
+    print(ch.objective_function.heuristic_objective_value)
+    #ch.objective_function._update_z(nodes_out, nodes_in)
+    #print(ch.objective_function._z)
+    '''
+    '''
     profiler.stop()
     print(profiler.output_text(unicode=True, color=True))
 
@@ -436,6 +458,7 @@ if __name__ == "__main__":
 
     # code you want to profile
     '''
+    '''
     try:
         alns = ALNS(filename + ".pkl")
     except KeyboardInterrupt:
@@ -444,6 +467,9 @@ if __name__ == "__main__":
             sys.exit(0)
         except SystemExit:
             os._exit(0)
+
+    profiler.stop()
+    print(profiler.output_text(unicode=True, color=True))
     '''
     # profiler.stop()
     # print(profiler.output_text(unicode=True, color=True))

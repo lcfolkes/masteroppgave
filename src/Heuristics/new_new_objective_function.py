@@ -18,10 +18,9 @@ class ObjectiveFunction:
         self._w = self._initialize_w()
         self._charging_deviation = self._initialize_charging_deviation()
         self._relocation_time = np.array([0.0 for _ in range(self.num_scenarios)])
-
         self._true_objective_value = \
-            World.PROFIT_RENTAL * np.sum([np.sum(node) for node in self._z.values()]) / self.num_scenarios \
-            - World.COST_DEVIATION * np.sum([np.sum(node) for node in self._w.values()]) / self.num_scenarios
+            World.PROFIT_RENTAL * np.sum([np.sum([np.min(scenario) for scenario in node]) for node in self._z]) / self.num_scenarios \
+            - World.COST_DEVIATION * np.sum([np.sum([np.maximum(w, 0) for w in node]) for node in self._w]) / self.num_scenarios
 
         self._heuristic_objective_value = \
             self._true_objective_value - 1000 * sum(self._charging_deviation) / self.num_scenarios
@@ -35,15 +34,12 @@ class ObjectiveFunction:
         return self._true_objective_value
 
     def _initialize_z(self):
-        z = {node.node_id: node.parking_state + node.car_returns for node in
-             self.parking_nodes}
+        z = [[[node.parking_state + node.car_returns[s], node.customer_requests[s]] for s in range(self.num_scenarios)] for node in self.parking_nodes]
 
         return z
 
     def _initialize_w(self):
-        w = {
-            node.node_id: node.ideal_state - node.parking_state + self._z[node.node_id] - node.car_returns
-            for node in self.parking_nodes}
+        w = [[node.ideal_state - node.parking_state + np.min(self._z[node.node_id-1][s]) - node.car_returns[s] for s in range(self.num_scenarios)] for node in self.parking_nodes]
 
         return w
 
@@ -66,7 +62,7 @@ class ObjectiveFunction:
 
         nodes_in, nodes_out = get_parking_nodes_in_out(added_car_moves, removed_car_moves)
         self._update_z(nodes_in, nodes_out, scenario)
-        self._update_w(nodes_in, nodes_out, scenario)
+        #self._update_w(nodes_in, nodes_out, scenario)
         self._update_relocation_time(added_car_moves, removed_car_moves, scenario)
         self._update_charging_deviation(added_car_moves, removed_car_moves, scenario)
 
@@ -74,7 +70,7 @@ class ObjectiveFunction:
         heuristic_objective_value = copy.copy(self._heuristic_objective_value)
 
         self._update_z(nodes_out, nodes_in, scenario)
-        self._update_w(nodes_out, nodes_in, scenario)
+        #self._update_w(nodes_out, nodes_in, scenario)
         self._update_relocation_time(removed_car_moves, added_car_moves, scenario)
         self._update_charging_deviation(removed_car_moves, added_car_moves, scenario)
 
@@ -94,7 +90,7 @@ class ObjectiveFunction:
 
         nodes_in, nodes_out = get_parking_nodes_in_out(added_car_moves, removed_car_moves)
         self._update_z(nodes_in, nodes_out, scenario)
-        self._update_w(nodes_in, nodes_out, scenario)
+        #self._update_w(nodes_in, nodes_out, scenario)
         self._update_relocation_time(added_car_moves, removed_car_moves, scenario)
         self._update_charging_deviation(added_car_moves, removed_car_moves, scenario)
 
@@ -107,45 +103,46 @@ class ObjectiveFunction:
         # TODO: Only first stage cars that come into a node should update z
         if scenario is None:
             for n in nodes_out:
-                for z in self._z[n.node_id]:
-                    z -= 1
-                    index = np.where(self._w[n.node_id] == z)
-                    self._w[n.node_id][index] -= 1
-                    if z < n.customer_requests[index]:
+                for s in range(len(self._z[n.node_id-1])):
+                    self._z[n.node_id-1][s][0] -= 1
+                    self._w[n.node_id-1][s] += 1
+                    #self._w[n.node_id-1][s] -= 1
+                    if self._z[n.node_id-1][s][0] < self._z[n.node_id-1][s][1]:
                         self._true_objective_value -= World.PROFIT_RENTAL / self.num_scenarios
                         self._heuristic_objective_value -= World.PROFIT_RENTAL / self.num_scenarios
-                    if self._w[n.node_id][index] >= 0:
-                        self._true_objective_value += World.COST_DEVIATION / self.num_scenarios
-                        self._heuristic_objective_value += World.COST_DEVIATION / self.num_scenarios
-            for n in nodes_in:
-                for s in range(self.num_scenarios):
-                    self._z[n.node_id][s] += 1
-                    self._w[n.node_id][s] += 1
-                    if self._z[n.node_id][s] <= n.customer_requests[s]:
-                        self._true_objective_value += World.PROFIT_RENTAL / self.num_scenarios
-                        self._heuristic_objective_value += World.PROFIT_RENTAL / self.num_scenarios
-                    if self._w[n.node_id][s] > 0:
+                    elif self._w[n.node_id-1][s] > 0 and self._w[n.node_id-1][s] <= n.ideal_state:
                         self._true_objective_value -= World.COST_DEVIATION / self.num_scenarios
                         self._heuristic_objective_value -= World.COST_DEVIATION / self.num_scenarios
+            for n in nodes_in:
+                for s in range(self.num_scenarios):
+                    self._z[n.node_id-1][s][0] += 1
+                    self._w[n.node_id-1][s] -= 1
+                    if self._z[n.node_id-1][s][0] < self._z[n.node_id-1][s][1]:
+                        self._true_objective_value += World.PROFIT_RENTAL / self.num_scenarios
+                        self._heuristic_objective_value += World.PROFIT_RENTAL / self.num_scenarios
+                    elif self._w[n.node_id-1][s] >= 0 and self._w[n.node_id-1][s] <= n.ideal_state:
+                        self._true_objective_value += World.COST_DEVIATION / self.num_scenarios
+                        self._heuristic_objective_value += World.COST_DEVIATION / self.num_scenarios
         else:
             for n in nodes_out:
-                self._z[n.node_id][scenario] -= 1
-                self._w[n.node_id][scenario] -= 1
-                if self._z[n.node_id][scenario] < n.customer_requests[scenario]:
+                self._z[n.node_id-1][scenario][0] -= 1
+                self._w[n.node_id-1][scenario] += 1
+                if self._z[n.node_id-1][scenario][0] < self._z[n.node_id-1][scenario][1]:
                     self._true_objective_value -= World.PROFIT_RENTAL / self.num_scenarios
                     self._heuristic_objective_value -= World.PROFIT_RENTAL / self.num_scenarios
-                if self._w[n.node_id][scenario] >= 0:
-                    self._true_objective_value += World.COST_DEVIATION / self.num_scenarios
-                    self._heuristic_objective_value += World.COST_DEVIATION / self.num_scenarios
-            for n in nodes_in:
-                self._z[n.node_id][scenario] += 1
-                self._w[n.node_id][scenario] += 1
-                if self._z[n.node_id][scenario] <= n.customer_requests[scenario]:
-                    self._true_objective_value += World.PROFIT_RENTAL / self.num_scenarios
-                    self._heuristic_objective_value += World.PROFIT_RENTAL / self.num_scenarios
-                if self._w[n.node_id][scenario] > 0:
+                elif self._w[n.node_id-1][scenario] > 0 and self._w[n.node_id-1][scenario] <= n.ideal_state:
                     self._true_objective_value -= World.COST_DEVIATION / self.num_scenarios
                     self._heuristic_objective_value -= World.COST_DEVIATION / self.num_scenarios
+
+            for n in nodes_in:
+                self._z[n.node_id-1][scenario][0] += 1
+                self._w[n.node_id-1][scenario] -= 1
+                if self._z[n.node_id-1][scenario][0] < self._z[n.node_id-1][scenario][1]:
+                    self._true_objective_value += World.PROFIT_RENTAL / self.num_scenarios
+                    self._heuristic_objective_value += World.PROFIT_RENTAL / self.num_scenarios
+                elif self._w[n.node_id-1][scenario] >= 0 and self._w[n.node_id-1][scenario] <= n.ideal_state:
+                    self._true_objective_value += World.COST_DEVIATION / self.num_scenarios
+                    self._heuristic_objective_value += World.COST_DEVIATION / self.num_scenarios
 
     def _update_w(self, nodes_in: [Node] = None, nodes_out: [Node] = None, scenario: int = None):
         """
@@ -158,24 +155,24 @@ class ObjectiveFunction:
             for n in nodes_out:
                 for s in range(self.num_scenarios):
                     self._w[n.node_id][s] += 1
-                    if self._w[n.node_id][s] >= 0:
+                    if self._w[n.node_id][s] > 0:
                         self._true_objective_value -= World.COST_DEVIATION / self.num_scenarios
                         self._heuristic_objective_value -= World.COST_DEVIATION / self.num_scenarios
             for n in nodes_in:
                 for s in range(self.num_scenarios):
                     self._w[n.node_id][s] -= 1
-                    if self._w[n.node_id][s] > 0:
+                    if self._w[n.node_id][s] >= 0:
                         self._true_objective_value += World.COST_DEVIATION / self.num_scenarios
                         self._heuristic_objective_value += World.COST_DEVIATION / self.num_scenarios
         else:
             for n in nodes_out:
                 self._w[n.node_id][scenario] += 1
-                if self._w[n.node_id][scenario] >= 0:
+                if self._w[n.node_id][scenario] > 0:
                     self._true_objective_value -= World.COST_DEVIATION / self.num_scenarios
                     self._heuristic_objective_value -= World.COST_DEVIATION / self.num_scenarios
             for n in nodes_in:
                 self._w[n.node_id][scenario] -= 1
-                if self._w[n.node_id][scenario] > 0:
+                if self._w[n.node_id][scenario] >= 0:
                     self._true_objective_value += World.COST_DEVIATION / self.num_scenarios
                     self._heuristic_objective_value += World.COST_DEVIATION / self.num_scenarios
 
@@ -184,27 +181,27 @@ class ObjectiveFunction:
         if scenario is None:
             self._relocation_time += sum(car_move.handling_time for car_move in added_car_moves)
             self._relocation_time -= sum(car_move.handling_time for car_move in removed_car_moves)
-            self._true_objective_value += World.COST_RELOCATION * (sum(car_move.handling_time for car_move in
-                                                                       removed_car_moves) - sum(car_move.handling_time
+            self._true_objective_value += World.COST_RELOCATION * (np.sum(car_move.handling_time for car_move in
+                                                                       removed_car_moves) - np.sum(car_move.handling_time
                                                                                                 for car_move in
                                                                                                 added_car_moves))
-            self._heuristic_objective_value += World.COST_RELOCATION * (sum(car_move.handling_time for car_move in
-                                                                            removed_car_moves) - sum(car_move.
+            self._heuristic_objective_value += World.COST_RELOCATION * (np.sum(car_move.handling_time for car_move in
+                                                                            removed_car_moves) - np.sum(car_move.
                                                                                                      handling_time for
                                                                                                      car_move in
                                                                                                      added_car_moves))
         else:
             self._relocation_time[scenario] += sum(car_move.handling_time for car_move in added_car_moves)
             self._relocation_time[scenario] -= sum(car_move.handling_time for car_move in removed_car_moves)
-            self._true_objective_value += World.COST_RELOCATION * (sum(car_move.handling_time for car_move in
-                                                                       removed_car_moves) - sum(car_move.handling_time
+            self._true_objective_value += World.COST_RELOCATION * ((np.sum(car_move.handling_time for car_move in
+                                                                       removed_car_moves) - np.sum(car_move.handling_time
                                                                                                 for car_move in
-                                                                                                added_car_moves)) / self.num_scenarios
-            self._heuristic_objective_value += World.COST_RELOCATION * (sum(car_move.handling_time for car_move in
-                                                                            removed_car_moves) - sum(car_move.
+                                                                                                added_car_moves)) / self.num_scenarios)
+            self._heuristic_objective_value += World.COST_RELOCATION * ((np.sum(car_move.handling_time for car_move in
+                                                                            removed_car_moves) - np.sum(car_move.
                                                                                                      handling_time for
                                                                                                      car_move in
-                                                                                                     added_car_moves)) / self.num_scenarios
+                                                                                                     added_car_moves)) / self.num_scenarios)
 
     def _update_charging_deviation(self, added_car_moves, removed_car_moves, scenario):
         num_charging_moves_added = sum(1 for cm in added_car_moves if cm.is_charging_move)
@@ -252,16 +249,42 @@ if __name__ == "__main__":
     from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
     from new_new_construction_heuristic import ConstructionHeuristic
 
-    filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_c"
-    ch = ConstructionHeuristic(filename + ".pkl")
+    filename = "InstanceGenerator/InstanceFiles/2nodes/2-2-1-1_a"
     profiler = Profiler()
     profiler.start()
+
+    ch = ConstructionHeuristic(filename + ".pkl")
+    ch.construct()
+    print(ch.objective_function.heuristic_objective_value)
+    ch.print_solution()
+    '''
+    nodes_in, nodes_out = get_parking_nodes_in_out([ch.car_moves[0]], [])
+    print(ch.objective_function.heuristic_objective_value)
+    print("z",ch.objective_function._z)
+    print("w",ch.objective_function._w)
+    ch.objective_function.update([ch.car_moves[0]])
+    print("added CM1")
+    print("z",ch.objective_function._z)
+    print("w",ch.objective_function._w)
+    print(ch.objective_function.heuristic_objective_value)
+    print("removed CM1")
+    ch.objective_function.update([],[ch.car_moves[0]])
+    print("z",ch.objective_function._z)
+    print("w",ch.objective_function._w)
+    print(ch.objective_function.heuristic_objective_value)
+    '''
+    #ch.objective_function.update([ch.car_moves[0]])
+    #print(ch.objective_function.heuristic_objective_value)
+
+
+
+    #ch.construct()
 
     #ch.construct()
 
     profiler.stop()
     print(profiler.output_text(unicode=True, color=True))
-    true_obj_val, best_obj_val = ch.get_obj_val(both=True)
+
     # print(f"Construction heuristic true obj. val {true_obj_val}")
     ch.print_solution()
 
