@@ -507,16 +507,19 @@ class ConstructionHeuristic:
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
-
+    import time
     filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
     ch = ConstructionHeuristic(filename + ".pkl")
-    profiler = Profiler()
-    profiler.start()
+    #profiler = Profiler()
+    #profiler.start()
+    start = time.perf_counter()
 
     ch.construct()
+    finish = time.perf_counter()
+    print(f"Finished in {round(finish - start, 2)} seconds(s)")
 
-    profiler.stop()
-    print(profiler.output_text())#unicode=True, color=True))
+    #profiler.stop()
+    #print(profiler.output_text())#unicode=True, color=True))
     true_obj_val, best_obj_val = ch.get_obj_val(both=True)
     # print(f"Construction heuristic true obj. val {true_obj_val}")
     ch.print_solution()
