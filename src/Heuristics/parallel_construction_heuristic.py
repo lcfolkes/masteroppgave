@@ -248,7 +248,6 @@ class ConstructionHeuristic:
             #    best_car_move_second_stage[s] = self._get_best_car_move_process(car_moves=self.car_moves_second_stage[s], scenario=s)
             with mp.Pool() as pool:
                 best_car_move_second_stage = pool.starmap(self._get_best_car_move_process, args)
-            print(best_car_move_second_stage)
             return best_car_move_second_stage
 
     def _get_best_employee(self, best_car_move):
