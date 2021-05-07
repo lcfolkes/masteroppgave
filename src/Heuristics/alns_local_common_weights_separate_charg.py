@@ -416,13 +416,13 @@ class ALNS():
 if __name__ == "__main__":
     from pyinstrument import Profiler
 
-    filename = "InstanceGenerator/InstanceFiles/25nodes/25-10-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_c"
 
     profiler = Profiler()
     profiler.start()
 
     ch = ConstructionHeuristic(filename + ".pkl")
-    ch.construct()
+    #ch.construct()
     ch.print_solution()
 
     profiler.stop()

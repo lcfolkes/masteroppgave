@@ -17,7 +17,6 @@ from tqdm import tqdm
 
 os.chdir(path_to_src)
 
-os.chdir(path_to_src)
 
 _IS_BEST = 33.0
 _IS_BETTER = 13.0

@@ -6,7 +6,6 @@ from InstanceGenerator.instance_components import CarMove, Node
 from InstanceGenerator.world import World
 
 
-
 class ObjectiveFunction:
 
     def __init__(self, world_instance):
@@ -36,13 +35,15 @@ class ObjectiveFunction:
         return self._true_objective_value
 
     def _initialize_z(self):
-        z = {node.node_id: np.minimum((node.parking_state + node.car_returns), node.customer_requests) for node in self.parking_nodes}
+        z = {node.node_id: node.parking_state + node.car_returns for node in
+             self.parking_nodes}
 
         return z
 
     def _initialize_w(self):
-        w = {node.node_id: np.maximum((node.ideal_state - node.parking_state + self._z[node.node_id] - node.car_returns), 0)
-             for node in self.parking_nodes}
+        w = {
+            node.node_id: node.ideal_state - node.parking_state + self._z[node.node_id] - node.car_returns
+            for node in self.parking_nodes}
 
         return w
 
@@ -50,7 +51,8 @@ class ObjectiveFunction:
         num_cars_in_need_of_charging = sum(pnode.charging_state for pnode in self.parking_nodes)
         return np.array([num_cars_in_need_of_charging for _ in range(self.num_scenarios)])
 
-    def evaluate(self, added_car_moves: [CarMove] = None, removed_car_moves: [CarMove] = None, scenario: int = None, both = "both"):
+    def evaluate(self, added_car_moves: [CarMove] = None, removed_car_moves: [CarMove] = None, scenario: int = None,
+                 both="both"):
         """
         :param added_car_moves: list of car moves, e.g: [cm1, cm2]
         :param removed_car_moves: list of car moves, e.g: [cm1, cm2]
@@ -102,30 +104,48 @@ class ObjectiveFunction:
         :param nodes_out: nodes with cars leaving node
         :param scenario: if second stage, then the scenario is specified
         """
-
+        # TODO: Only first stage cars that come into a node should update z
         if scenario is None:
             for n in nodes_out:
                 for z in self._z[n.node_id]:
-                    if z != 0:
-                        z -= 1
+                    z -= 1
+                    index = np.where(self._w[n.node_id] == z)
+                    self._w[n.node_id][index] -= 1
+                    if z < n.customer_requests[index]:
                         self._true_objective_value -= World.PROFIT_RENTAL / self.num_scenarios
                         self._heuristic_objective_value -= World.PROFIT_RENTAL / self.num_scenarios
+                    if self._w[n.node_id][index] >= 0:
+                        self._true_objective_value += World.COST_DEVIATION / self.num_scenarios
+                        self._heuristic_objective_value += World.COST_DEVIATION / self.num_scenarios
             for n in nodes_in:
                 for s in range(self.num_scenarios):
-                    if self._z[n.node_id][s] < n.customer_requests[s]:
-                        self._z[n.node_id][s] += 1
+                    self._z[n.node_id][s] += 1
+                    self._w[n.node_id][s] += 1
+                    if self._z[n.node_id][s] <= n.customer_requests[s]:
                         self._true_objective_value += World.PROFIT_RENTAL / self.num_scenarios
                         self._heuristic_objective_value += World.PROFIT_RENTAL / self.num_scenarios
+                    if self._w[n.node_id][s] > 0:
+                        self._true_objective_value -= World.COST_DEVIATION / self.num_scenarios
+                        self._heuristic_objective_value -= World.COST_DEVIATION / self.num_scenarios
         else:
             for n in nodes_out:
                 self._z[n.node_id][scenario] -= 1
-                self._true_objective_value -= World.PROFIT_RENTAL / self.num_scenarios
-                self._heuristic_objective_value -= World.PROFIT_RENTAL / self.num_scenarios
-            for n in nodes_in:
+                self._w[n.node_id][scenario] -= 1
                 if self._z[n.node_id][scenario] < n.customer_requests[scenario]:
-                    self._z[n.node_id][scenario] += 1
+                    self._true_objective_value -= World.PROFIT_RENTAL / self.num_scenarios
+                    self._heuristic_objective_value -= World.PROFIT_RENTAL / self.num_scenarios
+                if self._w[n.node_id][scenario] >= 0:
+                    self._true_objective_value += World.COST_DEVIATION / self.num_scenarios
+                    self._heuristic_objective_value += World.COST_DEVIATION / self.num_scenarios
+            for n in nodes_in:
+                self._z[n.node_id][scenario] += 1
+                self._w[n.node_id][scenario] += 1
+                if self._z[n.node_id][scenario] <= n.customer_requests[scenario]:
                     self._true_objective_value += World.PROFIT_RENTAL / self.num_scenarios
                     self._heuristic_objective_value += World.PROFIT_RENTAL / self.num_scenarios
+                if self._w[n.node_id][scenario] > 0:
+                    self._true_objective_value -= World.COST_DEVIATION / self.num_scenarios
+                    self._heuristic_objective_value -= World.COST_DEVIATION / self.num_scenarios
 
     def _update_w(self, nodes_in: [Node] = None, nodes_out: [Node] = None, scenario: int = None):
         """
@@ -136,24 +156,26 @@ class ObjectiveFunction:
 
         if scenario is None:
             for n in nodes_out:
-                for w in self._w[n.node_id]:
-                    w += 1
-                self._true_objective_value -= World.COST_DEVIATION
-                self._heuristic_objective_value -= World.COST_DEVIATION
+                for s in range(self.num_scenarios):
+                    self._w[n.node_id][s] += 1
+                    if self._w[n.node_id][s] >= 0:
+                        self._true_objective_value -= World.COST_DEVIATION / self.num_scenarios
+                        self._heuristic_objective_value -= World.COST_DEVIATION / self.num_scenarios
             for n in nodes_in:
                 for s in range(self.num_scenarios):
-                    if self._w[n.node_id][s] != 0:
-                        self._w[n.node_id][s] -= 1
+                    self._w[n.node_id][s] -= 1
+                    if self._w[n.node_id][s] > 0:
                         self._true_objective_value += World.COST_DEVIATION / self.num_scenarios
                         self._heuristic_objective_value += World.COST_DEVIATION / self.num_scenarios
         else:
             for n in nodes_out:
                 self._w[n.node_id][scenario] += 1
-                self._true_objective_value -= World.COST_DEVIATION / self.num_scenarios
-                self._heuristic_objective_value -= World.COST_DEVIATION / self.num_scenarios
+                if self._w[n.node_id][scenario] >= 0:
+                    self._true_objective_value -= World.COST_DEVIATION / self.num_scenarios
+                    self._heuristic_objective_value -= World.COST_DEVIATION / self.num_scenarios
             for n in nodes_in:
-                if self._w[n.node_id][scenario] != 0:
-                    self._w[n.node_id][scenario] -= 1
+                self._w[n.node_id][scenario] -= 1
+                if self._w[n.node_id][scenario] > 0:
                     self._true_objective_value += World.COST_DEVIATION / self.num_scenarios
                     self._heuristic_objective_value += World.COST_DEVIATION / self.num_scenarios
 
@@ -194,10 +216,7 @@ class ObjectiveFunction:
         else:
             self._charging_deviation[scenario] += num_charging_moves_removed - num_charging_moves_added
             self._heuristic_objective_value += 1000 * (
-                        num_charging_moves_added - num_charging_moves_removed) / self.num_scenarios
-
-    def _update_inter_move_travel_time(self):
-        pass
+                    num_charging_moves_added - num_charging_moves_removed) / self.num_scenarios
 
 
 def get_parking_nodes_in_out(added_car_moves: [CarMove], removed_car_moves: [CarMove]) -> ([Node], [Node]):
@@ -238,7 +257,7 @@ if __name__ == "__main__":
     profiler = Profiler()
     profiler.start()
 
-    ch.construct()
+    #ch.construct()
 
     profiler.stop()
     print(profiler.output_text(unicode=True, color=True))
@@ -247,5 +266,5 @@ if __name__ == "__main__":
     ch.print_solution()
 
     print("\n############## Evaluate solution ##############")
-    gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)
-    run_model(gi)
+    #gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)
+    #run_model(gi)
