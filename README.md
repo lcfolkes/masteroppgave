@@ -34,6 +34,18 @@ conda env update --prefix ./env --file environment.yml  --prune
 To remove packages just remove it from the packages.yml and run the same command. 
 This is a nice command to make a alias for.
 
+## Login Solstorm
+```
+ssh solstorm-login.iot.ntnu.no -l <username>
+```
+
+## Pull from github in Solstorm login node
+```
+cd /storage/users/<username>/masteroppgave
+git pull
+```
+
+
 ## Run from terminal
 To run a file from the terminal one must first set the <code>PYTHONPATH</code>. First, navigate to the root directory.
 ```
