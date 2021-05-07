@@ -133,17 +133,19 @@ class ALNS():
         temperature = (-np.abs(heuristic_obj_vals[0])) * 0.05 / np.log(0.5)
         # cooling_rate = 0.5  # cooling_rate in (0,1)
         cooling_rate = np.exp(np.log(0.002) / 200)
+        iterations_alns = 50
+        iterations_segment = 10
 
         # SEGMENTS
         try:
-            for i in range(50):
+            for i in range(iterations_alns):
                 # print(i)
 
                 # print(f"Iteration {i * 10}")
                 # print(f"Best objective value {best_solution[1]}")
                 # print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
-                loop = tqdm(range(10), total=10, leave=True)
-                loop.set_description(f"Segment[{i}/{50}]")
+                loop = tqdm(range(iterations_segment), total=iterations_segment, leave=True)
+                loop.set_description(f"Segment[{i}/{iterations_alns}]")
                 loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val,
                                  best_true_obj_val=best_solution[1])
                 output_text = "\n"
@@ -415,38 +417,17 @@ class ALNS():
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
+    filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
 
-    filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_c"
-
-    profiler = Profiler()
-    profiler.start()
-
-    ch = ConstructionHeuristic(filename + ".pkl")
-    #ch.construct()
-    ch.print_solution()
-
-    profiler.stop()
-    print(profiler.output_text(unicode=True, color=True))
-
-    # gi = GurobiInstance(filename + ".yaml")
-    # run_model(gi, time_limit=10000.0)
-
-    # profiler = Profiler()
-    # profiler.start()
-
-    # code you want to profile
-    '''
     try:
+        profiler = Profiler()
+        profiler.start()
         alns = ALNS(filename + ".pkl")
+        profiler.stop()
+        print(profiler.output_text(unicode=True, color=True))
     except KeyboardInterrupt:
         print('Interrupted')
         try:
             sys.exit(0)
         except SystemExit:
             os._exit(0)
-    '''
-    # profiler.stop()
-    # print(profiler.output_text(unicode=True, color=True))
-    # print("\n############## Optimal solution ##############")
-    # gi2 = GurobiInstance(filename + ".yaml")
-    # run_model(gi2, time_limit=300)
