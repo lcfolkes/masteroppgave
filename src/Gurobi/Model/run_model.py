@@ -2,8 +2,8 @@ import os
 import sys
 import gurobipy as gp
 import pandas as pd
-from src.Gurobi.Model.gurobi_instance import GurobiInstance
-from src.HelperFiles.helper_functions import write_gurobi_results_to_file
+from Gurobi.Model.gurobi_instance import GurobiInstance
+from HelperFiles.helper_functions import write_gurobi_results_to_file
 
 
 def run_model(model, stochastic=True, time_limit=None, reset=False):

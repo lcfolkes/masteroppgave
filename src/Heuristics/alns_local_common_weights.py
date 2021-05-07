@@ -7,14 +7,13 @@ from DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretIns
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from Heuristics.LocalSearch.local_search import LocalSearch
-from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution
+from Heuristics.helper_functions_heuristics import safe_zero_division
 from new_construction_heuristic import ConstructionHeuristic
 from path_manager import path_to_src
 import numpy as np
 import os
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-from colorama import Fore
 
 os.chdir(path_to_src)
 
@@ -327,8 +326,6 @@ class ALNS():
 
 
 if __name__ == "__main__":
-    from pyinstrument import Profiler
-
     filename = "InstanceGenerator/InstanceFiles/32nodes/32-10-1-1_a"
 
     # gi = GurobiInstance(filename + ".yaml")

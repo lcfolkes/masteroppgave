@@ -2,9 +2,9 @@ import os
 
 import numpy as np
 
-from Heuristics.objective_function import get_obj_val_of_car_moves, get_objective_function_val
+from Heuristics.objective_function import get_obj_val_of_car_moves
 from path_manager import path_to_src
-from src.InstanceGenerator.instance_components import CarMove, ChargingNode, Employee
+from InstanceGenerator.instance_components import CarMove, ChargingNode, Employee
 
 os.chdir(path_to_src)
 

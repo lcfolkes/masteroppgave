@@ -1,5 +1,5 @@
-from src.HelperFiles.helper_functions import read_config
-from src.InstanceGenerator.instance_components import Node, ParkingNode, ChargingNode, Employee, Car, CarMove
+from HelperFiles.helper_functions import read_config
+from InstanceGenerator.instance_components import Node, ParkingNode, ChargingNode, Employee, Car, CarMove
 import numpy as np
 import pandas as pd
 import random

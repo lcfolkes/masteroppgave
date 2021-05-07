@@ -3,7 +3,7 @@ import numpy as np
 
 from path_manager import path_to_src
 
-from src.InstanceGenerator.instance_components import ParkingNode, Employee, CarMove, ChargingNode
+from InstanceGenerator.instance_components import ParkingNode, Employee, CarMove, ChargingNode
 from InstanceGenerator.world import World
 
 os.chdir(path_to_src)
