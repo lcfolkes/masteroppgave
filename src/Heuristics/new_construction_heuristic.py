@@ -499,7 +499,8 @@ class ConstructionHeuristic:
 if __name__ == "__main__":
     from pyinstrument import Profiler
     import time
-    filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
+
+    filename = "InstanceGenerator/InstanceFiles/26nodes/26-50-1-1_a"
     ch = ConstructionHeuristic(filename + ".pkl")
     #profiler = Profiler()
     #profiler.start()
@@ -515,6 +516,7 @@ if __name__ == "__main__":
     # print(f"Construction heuristic true obj. val {true_obj_val}")
     ch.print_solution()
     print(f"Finished in {round(finish - start, 2)} seconds(s)")
+
     #print("\n############## Evaluate solution ##############")
     #gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)
     #run_model(gi)
