@@ -9,20 +9,17 @@ from Gurobi.Model.run_model import run_model
 from Heuristics.LocalSearch.local_search import LocalSearch
 from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution
 from new_construction_heuristic import ConstructionHeuristic
+#from parallel_construction_heuristic import ConstructionHeuristic
 from path_manager import path_to_src
 import numpy as np
 import os
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-from colorama import Fore
-
-os.chdir(path_to_src)
-
 os.chdir(path_to_src)
 
 _IS_BEST = 33.0
-_IS_BETTER = 13.0
-_IS_ACCEPTED = 1.0
+_IS_BETTER = 9.0
+_IS_ACCEPTED = 13.0
 
 '''
 
@@ -43,6 +40,7 @@ _IS_REJECTED
 class ALNS():
 
     def __init__(self, filename):
+        print("halla")
         self.filename = filename
 
         self.best_solution = None
@@ -113,6 +111,7 @@ class ALNS():
 
     def run(self, solution):
         # TODO: in order to save time, this could be implemented as a queue (as in tabu search)
+        start = time.perf_counter()
         visited_hash_keys = set()
 
         solution.construct(verbose=True)
@@ -268,6 +267,9 @@ class ALNS():
                 temperature *= cooling_rate
                 self._update_score_adjustment_parameters()
 
+            finish = time.perf_counter()
+            print(f"Finished in {round(finish - start, 2)} seconds(s)")
+
         except KeyboardInterrupt:
             print("Keyboard Interrupt")
         except:
@@ -417,14 +419,17 @@ class ALNS():
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
-    filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
+    import time
+    filename = "InstanceGenerator/InstanceFiles/26nodes/26-25-1-1_a"
 
     try:
-        profiler = Profiler()
-        profiler.start()
+        #profiler = Profiler()
+        #profiler.start()
         alns = ALNS(filename + ".pkl")
-        profiler.stop()
-        print(profiler.output_text(unicode=True, color=True))
+
+
+        #profiler.stop()
+        #print(profiler.output_text(unicode=True, color=True))
     except KeyboardInterrupt:
         print('Interrupted')
         try:

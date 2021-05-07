@@ -18,7 +18,6 @@ class ConstructionHeuristic:
     # filename = "InstanceFiles/6nodes/6-3-1-1_b.yaml"
 
     def __init__(self, instance_file):
-
         self.instance_file = instance_file
         self.world_instance = load_object_from_file(instance_file)
         self.objective_function = ObjectiveFunction(self.world_instance)
@@ -500,7 +499,7 @@ if __name__ == "__main__":
     from pyinstrument import Profiler
     import time
 
-    filename = "InstanceGenerator/InstanceFiles/26nodes/26-50-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/26nodes/26-25-1-1_a"
     ch = ConstructionHeuristic(filename + ".pkl")
     #profiler = Profiler()
     #profiler.start()
