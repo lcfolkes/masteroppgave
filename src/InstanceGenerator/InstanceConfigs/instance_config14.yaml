@@ -17,8 +17,8 @@ tasks:
 # NUMBER OF PARKING NODES IN INSTANCE
 num_parking_nodes: 26
 
-# NUMBER OF CHARGED CARS IN INSTANCE
-num_charged_cars: 24
+# NUMBER OF AVAILABLE/CHARGED CARS IN INSTANCE
+num_charged_cars: 13
 
 #CHARGING NODES
 charging_nodes:

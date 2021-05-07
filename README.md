@@ -34,17 +34,59 @@ conda env update --prefix ./env --file environment.yml  --prune
 To remove packages just remove it from the packages.yml and run the same command. 
 This is a nice command to make a alias for.
 
-## Testing
-To run all tests run the following command in the root directory of the project
+## Solstorm
+
+### Login
 ```
-python -m unittest discover
-```
-To run only test for a specific module, run:
-```
-python -m unittest discover <module_name>
-```
-e.g.:
-```
-python -m unittest discover system_simulation
+ssh solstorm-login.iot.ntnu.no -l <username>
 ```
 
+### Pull from github in Solstorm login node or screen
+```
+cd /storage/users/<username>/masteroppgave
+git pull
+```
+
+### Setup
+```
+cd /storage/users/<username>/masteroppgave
+pip install -r requirements.txt
+```
+
+
+### Screen
+To run from a compute node one must first connect to a *screen*.
+#### Check if you have any screens
+```
+screen -ls
+```
+#### Connect to existing screen
+```
+screen -R <screen_name>
+```
+
+#### Create new screen
+```
+screen -S <screen_name>
+```
+
+#### Detach from screen
+<kbd>Ctrl + a</kbd> <kbd>d</kbd>
+
+## Run from terminal
+To run a file from the terminal one must first set the <code>PYTHONPATH</code>. First, navigate to the root directory.
+```
+cd masteroppgave/src
+```
+Then update <code>PYTHONPATH</code> with the following command:
+```
+export PYTHONPATH="$PWD"
+```
+To confirm that the root directory is added to <code>PYTHONPATH</code>, type:
+```
+echo $PYTHONPATH
+```
+When <code>PYTHONPATH</code> is set correctly, simply run the file. Remember to specify path relative to <code>/src</code>. E.g.:
+```
+python Heuristics/main.py
+```

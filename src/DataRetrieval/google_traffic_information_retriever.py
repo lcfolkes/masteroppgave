@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
 import time
-import random
 
 LARSAPIKEY_1 = "AIzaSyAuWAW34Q4r4_in7Opl6ry1L2G92M8l0tU"
 LARSAPIKEY_2 = "AIzaSyAV4paleeEavURgfyFziQw_7RWkNi2mviw"

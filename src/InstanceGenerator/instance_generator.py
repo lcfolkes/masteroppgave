@@ -1,6 +1,6 @@
-from src.InstanceGenerator.file_writer import write_to_file_yaml
-from src.HelperFiles.helper_functions import read_config
-from src.InstanceGenerator.world import World, create_parking_nodes, \
+from InstanceGenerator.file_writer import write_to_file_yaml
+from HelperFiles.helper_functions import read_config
+from InstanceGenerator.world import World, create_parking_nodes, \
     create_charging_nodes, create_employees, create_cars, create_car_moves, set_distances, set_demands
 import copy
 
@@ -65,7 +65,7 @@ def create_instance_from_world(world: World, num_scenarios: int, num_tasks: int,
 
 
 def main():
-    cf = read_config('./InstanceGenerator/InstanceConfigs/instance_config.yaml')
+    cf = read_config('./InstanceGenerator/InstanceConfigs/instance_config14.yaml')
     print("\nWELCOME TO THE EXAMPLE CREATOR \n")
     worlds = []
     for i in range(cf['examples']):

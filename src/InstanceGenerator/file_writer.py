@@ -2,7 +2,7 @@ import yaml
 import os
 
  ## FILE HANDLER ##
-from src.HelperFiles.helper_functions import save_object_to_file
+from HelperFiles.helper_functions import save_object_to_file
 
 
 def write_to_file_yaml(world, instance_name: str):

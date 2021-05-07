@@ -1,21 +1,25 @@
+
 import copy
 import sys
 from collections import OrderedDict
 import random
+import os
+print("cwd ", os.getcwd())
+from path_manager import path_to_src
 from DestroyAndRepairHeuristics.destroy import Destroy, RandomRemoval, WorstRemoval, ShawRemoval
 from DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretInsertion
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from Heuristics.LocalSearch.local_search import LocalSearch
-from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution
-from new_construction_heuristic import ConstructionHeuristic
-from path_manager import path_to_src
+from Heuristics.helper_functions_heuristics import safe_zero_division
+from Heuristics.new_construction_heuristic import ConstructionHeuristic
 import numpy as np
-import os
+
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 os.chdir(path_to_src)
+
 
 
 _IS_BEST = 33.0
@@ -288,7 +292,6 @@ class ALNS():
 
 
 if __name__ == "__main__":
-	from pyinstrument import Profiler
 
 	filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
 

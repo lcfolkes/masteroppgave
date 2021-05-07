@@ -1,7 +1,6 @@
-import copy
 import numpy as np
 
-from Heuristics.helper_functions_heuristics import get_first_stage_solution, copy_numpy_dict
+from Heuristics.helper_functions_heuristics import copy_numpy_dict
 from InstanceGenerator.instance_components import CarMove, Node
 from InstanceGenerator.world import World
 

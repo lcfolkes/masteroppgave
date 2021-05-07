@@ -2,12 +2,10 @@ import os
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Heuristics.feasibility_checker import FeasibilityChecker
 from Heuristics.helper_functions_heuristics import remove_all_car_moves_of_car_in_car_move, \
-    get_first_stage_solution_and_removed_moves, get_first_stage_solution, get_first_and_second_stage_solution, \
-    get_assigned_car_moves, get_first_stage_solution_list_from_dict, get_separate_assigned_car_moves, \
-    get_first_stage_solution_list_from_solution
+    get_first_and_second_stage_solution
 from Heuristics.new_objective_function import ObjectiveFunction
-from src.HelperFiles.helper_functions import load_object_from_file
-from src.Gurobi.Model.run_model import run_model
+from HelperFiles.helper_functions import load_object_from_file
+from Gurobi.Model.run_model import run_model
 import pandas as pd
 from path_manager import path_to_src
 

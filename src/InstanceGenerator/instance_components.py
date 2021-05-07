@@ -2,7 +2,7 @@ import itertools
 
 import numpy as np
 
-from src.HelperFiles.helper_functions import read_config
+from HelperFiles.helper_functions import read_config
 import os
 from path_manager import path_to_src
 
