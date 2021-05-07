@@ -8,8 +8,7 @@ from HelperFiles.helper_functions import load_object_from_file
 from Gurobi.Model.run_model import run_model
 import pandas as pd
 from path_manager import path_to_src
-import concurrent.futures
-
+import multiprocessing as mp
 
 os.chdir(path_to_src)
 
@@ -213,8 +212,6 @@ class ConstructionHeuristic:
 
 
     def _get_best_car_move_process(self, car_moves, scenario=None):
-        #print(f"cm: {car_moves}")
-        print(f"scenario: {scenario}")
         best_car_move = None
         if scenario is None:
             best_obj_val = self.objective_function.heuristic_objective_value
@@ -249,8 +246,9 @@ class ConstructionHeuristic:
             args = ((self.car_moves_second_stage[s], s) for s in range(self.num_scenarios))
             #for s in range(self.num_scenarios):
             #    best_car_move_second_stage[s] = self._get_best_car_move_process(car_moves=self.car_moves_second_stage[s], scenario=s)
-            with concurrent.futures.ProcessPoolExecutor() as executor:
-                best_car_move_second_stage = executor.map(lambda p: self._get_best_car_move_process(*p), args)
+            with mp.Pool() as pool:
+                best_car_move_second_stage = pool.starmap(self._get_best_car_move_process, args)
+            print(best_car_move_second_stage)
             return best_car_move_second_stage
 
     def _get_best_employee(self, best_car_move):

@@ -8,6 +8,7 @@ from HelperFiles.helper_functions import load_object_from_file
 from Gurobi.Model.run_model import run_model
 import pandas as pd
 from path_manager import path_to_src
+import multiprocessing as mp
 
 os.chdir(path_to_src)
 
@@ -209,96 +210,42 @@ class ConstructionHeuristic:
                         print("{} second stage car moves added in scenarios {}\n".format(
                             len(scenarios_with_insertion), ([i + 1 for i in scenarios_with_insertion])))
 
+
+    def _get_best_car_move_process(self, car_moves, scenario=None):
+        best_car_move = None
+        if scenario is None:
+            best_obj_val = self.objective_function.heuristic_objective_value
+        else:
+            best_obj_val = self.objective_function.heuristic_objective_value_scenarios[scenario]
+
+        # print("Iteration")
+        for car_move in car_moves:
+            if car_move.is_charging_move:
+                # Checking if charging node has space for another car
+                if car_move.end_node.capacity == car_move.end_node.num_charging[0]:
+                    # TODO: remove car_moves with this destination
+                    continue
+            if scenario is None:
+                obj_val = self.objective_function.evaluate(added_car_moves=[car_move])
+            else:
+                obj_val = self.objective_function.evaluate(added_car_moves=[car_move], scenario=scenario)
+
+            if obj_val > best_obj_val:
+                best_obj_val = obj_val
+                best_car_move = car_move
+
+        return best_car_move
+
     def _get_best_car_move(self):
         # FIRST STAGE
         if self.first_stage:
-            best_car_move_first_stage = None
-            best_obj_val_first_stage = self.objective_function.heuristic_objective_value
-
-            # print("Iteration")
-            for car_move in self.car_moves:
-                if car_move.is_charging_move:
-                    # Checking if charging node has space for another car
-                    if car_move.end_node.capacity == car_move.end_node.num_charging[0]:
-                        # TODO: remove car_moves with this destination
-                        continue
-
-                obj_val = self.objective_function.evaluate(added_car_moves=[car_move])
-
-                if obj_val > best_obj_val_first_stage:
-                    best_obj_val_first_stage = obj_val
-                    best_car_move_first_stage = car_move
-
-                # La til dette 4 mai - mathias
-                # For at den skal velge minst tidkrevende charging moves
-                '''
-                elif obj_val == best_obj_val_first_stage:
-                    if car_move.handling_time < best_car_move_first_stage.handling_time:
-                        best_obj_val_first_stage = obj_val
-                    best_car_move_first_stage = car_move
-                '''
-            return best_car_move_first_stage
-
-
+            return self._get_best_car_move_process(self.car_moves)
         # SECOND STAGE
         else:
             best_car_move_second_stage = [None for _ in range(self.num_scenarios)]
-            best_obj_val_second_stage = list(self.objective_function.heuristic_objective_value_scenarios)
-
             for s in range(self.num_scenarios):
-                # Parking moves second stage
-                for r in range(len(self.car_moves_second_stage[s])):
-                    if self.car_moves_second_stage[s][r].is_charging_move:
-                        # Checking if charging node has space for another car
-
-                        if self.car_moves_second_stage[s][r].end_node.capacity == \
-                                self.car_moves_second_stage[s][r].end_node.num_charging[s]:
-                            # TODO: remove car_moves with this destination for this scenario
-                            continue
-
-                    obj_val = self.objective_function.evaluate(added_car_moves=[self.car_moves_second_stage[s][r]],
-                                                               scenario=s)
-
-                    if obj_val > best_obj_val_second_stage[s]:
-                        if self.car_moves_second_stage[s][r].is_charging_move:
-
-                            # Checking if charging node has space for another car
-                            if self.car_moves_second_stage[s][r].end_node.capacity == \
-                                    self.car_moves_second_stage[s][r].end_node.num_charging[s]:
-                                continue
-
-                            else:
-                                best_obj_val_second_stage[s] = obj_val
-                                best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
-                                # car_moves[s][r].end_node.add_car(scenario=s)
-                        else:
-                            best_obj_val_second_stage[s] = obj_val
-                            best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
-                    '''
-                    elif obj_val == best_obj_val_second_stage[s]:
-                        if self.car_moves_second_stage[s][r].is_charging_move:
-
-                            # Checking if charging node has space for another car
-                            if self.car_moves_second_stage[s][r].end_node.capacity == \
-                                    self.car_moves_second_stage[s][r].end_node.num_charging[s]:
-                                continue
-
-                            elif self.car_moves_second_stage[s][r].handling_time < best_car_move_second_stage.handling_time:
-                                best_obj_val_second_stage[s] = obj_val
-                                best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
-                                # car_moves[s][r].end_node.add_car(scenario=s)
-                        elif self.car_moves_second_stage[s][r].handling_time < best_car_move_second_stage[s].handling_time:
-                            best_obj_val_second_stage[s] = obj_val
-                            best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
-                    '''
-            out_list = []
-            for car_move in best_car_move_second_stage:
-                if car_move is not None:
-                    out_list.append(car_move.car_move_id)
-                else:
-                    out_list.append(car_move)
-
-            # print([round(o,2) for o in best_obj_val_second_stage])
+                best_car_move_second_stage[s] = self._get_best_car_move_process(car_moves=self.car_moves_second_stage[s],
+                                                                                scenario=s)
             return best_car_move_second_stage
 
     def _get_best_employee(self, best_car_move):
