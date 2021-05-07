@@ -53,16 +53,17 @@ To run from a compute node one must first connect to a *screen*.
 screen -ls
 ```
 #### Connect to existing screen
-
 ```
 screen -R <screen_name>
 ```
 
 #### Create new screen
-
 ```
 screen -S <screen_name>
 ```
+
+#### Detach from screen
+<kbd>Ctrl + a</kbd> <kbd>d</kbd>
 
 ## Run from terminal
 To run a file from the terminal one must first set the <code>PYTHONPATH</code>. First, navigate to the root directory.
