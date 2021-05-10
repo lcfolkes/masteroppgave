@@ -285,14 +285,13 @@ class ChargeRemoval(Destroy):
 
 
 if __name__ == "__main__":
-    from Heuristics.objective_function import get_objective_function_val
+    #from Heuristics.objective_function import get_objective_function_val
     from Heuristics.new_construction_heuristic import ConstructionHeuristic
 
     print("\n---- HEURISTIC ----")
     ch = ConstructionHeuristic("./InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_a.pkl")
     ch.construct()
     ch.print_solution()
-    get_objective_function_val(ch.parking_nodes, ch.employees, ch.num_scenarios)
     # rr = RandomRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
     #				   neighborhood_size=1)
     # rr.to_string()
