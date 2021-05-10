@@ -9,8 +9,8 @@ from Heuristics.helper_functions_heuristics import remove_all_car_moves_of_car_i
     get_assigned_car_moves, get_first_stage_solution_list_from_dict, get_separate_assigned_car_moves, \
     get_first_stage_solution_list_from_solution
 from Heuristics.best_objective_function import ObjectiveFunction
-from src.HelperFiles.helper_functions import load_object_from_file
-from src.Gurobi.Model.run_model import run_model
+from HelperFiles.helper_functions import load_object_from_file
+from Gurobi.Model.run_model import run_model
 import pandas as pd
 from path_manager import path_to_src
 
