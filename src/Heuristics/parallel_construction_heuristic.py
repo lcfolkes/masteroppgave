@@ -251,7 +251,6 @@ class ConstructionHeuristic:
             best_car_move_second_stage = [self.car_moves_dict[cm.car_move_id] if cm is not None else None for cm in best_car_move_second_stage]
             return best_car_move_second_stage
 
-    #TODO: does not work properly
     def _get_best_employee_process(self, best_employee, current_employee, best_car_move, best_travel_time, scenario=None):
         best_employee = best_employee
         if best_car_move is not None:
@@ -281,11 +280,6 @@ class ConstructionHeuristic:
                 if self.first_stage:
                     best_employee_first_stage, best_travel_time_first_stage = self._get_best_employee_process(
                         best_employee_first_stage, employee, best_car_move, best_travel_time_first_stage)
-                    #legal_move, travel_time_to_car_move = self.feasibility_checker.check_legal_move(
-                    #    car_move=best_car_move, employee=employee, get_employee_travel_time=True)
-                    #if legal_move and travel_time_to_car_move < best_travel_time_first_stage:
-                    #    best_travel_time_first_stage = travel_time_to_car_move
-                    #    best_employee_first_stage = employee
                 else:
                     args = ((best_employee_second_stage[s], employee, best_car_move[s], best_travel_time_second_stage[s], s)
                             for s in range(self.num_scenarios))
@@ -295,52 +289,12 @@ class ConstructionHeuristic:
                                                   if res_tuple[0] is not None else None for res_tuple in res]
                     best_travel_time_second_stage = [res_tuple[1] for res_tuple in res]
 
-        '''
-        def _get_best_employee(self, best_car_move):
-        if self.first_stage:
-            best_employee_first_stage = None
-            best_travel_time_first_stage = 100
-        else:
-            best_employee_second_stage = [None for _ in range(self.num_scenarios)]
-            best_travel_time_to_car_move_second_stage = [100 for _ in range(self.num_scenarios)]
-
-        best_move_not_legal = True
-
-        for employee in self.employees:
-            task_num = len(employee.car_moves)
-            # if first stage and the number of completed task for employee is below the number of tasks in first stage,
-            # or if second stage and the number of completed tasks are the same or larger than the number of tasks
-            # in first stage
-            if self.first_stage == (task_num < self.world_instance.first_stage_tasks):
-                if self.first_stage:
-                    legal_move, travel_time_to_car_move = self.feasibility_checker.check_legal_move(
-                        car_move=best_car_move, employee=employee, get_employee_travel_time=True)
-                    # print(f"legal_move {legal_move}\n{best_car_move.to_string()}")
-                    if legal_move and travel_time_to_car_move < best_travel_time_to_car_move:
-                        best_move_not_legal = False
-                        best_travel_time_first_stage = travel_time_to_car_move
-                        best_employee_first_stage = employee
-
-                else:
-                    for s in range(self.num_scenarios):
-
-                        if best_car_move[s] is not None:
-                            legal_move, travel_time_to_car_move = self.feasibility_checker.check_legal_move(
-                                car_move=best_car_move[s], employee=employee, scenario=s, get_employee_travel_time=True)
-
-                            if legal_move and travel_time_to_car_move < best_travel_time_to_car_move_second_stage[s]:
-                                best_move_not_legal = False
-                                best_travel_time_to_car_move_second_stage[s] = travel_time_to_car_move
-                                best_employee_second_stage[s] = employee
-        '''
         # Remove best move if not legal. Else return best employee
         if self.first_stage:
             if best_employee_first_stage is None and best_car_move is not None:
                 self.car_moves.remove(best_car_move)
             return best_employee_first_stage
         else:
-            print(f"best_car_move {[cm.car_move_id if cm is not None else None for cm in best_car_move]}")
-            print(f"best_employee {[emp.employee_id if emp is not None else None for emp in best_employee_second_stage]}")
             for s, emp in enumerate(best_employee_second_stage):
                 if emp is None and best_car_move[s] is not None:
                     self.car_moves_second_stage[s] = [cm for cm in self.car_moves_second_stage[s] if cm != best_car_move[s]]
