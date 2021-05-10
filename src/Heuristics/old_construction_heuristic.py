@@ -3,7 +3,7 @@ from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Heuristics.feasibility_checker import FeasibilityChecker
 from Heuristics.helper_functions_heuristics import remove_all_car_moves_of_car_in_car_move, \
     get_first_and_second_stage_solution
-from Heuristics.new_objective_function import ObjectiveFunction
+from Heuristics.old_objective_function import ObjectiveFunction
 from HelperFiles.helper_functions import load_object_from_file
 from Gurobi.Model.run_model import run_model
 import pandas as pd
@@ -231,12 +231,12 @@ class ConstructionHeuristic:
 
                 # La til dette 4 mai - mathias
                 # For at den skal velge minst tidkrevende charging moves
-                '''
+
                 elif obj_val == best_obj_val_first_stage:
                     if car_move.handling_time < best_car_move_first_stage.handling_time:
                         best_obj_val_first_stage = obj_val
                     best_car_move_first_stage = car_move
-                '''
+
             return best_car_move_first_stage
 
 
@@ -260,6 +260,7 @@ class ConstructionHeuristic:
                                                                scenario=s)
 
                     if obj_val > best_obj_val_second_stage[s]:
+                        '''
                         if self.car_moves_second_stage[s][r].is_charging_move:
 
                             # Checking if charging node has space for another car
@@ -272,10 +273,15 @@ class ConstructionHeuristic:
                                 best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
                                 # car_moves[s][r].end_node.add_car(scenario=s)
                         else:
+                        '''
+                        best_obj_val_second_stage[s] = obj_val
+                        best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
+
+                    elif obj_val == best_obj_val_second_stage[s]:
+                        if self.car_moves_second_stage[s][r].handling_time < best_car_move_second_stage[s].handling_time:
                             best_obj_val_second_stage[s] = obj_val
                             best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
-                    '''
-                    elif obj_val == best_obj_val_second_stage[s]:
+                        '''
                         if self.car_moves_second_stage[s][r].is_charging_move:
 
                             # Checking if charging node has space for another car

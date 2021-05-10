@@ -8,7 +8,7 @@ from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from Heuristics.LocalSearch.local_search import LocalSearch
 from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution
-from new_construction_heuristic import ConstructionHeuristic
+from best_construction_heuristic import ConstructionHeuristic
 from path_manager import path_to_src
 import numpy as np
 import os
@@ -142,8 +142,8 @@ class ALNS():
                 # print(f"Iteration {i * 10}")
                 # print(f"Best objective value {best_solution[1]}")
                 # print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
-                loop = tqdm(range(100), total=10, leave=True)
-                loop.set_description(f"Segment[{i}/{50}]")
+                loop = tqdm(range(10), total=10, leave=True)
+                loop.set_description(f"Segment[{i}/{100}]")
                 loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val,
                                  best_true_obj_val=best_solution[1])
                 output_text = "\n"
@@ -415,19 +415,24 @@ class ALNS():
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
-    from new_new_objective_function import get_parking_nodes_in_out
+    from best_objective_function import get_parking_nodes_in_out
 
-    filename = "InstanceGenerator/InstanceFiles/40nodes/40-10-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/20nodes/20-25-1-1_b"
+    '''
     ch = ConstructionHeuristic(filename + ".pkl")
     profiler = Profiler()
     profiler.start()
 
-    ch.construct()
+    ch.construct(verbose=True)
 
     ch.print_solution()
 
     profiler.stop()
     print(profiler.output_text(unicode=True, color=True))
+
+    gi = GurobiInstance(filename + ".yaml", ch.employees, optimize=False)
+    run_model(gi)
+    '''
     '''
     nodes_in, nodes_out = get_parking_nodes_in_out([ch.car_moves[0]], [])
     true = ch.objective_function.evaluate([ch.car_moves[0]])
@@ -465,7 +470,8 @@ if __name__ == "__main__":
 
     # code you want to profile
     '''
-    '''
+    profiler = Profiler()
+    profiler.start()
     try:
         alns = ALNS(filename + ".pkl")
     except KeyboardInterrupt:
@@ -477,7 +483,7 @@ if __name__ == "__main__":
 
     profiler.stop()
     print(profiler.output_text(unicode=True, color=True))
-    '''
+
     # profiler.stop()
     # print(profiler.output_text(unicode=True, color=True))
     # print("\n############## Optimal solution ##############")

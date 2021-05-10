@@ -1,11 +1,14 @@
 import os
+
+import numpy as np
+
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Heuristics.feasibility_checker import FeasibilityChecker
 from Heuristics.helper_functions_heuristics import remove_all_car_moves_of_car_in_car_move, \
     get_first_stage_solution_and_removed_moves, get_first_stage_solution, get_first_and_second_stage_solution, \
     get_assigned_car_moves, get_first_stage_solution_list_from_dict, get_separate_assigned_car_moves, \
     get_first_stage_solution_list_from_solution
-from Heuristics.new_new_objective_function import ObjectiveFunction
+from Heuristics.best_objective_function import ObjectiveFunction
 from src.HelperFiles.helper_functions import load_object_from_file
 from src.Gurobi.Model.run_model import run_model
 import pandas as pd
@@ -205,8 +208,9 @@ class ConstructionHeuristic:
                         else:
                             added_scenarios.append(0)
 
-                    scenarios_with_insertion = [i for i, x in enumerate(added_scenarios) if x == 1]
+
                     if verbose:
+                        scenarios_with_insertion = [i for i, x in enumerate(added_scenarios) if x == 1]
                         print(f"Second stage insertion number {second_stage_move_counter}:")
                         print("{} second stage car moves added in scenarios {}\n".format(
                             len(scenarios_with_insertion), ([i + 1 for i in scenarios_with_insertion])))
@@ -230,13 +234,6 @@ class ConstructionHeuristic:
                     best_obj_val_first_stage = obj_val
                     best_car_move_first_stage = car_move
 
-                # La til dette 4 mai - mathias
-                # For at den skal velge minst tidkrevende charging moves
-
-                elif obj_val == best_obj_val_first_stage:
-                    if car_move.handling_time < best_car_move_first_stage.handling_time:
-                        best_obj_val_first_stage = obj_val
-                    best_car_move_first_stage = car_move
 
             return best_car_move_first_stage
 
@@ -261,6 +258,7 @@ class ConstructionHeuristic:
                                                                scenario=s, both="heuristic")
 
                     if obj_val > best_obj_val_second_stage[s]:
+                        '''
                         if self.car_moves_second_stage[s][r].is_charging_move:
 
                             # Checking if charging node has space for another car
@@ -269,14 +267,21 @@ class ConstructionHeuristic:
                                 continue
 
                             else:
+                        
                                 best_obj_val_second_stage[s] = obj_val
                                 best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
                                 # car_moves[s][r].end_node.add_car(scenario=s)
                         else:
+                        '''
+                        best_obj_val_second_stage[s] = obj_val
+                        best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
+
+                    elif obj_val == best_obj_val_second_stage[s]:
+                        if self.car_moves_second_stage[s][r].handling_time < best_car_move_second_stage[s].handling_time:
                             best_obj_val_second_stage[s] = obj_val
                             best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
                     '''
-                    elif obj_val == best_obj_val_second_stage[s]:
+                        best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
                         if self.car_moves_second_stage[s][r].is_charging_move:
 
                             # Checking if charging node has space for another car
