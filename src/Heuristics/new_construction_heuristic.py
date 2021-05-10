@@ -175,8 +175,8 @@ class ConstructionHeuristic:
                     self._add_car_move_to_employee(best_car_move=best_car_move_first_stage,
                                                    best_employee=best_employee_first_stage)
                     first_stage_move_counter += 1
-                    if verbose:
-                        print(f"{first_stage_move_counter} first stage insertions completed\n")
+                    #if verbose:
+                    #    print(f"{first_stage_move_counter} first stage insertions completed\n")
 
 
             else:
