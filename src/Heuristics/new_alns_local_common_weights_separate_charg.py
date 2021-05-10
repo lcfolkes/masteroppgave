@@ -429,13 +429,13 @@ if __name__ == "__main__":
     filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
 
     try:
-        profiler = Profiler()
-        profiler.start()
+        #profiler = Profiler()
+        #profiler.start()
         alns = ALNS(filename + ".pkl")
 
 
-        profiler.stop()
-        print(profiler.output_text(unicode=True, color=True))
+        #profiler.stop()
+        #print(profiler.output_text(unicode=True, color=True))
     except KeyboardInterrupt:
         print('Interrupted')
         try:
