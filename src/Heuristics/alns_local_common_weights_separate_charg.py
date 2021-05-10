@@ -8,7 +8,7 @@ from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from Heuristics.LocalSearch.local_search import LocalSearch
 from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution
-from Heuristics.best_construction_heuristic import ConstructionHeuristic
+from Heuristics.parallel_construction_heuristic import ConstructionHeuristic
 
 from path_manager import path_to_src
 import numpy as np
@@ -140,7 +140,7 @@ class ALNS():
                 # print(f"Iteration {i * 10}")
                 # print(f"Best objective value {best_solution[1]}")
                 # print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
-                loop = tqdm(range(10), total=10, leave=True)
+                loop = tqdm(range(iterations_segment), total=iterations_segment, leave=True)
                 loop.set_description(f"Segment[{i}/{100}]")
 
                 loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val,
@@ -421,58 +421,9 @@ if __name__ == "__main__":
     from best_objective_function import get_parking_nodes_in_out
 
     filename = "InstanceGenerator/InstanceFiles/20nodes/20-25-1-1_b"
-    '''
-    ch = ConstructionHeuristic(filename + ".pkl")
-    profiler = Profiler()
-    profiler.start()
-
-    ch.construct(verbose=True)
-
-    ch.print_solution()
-
-    profiler.stop()
-    print(profiler.output_text(unicode=True, color=True))
-
-    gi = GurobiInstance(filename + ".yaml", ch.employees, optimize=False)
-    run_model(gi)
-    '''
-    '''
-    nodes_in, nodes_out = get_parking_nodes_in_out([ch.car_moves[0]], [])
-    true = ch.objective_function.evaluate([ch.car_moves[0]])
-    print(true)
-    #print(heur)
-    ch.objective_function.update([ch.car_moves[2]])
-    print(ch.objective_function.heuristic_objective_value)
-    '''
-    '''
-    profiler = Profiler()
-    profiler.start()
-
-    ch = ConstructionHeuristic(filename + ".pkl")
-    ch.construct()
-    ch.print_solution()
-    
-    nodes_in, nodes_out = get_parking_nodes_in_out([ch.car_moves[0]], [])
-    ch.objective_function._update_z(nodes_in, nodes_out)
-    print("CM1 in")
-    print("z", ch.objective_function._z)
-    print("w", ch.objective_function._w)
-    print(ch.objective_function.heuristic_objective_value)
-    #ch.objective_function._update_z(nodes_out, nodes_in)
-    #print(ch.objective_function._z)
-    '''
-    '''
-    profiler.stop()
-    print(profiler.output_text(unicode=True, color=True))
-
-    # gi = GurobiInstance(filename + ".yaml")
-    # run_model(gi, time_limit=10000.0)
-
-    # profiler = Profiler()
-    # profiler.start()
 
     # code you want to profile
-    '''
+
     profiler = Profiler()
     profiler.start()
 
