@@ -274,6 +274,7 @@ class ConstructionHeuristic:
 
                 else:
                     for s in range(self.num_scenarios):
+
                         if best_car_move[s] is not None:
                             legal_move, travel_time_to_car_move = self.feasibility_checker.check_legal_move(
                                 car_move=best_car_move[s], employee=employee, scenario=s, get_employee_travel_time=True)
@@ -287,17 +288,11 @@ class ConstructionHeuristic:
         if self.first_stage:
             if best_move_not_legal:
                 self.car_moves.remove(best_car_move)
-                return
-            else:
-                return best_employee
+            return best_employee
         else:
             if best_move_not_legal:
                 for s in range(self.num_scenarios):
-                    # self.car_moves_second_stage[s] = [cm for cm in self.car_moves_second_stage[s] if cm != best_car_move[s]]
-                    try:
-                        self.car_moves_second_stage[s].remove(best_car_move[s])
-                    except:
-                        pass
+                    self.car_moves_second_stage[s] = [cm for cm in self.car_moves_second_stage[s] if cm != best_car_move[s]]
                 return
             else:
                 return best_employee_second_stage
@@ -345,8 +340,7 @@ class ConstructionHeuristic:
                         # When first stage is finished, initialize car_moves to be list of copies of
                         # car_moves (number of copies = num_scenarios)
                         self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(best_car_move[s],
-                                                                                                 self.car_moves_second_stage[
-                                                                                                     s])
+                                                                                                 self.car_moves_second_stage[s])
 
                 # print(f"car_moves: {len(car_moves[s])}")
                 if not any(self.car_moves_second_stage):
@@ -499,7 +493,7 @@ if __name__ == "__main__":
     from pyinstrument import Profiler
     import time
 
-    filename = "InstanceGenerator/InstanceFiles/26nodes/26-25-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
     ch = ConstructionHeuristic(filename + ".pkl")
     #profiler = Profiler()
     #profiler.start()

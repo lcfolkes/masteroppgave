@@ -8,8 +8,8 @@ from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from Heuristics.LocalSearch.local_search import LocalSearch
 from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution
-from new_construction_heuristic import ConstructionHeuristic
-#from parallel_construction_heuristic import ConstructionHeuristic
+#from new_construction_heuristic import ConstructionHeuristic
+from parallel_construction_heuristic import ConstructionHeuristic
 from path_manager import path_to_src
 import numpy as np
 import os
@@ -40,7 +40,6 @@ _IS_REJECTED
 class ALNS():
 
     def __init__(self, filename):
-        print("halla")
         self.filename = filename
 
         self.best_solution = None
@@ -420,7 +419,7 @@ class ALNS():
 if __name__ == "__main__":
     from pyinstrument import Profiler
     import time
-    filename = "InstanceGenerator/InstanceFiles/26nodes/26-25-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
 
     try:
         #profiler = Profiler()

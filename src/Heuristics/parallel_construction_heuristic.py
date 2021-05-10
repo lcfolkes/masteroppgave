@@ -34,6 +34,7 @@ class ConstructionHeuristic:
         self.assigned_car_moves = {k: [[] for _ in range(self.num_scenarios)] for k in
                                    self.employees}  # [gamma_k] dictionary containing ordered list of car_moves,
         # assigned to employee k in scenario s
+        self.employees_dict = {k.employee_id: k for k in self.employees}
         self.car_moves_dict = {}
         self.car_moves = []  # self.world_instance.car_moves
         self.car_moves_second_stage = []
@@ -193,7 +194,7 @@ class ConstructionHeuristic:
                 ### GET BEST EMPLOYEE ###
                 best_employee_second_stage = self._get_best_employee(best_car_move=best_car_move_second_stage)
                 ### ADD CAR MOVE TO EMPLOYEE ###
-                if best_employee_second_stage is not None:
+                if not all(emp is None for emp in best_employee_second_stage):
                     self._add_car_move_to_employee(best_car_move=best_car_move_second_stage,
                                                    best_employee=best_employee_second_stage)
 
@@ -245,22 +246,60 @@ class ConstructionHeuristic:
         # SECOND STAGE
         else:
             args = ((self.car_moves_second_stage[s], s) for s in range(self.num_scenarios))
-            with mp.Pool() as pool:
+            with mp.Pool(processes=self.num_scenarios) as pool:
                 best_car_move_second_stage = pool.starmap(self._get_best_car_move_process, args)
             best_car_move_second_stage = [self.car_moves_dict[cm.car_move_id] if cm is not None else None for cm in best_car_move_second_stage]
-            #print(f"parallel: {best_car_move_second_stage}")
-
-            #best_car_move_second_stage = [None for _ in range(self.num_scenarios)]
-            #for s in range(self.num_scenarios):
-            #    best_car_move_second_stage[s] = self._get_best_car_move_process(car_moves=self.car_moves_second_stage[s], scenario=s)
-            #print(f"sequential: {best_car_move_second_stage}")
-
             return best_car_move_second_stage
+
+    #TODO: does not work properly
+    def _get_best_employee_process(self, best_employee, current_employee, best_car_move, best_travel_time, scenario=None):
+        best_employee = best_employee
+        if best_car_move is not None:
+            legal_move, travel_time_to_car_move = self.feasibility_checker.check_legal_move(
+                car_move=best_car_move, employee=current_employee, scenario=scenario, get_employee_travel_time=True)
+
+            if legal_move and travel_time_to_car_move < best_travel_time:
+                best_travel_time = travel_time_to_car_move
+                best_employee = current_employee
+
+        return best_employee, best_travel_time
 
     def _get_best_employee(self, best_car_move):
         if self.first_stage:
-            best_employee = None
-            best_travel_time_to_car_move = 100
+            best_employee_first_stage = None
+            best_travel_time_first_stage = 100
+        else:
+            best_employee_second_stage = [None for _ in range(self.num_scenarios)]
+            best_travel_time_second_stage = [100 for _ in range(self.num_scenarios)]
+
+        for employee in self.employees:
+            task_num = len(employee.car_moves)
+            # if first stage and the number of completed task for employee is below the number of tasks in first stage,
+            # or if second stage and the number of completed tasks are the same or larger than the number of tasks
+            # in first stage
+            if self.first_stage == (task_num < self.world_instance.first_stage_tasks):
+                if self.first_stage:
+                    best_employee_first_stage, best_travel_time_first_stage = self._get_best_employee_process(
+                        best_employee_first_stage, employee, best_car_move, best_travel_time_first_stage)
+                    #legal_move, travel_time_to_car_move = self.feasibility_checker.check_legal_move(
+                    #    car_move=best_car_move, employee=employee, get_employee_travel_time=True)
+                    #if legal_move and travel_time_to_car_move < best_travel_time_first_stage:
+                    #    best_travel_time_first_stage = travel_time_to_car_move
+                    #    best_employee_first_stage = employee
+                else:
+                    args = ((best_employee_second_stage[s], employee, best_car_move[s], best_travel_time_second_stage[s], s)
+                            for s in range(self.num_scenarios))
+                    with mp.Pool(processes=self.num_scenarios) as pool:
+                        res = pool.starmap(self._get_best_employee_process, args)
+                    best_employee_second_stage = [self.employees_dict[res_tuple[0].employee_id]
+                                                  if res_tuple[0] is not None else None for res_tuple in res]
+                    best_travel_time_second_stage = [res_tuple[1] for res_tuple in res]
+
+        '''
+        def _get_best_employee(self, best_car_move):
+        if self.first_stage:
+            best_employee_first_stage = None
+            best_travel_time_first_stage = 100
         else:
             best_employee_second_stage = [None for _ in range(self.num_scenarios)]
             best_travel_time_to_car_move_second_stage = [100 for _ in range(self.num_scenarios)]
@@ -279,11 +318,12 @@ class ConstructionHeuristic:
                     # print(f"legal_move {legal_move}\n{best_car_move.to_string()}")
                     if legal_move and travel_time_to_car_move < best_travel_time_to_car_move:
                         best_move_not_legal = False
-                        best_travel_time_to_car_move = travel_time_to_car_move
-                        best_employee = employee
+                        best_travel_time_first_stage = travel_time_to_car_move
+                        best_employee_first_stage = employee
 
                 else:
                     for s in range(self.num_scenarios):
+
                         if best_car_move[s] is not None:
                             legal_move, travel_time_to_car_move = self.feasibility_checker.check_legal_move(
                                 car_move=best_car_move[s], employee=employee, scenario=s, get_employee_travel_time=True)
@@ -292,25 +332,20 @@ class ConstructionHeuristic:
                                 best_move_not_legal = False
                                 best_travel_time_to_car_move_second_stage[s] = travel_time_to_car_move
                                 best_employee_second_stage[s] = employee
-
+        '''
         # Remove best move if not legal. Else return best employee
         if self.first_stage:
-            if best_move_not_legal:
+            if best_employee_first_stage is None and best_car_move is not None:
                 self.car_moves.remove(best_car_move)
-                return
-            else:
-                return best_employee
+            return best_employee_first_stage
         else:
-            if best_move_not_legal:
-                for s in range(self.num_scenarios):
-                    # self.car_moves_second_stage[s] = [cm for cm in self.car_moves_second_stage[s] if cm != best_car_move[s]]
-                    try:
-                        self.car_moves_second_stage[s].remove(best_car_move[s])
-                    except:
-                        pass
-                return
-            else:
-                return best_employee_second_stage
+            print(f"best_car_move {[cm.car_move_id if cm is not None else None for cm in best_car_move]}")
+            print(f"best_employee {[emp.employee_id if emp is not None else None for emp in best_employee_second_stage]}")
+            for s, emp in enumerate(best_employee_second_stage):
+                if emp is None and best_car_move[s] is not None:
+                    self.car_moves_second_stage[s] = [cm for cm in self.car_moves_second_stage[s] if cm != best_car_move[s]]
+            return best_employee_second_stage
+
 
     def _add_car_move_to_employee(self, best_car_move, best_employee):
 
@@ -354,9 +389,8 @@ class ConstructionHeuristic:
 
                         # When first stage is finished, initialize car_moves to be list of copies of
                         # car_moves (number of copies = num_scenarios)
-                        self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(best_car_move[s],
-                                                                                                 self.car_moves_second_stage[
-                                                                                                     s])
+                        self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(
+                            best_car_move[s], self.car_moves_second_stage[s])
 
                 # print(f"car_moves: {len(car_moves[s])}")
                 if not any(self.car_moves_second_stage):
@@ -509,7 +543,7 @@ if __name__ == "__main__":
     from pyinstrument import Profiler
     import time
 
-    filename = "InstanceGenerator/InstanceFiles/26nodes/26-50-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
     ch = ConstructionHeuristic(filename + ".pkl")
     # profiler = Profiler()
     # profiler.start()
