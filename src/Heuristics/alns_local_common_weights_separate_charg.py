@@ -8,8 +8,8 @@ from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from Heuristics.LocalSearch.local_search import LocalSearch
 from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution
-from Heuristics.new_construction_heuristic import ConstructionHeuristic
-#from Heuristics.parallel_construction_heuristic import ConstructionHeuristic
+from Heuristics.parallel_construction_heuristic import ConstructionHeuristic
+
 from path_manager import path_to_src
 import numpy as np
 import os
@@ -133,6 +133,7 @@ class ALNS():
 
         # SEGMENTS
         try:
+
             for i in range(iterations_alns):
                 # print(i)
 
@@ -140,7 +141,8 @@ class ALNS():
                 # print(f"Best objective value {best_solution[1]}")
                 # print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
                 loop = tqdm(range(iterations_segment), total=iterations_segment, leave=True)
-                loop.set_description(f"Segment[{i}/{iterations_alns}]")
+                loop.set_description(f"Segment[{i}/{100}]")
+
                 loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val,
                                  best_true_obj_val=best_solution[1])
                 output_text = "\n"
@@ -416,7 +418,14 @@ class ALNS():
 if __name__ == "__main__":
     from pyinstrument import Profiler
     import time
-    filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
+    from best_objective_function import get_parking_nodes_in_out
+
+    filename = "InstanceGenerator/InstanceFiles/20nodes/20-25-1-1_b"
+
+    # code you want to profile
+
+    profiler = Profiler()
+    profiler.start()
 
     try:
         #profiler = Profiler()
@@ -432,3 +441,13 @@ if __name__ == "__main__":
             sys.exit(0)
         except SystemExit:
             os._exit(0)
+
+    profiler.stop()
+    print(profiler.output_text(unicode=True, color=True))
+
+    # profiler.stop()
+    # print(profiler.output_text(unicode=True, color=True))
+    # print("\n############## Optimal solution ##############")
+    # gi2 = GurobiInstance(filename + ".yaml")
+    # run_model(gi2, time_limit=300)
+

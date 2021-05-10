@@ -3,7 +3,7 @@ from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Heuristics.feasibility_checker import FeasibilityChecker
 from Heuristics.helper_functions_heuristics import remove_all_car_moves_of_car_in_car_move, \
     get_first_and_second_stage_solution
-from Heuristics.new_objective_function import ObjectiveFunction
+from Heuristics.best_objective_function import ObjectiveFunction
 from HelperFiles.helper_functions import load_object_from_file
 from Gurobi.Model.run_model import run_model
 import pandas as pd
@@ -215,10 +215,8 @@ class ConstructionHeuristic:
 
     def _get_best_car_move_process(self, car_moves, scenario=None):
         best_car_move = None
-        if scenario is None:
-            best_obj_val = self.objective_function.heuristic_objective_value
-        else:
-            best_obj_val = self.objective_function.heuristic_objective_value_scenarios[scenario]
+        best_obj_val = self.objective_function.heuristic_objective_value
+
 
         # print("Iteration")
         for car_move in car_moves:
@@ -228,9 +226,9 @@ class ConstructionHeuristic:
                     # TODO: remove car_moves with this destination
                     continue
             if scenario is None:
-                obj_val = self.objective_function.evaluate(added_car_moves=[car_move])
+                obj_val = self.objective_function.evaluate(added_car_moves=[car_move], both="heuristic")
             else:
-                obj_val = self.objective_function.evaluate(added_car_moves=[car_move], scenario=scenario)
+                obj_val = self.objective_function.evaluate(added_car_moves=[car_move], scenario=scenario, both="heuristic")
 
             if obj_val > best_obj_val:
                 best_obj_val = obj_val

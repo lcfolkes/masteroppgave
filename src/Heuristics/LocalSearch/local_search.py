@@ -1,5 +1,5 @@
 from Heuristics.LocalSearch.local_search_operator import IntraMove, InterSwap
-from Heuristics.new_construction_heuristic import ConstructionHeuristic
+from Heuristics.old_construction_heuristic import ConstructionHeuristic
 from Heuristics.feasibility_checker import FeasibilityChecker
 
 

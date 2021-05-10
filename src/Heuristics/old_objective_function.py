@@ -294,14 +294,14 @@ if __name__ == "__main__":
     from pyinstrument import Profiler
     from src.Gurobi.Model.run_model import run_model
     from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
-    from new_construction_heuristic import ConstructionHeuristic
+    from old_construction_heuristic import ConstructionHeuristic
 
-    filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_c"
+    filename = "InstanceGenerator/InstanceFiles/40nodes/40-10-1-1_a"
     ch = ConstructionHeuristic(filename + ".pkl")
     profiler = Profiler()
     profiler.start()
 
-    ch.construct()
+    ch.construct(verbose=True)
 
     profiler.stop()
     print(profiler.output_text(unicode=True, color=True))
