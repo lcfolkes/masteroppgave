@@ -73,6 +73,21 @@ screen -S <screen_name>
 #### Detach from screen
 <kbd>Ctrl + a</kbd> <kbd>d</kbd>
 
+### Connect to compute node
+When connected to a screen, you must connect to a compute node before running any tests.
+```
+ssh compute-<rack>-<node_id>
+```
+#### Load modules on new compute node
+The first time you access a compute node, you must load Python and Gurobi
+```
+module load Python/3.7.4-GCCcore-8.3.0
+module load gurobi/9.0.2
+cd $GUROBI_HOME
+python setup.py build -b $HOME/.cache/gurobipy install --user
+```
+Navigate back to *storage* and pip install requirements (see Solstorm->Setup)
+
 ## Run from terminal
 To run a file from the terminal one must first set the <code>PYTHONPATH</code>. First, navigate to the root directory.
 ```
