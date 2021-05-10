@@ -81,8 +81,8 @@ ssh compute-<rack>-<node_id>
 #### Load modules on new compute node
 The first time you access a compute node, you must load Python and Gurobi
 ```
-module load Python/3.7.4-GCCcore-8.3.0
-module load gurobi/9.0.2
+module load Python/3.8.6-GCCcore-10.2.0
+module load gurobi/9.1
 cd $GUROBI_HOME
 python setup.py build -b $HOME/.cache/gurobipy install --user
 ```
