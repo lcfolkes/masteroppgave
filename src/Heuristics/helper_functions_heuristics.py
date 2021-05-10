@@ -323,7 +323,7 @@ def get_first_stage_solution_and_removed_moves(input_solution, num_first_stage_t
 
 def copy_solution_dict(input_solution):
     out_solution = {}
-    for scenarios, employee in input_solution.item():
+    for employee, scenarios in input_solution.items():
         out_solution[employee] = []
         for car_moves in scenarios:
             car_moves_scenario = []
