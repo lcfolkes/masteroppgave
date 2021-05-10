@@ -321,6 +321,27 @@ def get_first_stage_solution_and_removed_moves(input_solution, num_first_stage_t
 
     return first_stage_solution, removed_moves
 
+def copy_solution_dict(input_solution):
+    out_solution = {}
+    for scenarios, employee in input_solution.item():
+        out_solution[employee] = []
+        for car_moves in scenarios:
+            car_moves_scenario = []
+            for cm in car_moves:
+                car_moves_scenario.append(cm)
+            out_solution[employee].append(car_moves_scenario)
+
+    return out_solution
+
+def copy_unused_car_moves_2d_list(unused_car_moves):
+    out_list = []
+    for scenario in unused_car_moves:
+        scenario_list = []
+        for cm in scenario:
+            scenario_list.append(cm)
+        out_list.append(scenario_list)
+
+    return out_list
 
 def reset_car_moves(removed_car_moves: [CarMove]):
     for cm in removed_car_moves:
