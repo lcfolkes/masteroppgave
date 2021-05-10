@@ -122,9 +122,9 @@ class ALNS():
 						destroy_heuristic = self._get_destroy_operator(solution=candidate_solution.assigned_car_moves,
 																	   neighborhood_size=1, randomization_degree=40,
 																	   world_instance=candidate_solution.world_instance)
-						destroy_heuristic.destroy()
+						#destroy_heuristic.destroy()
 						#print("Destroy: ", destroy_heuristic, destroy_heuristic.solution)
-						destroy_heuristic.to_string()
+						#destroy_heuristic.to_string()
 						# print(destroy)
 
 						repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
@@ -133,7 +133,7 @@ class ALNS():
 						repair_heuristic.repair()
 
 						#print("Repair: ", repair_heuristic, repair_heuristic.solution)
-						repair_heuristic.to_string()
+						#repair_heuristic.to_string()
 						candidate_solution.rebuild(repair_heuristic.solution)
 						hash_key = candidate_solution.hash_key
 						if hash_key in visited_hash_keys:

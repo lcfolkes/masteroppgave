@@ -285,7 +285,9 @@ class ChargeRemoval(Destroy):
 
 
 if __name__ == "__main__":
+
     from Heuristics.old_construction_heuristic import ConstructionHeuristic
+
 
     print("\n---- HEURISTIC ----")
     ch = ConstructionHeuristic("./InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_a.pkl")

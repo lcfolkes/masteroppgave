@@ -3,7 +3,7 @@ from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Heuristics.feasibility_checker import FeasibilityChecker
 from Heuristics.helper_functions_heuristics import remove_all_car_moves_of_car_in_car_move, \
     get_first_and_second_stage_solution
-from Heuristics.old_objective_function import ObjectiveFunction
+from Heuristics.best_objective_function import ObjectiveFunction
 from HelperFiles.helper_functions import load_object_from_file
 from Gurobi.Model.run_model import run_model
 import pandas as pd
@@ -18,6 +18,7 @@ class ConstructionHeuristic:
     # filename = "InstanceFiles/6nodes/6-3-1-1_b.yaml"
 
     def __init__(self, instance_file):
+
         self.instance_file = instance_file
         self.world_instance = load_object_from_file(instance_file)
         self.objective_function = ObjectiveFunction(self.world_instance)
@@ -33,6 +34,8 @@ class ConstructionHeuristic:
         self.assigned_car_moves = {k: [[] for _ in range(self.num_scenarios)] for k in
                                    self.employees}  # [gamma_k] dictionary containing ordered list of car_moves,
         # assigned to employee k in scenario s
+        self.employees_dict = {k.employee_id: k for k in self.employees}
+        self.car_moves_dict = {}
         self.car_moves = []  # self.world_instance.car_moves
         self.car_moves_second_stage = []
         self._initialize_car_moves()
@@ -54,8 +57,7 @@ class ConstructionHeuristic:
             return self.objective_function.heuristic_objective_value
 
     def _initialize_for_rebuild(self):
-        self.unused_car_moves = [[] for _ in range(
-            self.num_scenarios)]  # [beta] list of unused car_moves for scenario s (zero index)
+        self.unused_car_moves = [[] for _ in range(self.num_scenarios)]  # [beta] list of unused car_moves for scenario s (zero index)
         for k in self.employees:
             '''
             print(f"emp {k.employee_id}")
@@ -148,6 +150,7 @@ class ConstructionHeuristic:
         for car in self.world_instance.cars:
             for car_move in car.car_moves:
                 self.car_moves.append(car_move)
+                self.car_moves_dict[car_move.car_move_id] = car_move
                 for s in range(self.num_scenarios):
                     self.unused_car_moves[s].append(car_move)
 
@@ -175,8 +178,8 @@ class ConstructionHeuristic:
                     self._add_car_move_to_employee(best_car_move=best_car_move_first_stage,
                                                    best_employee=best_employee_first_stage)
                     first_stage_move_counter += 1
-                    #if verbose:
-                    #    print(f"{first_stage_move_counter} first stage insertions completed\n")
+                    if verbose:
+                        print(f"{first_stage_move_counter} first stage insertions completed\n")
 
 
             else:
@@ -190,7 +193,7 @@ class ConstructionHeuristic:
                 ### GET BEST EMPLOYEE ###
                 best_employee_second_stage = self._get_best_employee(best_car_move=best_car_move_second_stage)
                 ### ADD CAR MOVE TO EMPLOYEE ###
-                if best_employee_second_stage is not None:
+                if not all(emp is None for emp in best_employee_second_stage):
                     self._add_car_move_to_employee(best_car_move=best_car_move_second_stage,
                                                    best_employee=best_employee_second_stage)
 
@@ -229,7 +232,6 @@ class ConstructionHeuristic:
             else:
                 obj_val = self.objective_function.evaluate(added_car_moves=[car_move], scenario=scenario)
 
-
             if obj_val > best_obj_val:
                 best_obj_val = obj_val
                 best_car_move = car_move
@@ -242,22 +244,31 @@ class ConstructionHeuristic:
             return self._get_best_car_move_process(self.car_moves)
         # SECOND STAGE
         else:
-            best_car_move_second_stage = [None for _ in range(self.num_scenarios)]
-            for s in range(self.num_scenarios):
-                best_car_move_second_stage[s] = self._get_best_car_move_process(
-                    car_moves=self.car_moves_second_stage[s], scenario=s)
-
+            args = ((self.car_moves_second_stage[s], s) for s in range(self.num_scenarios))
+            with mp.Pool(processes=self.num_scenarios) as pool:
+                best_car_move_second_stage = pool.starmap(self._get_best_car_move_process, args)
+            best_car_move_second_stage = [self.car_moves_dict[cm.car_move_id] if cm is not None else None for cm in best_car_move_second_stage]
             return best_car_move_second_stage
+
+    def _get_best_employee_process(self, best_employee, current_employee, best_car_move, best_travel_time, scenario=None):
+        best_employee = best_employee
+        if best_car_move is not None:
+            legal_move, travel_time_to_car_move = self.feasibility_checker.check_legal_move(
+                car_move=best_car_move, employee=current_employee, scenario=scenario, get_employee_travel_time=True)
+
+            if legal_move and travel_time_to_car_move < best_travel_time:
+                best_travel_time = travel_time_to_car_move
+                best_employee = current_employee
+
+        return best_employee, best_travel_time
 
     def _get_best_employee(self, best_car_move):
         if self.first_stage:
-            best_employee = None
-            best_travel_time_to_car_move = 100
+            best_employee_first_stage = None
+            best_travel_time_first_stage = 100
         else:
             best_employee_second_stage = [None for _ in range(self.num_scenarios)]
-            best_travel_time_to_car_move_second_stage = [100 for _ in range(self.num_scenarios)]
-
-        best_move_not_legal = True
+            best_travel_time_second_stage = [100 for _ in range(self.num_scenarios)]
 
         for employee in self.employees:
             task_num = len(employee.car_moves)
@@ -266,38 +277,28 @@ class ConstructionHeuristic:
             # in first stage
             if self.first_stage == (task_num < self.world_instance.first_stage_tasks):
                 if self.first_stage:
-                    legal_move, travel_time_to_car_move = self.feasibility_checker.check_legal_move(
-                        car_move=best_car_move, employee=employee, get_employee_travel_time=True)
-                    # print(f"legal_move {legal_move}\n{best_car_move.to_string()}")
-                    if legal_move and travel_time_to_car_move < best_travel_time_to_car_move:
-                        best_move_not_legal = False
-                        best_travel_time_to_car_move = travel_time_to_car_move
-                        best_employee = employee
-
+                    best_employee_first_stage, best_travel_time_first_stage = self._get_best_employee_process(
+                        best_employee_first_stage, employee, best_car_move, best_travel_time_first_stage)
                 else:
-                    for s in range(self.num_scenarios):
-
-                        if best_car_move[s] is not None:
-                            legal_move, travel_time_to_car_move = self.feasibility_checker.check_legal_move(
-                                car_move=best_car_move[s], employee=employee, scenario=s, get_employee_travel_time=True)
-
-                            if legal_move and travel_time_to_car_move < best_travel_time_to_car_move_second_stage[s]:
-                                best_move_not_legal = False
-                                best_travel_time_to_car_move_second_stage[s] = travel_time_to_car_move
-                                best_employee_second_stage[s] = employee
+                    args = ((best_employee_second_stage[s], employee, best_car_move[s], best_travel_time_second_stage[s], s)
+                            for s in range(self.num_scenarios))
+                    with mp.Pool(processes=self.num_scenarios) as pool:
+                        res = pool.starmap(self._get_best_employee_process, args)
+                    best_employee_second_stage = [self.employees_dict[res_tuple[0].employee_id]
+                                                  if res_tuple[0] is not None else None for res_tuple in res]
+                    best_travel_time_second_stage = [res_tuple[1] for res_tuple in res]
 
         # Remove best move if not legal. Else return best employee
         if self.first_stage:
-            if best_move_not_legal:
+            if best_employee_first_stage is None and best_car_move is not None:
                 self.car_moves.remove(best_car_move)
-            return best_employee
+            return best_employee_first_stage
         else:
-            if best_move_not_legal:
-                for s in range(self.num_scenarios):
+            for s, emp in enumerate(best_employee_second_stage):
+                if emp is None and best_car_move[s] is not None:
                     self.car_moves_second_stage[s] = [cm for cm in self.car_moves_second_stage[s] if cm != best_car_move[s]]
-                return
-            else:
-                return best_employee_second_stage
+            return best_employee_second_stage
+
 
     def _add_car_move_to_employee(self, best_car_move, best_employee):
 
@@ -341,8 +342,8 @@ class ConstructionHeuristic:
 
                         # When first stage is finished, initialize car_moves to be list of copies of
                         # car_moves (number of copies = num_scenarios)
-                        self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(best_car_move[s],
-                                                                                                 self.car_moves_second_stage[s])
+                        self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(
+                            best_car_move[s], self.car_moves_second_stage[s])
 
                 # print(f"car_moves: {len(car_moves[s])}")
                 if not any(self.car_moves_second_stage):
@@ -497,21 +498,19 @@ if __name__ == "__main__":
 
     filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
     ch = ConstructionHeuristic(filename + ".pkl")
-    #profiler = Profiler()
-    #profiler.start()
+    # profiler = Profiler()
+    # profiler.start()
     start = time.perf_counter()
 
     ch.construct()
     finish = time.perf_counter()
 
-
-    #profiler.stop()
-    #print(profiler.output_text())#unicode=True, color=True))
+    # profiler.stop()
+    # print(profiler.output_text())#unicode=True, color=True))
     true_obj_val, best_obj_val = ch.get_obj_val(both=True)
     # print(f"Construction heuristic true obj. val {true_obj_val}")
     ch.print_solution()
     print(f"Finished in {round(finish - start, 2)} seconds(s)")
-
-    #print("\n############## Evaluate solution ##############")
-    #gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)
-    #run_model(gi)
+    # print("\n############## Evaluate solution ##############")
+    # gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)
+    # run_model(gi)
