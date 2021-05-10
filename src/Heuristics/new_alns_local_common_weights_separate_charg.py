@@ -8,8 +8,8 @@ from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from Heuristics.LocalSearch.local_search import LocalSearch
 from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution, copy_solution_dict, copy_unused_car_moves_2d_list
-#from new_construction_heuristic import ConstructionHeuristic
-from parallel_construction_heuristic import ConstructionHeuristic
+from Heuristics.new_construction_heuristic import ConstructionHeuristic
+#from Heuristics.parallel_construction_heuristic import ConstructionHeuristic
 from path_manager import path_to_src
 import numpy as np
 import os
@@ -74,7 +74,7 @@ class ALNS():
         print(f"Heuristic obj. val {heuristic_obj_vals[0]}")
         current_solution = copy_solution_dict(solution.assigned_car_moves)
         current_unused_car_moves = copy_unused_car_moves_2d_list(solution.unused_car_moves)
-        visited_hash_keys.add(current_solution.hash_key)
+        visited_hash_keys.add(solution.hash_key)
         MODE = "LOCAL"
 
         # temperature = 1000  # Start temperature must be set differently. High temperature --> more randomness
@@ -102,7 +102,7 @@ class ALNS():
                 for j in loop:
                     # print(f"Iteration {i*10 + j}")
                     candidate_unused_car_moves = copy_unused_car_moves_2d_list(current_unused_car_moves)
-                    candidate_solution = copy_solution_dict(current_solution.assigned_car_moves)
+                    candidate_solution = copy_solution_dict(current_solution)
 
                     if MODE == "LOCAL_FIRST":
                         print("\n----- LOCAL SEARCH FIRST BEST -----")
@@ -110,7 +110,7 @@ class ALNS():
                                                    self._num_first_stage_tasks,
                                                    self._feasibility_checker)
                         local_search.search("best_first")
-                        candidate_solution.rebuild(local_search.solution, "second_stage")
+                        solution.rebuild(local_search.solution, "second_stage")
                         visited_hash_keys.update(local_search.visited_list)
 
                     elif MODE == "LOCAL_FULL":
@@ -148,7 +148,7 @@ class ALNS():
                             counter += 1
                             continue
                         visited_hash_keys.add(hash_key)
-                        candidate_solution.rebuild(repair_heuristic.solution)
+                        solution.rebuild(repair_heuristic.solution)
                         '''
                         hash_key = candidate_solution.hash_key
                         if hash_key in visited_hash_keys:
@@ -241,7 +241,7 @@ class ALNS():
             print(self.operator_pairs)
             print("best solution")
             print("obj_val", best_solution[1])
-            best_solution[0].print_solution()
+            #best_solution[0].print_solution()
 
     # best_solution.print_solution()
 
