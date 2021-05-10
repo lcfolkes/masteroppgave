@@ -57,8 +57,7 @@ class ConstructionHeuristic:
             return self.objective_function.heuristic_objective_value
 
     def _initialize_for_rebuild(self):
-        self.unused_car_moves = [[] for _ in range(
-            self.num_scenarios)]  # [beta] list of unused car_moves for scenario s (zero index)
+        self.unused_car_moves = [[] for _ in range(self.num_scenarios)]  # [beta] list of unused car_moves for scenario s (zero index)
         for k in self.employees:
             '''
             print(f"emp {k.employee_id}")

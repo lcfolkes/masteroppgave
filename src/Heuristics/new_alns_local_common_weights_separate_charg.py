@@ -7,9 +7,9 @@ from DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretIns
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from Heuristics.LocalSearch.local_search import LocalSearch
-from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution
-from new_construction_heuristic import ConstructionHeuristic
-#from parallel_construction_heuristic import ConstructionHeuristic
+from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution, copy_solution_dict, copy_unused_car_moves_2d_list
+#from new_construction_heuristic import ConstructionHeuristic
+from parallel_construction_heuristic import ConstructionHeuristic
 from path_manager import path_to_src
 import numpy as np
 import os
@@ -22,12 +22,15 @@ _IS_BETTER = 9.0
 _IS_ACCEPTED = 13.0
 
 '''
+
 _IS_BEST (sigma_1): The last remove-insert operation resulted in a new global best solution
 _IS_BETTER (sigma_2): The last remove-insert operation resulted in a solution that has not been accepted before.
          The cost of the new solution is better than the cost of the current solution.
+
 _IS_ACCEPTED (sigma_3): The last remove-insert operation resulted in a solution that has not been accepted before. The cost of
             the new solution is worse than the cost of current solution, but the solution was accepted.
 _IS_REJECTED
+
 '''
 
 
@@ -44,66 +47,15 @@ class ALNS():
         self.best_obj_val = 0
 
         solution = ConstructionHeuristic(self.filename)
-        self.num_employees = len(solution.employees)
+        self._num_employees = len(solution.employees)
+        self._num_first_stage_tasks = solution.num_first_stage_tasks
+        self._feasibility_checker = solution.feasibility_checker
+        self._world_instance = solution.world_instance
         self.operator_pairs = self._initialize_operators()
         self.operators_record = self._initialize_operator_records()
         self.run(solution)
 
-    def _initialize_operators(self):
-        if self.num_employees < 3:
-            operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_charge': 3.0,
-                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_charge': 3.0,
-                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_charge': 3.0,
-                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_charge': 20.0})
-        elif self.num_employees < 4:
-            operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': 3.0,
-                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_charge': 3.0,
-                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 3.0,
-                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_charge': 20.0})
-        else:
-            operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0,
-                 'random_charge': 3.0,
-                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0,
-                 'worst_charge': 3.0,
-                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0,
-                 'shaw_charge': 3.0,
-                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_regret4': 3.0,
-                 'charge_charge': 20.0})
 
-        return operators
-
-    def _initialize_operator_records(self):
-        if self.num_employees < 3:
-            operators_record = OrderedDict(
-                {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'random_charge': [1.0, 0],
-                 'worst_greedy': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_charge': [1.0, 0],
-                 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_charge': [1.0, 0],
-                 'charge_greedy': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_charge': [1.0, 0]})
-        elif self.num_employees < 4:
-            operators_record = OrderedDict(
-                {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'random_regret3': [1.0, 0],
-                 'random_charge': [1.0, 0],
-                 'worst_greedy': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_regret3': [1.0, 0],
-                 'worst_charge': [1.0, 0],
-                 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_regret3': [1.0, 0],
-                 'shaw_charge': [1.0, 0],
-                 'charge_greedy': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_regret3': [1.0, 0],
-                 'charge_charge': [1.0, 0]})
-        else:
-            operators_record = OrderedDict(
-                {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'random_regret3': [1.0, 0],
-                 'random_regret4': [1.0, 0], 'random_charge': [1.0, 0],
-                 'worst_greedy': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_regret3': [1.0, 0],
-                 'worst_regret4': [1.0, 0], 'worst_charge': [1.0, 0],
-                 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_regret3': [1.0, 0], 'shaw_regret4': [1.0, 0],
-                 'shaw_charge': [1.0, 0],
-                 'charge_greedy': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_regret3': [1.0, 0],
-                 'charge_regret4': [1.0, 0], 'charge_charge': [1.0, 0]})
-
-        return operators_record
 
     def run(self, solution):
         # TODO: in order to save time, this could be implemented as a queue (as in tabu search)
@@ -116,11 +68,12 @@ class ALNS():
         current_obj_val = best_obj_val
         true_obj_vals = [true_obj_val]
         heuristic_obj_vals = [best_obj_val]
-        best_solution = (solution, true_obj_val)
+        best_solution = (copy_solution_dict(solution.assigned_car_moves), true_obj_val)
         print(f"Construction heuristic true obj. val {true_obj_val}")
         print(f"Heuristic obj. val {heuristic_obj_vals[0]}")
         print(f"Heuristic obj. val {heuristic_obj_vals[0]}")
-        current_solution = solution
+        current_solution = copy_solution_dict(solution.assigned_car_moves)
+        current_unused_car_moves = copy_unused_car_moves_2d_list(solution.unused_car_moves)
         visited_hash_keys.add(current_solution.hash_key)
         MODE = "LOCAL"
 
@@ -148,42 +101,42 @@ class ALNS():
 
                 for j in loop:
                     # print(f"Iteration {i*10 + j}")
-                    candidate_solution = copy.deepcopy(current_solution)
+                    candidate_unused_car_moves = copy_unused_car_moves_2d_list(current_unused_car_moves)
+                    candidate_solution = copy_solution_dict(current_solution.assigned_car_moves)
 
                     if MODE == "LOCAL_FIRST":
                         print("\n----- LOCAL SEARCH FIRST BEST -----")
-                        local_search = LocalSearch(candidate_solution.assigned_car_moves,
-                                                   candidate_solution.world_instance.first_stage_tasks,
-                                                   candidate_solution.feasibility_checker)
+                        local_search = LocalSearch(candidate_solution,
+                                                   self._num_first_stage_tasks,
+                                                   self._feasibility_checker)
                         local_search.search("best_first")
                         candidate_solution.rebuild(local_search.solution, "second_stage")
                         visited_hash_keys.update(local_search.visited_list)
 
                     elif MODE == "LOCAL_FULL":
                         print("\n----- LOCAL SEARCH FULL -----")
-                        local_search = LocalSearch(candidate_solution.assigned_car_moves,
-                                                   candidate_solution.world_instance.first_stage_tasks,
-                                                   candidate_solution.feasibility_checker)
+                        local_search = LocalSearch(candidate_solution,
+                                                   self._num_first_stage_tasks,
+                                                   self._feasibility_checker)
                         local_search.search("full")
-                        candidate_solution.rebuild(local_search.solution, "second_stage")
+                        solution.rebuild(local_search.solution, "second_stage")
                         visited_hash_keys.update(local_search.visited_list)
 
 
                     elif MODE == "LNS":
                         # print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
                         destroy_heuristic, operator_pair = self._get_destroy_operator(
-                            solution=candidate_solution.assigned_car_moves,
+                            solution=candidate_solution,
                             neighborhood_size=1, randomization_degree=40,
-                            world_instance=candidate_solution.world_instance)
+                            world_instance=self._world_instance)
                         destroy_heuristic.destroy()
                         # print("Destroy: ", destroy_heuristic, destroy_heuristic.solution)
                         # destroy_heuristic.to_string()
                         # print(destroy)
 
                         repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
-                                                                     unused_car_moves=candidate_solution.
-                                                                     unused_car_moves,
-                                                                     world_instance=candidate_solution.world_instance,
+                                                                     unused_car_moves=candidate_unused_car_moves,
+                                                                     world_instance=self._world_instance,
                                                                      operator_pair=operator_pair)
                         repair_heuristic.repair()
 
@@ -203,7 +156,7 @@ class ALNS():
                         visited_hash_keys.add(hash_key)
                         '''
 
-                    true_obj_val, candidate_obj_val = candidate_solution.get_obj_val(both=True)
+                    true_obj_val, candidate_obj_val = solution.get_obj_val(both=True)
                     true_obj_vals.append(true_obj_val)
                     # print(f"true_obj_val {true_obj_val}")
                     # print(f"\ncurrent_obj_val {current_obj_val}")
@@ -248,6 +201,7 @@ class ALNS():
                         # current_solution = copy.deepcopy(solution)
                         current_obj_val = candidate_obj_val
                         current_solution = candidate_solution
+                        current_unused_car_moves = candidate_unused_car_moves
 
                     else:
                         output_text += str(counter) + " Not accepted solution\n"
@@ -290,6 +244,62 @@ class ALNS():
             best_solution[0].print_solution()
 
     # best_solution.print_solution()
+
+    def _initialize_operators(self):
+        if self._num_employees < 3:
+            operators = OrderedDict(
+                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_charge': 3.0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_charge': 3.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_charge': 20.0})
+        elif self._num_employees < 4:
+            operators = OrderedDict(
+                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': 3.0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_charge': 3.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_charge': 20.0})
+        else:
+            operators = OrderedDict(
+                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0,
+                 'random_charge': 3.0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0,
+                 'worst_charge': 3.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0,
+                 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_regret4': 3.0,
+                 'charge_charge': 20.0})
+
+        return operators
+
+    def _initialize_operator_records(self):
+        if self._num_employees < 3:
+            operators_record = OrderedDict(
+                {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'random_charge': [1.0, 0],
+                 'worst_greedy': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_charge': [1.0, 0],
+                 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_charge': [1.0, 0],
+                 'charge_greedy': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_charge': [1.0, 0]})
+        elif self._num_employees < 4:
+            operators_record = OrderedDict(
+                {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'random_regret3': [1.0, 0],
+                 'random_charge': [1.0, 0],
+                 'worst_greedy': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_regret3': [1.0, 0],
+                 'worst_charge': [1.0, 0],
+                 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_regret3': [1.0, 0],
+                 'shaw_charge': [1.0, 0],
+                 'charge_greedy': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_regret3': [1.0, 0],
+                 'charge_charge': [1.0, 0]})
+        else:
+            operators_record = OrderedDict(
+                {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'random_regret3': [1.0, 0],
+                 'random_regret4': [1.0, 0], 'random_charge': [1.0, 0],
+                 'worst_greedy': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_regret3': [1.0, 0],
+                 'worst_regret4': [1.0, 0], 'worst_charge': [1.0, 0],
+                 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_regret3': [1.0, 0], 'shaw_regret4': [1.0, 0],
+                 'shaw_charge': [1.0, 0],
+                 'charge_greedy': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_regret3': [1.0, 0],
+                 'charge_regret4': [1.0, 0], 'charge_charge': [1.0, 0]})
+
+        return operators_record
 
     def _accept(self, new_obj_val, current_obj_val, temperature) -> bool:
         if new_obj_val > current_obj_val:
@@ -419,13 +429,13 @@ if __name__ == "__main__":
     filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
 
     try:
-        #profiler = Profiler()
-        #profiler.start()
+        profiler = Profiler()
+        profiler.start()
         alns = ALNS(filename + ".pkl")
 
 
-        #profiler.stop()
-        #print(profiler.output_text(unicode=True, color=True))
+        profiler.stop()
+        print(profiler.output_text(unicode=True, color=True))
     except KeyboardInterrupt:
         print('Interrupted')
         try:
