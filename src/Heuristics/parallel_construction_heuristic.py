@@ -96,21 +96,19 @@ class ConstructionHeuristic:
 
         if stage == "first":
             # Check if this is not necessary for LNS
-            employee_ids = {e.employee_id: e for e in self.employees}
-            car_move_ids = {cm.car_move_id: cm for cm in self.car_moves}
             first_stage_solution = solution
             # print(first_stage_solution)
 
             # We have to reset all car moves before we begin adding new ones
             for employee_obj, car_move_objs in first_stage_solution.items():
                 for cm_obj in car_move_objs:
-                    cm = car_move_ids[cm_obj.car_move_id]
+                    cm = self.car_moves_dict[cm_obj.car_move_id]
                     cm.reset()
 
             for employee_obj, car_move_objs in first_stage_solution.items():
-                emp = employee_ids[employee_obj.employee_id]
+                emp = self.employees_dict[employee_obj.employee_id]
                 for cm_obj in car_move_objs:
-                    cm = car_move_ids[cm_obj.car_move_id]
+                    cm = self.car_moves_dict[cm_obj.car_move_id]
                     '''
                     if cm.is_charging_move:
                         print(

@@ -244,9 +244,9 @@ class ALNS():
                  'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_charge': 3.0,
                  'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_charge': 20.0})'''
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_regret2': 1.0,
-                 'worst_greedy': 1.0, 'worst_regret2': 1.0,
-                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0})
+                {'random_charge': 3.0,
+                 'worst_charge': 3.0, 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_charge': 20.0})
         elif self.num_employees < 4:
             '''operators = OrderedDict(
                 {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': 3.0,
@@ -254,9 +254,9 @@ class ALNS():
                  'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 3.0,
                  'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_charge': 20.0})'''
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0,
-                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0,
-                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0})
+                {'random_charge': 3.0, 'worst_charge': 3.0, 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_charge': 20.0})
+
         else:
             '''operators = OrderedDict(
                 {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0,
@@ -269,9 +269,11 @@ class ALNS():
                  'charge_charge': 20.0})
             '''
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0,
-                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0,
-                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0})
+                {'random_charge': 3.0,
+                 'worst_charge': 3.0,
+                 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_regret4': 3.0,
+                 'charge_charge': 20.0})
 
         return operators
 
@@ -432,20 +434,22 @@ if __name__ == "__main__":
     import time
     from best_objective_function import get_parking_nodes_in_out
 
-    filename = "InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_a"
+    filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
 
     # code you want to profile
 
 
     try:
-        profiler = Profiler()
-        profiler.start()
+        #profiler = Profiler()
+        #profiler.start()
         alns = ALNS(filename + ".pkl")
-        profiler.stop()
-        print("best solution")
-        print("obj_val", alns.best_solution[1])
-        alns.best_solution[0].print_solution()
-        print(profiler.output_text(unicode=True, color=True))
+        alns = ALNS(filename + ".pkl")
+        alns = ALNS(filename + ".pkl")
+        #profiler.stop()
+        #print("best solution")
+        #print("obj_val", alns.best_solution[1])
+        #alns.best_solution[0].print_solution()
+        #print(profiler.output_text(unicode=True, color=True))
     except KeyboardInterrupt:
         print('Interrupted')
         try:

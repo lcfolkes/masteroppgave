@@ -38,6 +38,8 @@ class ConstructionHeuristic:
         self.assigned_car_moves = {k: [[] for _ in range(self.num_scenarios)] for k in
                                    self.employees}  # [gamma_k] dictionary containing ordered list of car_moves,
         # assigned to employee k in scenario s
+        self.employees_dict = {k.employee_id: k for k in self.employees}
+        self.car_moves_dict = {}
         self.car_moves = []  # self.world_instance.car_moves
         self.car_moves_second_stage = []
         self._initialize_car_moves()
@@ -74,6 +76,7 @@ class ConstructionHeuristic:
         self.car_moves = []  # self.world_instance.car_moves
         self.car_moves_second_stage = []
         self._initialize_car_moves()
+        self._initialize_charging_nodes()
         self.available_employees = True
         self.first_stage = True
         self.objective_function = ObjectiveFunction(self.world_instance)
@@ -99,21 +102,19 @@ class ConstructionHeuristic:
 
         if stage == "first":
             # Check if this is not necessary for LNS
-            employee_ids = {e.employee_id: e for e in self.employees}
-            car_move_ids = {cm.car_move_id: cm for cm in self.car_moves}
             first_stage_solution = solution
             # print(first_stage_solution)
 
             # We have to reset all car moves before we begin adding new ones
-            for employee_obj, car_move_objs in first_stage_solution.items():
-                for cm_obj in car_move_objs:
-                    cm = car_move_ids[cm_obj.car_move_id]
-                    cm.reset()
+            #for employee_obj, car_move_objs in first_stage_solution.items():
+            #    for cm_obj in car_move_objs:
+            #        cm = self.car_moves_dict[cm_obj.car_move_id]
+            #        #cm.reset()
 
             for employee_obj, car_move_objs in first_stage_solution.items():
-                emp = employee_ids[employee_obj.employee_id]
+                emp = self.employees_dict[employee_obj.employee_id]
                 for cm_obj in car_move_objs:
-                    cm = car_move_ids[cm_obj.car_move_id]
+                    cm = self.car_moves_dict[cm_obj.car_move_id]
                     '''
                     if cm.is_charging_move:
                         print(
@@ -123,18 +124,8 @@ class ConstructionHeuristic:
                     self._add_car_move_to_employee(best_car_move=cm, best_employee=emp)
 
         else:
-            first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(solution,
-                                                                                              self.world_instance.
-                                                                                              first_stage_tasks)
-
-            for employee_obj, car_move_objs in first_stage_solution.items():
-                for cm_obj in car_move_objs:
-                    cm_obj.reset()
-
-            for employee_obj, car_moves_scenarios in second_stage_solution.items():
-                for scenario in car_moves_scenarios:
-                    for car_move in scenario:
-                        car_move.reset(scenario=car_moves_scenarios.index(scenario))
+            first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(
+                solution, self.world_instance.first_stage_tasks)
 
             for employee_obj, car_move_objs in first_stage_solution.items():
                 for cm_obj in car_move_objs:
@@ -153,8 +144,13 @@ class ConstructionHeuristic:
         for car in self.world_instance.cars:
             for car_move in car.car_moves:
                 self.car_moves.append(car_move)
+                self.car_moves_dict[car_move.car_move_id] = car_move
                 for s in range(self.num_scenarios):
                     self.unused_car_moves[s].append(car_move)
+
+    def _initialize_charging_nodes(self):
+        for cn in self.world_instance.charging_nodes:
+            cn.reset()
 
     def construct(self, verbose=False):
         if verbose:

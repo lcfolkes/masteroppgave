@@ -23,7 +23,8 @@ class Destroy(ABC):
         self.solution, self.removed_moves = get_first_stage_solution_and_removed_moves(solution,
                                                                                        world_instance.first_stage_tasks)
         self.neighborhood_size = neighborhood_size
-        #self.to_string()
+        print("input solution destroy")
+        self.to_string()
         # self._destroy()
 
     @abstractmethod
@@ -42,7 +43,7 @@ class Destroy(ABC):
             print("input first stage solution")
         else:
             print("\nDESTROY")
-            print(f"\ndestroyed solution: {type(self)}")
+            print(f"\ndestroyed solution: {self}")
         # print(self.solution)
 
         for k, v in self.solution.items():
@@ -255,6 +256,7 @@ class ChargeRemoval(Destroy):
         """
         super().__init__(solution, world_instance, neighborhood_size)
         self.removed_moves_in_this_operation = []
+
     def destroy(self):
         solution_dict = self.solution
         solution_list = get_first_stage_solution_list_from_dict(solution_dict)

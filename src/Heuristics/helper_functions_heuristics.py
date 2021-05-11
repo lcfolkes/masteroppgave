@@ -87,20 +87,8 @@ def insert_car_move(solution: {Employee: [CarMove]}, car_move: CarMove, employee
     else:
         solution.get(employee).insert(idx, car_move)
     # Update charging state in end node if the chosen move is a charging move
-    car_move.set_employee(employee)
-
-
-def remove_car_move_from_employee_from_solution(solution: {Employee: [CarMove]}, car_move: CarMove, employee):
-    """
-    :param solution: input solution with move
-    :param car_move: car move to be removed
-    :param employee_id: id of employee of whom is assigned the car move
-    :return: solution without car_move
-    """
-    # employee_obj = [e for e in solution.keys() if e.employee_id == employee_id][0]
-    solution.get(employee).remove(car_move)
-    car_move.reset()
-    # return solution
+    employee.add_car_move(car_move)
+    #car_move.set_employee(employee)
 
 
 '''

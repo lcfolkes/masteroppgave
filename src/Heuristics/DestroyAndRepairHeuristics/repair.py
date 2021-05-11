@@ -69,7 +69,7 @@ class Repair(ABC):
 
     def to_string(self):
         print("\nREPAIR")
-        print(f"\nrepaired solution: {type(self)}")
+        print(f"\nrepaired solution: {self}")
         for k, v in self.solution.items():
             print(k.employee_id)
             print([cm.car_move_id for cm in v])

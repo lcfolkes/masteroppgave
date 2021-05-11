@@ -72,7 +72,8 @@ class ALNS():
         current_solution = copy_solution_dict(self.solution.assigned_car_moves)
         current_unused_car_moves = copy_unused_car_moves_2d_list(self.solution.unused_car_moves)
         visited_hash_keys.add(self.solution.hash_key)
-        MODE = "LOCAL"
+        #MODE = "LOCAL"
+        MODE = "LOCAL_FIRST"
 
         # temperature = 1000  # Start temperature must be set differently. High temperature --> more randomness
         temperature = (-np.abs(heuristic_obj_vals[0])) * 0.05 / np.log(0.5)
@@ -121,14 +122,23 @@ class ALNS():
 
 
                     elif MODE == "LNS":
-                        # print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
+                        print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
+                        print(f"charging nodes before destroy")
+                        for cn in self.solution.world_instance.charging_nodes:
+                            print(f"cn: {cn.node_id}, {cn.num_charging}/{cn.capacity}")
+
                         destroy_heuristic, operator_pair = self._get_destroy_operator(
                             solution=candidate_solution,
                             neighborhood_size=1, randomization_degree=40,
                             world_instance=self._world_instance)
                         destroy_heuristic.destroy()
-                        # print("Destroy: ", destroy_heuristic, destroy_heuristic.solution)
-                        # destroy_heuristic.to_string()
+
+                        print(f"Destroy: {destroy_heuristic}\n{destroy_heuristic.solution}\n{destroy_heuristic.to_string()}")
+
+                        print(f"charging nodes after destroy")
+                        for cn in self.solution.world_instance.charging_nodes:
+                            print(f"cn: {cn.node_id}, {cn.num_charging}/{cn.capacity}")
+                        destroy_heuristic.destroy()
                         # print(destroy)
 
                         repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
@@ -136,6 +146,11 @@ class ALNS():
                                                                      world_instance=self._world_instance,
                                                                      operator_pair=operator_pair)
                         repair_heuristic.repair()
+                        print(f"Repair: {repair_heuristic}\n{repair_heuristic.solution}\n{repair_heuristic.to_string()}")
+                        print(f"charging nodes after repair")
+                        for cn in self.solution.world_instance.charging_nodes:
+                            print(f"cn: {cn.node_id}, {cn.num_charging}/{cn.capacity}")
+                        destroy_heuristic.destroy()
 
                         # print("Repair: ", repair_heuristic, repair_heuristic.solution)
                         # repair_heuristic.to_string()
@@ -248,9 +263,9 @@ class ALNS():
                  'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_charge': 3.0,
                  'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_charge': 20.0})'''
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_regret2': 1.0,
-                 'worst_greedy': 1.0, 'worst_regret2': 1.0,
-                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0})
+                {'random_charge': 3.0,
+                 'worst_charge': 3.0, 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_charge': 20.0})
         elif self._num_employees < 4:
             '''operators = OrderedDict(
                 {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': 3.0,
@@ -258,9 +273,9 @@ class ALNS():
                  'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 3.0,
                  'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_charge': 20.0})'''
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0,
-                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0,
-                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0})
+                {'random_charge': 3.0, 'worst_charge': 3.0, 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_charge': 20.0})
+
         else:
             '''operators = OrderedDict(
                 {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0,
@@ -273,9 +288,11 @@ class ALNS():
                  'charge_charge': 20.0})
             '''
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0,
-                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0,
-                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0})
+                {'random_charge': 3.0,
+                 'worst_charge': 3.0,
+                 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_regret4': 3.0,
+                 'charge_charge': 20.0})
 
         return operators
 
@@ -447,7 +464,7 @@ if __name__ == "__main__":
         alns.solution.rebuild(alns.best_solution[0], "second_stage")
         alns.solution.print_solution()
         print(profiler.output_text(unicode=True, color=True))
-
+        '''
         print("\n############## Evaluate solution ##############")
         gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=False)
         run_model(gi)
@@ -458,7 +475,7 @@ if __name__ == "__main__":
 
         print("\n############## Optimal solution ##############")
         gi2 = GurobiInstance(filename + ".yaml")
-        run_model(gi2, time_limit=300)
+        run_model(gi2, time_limit=300)'''
     except KeyboardInterrupt:
         print('Interrupted')
         try:
