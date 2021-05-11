@@ -34,9 +34,6 @@ _IS_REJECTED
 '''
 
 
-# TODO: Need to keep track of visited solutions by assigning a hash key to each solution and storing the key in a hash table
-
-
 class ALNS():
 
     def __init__(self, filename):
@@ -437,7 +434,7 @@ class ALNS():
 if __name__ == "__main__":
     from pyinstrument import Profiler
     import time
-    filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_a"
+    filename = "InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_a"
 
     try:
         profiler = Profiler()
@@ -448,9 +445,7 @@ if __name__ == "__main__":
         profiler.stop()
         print("best solution")
         print("obj_val", alns.best_solution[1])
-        print(alns.best_solution[0])
         alns.solution.rebuild(alns.best_solution[0], "second_stage")
-        #print(alns.solution.assigned_car_moves)
         alns.solution.print_solution()
         print(profiler.output_text(unicode=True, color=True))
     except KeyboardInterrupt:

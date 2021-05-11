@@ -353,11 +353,7 @@ class ConstructionHeuristic:
         else:
             if best_move_not_legal:
                 for s in range(self.num_scenarios):
-                    # self.car_moves_second_stage[s] = [cm for cm in self.car_moves_second_stage[s] if cm != best_car_move[s]]
-                    try:
-                        self.car_moves_second_stage[s].remove(best_car_move[s])
-                    except:
-                        pass
+                    self.car_moves_second_stage[s] = [cm for cm in self.car_moves_second_stage[s] if cm != best_car_move[s]]
                 return
             else:
                 return best_employee_second_stage

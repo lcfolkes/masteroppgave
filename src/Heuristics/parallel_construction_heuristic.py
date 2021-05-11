@@ -278,13 +278,17 @@ class ConstructionHeuristic:
                     best_employee_first_stage, best_travel_time_first_stage = self._get_best_employee_process(
                         best_employee_first_stage, employee, best_car_move, best_travel_time_first_stage)
                 else:
+                    for s in range(self.num_scenarios):
+                        best_employee_second_stage[s], best_travel_time_second_stage[s] = self._get_best_employee_process(
+                            best_employee_first_stage[s], employee, best_car_move[s], best_travel_time_first_stage[s], s)
+                    '''
                     args = ((best_employee_second_stage[s], employee, best_car_move[s], best_travel_time_second_stage[s], s)
                             for s in range(self.num_scenarios))
                     with mp.Pool(processes=self.num_scenarios) as pool:
                         res = pool.starmap(self._get_best_employee_process, args)
                     best_employee_second_stage = [self.employees_dict[res_tuple[0].employee_id]
                                                   if res_tuple[0] is not None else None for res_tuple in res]
-                    best_travel_time_second_stage = [res_tuple[1] for res_tuple in res]
+                    best_travel_time_second_stage = [res_tuple[1] for res_tuple in res]'''
 
         # Remove best move if not legal. Else return best employee
         if self.first_stage:
