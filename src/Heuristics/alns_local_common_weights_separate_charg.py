@@ -15,6 +15,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+
 os.chdir(path_to_src)
 
 _IS_BEST = 33.0
@@ -110,6 +111,17 @@ class ALNS():
         start = time.perf_counter()
         visited_hash_keys = set()
 
+        finish_times_segments = []
+        first_checkpoint = 80
+        second_checkpoint = 200
+        first_checkpoint_reached = False
+        second_checkpoint_reached = False
+        obj_val_first_checkpoint = None
+        heur_val_first_checkpoint = None
+        obj_val_second_checkpoint = None
+        heur_val_second_checkpoint = None
+
+
         solution.construct(verbose=True)
         solution.print_solution()
         true_obj_val, best_obj_val = solution.get_obj_val(both=True)
@@ -128,8 +140,9 @@ class ALNS():
         temperature = (-np.abs(heuristic_obj_vals[0])) * 0.05 / np.log(0.5)
         # cooling_rate = 0.5  # cooling_rate in (0,1)
         cooling_rate = np.exp(np.log(0.002) / 200)
-        iterations_alns = 1
-        iterations_segment = 10
+        iterations_alns = 100
+        iterations_segment = 20
+        time_limit = 300
 
         # SEGMENTS
         try:
@@ -153,7 +166,7 @@ class ALNS():
                     candidate_solution = copy.deepcopy(current_solution)
 
                     if MODE == "LOCAL_FIRST":
-                        print("\n----- LOCAL SEARCH FIRST BEST -----")
+                        # print("\n----- LOCAL SEARCH FIRST BEST -----")
                         local_search = LocalSearch(candidate_solution.assigned_car_moves,
                                                    candidate_solution.world_instance.first_stage_tasks,
                                                    candidate_solution.feasibility_checker)
@@ -162,7 +175,7 @@ class ALNS():
                         visited_hash_keys.update(local_search.visited_list)
 
                     elif MODE == "LOCAL_FULL":
-                        print("\n----- LOCAL SEARCH FULL -----")
+                        # print("\n----- LOCAL SEARCH FULL -----")
                         local_search = LocalSearch(candidate_solution.assigned_car_moves,
                                                    candidate_solution.world_instance.first_stage_tasks,
                                                    candidate_solution.feasibility_checker)
@@ -255,6 +268,22 @@ class ALNS():
                         output_text += str(counter) + " Not accepted solution\n"
                         counter += 1
                         MODE = "LNS"
+
+                    if time.perf_counter() > time_limit:
+                        print("Time limit reached!")
+                        finish = time.perf_counter()
+                        exit()
+                    if time.perf_counter() > first_checkpoint and not first_checkpoint_reached:
+                        first_checkpoint_reached = True
+                        obj_val_first_checkpoint, heur_val_first_checkpoint = best_solution[0].get_obj_val(both=True)
+                    if time.perf_counter() > second_checkpoint and not second_checkpoint_reached:
+                        second_checkpoint_reached = True
+                        obj_val_second_checkpoint, heur_val_second_checkpoint = best_solution[0].get_obj_val(both=True)
+
+
+                time_segment = time.perf_counter()
+                finish_times_segments.append(time_segment)
+
                 print(output_text)
 
                 # print statistics
@@ -270,6 +299,9 @@ class ALNS():
 
         except KeyboardInterrupt:
             print("Keyboard Interrupt")
+        except exit():
+            print("Time limit reached!")
+
         except:
             print("Unexpected error:", sys.exc_info()[0])
             raise
@@ -290,6 +322,25 @@ class ALNS():
             print("best solution")
             print("obj_val", best_solution[1])
             best_solution[0].print_solution()
+
+            # Strings to save to file
+            obj_val_txt = f"Objective value: {str(best_solution[1])}\n"
+            heur_val_txt = f"Heuristic value: {str(best_solution[0])}\n"
+            first_checkpoint_txt1 = f"Objective value after {first_checkpoint} s: {obj_val_first_checkpoint}\n"
+            first_checkpoint_txt2 = f"Heuristic value after {first_checkpoint} s: {heur_val_first_checkpoint}\n"
+            second_checkpoint_txt1 = f"Objective value after {second_checkpoint} s: {obj_val_second_checkpoint}\n"
+            second_checkpoint_txt2 = f"Heuristic value after {second_checkpoint} s: {heur_val_second_checkpoint}\n"
+            time_spent_txt = f"Time used: {finish}\n"
+            finish_times_segments_txt = f"Finish time segments:\n{finish_times_segments}\n"
+            iterations_done_txt = f"Iterations completed: {len(finish_times_segments)*iterations_segment} iterations in {len(finish_times_segments)} segments\n"
+
+            #Write to file
+            f = open(filename + "_results.txt", "a")
+            f.writelines([obj_val_txt, heur_val_txt, first_checkpoint_txt1, first_checkpoint_txt2,
+                          second_checkpoint_txt1, second_checkpoint_txt2, time_spent_txt, finish_times_segments_txt,
+                          iterations_done_txt])
+            f.close()
+
 
     # best_solution.print_solution()
 
@@ -420,9 +471,7 @@ if __name__ == "__main__":
     import time
     from best_objective_function import get_parking_nodes_in_out
 
-    filename = "InstanceGenerator/InstanceFiles/26nodes/26-25-1-1_a"
-
-
+    filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
 
     try:
         profiler = Profiler()
@@ -445,4 +494,3 @@ if __name__ == "__main__":
     # print("\n############## Optimal solution ##############")
     # gi2 = GurobiInstance(filename + ".yaml")
     # run_model(gi2, time_limit=300)
-
