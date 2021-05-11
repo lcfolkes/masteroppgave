@@ -565,9 +565,9 @@ if __name__ == "__main__":
 
     ch.construct()
 
-    ch.print_solution()
 
     profiler.stop()
+    ch.print_solution()
     print(profiler.output_text(unicode=True, color=True))
     # print(f"Construction heuristic true obj. val {true_obj_val}")
 
