@@ -280,7 +280,7 @@ class ConstructionHeuristic:
                 else:
                     for s in range(self.num_scenarios):
                         best_employee_second_stage[s], best_travel_time_second_stage[s] = self._get_best_employee_process(
-                            best_employee_first_stage[s], employee, best_car_move[s], best_travel_time_first_stage[s], s)
+                            best_employee_second_stage[s], employee, best_car_move[s], best_travel_time_second_stage[s],s)
                     '''
                     args = ((best_employee_second_stage[s], employee, best_car_move[s], best_travel_time_second_stage[s], s)
                             for s in range(self.num_scenarios))
