@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 
-from Heuristics.construction_heuristic import ConstructionHeuristic
+from Heuristics.best_construction_heuristic import ConstructionHeuristic
+
 from Heuristics.feasibility_checker import FeasibilityChecker
 from Heuristics.helper_functions_heuristics import get_first_and_second_stage_solution, \
 	reconstruct_solution_from_first_and_second_stage, get_first_stage_solution, get_second_stage_solution_dict
-from Heuristics.objective_function import get_obj_val_of_solution_dict
 import itertools
 
 

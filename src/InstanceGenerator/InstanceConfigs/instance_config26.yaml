@@ -11,26 +11,26 @@ num_scenarios: 25
 
 # TASKS
 tasks:
-  num_all: 5
-  num_first_stage: 1
+  num_all: 4
+  num_first_stage: 2
 
 # NUMBER OF PARKING NODES IN INSTANCE
-num_parking_nodes: 26
+num_parking_nodes: 20
 
 # NUMBER OF AVAILABLE/CHARGED CARS IN INSTANCE
-num_charged_cars: 13
+num_charged_cars: 20
 
 #CHARGING NODES
 charging_nodes:
   num_charging: 4
-  parking_nodes: [3,5,10,12]
+  parking_nodes: [1,4,8,19]
   capacities: [2,2,2,2]
 
 #EMPLOYEES
 employees:
-  num_employees: 3
-  start_time: [0,0,0]
-  handling: [0,0,0]
+  num_employees: 4
+  start_time: [0,0,0,0]
+  handling: [0,0,0,0]
 
 planning_period: 60
 

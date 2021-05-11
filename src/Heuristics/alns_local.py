@@ -12,7 +12,7 @@ from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from Heuristics.LocalSearch.local_search import LocalSearch
 from Heuristics.helper_functions_heuristics import safe_zero_division
-from Heuristics.new_construction_heuristic import ConstructionHeuristic
+from Heuristics.old_construction_heuristic import ConstructionHeuristic
 import numpy as np
 
 import matplotlib.pyplot as plt

@@ -1,8 +1,6 @@
 import os
 
 import numpy as np
-
-from Heuristics.objective_function import get_obj_val_of_car_moves
 from path_manager import path_to_src
 from InstanceGenerator.instance_components import CarMove, ChargingNode, Employee
 
@@ -158,7 +156,7 @@ def get_separate_assigned_car_moves(employees, num_scenarios):
 
     return first_stage_car_moves, second_stage_car_moves
 
-
+'''
 def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scenarios):
     # FIRST STAGE
     if first_stage:
@@ -241,7 +239,7 @@ def get_best_car_move(parking_nodes, employees, car_moves, first_stage, num_scen
         # print([round(o,2) for o in best_obj_val_second_stage])
         return best_car_move_second_stage
 
-
+'''
 def safe_zero_division(a, b):
     return a / b if b else 0.0
 

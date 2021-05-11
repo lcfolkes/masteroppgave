@@ -4,9 +4,10 @@ import random
 from Heuristics.feasibility_checker import FeasibilityChecker
 from path_manager import path_to_src
 from abc import ABC, abstractmethod
-from Heuristics.helper_functions_heuristics import insert_car_move, remove_all_car_moves_of_car_in_car_move, get_first_stage_solution_list_from_dict
-from Heuristics.new_objective_function import ObjectiveFunction
 
+from Heuristics.helper_functions_heuristics import insert_car_move, remove_all_car_moves_of_car_in_car_move, \
+    get_first_stage_solution_list_from_dict
+from Heuristics.old_objective_function import ObjectiveFunction
 from InstanceGenerator.instance_components import CarMove, Employee
 from InstanceGenerator.world import World
 from Heuristics.DestroyAndRepairHeuristics.destroy import Destroy, ChargeRemoval
@@ -342,7 +343,7 @@ class ChargeInsertion(Repair):
 
 
 if __name__ == "__main__":
-    from Heuristics.new_construction_heuristic import ConstructionHeuristic
+    from Heuristics.old_construction_heuristic import ConstructionHeuristic
     from Heuristics.helper_functions_heuristics import get_first_stage_solution_list_from_dict, \
         get_first_stage_solution_and_removed_moves
 
