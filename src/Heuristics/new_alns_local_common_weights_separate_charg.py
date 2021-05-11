@@ -441,13 +441,15 @@ if __name__ == "__main__":
         profiler.start()
         alns = ALNS(filename + ".pkl")
 
-
         profiler.stop()
         print("best solution")
         print("obj_val", alns.best_solution[1])
         alns.solution.rebuild(alns.best_solution[0], "second_stage")
         alns.solution.print_solution()
         print(profiler.output_text(unicode=True, color=True))
+        print("\n############## Optimal solution ##############")
+        gi2 = GurobiInstance(filename + ".yaml")
+        run_model(gi2, time_limit=300)
     except KeyboardInterrupt:
         print('Interrupted')
         try:
