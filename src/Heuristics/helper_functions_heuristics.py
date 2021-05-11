@@ -87,20 +87,9 @@ def insert_car_move(solution: {Employee: [CarMove]}, car_move: CarMove, employee
     else:
         solution.get(employee).insert(idx, car_move)
     # Update charging state in end node if the chosen move is a charging move
-    car_move.set_employee(employee)
-
-
-def remove_car_move_from_employee_from_solution(solution: {Employee: [CarMove]}, car_move: CarMove, employee):
-    """
-    :param solution: input solution with move
-    :param car_move: car move to be removed
-    :param employee_id: id of employee of whom is assigned the car move
-    :return: solution without car_move
-    """
-    # employee_obj = [e for e in solution.keys() if e.employee_id == employee_id][0]
-    solution.get(employee).remove(car_move)
-    car_move.reset()
-    # return solution
+    car_move.update()
+    #employee.add_car_move(car_move)
+    #car_move.set_employee(employee)
 
 
 '''
@@ -307,12 +296,13 @@ def get_first_stage_solution_and_removed_moves(input_solution, num_first_stage_t
         first_stage_solution[k] = []
         for i in range(min(num_first_stage_tasks, len(input_solution[k][0]))):
             first_stage_solution[k].append(input_solution[k][0][i])
+            input_solution[k][0][i].update()
 
         for s in range(len(input_solution[k])):
             # For solutions where number of assigned tasks are less than the number of first stage tasks
             for i in range(min(num_first_stage_tasks, len(input_solution[k][s])), len(input_solution[k][s])):
                 # input_solution[k][s][i]
-                input_solution[k][s][i].reset(s)
+                #input_solution[k][s][i].reset(s)
                 removed_second_stage_moves.add(input_solution[k][s][i])
 
     removed_moves = list(removed_second_stage_moves)

@@ -420,8 +420,8 @@ class ConstructionHeuristic:
                                    car_move.car_move_id, car_move.car.car_id,
                                    f"{start_node_id} -> {car_move.start_node.node_id} -> {car_move.end_node.node_id}",
                                    round(employee.start_times_car_moves[employee.car_moves.index(car_move)]
-                                         - employee.travel_times_car_moves[employee.car_moves.index(car_move)], 2),
-                                   round(employee.travel_times_car_moves[employee.car_moves.index(car_move)], 2),
+										 - employee.travel_times_to_car_moves[employee.car_moves.index(car_move)], 2),
+                                   round(employee.travel_times_to_car_moves[employee.car_moves.index(car_move)], 2),
                                    round(employee.car_moves[employee.car_moves.index(car_move)].handling_time, 2),
                                    round(car_move.start_time + car_move.handling_time, 2)
                                    ]
@@ -458,9 +458,9 @@ class ConstructionHeuristic:
                                                 f"{start_node_id} -> {car_move.start_node.node_id} -> {car_move.end_node.node_id}",
                                                 round(employee.start_times_car_moves_second_stage[s][
                                                           employee.car_moves_second_stage[s].index(car_move)]
-                                                      - employee.travel_times_car_moves_second_stage[s][
+                                                      - employee.travel_times_to_car_moves_second_stage[s][
                                                           employee.car_moves_second_stage[s].index(car_move)], 2),
-                                                round(employee.travel_times_car_moves_second_stage[s][
+                                                round(employee.travel_times_to_car_moves_second_stage[s][
                                                           employee.car_moves_second_stage[s].index(car_move)], 2),
                                                 round(employee.car_moves_second_stage[s][
                                                           employee.car_moves_second_stage[s].index(

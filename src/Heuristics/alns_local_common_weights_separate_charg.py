@@ -8,7 +8,7 @@ from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from Heuristics.LocalSearch.local_search import LocalSearch
 from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution
-from Heuristics.parallel_construction_heuristic import ConstructionHeuristic
+from Heuristics.best_construction_heuristic import ConstructionHeuristic
 
 from path_manager import path_to_src
 import numpy as np
@@ -49,61 +49,6 @@ class ALNS():
         self.operators_record = self._initialize_operator_records()
         self.run(solution)
 
-    def _initialize_operators(self):
-        if self.num_employees < 3:
-            operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_charge': 3.0,
-                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_charge': 3.0,
-                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_charge': 3.0,
-                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_charge': 20.0})
-        elif self.num_employees < 4:
-            operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': 3.0,
-                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_charge': 3.0,
-                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 3.0,
-                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_charge': 20.0})
-        else:
-            operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0,
-                 'random_charge': 3.0,
-                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0,
-                 'worst_charge': 3.0,
-                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0,
-                 'shaw_charge': 3.0,
-                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_regret4': 3.0,
-                 'charge_charge': 20.0})
-
-        return operators
-
-    def _initialize_operator_records(self):
-        if self.num_employees < 3:
-            operators_record = OrderedDict(
-                {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'random_charge': [1.0, 0],
-                 'worst_greedy': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_charge': [1.0, 0],
-                 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_charge': [1.0, 0],
-                 'charge_greedy': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_charge': [1.0, 0]})
-        elif self.num_employees < 4:
-            operators_record = OrderedDict(
-                {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'random_regret3': [1.0, 0],
-                 'random_charge': [1.0, 0],
-                 'worst_greedy': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_regret3': [1.0, 0],
-                 'worst_charge': [1.0, 0],
-                 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_regret3': [1.0, 0],
-                 'shaw_charge': [1.0, 0],
-                 'charge_greedy': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_regret3': [1.0, 0],
-                 'charge_charge': [1.0, 0]})
-        else:
-            operators_record = OrderedDict(
-                {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'random_regret3': [1.0, 0],
-                 'random_regret4': [1.0, 0], 'random_charge': [1.0, 0],
-                 'worst_greedy': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_regret3': [1.0, 0],
-                 'worst_regret4': [1.0, 0], 'worst_charge': [1.0, 0],
-                 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_regret3': [1.0, 0], 'shaw_regret4': [1.0, 0],
-                 'shaw_charge': [1.0, 0],
-                 'charge_greedy': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_regret3': [1.0, 0],
-                 'charge_regret4': [1.0, 0], 'charge_charge': [1.0, 0]})
-
-        return operators_record
 
     def run(self, solution):
         # TODO: in order to save time, this could be implemented as a queue (as in tabu search)
@@ -287,11 +232,80 @@ class ALNS():
             # print(self.operators_pairs)
             # print(self.repair_operators)
             print(self.operator_pairs)
-            print("best solution")
-            print("obj_val", best_solution[1])
-            best_solution[0].print_solution()
+
 
     # best_solution.print_solution()
+
+    def _initialize_operators(self):
+        if self.num_employees < 3:
+            '''operators = OrderedDict(
+                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_charge': 3.0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_charge': 3.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_charge': 20.0})'''
+            operators = OrderedDict(
+                {'random_charge': 3.0,
+                 'worst_charge': 3.0, 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_charge': 20.0})
+        elif self.num_employees < 4:
+            '''operators = OrderedDict(
+                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': 3.0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_charge': 3.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_charge': 20.0})'''
+            operators = OrderedDict(
+                {'random_charge': 3.0, 'worst_charge': 3.0, 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_charge': 20.0})
+
+        else:
+            '''operators = OrderedDict(
+                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0,
+                 'random_charge': 3.0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0,
+                 'worst_charge': 3.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0,
+                 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_regret4': 3.0,
+                 'charge_charge': 20.0})
+            '''
+            operators = OrderedDict(
+                {'random_charge': 3.0,
+                 'worst_charge': 3.0,
+                 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_regret4': 3.0,
+                 'charge_charge': 20.0})
+
+        return operators
+
+    def _initialize_operator_records(self):
+        if self.num_employees < 3:
+            operators_record = OrderedDict(
+                {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'random_charge': [1.0, 0],
+                 'worst_greedy': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_charge': [1.0, 0],
+                 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_charge': [1.0, 0],
+                 'charge_greedy': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_charge': [1.0, 0]})
+        elif self.num_employees < 4:
+            operators_record = OrderedDict(
+                {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'random_regret3': [1.0, 0],
+                 'random_charge': [1.0, 0],
+                 'worst_greedy': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_regret3': [1.0, 0],
+                 'worst_charge': [1.0, 0],
+                 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_regret3': [1.0, 0],
+                 'shaw_charge': [1.0, 0],
+                 'charge_greedy': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_regret3': [1.0, 0],
+                 'charge_charge': [1.0, 0]})
+        else:
+            operators_record = OrderedDict(
+                {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'random_regret3': [1.0, 0],
+                 'random_regret4': [1.0, 0], 'random_charge': [1.0, 0],
+                 'worst_greedy': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_regret3': [1.0, 0],
+                 'worst_regret4': [1.0, 0], 'worst_charge': [1.0, 0],
+                 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_regret3': [1.0, 0], 'shaw_regret4': [1.0, 0],
+                 'shaw_charge': [1.0, 0],
+                 'charge_greedy': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_regret3': [1.0, 0],
+                 'charge_regret4': [1.0, 0], 'charge_charge': [1.0, 0]})
+
+        return operators_record
 
     def _accept(self, new_obj_val, current_obj_val, temperature) -> bool:
         if new_obj_val > current_obj_val:
@@ -420,20 +434,21 @@ if __name__ == "__main__":
     import time
     from best_objective_function import get_parking_nodes_in_out
 
-    filename = "InstanceGenerator/InstanceFiles/20nodes/20-25-1-1_b"
+    filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
 
     # code you want to profile
 
-    profiler = Profiler()
-    profiler.start()
 
     try:
         #profiler = Profiler()
         #profiler.start()
         alns = ALNS(filename + ".pkl")
-
-
+        alns = ALNS(filename + ".pkl")
+        alns = ALNS(filename + ".pkl")
         #profiler.stop()
+        #print("best solution")
+        #print("obj_val", alns.best_solution[1])
+        #alns.best_solution[0].print_solution()
         #print(profiler.output_text(unicode=True, color=True))
     except KeyboardInterrupt:
         print('Interrupted')
@@ -442,12 +457,8 @@ if __name__ == "__main__":
         except SystemExit:
             os._exit(0)
 
-    profiler.stop()
-    print(profiler.output_text(unicode=True, color=True))
 
     # profiler.stop()
     # print(profiler.output_text(unicode=True, color=True))
-    # print("\n############## Optimal solution ##############")
-    # gi2 = GurobiInstance(filename + ".yaml")
-    # run_model(gi2, time_limit=300)
+
 

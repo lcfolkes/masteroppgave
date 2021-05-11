@@ -7,7 +7,7 @@ from Heuristics.helper_functions_heuristics import get_first_stage_solution_list
     get_first_stage_solution_and_removed_moves
 from Heuristics.heuristics_constants import HeuristicsConstants
 from InstanceGenerator.instance_components import CarMove
-from Heuristics.old_objective_function import ObjectiveFunction
+from Heuristics.best_objective_function import ObjectiveFunction
 
 os.chdir(path_to_src)
 
@@ -20,8 +20,9 @@ class Destroy(ABC):
         :param neighborhood_size: (q) number of car_moves to remove
         """
         self.num_scenarios = world_instance.num_scenarios
-        self.solution, self.removed_moves = get_first_stage_solution_and_removed_moves(solution,
-                                                                                       world_instance.first_stage_tasks)
+        self.world_instance = world_instance
+        self.solution, self.removed_moves = get_first_stage_solution_and_removed_moves(
+            solution, world_instance.first_stage_tasks)
         self.neighborhood_size = neighborhood_size
         #self.to_string()
         # self._destroy()
@@ -42,7 +43,7 @@ class Destroy(ABC):
             print("input first stage solution")
         else:
             print("\nDESTROY")
-            print(f"\ndestroyed solution: {type(self)}")
+            print(f"\ndestroyed solution: {self}")
         # print(self.solution)
 
         for k, v in self.solution.items():
@@ -75,7 +76,7 @@ class RandomRemoval(Destroy):
             if not any(solution[k]):
                 continue
             i = random.randrange(0, len(solution[k]), 1)
-            # Charging node states are updated and employees are removed
+            # Charging node states are updated
             solution[k][i].reset()
             self.removed_moves.append(solution[k][i])
             solution[k] = solution[k][:i] + solution[k][i + 1:]
@@ -108,7 +109,7 @@ class WorstRemoval(Destroy):
 
         for i in range(len(solution_list)):
             # solution_copy = solution_list[:i] + solution_list[i + 1:]
-            obj_val_remove_cm = self.objective_function.evaluate(removed_car_moves=[solution_list[i]])
+            obj_val_remove_cm = self.objective_function.evaluate(removed_car_moves=[solution_list[i]], mode="heuristic")
             '''
             else:
                 obj_val_remove_cm = self.objective_function.evaluate(added_car_moves=[solution_list[i-1]],
@@ -141,9 +142,6 @@ class WorstRemoval(Destroy):
                 solution_list[idx].reset()
                 removed_car_moves.append(solution_list[idx])
             except:
-                # TODO: find out why we sometimes get index out of range.
-                #  I suspect it happens when len of list is 0 and index becomes 0
-                # seems to be correct. What do we do if it does not work? just continue?
                 print("destroy.py/worst")
                 print(f"index {index}")
                 print(f"list_len {len(obj_val_list)}")
@@ -198,10 +196,9 @@ class ShawRemoval(Destroy):
 
                 # Charging node states are updated and employees are removed
                 car_moves_not_removed[index].reset()
+
                 removed_list.append(car_moves_not_removed[index])
             except:
-                # TODO: find out why we sometimes get index out of range.
-                # I suspect it happens when len of list is 0 and index becomes 0
                 print("destroy.py/shaw")
                 print(f"index {index}")
                 print(f"list_len {len(car_moves_not_removed)}")
@@ -255,6 +252,7 @@ class ChargeRemoval(Destroy):
         """
         super().__init__(solution, world_instance, neighborhood_size)
         self.removed_moves_in_this_operation = []
+
     def destroy(self):
         solution_dict = self.solution
         solution_list = get_first_stage_solution_list_from_dict(solution_dict)

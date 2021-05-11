@@ -100,37 +100,45 @@ class World:
         if scenario is None:
             travel_time_to_car_move = self.get_employee_travel_time_to_node(start_node=employee.current_node,
                                                                             end_node=car_move.start_node)
-            car_move_start_time = employee.current_time + travel_time_to_car_move
-            total_travel_time = travel_time_to_car_move + car_move.handling_time
-            car_move.set_start_time(car_move_start_time)
-            employee.add_car_move(total_travel_time, car_move)
+            employee.add_car_move(travel_time_to_car_move=travel_time_to_car_move, car_move=car_move)
             if len(employee.car_moves) == self.first_stage_tasks:
                 employee.initialize_second_stage(num_scenarios=self.num_scenarios)
         else:
             # zero-indexed scenario
             travel_time_to_car_move = self.get_employee_travel_time_to_node(
                 start_node=employee.current_node_second_stage[scenario], end_node=car_move.start_node)
-            total_travel_time = travel_time_to_car_move + car_move.handling_time
 
-            if len(car_move.employee_second_stage) == 0:
-                car_move.initialize_second_stage(num_scenarios=self.num_scenarios)
-            employee.add_car_move(total_travel_time=total_travel_time, car_move=car_move, scenario=scenario)
+            employee.add_car_move(travel_time_to_car_move=travel_time_to_car_move, car_move=car_move, scenario=scenario)
 
-            # Set start time of the car move in the relevant scenario
-            car_move_start_time = employee.current_time_second_stage[scenario] - car_move.handling_time
-            car_move.set_start_time(car_move_start_time, scenario=scenario)
-
+    '''
     def remove_car_move_from_employee(self, car_move: CarMove, employee: Employee):
         # start_node is the end node of the car move performed before the one we want to remove.
         # what if the list is empty? then take start_node
         try:
-            total_travel_time = self.get_employee_travel_time_to_node(start_node=employee.car_moves[-2].end_node,
-                                                                      end_node=car_move.start_node) + car_move.handling_time
+            idx = employee.car_moves.index(car_move)
+            travel_time_to_car_move = self.get_employee_travel_time_to_node(start_node=employee.car_moves[idx-1].end_node,
+                                                                      end_node=car_move.start_node)
         except:
-            total_travel_time = self.get_employee_travel_time_to_node(start_node=employee.start_node,
-                                                                      end_node=car_move.start_node) + car_move.handling_time
+            travel_time_to_car_move = self.get_employee_travel_time_to_node(start_node=employee.start_node,
+                                                                      end_node=car_move.start_node)
+        idx = employee.car_moves.index(car_move)
+        if idx == 0 and len(employee.car_moves) > 1:
+            new_travel_time_to_car_move = self.get_employee_travel_time_to_node(
+                start_node=employee.start_node,
+                end_node=employee.car_moves[1].start_node)
 
-        employee.remove_last_car_move(total_travel_time)
+        elif idx > 0 and len(employee.car_moves) > idx:
+            new_travel_time_to_car_move = self.get_employee_travel_time_to_node(
+                start_node=employee.car_moves[idx-1].start_node,
+                end_node=employee.car_moves[idx+1].start_node
+            )
+
+        else:
+            new_travel_time_to_car_move = 0
+
+        employee.remove_car_move(idx=idx, new_travel_time_to_car_move=new_travel_time_to_car_move)
+        '''
+
 
     def get_employee_travel_time_to_node(self, start_node: Node, end_node: Node):
         employee_start_node = start_node.node_id - 1

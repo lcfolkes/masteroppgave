@@ -7,7 +7,8 @@ from DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretIns
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from Heuristics.LocalSearch.local_search import LocalSearch
-from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution, copy_solution_dict, copy_unused_car_moves_2d_list
+from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution, copy_solution_dict, \
+    copy_unused_car_moves_2d_list, get_first_and_second_stage_solution
 from Heuristics.best_construction_heuristic import ConstructionHeuristic
 #from Heuristics.parallel_construction_heuristic import ConstructionHeuristic
 from path_manager import path_to_src
@@ -34,9 +35,6 @@ _IS_REJECTED
 '''
 
 
-# TODO: Need to keep track of visited solutions by assigning a hash key to each solution and storing the key in a hash table
-
-
 class ALNS():
 
     def __init__(self, filename):
@@ -46,36 +44,43 @@ class ALNS():
         self.best_solutions = None
         self.best_obj_val = 0
 
-        solution = ConstructionHeuristic(self.filename)
-        self._num_employees = len(solution.employees)
-        self._num_first_stage_tasks = solution.num_first_stage_tasks
-        self._feasibility_checker = solution.feasibility_checker
-        self._world_instance = solution.world_instance
+        self.solution = ConstructionHeuristic(self.filename)
+        self._num_employees = len(self.solution.employees)
+        self._num_first_stage_tasks = self.solution.num_first_stage_tasks
+        self._feasibility_checker = self.solution.feasibility_checker
+        self._world_instance = self.solution.world_instance
         self.operator_pairs = self._initialize_operators()
         self.operators_record = self._initialize_operator_records()
-        self.run(solution)
+        self.run()
 
+    def _initialize_new_iteration(self, current_unused_car_moves, current_solution):
 
+        candidate_unused_car_moves = copy_unused_car_moves_2d_list(current_unused_car_moves)
+        candidate_solution = copy_solution_dict(current_solution)
+        for cn in self._world_instance.charging_nodes:
+            cn.reset()
+        return candidate_unused_car_moves, candidate_solution
 
-    def run(self, solution):
+    def run(self):
         # TODO: in order to save time, this could be implemented as a queue (as in tabu search)
         start = time.perf_counter()
         visited_hash_keys = set()
 
-        solution.construct(verbose=True)
-        solution.print_solution()
-        true_obj_val, best_obj_val = solution.get_obj_val(both=True)
+        self.solution.construct(verbose=True)
+        self.solution.print_solution()
+        true_obj_val, best_obj_val = self.solution.get_obj_val(both=True)
         current_obj_val = best_obj_val
         true_obj_vals = [true_obj_val]
         heuristic_obj_vals = [best_obj_val]
-        best_solution = (copy_solution_dict(solution.assigned_car_moves), true_obj_val)
+        best_solution = (copy_solution_dict(self.solution.assigned_car_moves), true_obj_val)
         print(f"Construction heuristic true obj. val {true_obj_val}")
         print(f"Heuristic obj. val {heuristic_obj_vals[0]}")
         print(f"Heuristic obj. val {heuristic_obj_vals[0]}")
-        current_solution = copy_solution_dict(solution.assigned_car_moves)
-        current_unused_car_moves = copy_unused_car_moves_2d_list(solution.unused_car_moves)
-        visited_hash_keys.add(solution.hash_key)
-        MODE = "LOCAL"
+        current_solution = copy_solution_dict(self.solution.assigned_car_moves)
+        current_unused_car_moves = copy_unused_car_moves_2d_list(self.solution.unused_car_moves)
+        visited_hash_keys.add(self.solution.hash_key)
+        #MODE = "LOCAL"
+        MODE = "LOCAL_FIRST"
 
         # temperature = 1000  # Start temperature must be set differently. High temperature --> more randomness
         temperature = (-np.abs(heuristic_obj_vals[0])) * 0.05 / np.log(0.5)
@@ -103,35 +108,39 @@ class ALNS():
                     # print(f"Iteration {i*10 + j}")
                     candidate_unused_car_moves = copy_unused_car_moves_2d_list(current_unused_car_moves)
                     candidate_solution = copy_solution_dict(current_solution)
+                    candidate_unused_car_moves, candidate_solution = self._initialize_new_iteration(
+                        current_unused_car_moves, current_solution)
 
                     if MODE == "LOCAL_FIRST":
-                        print("\n----- LOCAL SEARCH FIRST BEST -----")
+                        #print("\n----- LOCAL SEARCH FIRST BEST -----")
                         local_search = LocalSearch(candidate_solution,
                                                    self._num_first_stage_tasks,
                                                    self._feasibility_checker)
                         local_search.search("best_first")
-                        solution.rebuild(local_search.solution, "second_stage")
+                        self.solution.rebuild(local_search.solution, "second_stage")
                         visited_hash_keys.update(local_search.visited_list)
 
                     elif MODE == "LOCAL_FULL":
-                        print("\n----- LOCAL SEARCH FULL -----")
+                        #print("\n----- LOCAL SEARCH FULL -----")
                         local_search = LocalSearch(candidate_solution,
                                                    self._num_first_stage_tasks,
                                                    self._feasibility_checker)
                         local_search.search("full")
-                        solution.rebuild(local_search.solution, "second_stage")
+                        self.solution.rebuild(local_search.solution, "second_stage")
                         visited_hash_keys.update(local_search.visited_list)
 
 
                     elif MODE == "LNS":
-                        # print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
+                        #print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
                         destroy_heuristic, operator_pair = self._get_destroy_operator(
                             solution=candidate_solution,
                             neighborhood_size=1, randomization_degree=40,
                             world_instance=self._world_instance)
                         destroy_heuristic.destroy()
-                        # print("Destroy: ", destroy_heuristic, destroy_heuristic.solution)
-                        # destroy_heuristic.to_string()
+
+                        #print(f"Destroy: {destroy_heuristic}\n{destroy_heuristic.solution}\n{destroy_heuristic.to_string()}")
+
+                        destroy_heuristic.destroy()
                         # print(destroy)
 
                         repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
@@ -139,6 +148,8 @@ class ALNS():
                                                                      world_instance=self._world_instance,
                                                                      operator_pair=operator_pair)
                         repair_heuristic.repair()
+
+                        destroy_heuristic.destroy()
 
                         # print("Repair: ", repair_heuristic, repair_heuristic.solution)
                         # repair_heuristic.to_string()
@@ -148,7 +159,7 @@ class ALNS():
                             counter += 1
                             continue
                         visited_hash_keys.add(hash_key)
-                        solution.rebuild(repair_heuristic.solution)
+                        self.solution.rebuild(repair_heuristic.solution)
                         '''
                         hash_key = candidate_solution.hash_key
                         if hash_key in visited_hash_keys:
@@ -156,7 +167,7 @@ class ALNS():
                         visited_hash_keys.add(hash_key)
                         '''
 
-                    true_obj_val, candidate_obj_val = solution.get_obj_val(both=True)
+                    true_obj_val, candidate_obj_val = self.solution.get_obj_val(both=True)
                     true_obj_vals.append(true_obj_val)
                     # print(f"true_obj_val {true_obj_val}")
                     # print(f"\ncurrent_obj_val {current_obj_val}")
@@ -172,9 +183,11 @@ class ALNS():
                             # NEW GLOBAL BEST
                             if candidate_obj_val > best_obj_val:
                                 best_obj_val = candidate_obj_val
-                                best_solution = (candidate_solution, true_obj_val)
+                                best_solution = (copy_solution_dict(self.solution.assigned_car_moves), true_obj_val)
                                 output_text += str(counter) + f" New best solution globally: {candidate_obj_val}\n"
                                 counter += 1
+                                #print("NEW GLOBAL SOLUTION")
+                                #self.solution.print_solution()
                                 if MODE == "LNS":
                                     self._update_weight_record(_IS_BEST, destroy_heuristic, repair_heuristic)
                             # NEW LOCAL BEST
@@ -239,9 +252,10 @@ class ALNS():
             # print(self.operators_pairs)
             # print(self.repair_operators)
             print(self.operator_pairs)
-            print("best solution")
-            print("obj_val", best_solution[1])
-            #best_solution[0].print_solution()
+            first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(
+                best_solution[0], self.solution.world_instance.first_stage_tasks)
+
+
 
     # best_solution.print_solution()
 
@@ -252,12 +266,14 @@ class ALNS():
                  'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_charge': 3.0,
                  'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_charge': 3.0,
                  'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_charge': 20.0})
+
         elif self._num_employees < 4:
             operators = OrderedDict(
                 {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': 3.0,
                  'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_charge': 3.0,
                  'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 3.0,
                  'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_charge': 20.0})
+
         else:
             operators = OrderedDict(
                 {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0,
@@ -426,16 +442,31 @@ class ALNS():
 if __name__ == "__main__":
     from pyinstrument import Profiler
     import time
-    filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/15nodes/15-10-2-1_a"
 
     try:
         profiler = Profiler()
         profiler.start()
         alns = ALNS(filename + ".pkl")
 
-
         profiler.stop()
+        print("best solution")
+        print("obj_val", alns.best_solution[1])
+        alns.solution.rebuild(alns.best_solution[0], "second_stage")
+        alns.solution.print_solution()
         print(profiler.output_text(unicode=True, color=True))
+
+        print("\n############## Evaluate solution ##############")
+        gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=False)
+        run_model(gi)
+        '''
+        print("\n############## Reoptimized solution ##############")
+        gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=True)
+        run_model(gi)
+
+        print("\n############## Optimal solution ##############")
+        gi2 = GurobiInstance(filename + ".yaml")
+        run_model(gi2, time_limit=300)'''
     except KeyboardInterrupt:
         print('Interrupted')
         try:

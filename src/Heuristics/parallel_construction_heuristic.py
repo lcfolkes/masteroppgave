@@ -96,21 +96,19 @@ class ConstructionHeuristic:
 
         if stage == "first":
             # Check if this is not necessary for LNS
-            employee_ids = {e.employee_id: e for e in self.employees}
-            car_move_ids = {cm.car_move_id: cm for cm in self.car_moves}
             first_stage_solution = solution
             # print(first_stage_solution)
 
             # We have to reset all car moves before we begin adding new ones
             for employee_obj, car_move_objs in first_stage_solution.items():
                 for cm_obj in car_move_objs:
-                    cm = car_move_ids[cm_obj.car_move_id]
+                    cm = self.car_moves_dict[cm_obj.car_move_id]
                     cm.reset()
 
             for employee_obj, car_move_objs in first_stage_solution.items():
-                emp = employee_ids[employee_obj.employee_id]
+                emp = self.employees_dict[employee_obj.employee_id]
                 for cm_obj in car_move_objs:
-                    cm = car_move_ids[cm_obj.car_move_id]
+                    cm = self.car_moves_dict[cm_obj.car_move_id]
                     '''
                     if cm.is_charging_move:
                         print(
@@ -226,9 +224,9 @@ class ConstructionHeuristic:
                     # TODO: remove car_moves with this destination
                     continue
             if scenario is None:
-                obj_val = self.objective_function.evaluate(added_car_moves=[car_move], both="heuristic")
+                obj_val = self.objective_function.evaluate(added_car_moves=[car_move], mode="heuristic")
             else:
-                obj_val = self.objective_function.evaluate(added_car_moves=[car_move], scenario=scenario, both="heuristic")
+                obj_val = self.objective_function.evaluate(added_car_moves=[car_move], scenario=scenario, mode="heuristic")
 
             if obj_val > best_obj_val:
                 best_obj_val = obj_val
@@ -278,13 +276,17 @@ class ConstructionHeuristic:
                     best_employee_first_stage, best_travel_time_first_stage = self._get_best_employee_process(
                         best_employee_first_stage, employee, best_car_move, best_travel_time_first_stage)
                 else:
+                    for s in range(self.num_scenarios):
+                        best_employee_second_stage[s], best_travel_time_second_stage[s] = self._get_best_employee_process(
+                            best_employee_second_stage[s], employee, best_car_move[s], best_travel_time_second_stage[s],s)
+                    '''
                     args = ((best_employee_second_stage[s], employee, best_car_move[s], best_travel_time_second_stage[s], s)
                             for s in range(self.num_scenarios))
                     with mp.Pool(processes=self.num_scenarios) as pool:
                         res = pool.starmap(self._get_best_employee_process, args)
                     best_employee_second_stage = [self.employees_dict[res_tuple[0].employee_id]
                                                   if res_tuple[0] is not None else None for res_tuple in res]
-                    best_travel_time_second_stage = [res_tuple[1] for res_tuple in res]
+                    best_travel_time_second_stage = [res_tuple[1] for res_tuple in res]'''
 
         # Remove best move if not legal. Else return best employee
         if self.first_stage:
@@ -419,8 +421,8 @@ class ConstructionHeuristic:
                                    car_move.car_move_id, car_move.car.car_id,
                                    f"{start_node_id} -> {car_move.start_node.node_id} -> {car_move.end_node.node_id}",
                                    round(employee.start_times_car_moves[employee.car_moves.index(car_move)]
-                                         - employee.travel_times_car_moves[employee.car_moves.index(car_move)], 2),
-                                   round(employee.travel_times_car_moves[employee.car_moves.index(car_move)], 2),
+                                         - employee.travel_times_to_car_moves[employee.car_moves.index(car_move)], 2),
+                                   round(employee.travel_times_to_car_moves[employee.car_moves.index(car_move)], 2),
                                    round(employee.car_moves[employee.car_moves.index(car_move)].handling_time, 2),
                                    round(car_move.start_time + car_move.handling_time, 2)
                                    ]
@@ -457,9 +459,9 @@ class ConstructionHeuristic:
                                                 f"{start_node_id} -> {car_move.start_node.node_id} -> {car_move.end_node.node_id}",
                                                 round(employee.start_times_car_moves_second_stage[s][
                                                           employee.car_moves_second_stage[s].index(car_move)]
-                                                      - employee.travel_times_car_moves_second_stage[s][
+                                                      - employee.travel_times_to_car_moves_second_stage[s][
                                                           employee.car_moves_second_stage[s].index(car_move)], 2),
-                                                round(employee.travel_times_car_moves_second_stage[s][
+                                                round(employee.travel_times_to_car_moves_second_stage[s][
                                                           employee.car_moves_second_stage[s].index(car_move)], 2),
                                                 round(employee.car_moves_second_stage[s][
                                                           employee.car_moves_second_stage[s].index(
@@ -492,23 +494,17 @@ class ConstructionHeuristic:
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
-    import time
 
-    filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_c"
     ch = ConstructionHeuristic(filename + ".pkl")
-    # profiler = Profiler()
-    # profiler.start()
-    start = time.perf_counter()
+    profiler = Profiler()
+    profiler.start()
 
     ch.construct()
-    finish = time.perf_counter()
 
-    # profiler.stop()
-    # print(profiler.output_text())#unicode=True, color=True))
-    true_obj_val, best_obj_val = ch.get_obj_val(both=True)
-    # print(f"Construction heuristic true obj. val {true_obj_val}")
+    profiler.stop()
     ch.print_solution()
-    print(f"Finished in {round(finish - start, 2)} seconds(s)")
+    print(profiler.output_text(unicode=True, color=True))
     # print("\n############## Evaluate solution ##############")
     # gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)
     # run_model(gi)
