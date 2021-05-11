@@ -46,35 +46,35 @@ class ALNS():
         self.best_solutions = None
         self.best_obj_val = 0
 
-        solution = ConstructionHeuristic(self.filename)
-        self._num_employees = len(solution.employees)
-        self._num_first_stage_tasks = solution.num_first_stage_tasks
-        self._feasibility_checker = solution.feasibility_checker
-        self._world_instance = solution.world_instance
+        self.solution = ConstructionHeuristic(self.filename)
+        self._num_employees = len(self.solution.employees)
+        self._num_first_stage_tasks = self.solution.num_first_stage_tasks
+        self._feasibility_checker = self.solution.feasibility_checker
+        self._world_instance = self.solution.world_instance
         self.operator_pairs = self._initialize_operators()
         self.operators_record = self._initialize_operator_records()
-        self.run(solution)
+        self.run()
 
 
 
-    def run(self, solution):
+    def run(self):
         # TODO: in order to save time, this could be implemented as a queue (as in tabu search)
         start = time.perf_counter()
         visited_hash_keys = set()
 
-        solution.construct(verbose=True)
-        solution.print_solution()
-        true_obj_val, best_obj_val = solution.get_obj_val(both=True)
+        self.solution.construct(verbose=True)
+        self.solution.print_solution()
+        true_obj_val, best_obj_val = self.solution.get_obj_val(both=True)
         current_obj_val = best_obj_val
         true_obj_vals = [true_obj_val]
         heuristic_obj_vals = [best_obj_val]
-        best_solution = (copy_solution_dict(solution.assigned_car_moves), true_obj_val)
+        best_solution = (copy_solution_dict(self.solution.assigned_car_moves), true_obj_val)
         print(f"Construction heuristic true obj. val {true_obj_val}")
         print(f"Heuristic obj. val {heuristic_obj_vals[0]}")
         print(f"Heuristic obj. val {heuristic_obj_vals[0]}")
-        current_solution = copy_solution_dict(solution.assigned_car_moves)
-        current_unused_car_moves = copy_unused_car_moves_2d_list(solution.unused_car_moves)
-        visited_hash_keys.add(solution.hash_key)
+        current_solution = copy_solution_dict(self.solution.assigned_car_moves)
+        current_unused_car_moves = copy_unused_car_moves_2d_list(self.solution.unused_car_moves)
+        visited_hash_keys.add(self.solution.hash_key)
         MODE = "LOCAL"
 
         # temperature = 1000  # Start temperature must be set differently. High temperature --> more randomness
@@ -110,7 +110,7 @@ class ALNS():
                                                    self._num_first_stage_tasks,
                                                    self._feasibility_checker)
                         local_search.search("best_first")
-                        solution.rebuild(local_search.solution, "second_stage")
+                        self.solution.rebuild(local_search.solution, "second_stage")
                         visited_hash_keys.update(local_search.visited_list)
 
                     elif MODE == "LOCAL_FULL":
@@ -119,7 +119,7 @@ class ALNS():
                                                    self._num_first_stage_tasks,
                                                    self._feasibility_checker)
                         local_search.search("full")
-                        solution.rebuild(local_search.solution, "second_stage")
+                        self.solution.rebuild(local_search.solution, "second_stage")
                         visited_hash_keys.update(local_search.visited_list)
 
 
@@ -148,7 +148,7 @@ class ALNS():
                             counter += 1
                             continue
                         visited_hash_keys.add(hash_key)
-                        solution.rebuild(repair_heuristic.solution)
+                        self.solution.rebuild(repair_heuristic.solution)
                         '''
                         hash_key = candidate_solution.hash_key
                         if hash_key in visited_hash_keys:
@@ -156,7 +156,7 @@ class ALNS():
                         visited_hash_keys.add(hash_key)
                         '''
 
-                    true_obj_val, candidate_obj_val = solution.get_obj_val(both=True)
+                    true_obj_val, candidate_obj_val = self.solution.get_obj_val(both=True)
                     true_obj_vals.append(true_obj_val)
                     # print(f"true_obj_val {true_obj_val}")
                     # print(f"\ncurrent_obj_val {current_obj_val}")
@@ -239,27 +239,33 @@ class ALNS():
             # print(self.operators_pairs)
             # print(self.repair_operators)
             print(self.operator_pairs)
-            print("best solution")
-            print("obj_val", best_solution[1])
-            #best_solution[0].print_solution()
+
 
     # best_solution.print_solution()
 
     def _initialize_operators(self):
         if self._num_employees < 3:
-            operators = OrderedDict(
+            '''operators = OrderedDict(
                 {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_charge': 3.0,
                  'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_charge': 3.0,
                  'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_charge': 3.0,
-                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_charge': 20.0})
-        elif self._num_employees < 4:
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_charge': 20.0})'''
             operators = OrderedDict(
+                {'random_greedy': 1.0, 'random_regret2': 1.0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0})
+        elif self._num_employees < 4:
+            '''operators = OrderedDict(
                 {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': 3.0,
                  'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_charge': 3.0,
                  'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 3.0,
-                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_charge': 20.0})
-        else:
+                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_charge': 20.0})'''
             operators = OrderedDict(
+                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0})
+        else:
+            '''operators = OrderedDict(
                 {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0,
                  'random_charge': 3.0,
                  'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0,
@@ -268,6 +274,11 @@ class ALNS():
                  'shaw_charge': 3.0,
                  'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_regret4': 3.0,
                  'charge_charge': 20.0})
+            '''
+            operators = OrderedDict(
+                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0})
 
         return operators
 
@@ -426,16 +437,22 @@ class ALNS():
 if __name__ == "__main__":
     from pyinstrument import Profiler
     import time
-    filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_a"
 
     try:
-        #profiler = Profiler()
-        #profiler.start()
+        profiler = Profiler()
+        profiler.start()
         alns = ALNS(filename + ".pkl")
 
 
-        #profiler.stop()
-        #print(profiler.output_text(unicode=True, color=True))
+        profiler.stop()
+        print("best solution")
+        print("obj_val", alns.best_solution[1])
+        print(alns.best_solution[0])
+        alns.solution.rebuild(alns.best_solution[0], "second_stage")
+        #print(alns.solution.assigned_car_moves)
+        alns.solution.print_solution()
+        print(profiler.output_text(unicode=True, color=True))
     except KeyboardInterrupt:
         print('Interrupted')
         try:

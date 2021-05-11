@@ -558,7 +558,7 @@ class ConstructionHeuristic:
 if __name__ == "__main__":
     from pyinstrument import Profiler
 
-    filename = "InstanceGenerator/InstanceFiles/20nodes/20-10-2-1_c"
+    filename = "InstanceGenerator/InstanceFiles/26nodes/26-25-1-1_a"
     ch = ConstructionHeuristic(filename + ".pkl")
     profiler = Profiler()
     profiler.start()
