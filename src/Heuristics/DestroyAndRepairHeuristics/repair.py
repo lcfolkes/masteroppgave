@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 
 from Heuristics.helper_functions_heuristics import insert_car_move, remove_all_car_moves_of_car_in_car_move, \
     get_first_stage_solution_list_from_dict
-from Heuristics.old_objective_function import ObjectiveFunction
+from Heuristics.best_objective_function import ObjectiveFunction
 from InstanceGenerator.instance_components import CarMove, Employee
 from InstanceGenerator.world import World
 from Heuristics.DestroyAndRepairHeuristics.destroy import Destroy, ChargeRemoval
@@ -139,7 +139,7 @@ class GreedyInsertion(Repair):
 
                     if self.feasibility_checker.is_first_stage_solution_feasible(
                             {employee: current_solution[employee] + [car_move]}):
-                        obj_val = self.objective_function.evaluate(added_car_moves=[car_move])
+                        obj_val = self.objective_function.evaluate(added_car_moves=[car_move], mode="heuristic")
 
                         if obj_val > best_obj_val:
                             best_obj_val = obj_val
@@ -214,7 +214,7 @@ class RegretInsertion(Repair):
             feasible_idx = []
             for employee, employee_moves in current_solution.items():
                 if len(employee_moves) < self.num_first_stage_tasks:
-                    obj_val = self.objective_function.evaluate(added_car_moves=[car_move])
+                    obj_val = self.objective_function.evaluate(added_car_moves=[car_move], mode="heuristic")
                     for idx in range(len(employee_moves) + 1):
                         current_solution[employee].insert(idx, car_move)
                         # insert_car_move(current_solution, car_move, employee, idx)
@@ -310,14 +310,19 @@ class ChargeInsertion(Repair):
     def _get_best_insertion(self, current_solution: {Employee: [CarMove]}, unused_charging_moves) -> (
             CarMove, Employee):
         random_charging_move = random.choice(unused_charging_moves)
+        tries = 0
         while random_charging_move.end_node.num_charging[0] == random_charging_move.end_node.capacity:
             random_charging_move = random.choice(unused_charging_moves)
+            tries += 1
+            if tries > 10:
+                return None, None, None
+
         obj_val_dict = {}
         feasible_idx = []
 
         for employee, employee_moves in current_solution.items():
             if len(employee_moves) < self.num_first_stage_tasks:
-                obj_val = self.objective_function.evaluate(added_car_moves=[random_charging_move])
+                obj_val = self.objective_function.evaluate(added_car_moves=[random_charging_move], mode="heuristic")
                 for idx in range(len(employee_moves) + 1):
                     current_solution[employee].insert(idx, random_charging_move)
                     # insert_car_move(current_solution, car_move, employee, idx)
