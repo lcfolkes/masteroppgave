@@ -8,7 +8,7 @@ from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from Heuristics.LocalSearch.local_search import LocalSearch
 from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution
-from Heuristics.parallel_construction_heuristic import ConstructionHeuristic
+from Heuristics.best_construction_heuristic import ConstructionHeuristic
 
 from path_manager import path_to_src
 import numpy as np
@@ -128,7 +128,7 @@ class ALNS():
         temperature = (-np.abs(heuristic_obj_vals[0])) * 0.05 / np.log(0.5)
         # cooling_rate = 0.5  # cooling_rate in (0,1)
         cooling_rate = np.exp(np.log(0.002) / 200)
-        iterations_alns = 50
+        iterations_alns = 1
         iterations_segment = 10
 
         # SEGMENTS
@@ -141,7 +141,7 @@ class ALNS():
                 # print(f"Best objective value {best_solution[1]}")
                 # print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
                 loop = tqdm(range(iterations_segment), total=iterations_segment, leave=True)
-                loop.set_description(f"Segment[{i}/{100}]")
+                loop.set_description(f"Segment[{i}/{iterations_alns}]")
 
                 loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val,
                                  best_true_obj_val=best_solution[1])
@@ -420,21 +420,16 @@ if __name__ == "__main__":
     import time
     from best_objective_function import get_parking_nodes_in_out
 
-    filename = "InstanceGenerator/InstanceFiles/20nodes/20-25-1-1_b"
+    filename = "InstanceGenerator/InstanceFiles/26nodes/26-25-1-1_a"
 
-    # code you want to profile
 
-    profiler = Profiler()
-    profiler.start()
 
     try:
-        #profiler = Profiler()
-        #profiler.start()
+        profiler = Profiler()
+        profiler.start()
         alns = ALNS(filename + ".pkl")
 
 
-        #profiler.stop()
-        #print(profiler.output_text(unicode=True, color=True))
     except KeyboardInterrupt:
         print('Interrupted')
         try:
