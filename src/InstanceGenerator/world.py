@@ -1,9 +1,13 @@
+from matplotlib import pyplot as plt
+
 from HelperFiles.helper_functions import read_config
+from Heuristics.helper_functions_heuristics import frequencies, probabilities
 from InstanceGenerator.instance_components import Node, ParkingNode, ChargingNode, Employee, Car, CarMove
 import numpy as np
 import pandas as pd
 import random
 import os
+import seaborn as sns
 from path_manager import path_to_src
 
 os.chdir(path_to_src)
@@ -61,6 +65,7 @@ class World:
         self.distances_car = []
         self.cars = []
         self.car_moves = []
+        self.relevant_car_moves = []
         self.bigM = []
 
     def set_num_scenarios(self, n: int):
@@ -94,6 +99,24 @@ class World:
 
     def add_car_move(self, car_move: CarMove):
         self.car_moves.append(car_move)
+
+    def _irrelevant_end_nodes(self, parking_nodes, acceptance_percentage=1):
+        out_list = []
+        for node in parking_nodes:
+            net_flow = node.ideal_state + node.customer_requests - node.car_returns - node.parking_state
+            count = sum(1 for s in net_flow if s <= 0)
+            if count/len(net_flow) >= acceptance_percentage:
+                out_list.append(node)
+        return out_list
+
+    def initialize_relevant_car_moves(self, acceptance_percentage):
+        relevant_car_moves = []
+        irrelevant_end_nodes = self._irrelevant_end_nodes(self.parking_nodes, acceptance_percentage)
+        for cm in self.car_moves:
+            if cm.end_node not in irrelevant_end_nodes:
+                relevant_car_moves.append(cm)
+        self.relevant_car_moves = relevant_car_moves
+
 
     def add_car_move_to_employee(self, car_move: CarMove, employee: Employee, scenario: int = None):
 
