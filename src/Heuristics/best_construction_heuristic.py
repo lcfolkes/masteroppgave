@@ -21,10 +21,11 @@ class ConstructionHeuristic:
     # instance_file = "InstanceFiles/6nodes/6-3-1-1_d.pkl"
     # filename = "InstanceFiles/6nodes/6-3-1-1_b.yaml"
 
-    def __init__(self, instance_file):
+    def __init__(self, instance_file, acceptance_percentage):
 
         self.instance_file = instance_file
         self.world_instance = load_object_from_file(instance_file)
+        self.world_instance.initialize_relevant_car_moves(acceptance_percentage)
         self.objective_function = ObjectiveFunction(self.world_instance)
         # self.world_instance.planning_period = 100
         self.feasibility_checker = FeasibilityChecker(self.world_instance)
@@ -43,7 +44,6 @@ class ConstructionHeuristic:
         self.car_moves = []  # self.world_instance.car_moves
         self.car_moves_second_stage = []
         self._initialize_car_moves()
-
         self.available_employees = True
         self.first_stage = True
         # self.hash_key = 0
@@ -123,12 +123,12 @@ class ConstructionHeuristic:
 
         
     def _initialize_car_moves(self):
-        for car in self.world_instance.cars:
-            for car_move in car.car_moves:
-                self.car_moves.append(car_move)
-                self.car_moves_dict[car_move.car_move_id] = car_move
-                for s in range(self.num_scenarios):
-                    self.unused_car_moves[s].append(car_move)
+        for car_move in self.world_instance.relevant_car_moves:
+        # car_move in self.world_instance.car_moves:
+            self.car_moves.append(car_move)
+            self.car_moves_dict[car_move.car_move_id] = car_move
+            for s in range(self.num_scenarios):
+                self.unused_car_moves[s].append(car_move)
 
     def _initialize_charging_nodes(self):
         for cn in self.world_instance.charging_nodes:
@@ -531,8 +531,8 @@ class ConstructionHeuristic:
 if __name__ == "__main__":
     from pyinstrument import Profiler
 
-    filename = "InstanceGenerator/InstanceFiles/15nodes/15-10-2-1_a"
-    ch = ConstructionHeuristic(filename + ".pkl")
+    filename = "InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
+    ch = ConstructionHeuristic(filename + ".pkl", acceptance_percentage=0.4)
     profiler = Profiler()
     profiler.start()
 

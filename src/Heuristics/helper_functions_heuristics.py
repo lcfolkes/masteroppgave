@@ -360,3 +360,19 @@ def copy_numpy_dict(d):
         #new_dict[k] = np.copy(v)
         new_dict[k] = np.array(v)
     return new_dict
+
+### PLOTTING HISTOGRAMS
+def frequencies(values):
+    frequencies = {}
+    for v in values:
+        if v in frequencies:
+            frequencies[v] += 1
+        else:
+            frequencies[v] = 1
+    return frequencies
+
+def probabilities(sample, freqs):
+    probs = []
+    for k,v in freqs.items():
+        probs.append(round(v/len(sample),1))
+    return probs

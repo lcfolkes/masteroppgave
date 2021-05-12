@@ -37,14 +37,14 @@ _IS_REJECTED
 
 class ALNS():
 
-    def __init__(self, filename):
+    def __init__(self, filename, acceptance_percentage=0.7):
         self.filename = filename
 
         self.best_solution = None
         self.best_solutions = None
         self.best_obj_val = 0
 
-        self.solution = ConstructionHeuristic(self.filename)
+        self.solution = ConstructionHeuristic(self.filename, acceptance_percentage)
         self._num_employees = len(self.solution.employees)
         self._num_first_stage_tasks = self.solution.num_first_stage_tasks
         self._feasibility_checker = self.solution.feasibility_checker
@@ -52,6 +52,7 @@ class ALNS():
         self.operator_pairs = self._initialize_operators()
         self.operators_record = self._initialize_operator_records()
         self.run()
+
 
     def _initialize_new_iteration(self, current_unused_car_moves, current_solution):
 
@@ -86,7 +87,7 @@ class ALNS():
         temperature = (-np.abs(heuristic_obj_vals[0])) * 0.05 / np.log(0.5)
         # cooling_rate = 0.5  # cooling_rate in (0,1)
         cooling_rate = np.exp(np.log(0.002) / 200)
-        iterations_alns = 50
+        iterations_alns = 10
         iterations_segment = 10
 
         # SEGMENTS
@@ -442,12 +443,12 @@ class ALNS():
 if __name__ == "__main__":
     from pyinstrument import Profiler
     import time
-    filename = "InstanceGenerator/InstanceFiles/15nodes/15-10-2-1_a"
+    filename = "InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
 
     try:
         profiler = Profiler()
         profiler.start()
-        alns = ALNS(filename + ".pkl")
+        alns = ALNS(filename + ".pkl", acceptance_percentage=1)
 
         profiler.stop()
         print("best solution")
