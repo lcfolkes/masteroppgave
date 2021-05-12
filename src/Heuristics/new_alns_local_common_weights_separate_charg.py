@@ -533,7 +533,9 @@ if __name__ == "__main__":
     try:
         profiler = Profiler()
         profiler.start()
+
         alns = ALNS(filename + ".pkl", acceptance_percentage=0.15)
+
 
         profiler.stop()
         print("best solution")
