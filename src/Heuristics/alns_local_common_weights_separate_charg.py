@@ -7,7 +7,8 @@ from DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretIns
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from Heuristics.LocalSearch.local_search import LocalSearch
-from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution
+from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution, \
+    copy_unused_car_moves_2d_list, copy_solution_dict
 from Heuristics.best_construction_heuristic import ConstructionHeuristic
 
 from path_manager import path_to_src
@@ -32,24 +33,31 @@ _IS_REJECTED
 '''
 
 
-# TODO: Need to keep track of visited solutions by assigning a hash key to each solution and storing the key in a hash table
-
-
 class ALNS():
 
-    def __init__(self, filename):
+    def __init__(self, filename, acceptance_percentage=1):
         self.filename = filename
 
         self.best_solution = None
         self.best_solutions = None
         self.best_obj_val = 0
 
-        solution = ConstructionHeuristic(self.filename)
+        solution = ConstructionHeuristic(self.filename, acceptance_percentage)
         self.num_employees = len(solution.employees)
+        self._num_first_stage_tasks = self.solution.num_first_stage_tasks
+        self._feasibility_checker = self.solution.feasibility_checker
+        self._world_instance = self.solution.world_instance
         self.operator_pairs = self._initialize_operators()
         self.operators_record = self._initialize_operator_records()
         self.run(solution)
 
+    def _initialize_new_iteration(self, current_unused_car_moves, current_solution):
+
+        candidate_unused_car_moves = copy_unused_car_moves_2d_list(current_unused_car_moves)
+        candidate_solution = copy_solution_dict(current_solution)
+        for cn in self._world_instance.charging_nodes:
+            cn.reset()
+        return candidate_unused_car_moves, candidate_solution
 
     def run(self, solution):
         # TODO: in order to save time, this could be implemented as a queue (as in tabu search)
@@ -65,7 +73,6 @@ class ALNS():
         heur_val_first_checkpoint = None
         obj_val_second_checkpoint = None
         heur_val_second_checkpoint = None
-
 
         solution.construct(verbose=True)
         solution.print_solution()
@@ -225,7 +232,6 @@ class ALNS():
                         second_checkpoint_reached = True
                         obj_val_second_checkpoint, heur_val_second_checkpoint = best_solution[0].get_obj_val(both=True)
 
-
                 time_segment = time.perf_counter()
                 finish_times_segments.append(time_segment)
 
@@ -265,7 +271,6 @@ class ALNS():
             # print(self.repair_operators)
             print(self.operator_pairs)
 
-
             # Strings to save to file
             obj_val_txt = f"Objective value: {str(best_solution[1])}\n"
             heur_val_txt = f"Heuristic value: {str(best_solution[0])}\n"
@@ -275,53 +280,39 @@ class ALNS():
             second_checkpoint_txt2 = f"Heuristic value after {second_checkpoint} s: {heur_val_second_checkpoint}\n"
             time_spent_txt = f"Time used: {finish}\n"
             finish_times_segments_txt = f"Finish time segments:\n{finish_times_segments}\n"
-            iterations_done_txt = f"Iterations completed: {len(finish_times_segments)*iterations_segment} iterations in {len(finish_times_segments)} segments\n"
+            iterations_done_txt = f"Iterations completed: {len(finish_times_segments) * iterations_segment} iterations in {len(finish_times_segments)} segments\n"
 
-            #Write to file
+            # Write to file
             f = open(filename + "_results.txt", "a")
             f.writelines([obj_val_txt, heur_val_txt, first_checkpoint_txt1, first_checkpoint_txt2,
                           second_checkpoint_txt1, second_checkpoint_txt2, time_spent_txt, finish_times_segments_txt,
                           iterations_done_txt])
             f.close()
 
-
     # best_solution.print_solution()
 
     def _initialize_operators(self):
         if self.num_employees < 3:
-            '''operators = OrderedDict(
+            operators = OrderedDict(
                 {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_charge': 3.0,
                  'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_charge': 3.0,
                  'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_charge': 3.0,
-                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_charge': 20.0})'''
-            operators = OrderedDict(
-                {'random_charge': 3.0,
-                 'worst_charge': 3.0, 'shaw_charge': 3.0,
                  'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_charge': 20.0})
+
         elif self.num_employees < 4:
-            '''operators = OrderedDict(
+            operators = OrderedDict(
                 {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': 3.0,
                  'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_charge': 3.0,
                  'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 3.0,
-                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_charge': 20.0})'''
-            operators = OrderedDict(
-                {'random_charge': 3.0, 'worst_charge': 3.0, 'shaw_charge': 3.0,
                  'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_charge': 20.0})
 
         else:
-            '''operators = OrderedDict(
+            operators = OrderedDict(
                 {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0,
                  'random_charge': 3.0,
                  'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0,
                  'worst_charge': 3.0,
                  'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0,
-                 'shaw_charge': 3.0,
-                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_regret4': 3.0,
-                 'charge_charge': 20.0})
-            '''
-            operators = OrderedDict(
-                {'random_charge': 3.0,
-                 'worst_charge': 3.0,
                  'shaw_charge': 3.0,
                  'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_regret4': 3.0,
                  'charge_charge': 20.0})
@@ -498,7 +489,6 @@ if __name__ == "__main__":
             sys.exit(0)
         except SystemExit:
             os._exit(0)
-
 
     # profiler.stop()
     # print(profiler.output_text(unicode=True, color=True))

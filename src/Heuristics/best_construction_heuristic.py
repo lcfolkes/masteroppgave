@@ -532,7 +532,7 @@ if __name__ == "__main__":
     from pyinstrument import Profiler
 
     filename = "InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
-    ch = ConstructionHeuristic(filename + ".pkl", acceptance_percentage=0.4)
+    ch = ConstructionHeuristic(filename + ".pkl", acceptance_percentage=0.3)
     profiler = Profiler()
     profiler.start()
 

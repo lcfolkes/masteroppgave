@@ -10,12 +10,13 @@ from Heuristics.LocalSearch.local_search import LocalSearch
 from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution, copy_solution_dict, \
     copy_unused_car_moves_2d_list, get_first_and_second_stage_solution
 from Heuristics.best_construction_heuristic import ConstructionHeuristic
-#from Heuristics.parallel_construction_heuristic import ConstructionHeuristic
+# from Heuristics.parallel_construction_heuristic import ConstructionHeuristic
 from path_manager import path_to_src
 import numpy as np
 import os
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+
 os.chdir(path_to_src)
 
 _IS_BEST = 33.0
@@ -27,11 +28,9 @@ _IS_ACCEPTED = 13.0
 _IS_BEST (sigma_1): The last remove-insert operation resulted in a new global best solution
 _IS_BETTER (sigma_2): The last remove-insert operation resulted in a solution that has not been accepted before.
          The cost of the new solution is better than the cost of the current solution.
-
 _IS_ACCEPTED (sigma_3): The last remove-insert operation resulted in a solution that has not been accepted before. The cost of
             the new solution is worse than the cost of current solution, but the solution was accepted.
 _IS_REJECTED
-
 '''
 
 
@@ -53,7 +52,6 @@ class ALNS():
         self.operators_record = self._initialize_operator_records()
         self.run()
 
-
     def _initialize_new_iteration(self, current_unused_car_moves, current_solution):
 
         candidate_unused_car_moves = copy_unused_car_moves_2d_list(current_unused_car_moves)
@@ -66,6 +64,16 @@ class ALNS():
         # TODO: in order to save time, this could be implemented as a queue (as in tabu search)
         start = time.perf_counter()
         visited_hash_keys = set()
+
+        finish_times_segments = []
+        first_checkpoint = 80
+        second_checkpoint = 200
+        first_checkpoint_reached = False
+        second_checkpoint_reached = False
+        obj_val_first_checkpoint = None
+        heur_val_first_checkpoint = None
+        obj_val_second_checkpoint = None
+        heur_val_second_checkpoint = None
 
         self.solution.construct(verbose=True)
         self.solution.print_solution()
@@ -80,7 +88,7 @@ class ALNS():
         current_solution = copy_solution_dict(self.solution.assigned_car_moves)
         current_unused_car_moves = copy_unused_car_moves_2d_list(self.solution.unused_car_moves)
         visited_hash_keys.add(self.solution.hash_key)
-        #MODE = "LOCAL"
+        # MODE = "LOCAL"
         MODE = "LOCAL_FIRST"
 
         # temperature = 1000  # Start temperature must be set differently. High temperature --> more randomness
@@ -89,6 +97,7 @@ class ALNS():
         cooling_rate = np.exp(np.log(0.002) / 200)
         iterations_alns = 10
         iterations_segment = 10
+        time_limit = 300
 
         # SEGMENTS
         try:
@@ -107,13 +116,11 @@ class ALNS():
 
                 for j in loop:
                     # print(f"Iteration {i*10 + j}")
-                    candidate_unused_car_moves = copy_unused_car_moves_2d_list(current_unused_car_moves)
-                    candidate_solution = copy_solution_dict(current_solution)
                     candidate_unused_car_moves, candidate_solution = self._initialize_new_iteration(
                         current_unused_car_moves, current_solution)
 
                     if MODE == "LOCAL_FIRST":
-                        #print("\n----- LOCAL SEARCH FIRST BEST -----")
+                        # print("\n----- LOCAL SEARCH FIRST BEST -----")
                         local_search = LocalSearch(candidate_solution,
                                                    self._num_first_stage_tasks,
                                                    self._feasibility_checker)
@@ -122,7 +129,7 @@ class ALNS():
                         visited_hash_keys.update(local_search.visited_list)
 
                     elif MODE == "LOCAL_FULL":
-                        #print("\n----- LOCAL SEARCH FULL -----")
+                        # print("\n----- LOCAL SEARCH FULL -----")
                         local_search = LocalSearch(candidate_solution,
                                                    self._num_first_stage_tasks,
                                                    self._feasibility_checker)
@@ -132,16 +139,14 @@ class ALNS():
 
 
                     elif MODE == "LNS":
-                        #print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
+                        # print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
                         destroy_heuristic, operator_pair = self._get_destroy_operator(
                             solution=candidate_solution,
                             neighborhood_size=1, randomization_degree=40,
                             world_instance=self._world_instance)
                         destroy_heuristic.destroy()
 
-                        #print(f"Destroy: {destroy_heuristic}\n{destroy_heuristic.solution}\n{destroy_heuristic.to_string()}")
-
-                        destroy_heuristic.destroy()
+                        # print(f"Destroy: {destroy_heuristic}\n{destroy_heuristic.solution}\n{destroy_heuristic.to_string()}")
                         # print(destroy)
 
                         repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
@@ -149,8 +154,6 @@ class ALNS():
                                                                      world_instance=self._world_instance,
                                                                      operator_pair=operator_pair)
                         repair_heuristic.repair()
-
-                        destroy_heuristic.destroy()
 
                         # print("Repair: ", repair_heuristic, repair_heuristic.solution)
                         # repair_heuristic.to_string()
@@ -187,8 +190,8 @@ class ALNS():
                                 best_solution = (copy_solution_dict(self.solution.assigned_car_moves), true_obj_val)
                                 output_text += str(counter) + f" New best solution globally: {candidate_obj_val}\n"
                                 counter += 1
-                                #print("NEW GLOBAL SOLUTION")
-                                #self.solution.print_solution()
+                                # print("NEW GLOBAL SOLUTION")
+                                # self.solution.print_solution()
                                 if MODE == "LNS":
                                     self._update_weight_record(_IS_BEST, destroy_heuristic, repair_heuristic)
                             # NEW LOCAL BEST
@@ -221,7 +224,21 @@ class ALNS():
                         output_text += str(counter) + " Not accepted solution\n"
                         counter += 1
                         MODE = "LNS"
+
+                    if time.perf_counter() > time_limit:
+                        print("Time limit reached!")
+                        finish = time.perf_counter()
+                        exit()
+                    if time.perf_counter() > first_checkpoint and not first_checkpoint_reached:
+                        first_checkpoint_reached = True
+                        obj_val_first_checkpoint, heur_val_first_checkpoint = best_solution[0].get_obj_val(both=True)
+                    if time.perf_counter() > second_checkpoint and not second_checkpoint_reached:
+                        second_checkpoint_reached = True
+                        obj_val_second_checkpoint, heur_val_second_checkpoint = best_solution[0].get_obj_val(both=True)
+
                 print(output_text)
+                time_segment = time.perf_counter()
+                finish_times_segments.append(time_segment)
 
                 # print statistics
                 # loop.set_description(f"Segment[{i}/{100}]")
@@ -236,6 +253,8 @@ class ALNS():
 
         except KeyboardInterrupt:
             print("Keyboard Interrupt")
+        except exit():
+            print("Time limit reached!")
         except:
             print("Unexpected error:", sys.exc_info()[0])
             raise
@@ -253,10 +272,24 @@ class ALNS():
             # print(self.operators_pairs)
             # print(self.repair_operators)
             print(self.operator_pairs)
-            first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(
-                best_solution[0], self.solution.world_instance.first_stage_tasks)
 
+            # Strings to save to file
+            obj_val_txt = f"Objective value: {str(best_solution[1])}\n"
+            heur_val_txt = f"Heuristic value: {str(best_solution[0])}\n"
+            first_checkpoint_txt1 = f"Objective value after {first_checkpoint} s: {obj_val_first_checkpoint}\n"
+            first_checkpoint_txt2 = f"Heuristic value after {first_checkpoint} s: {heur_val_first_checkpoint}\n"
+            second_checkpoint_txt1 = f"Objective value after {second_checkpoint} s: {obj_val_second_checkpoint}\n"
+            second_checkpoint_txt2 = f"Heuristic value after {second_checkpoint} s: {heur_val_second_checkpoint}\n"
+            time_spent_txt = f"Time used: {finish}\n"
+            finish_times_segments_txt = f"Finish time segments:\n{finish_times_segments}\n"
+            iterations_done_txt = f"Iterations completed: {len(finish_times_segments) * iterations_segment} iterations in {len(finish_times_segments)} segments\n"
 
+            # Write to file
+            f = open(filename + "_results.txt", "a")
+            f.writelines([obj_val_txt, heur_val_txt, first_checkpoint_txt1, first_checkpoint_txt2,
+                          second_checkpoint_txt1, second_checkpoint_txt2, time_spent_txt, finish_times_segments_txt,
+                          iterations_done_txt])
+            f.close()
 
     # best_solution.print_solution()
 
@@ -443,6 +476,7 @@ class ALNS():
 if __name__ == "__main__":
     from pyinstrument import Profiler
     import time
+
     filename = "InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
 
     try:
