@@ -109,11 +109,21 @@ class World:
                 out_list.append(node)
         return out_list
 
+    def _irrelevant_start_nodes(self, parking_nodes, acceptance_percentage=1):
+        out_list = []
+        for node in parking_nodes:
+            net_flow = node.ideal_state + node.customer_requests - node.car_returns - node.parking_state
+            count = sum(1 for s in net_flow if s > 0)
+            if count/len(net_flow) >= acceptance_percentage:
+                out_list.append(node)
+        return out_list
+
     def initialize_relevant_car_moves(self, acceptance_percentage):
         relevant_car_moves = []
         irrelevant_end_nodes = self._irrelevant_end_nodes(self.parking_nodes, acceptance_percentage)
+        irrelevant_start_nodes = self._irrelevant_start_nodes(self.parking_nodes, acceptance_percentage)
         for cm in self.car_moves:
-            if cm.end_node not in irrelevant_end_nodes:
+            if (cm.end_node not in irrelevant_end_nodes and cm.start_node not in irrelevant_start_nodes) or cm.is_charging_move:
                 relevant_car_moves.append(cm)
         self.relevant_car_moves = relevant_car_moves
 

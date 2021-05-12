@@ -275,7 +275,7 @@ class InterSwap(LocalSearchOperator):
 			elif first_stage[e2] and not first_stage[e1]:
 				car_move = first_stage[e2].pop(idx_2)
 				first_stage[e1].append(car_move)
-			elif not second_stage[e1] and not second_stage[e2]:
+			elif not first_stage[e1] and not first_stage[e2]:
 				pass
 			else:
 				first_stage[e2][idx_2], first_stage[e1][idx_1] = first_stage[e1][idx_1], first_stage[e2][idx_2]
