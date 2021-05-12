@@ -10,6 +10,7 @@ from Heuristics.LocalSearch.local_search import LocalSearch
 from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution, copy_solution_dict, \
     copy_unused_car_moves_2d_list, get_first_and_second_stage_solution
 from Heuristics.best_construction_heuristic import ConstructionHeuristic
+from Heuristics.heuristics_constants import HeuristicsConstants
 #from Heuristics.parallel_construction_heuristic import ConstructionHeuristic
 from path_manager import path_to_src
 import numpy as np
@@ -18,9 +19,9 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 os.chdir(path_to_src)
 
-_IS_BEST = 33.0
-_IS_BETTER = 9.0
-_IS_ACCEPTED = 13.0
+_IS_BEST = HeuristicsConstants.BEST
+_IS_BETTER = HeuristicsConstants.BETTER
+_IS_ACCEPTED = HeuristicsConstants.ACCEPTED
 
 '''
 
@@ -135,13 +136,11 @@ class ALNS():
                         #print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
                         destroy_heuristic, operator_pair = self._get_destroy_operator(
                             solution=candidate_solution,
-                            neighborhood_size=1, randomization_degree=40,
                             world_instance=self._world_instance)
                         destroy_heuristic.destroy()
 
                         #print(f"Destroy: {destroy_heuristic}\n{destroy_heuristic.solution}\n{destroy_heuristic.to_string()}")
 
-                        destroy_heuristic.destroy()
                         # print(destroy)
 
                         repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
@@ -149,8 +148,6 @@ class ALNS():
                                                                      world_instance=self._world_instance,
                                                                      operator_pair=operator_pair)
                         repair_heuristic.repair()
-
-                        destroy_heuristic.destroy()
 
                         # print("Repair: ", repair_heuristic, repair_heuristic.solution)
                         # repair_heuristic.to_string()
@@ -328,8 +325,11 @@ class ALNS():
         accept = acceptance_probability > random.random()
         return accept
 
-    def _get_destroy_operator(self, solution, neighborhood_size, randomization_degree, world_instance) -> \
+    def _get_destroy_operator(self, solution, world_instance) -> \
             (Destroy, str):
+
+        neighborhood_size = int(self._num_employees * self._num_first_stage_tasks * random.uniform(
+            HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1]))
         w_sum = sum(w for o, w in self.operator_pairs.items())
         # dist = distribution
         w_dist = [w / w_sum for o, w in self.operator_pairs.items()]
@@ -341,10 +341,12 @@ class ALNS():
             return RandomRemoval(solution, world_instance, neighborhood_size), operator_pair
         elif operator_pair == "worst_greedy" or operator_pair == "worst_regret2" or operator_pair == "worst_regret3" \
                 or operator_pair == "worst_regret4" or operator_pair == "worst_charge":
-            return WorstRemoval(solution, world_instance, neighborhood_size, randomization_degree), operator_pair
+            return WorstRemoval(solution, world_instance, neighborhood_size,
+                                HeuristicsConstants.DETERMINISM_PARAMETER_WORST), operator_pair
         elif operator_pair == "shaw_greedy" or operator_pair == "shaw_regret2" or operator_pair == "shaw_regret3" \
                 or operator_pair == "shaw_regret4" or operator_pair == "shaw_charge":
-            return ShawRemoval(solution, world_instance, neighborhood_size, randomization_degree), operator_pair
+            return ShawRemoval(solution, world_instance, neighborhood_size,
+                               HeuristicsConstants.DETERMINISM_PARAMETER_RELATED), operator_pair
         elif operator_pair == "charge_greedy" or operator_pair == "charge_regret2" or \
                 operator_pair == "charge_regret3" or operator_pair == "charge_regret4" \
                 or operator_pair == "charge_charge":
@@ -436,6 +438,9 @@ class ALNS():
             self.operator_pairs[k] = self.operator_pairs[k] * (1.0 - reaction_factor) + \
                                      safe_zero_division(reaction_factor, self.operators_record[k][1]) * \
                                      self.operators_record[k][0]
+            # lower threshold
+            if self.operator_pairs[k] < HeuristicsConstants.LOWER_THRESHOLD:
+                self.operator_pairs[k] = HeuristicsConstants.LOWER_THRESHOLD
             self.operators_record[k][0] = self.operator_pairs[k]
             self.operators_record[k][0] = 0
 
@@ -446,16 +451,16 @@ if __name__ == "__main__":
     filename = "InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
 
     try:
-        profiler = Profiler()
-        profiler.start()
+        #profiler = Profiler()
+        #profiler.start()
         alns = ALNS(filename + ".pkl", acceptance_percentage=0.7)
 
-        profiler.stop()
+        #profiler.stop()
         print("best solution")
         print("obj_val", alns.best_solution[1])
         alns.solution.rebuild(alns.best_solution[0], "second_stage")
         alns.solution.print_solution()
-        print(profiler.output_text(unicode=True, color=True))
+        #print(profiler.output_text(unicode=True, color=True))
 
         print("\n############## Evaluate solution ##############")
         gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=False)
