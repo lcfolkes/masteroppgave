@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
+from Gurobi.Model.run_model import run_model
 from Heuristics.best_construction_heuristic import ConstructionHeuristic
 
 from Heuristics.feasibility_checker import FeasibilityChecker
@@ -437,8 +439,10 @@ class EjectionSwap(LocalSearchOperator):
 
 
 if __name__ == "__main__":
+	filename = "InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_b"
+	'''
 	print("\n---- Construction Heuristic ----")
-	filename = "InstanceGenerator/InstanceFiles/25nodes/25-2-2-1_a"
+	
 	ch = ConstructionHeuristic(filename + ".pkl")
 	ch.construct()
 	print(ch.get_obj_val(true_objective=True, both=True))
@@ -453,5 +457,7 @@ if __name__ == "__main__":
 	solution = inter_swap.search("best_first", True)
 	ch.rebuild(solution, "second_stage")
 	print(ch.get_obj_val(true_objective=True, both=True))
-
+	'''
+	gi = GurobiInstance(filename + ".yaml")
+	run_model(gi)
 

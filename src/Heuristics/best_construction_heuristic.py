@@ -121,6 +121,7 @@ class ConstructionHeuristic:
 
         self.construct()
 
+        
     def _initialize_car_moves(self):
         for car in self.world_instance.cars:
             for car_move in car.car_moves:
@@ -206,7 +207,9 @@ class ConstructionHeuristic:
                         # TODO: remove car_moves with this destination
                         continue
 
+
                 obj_val = self.objective_function.evaluate(added_car_moves=[car_move], mode="heuristic")
+
                 if obj_val > best_obj_val_first_stage:
                     best_obj_val_first_stage = obj_val
                     best_car_move_first_stage = car_move
@@ -230,6 +233,7 @@ class ConstructionHeuristic:
                                 self.car_moves_second_stage[s][r].end_node.num_charging[s]:
                             # TODO: remove car_moves with this destination for this scenario
                             continue
+
 
                     obj_val = self.objective_function.evaluate(added_car_moves=[self.car_moves_second_stage[s][r]],
                                                                scenario=s, mode="heuristic")
@@ -341,7 +345,7 @@ class ConstructionHeuristic:
             if best_employee is not None:
 
                 self.world_instance.add_car_move_to_employee(best_car_move, best_employee)
-                self.objective_function.update(added_car_moves=[best_car_move])
+                self.objective_function.update(added_car_moves=np.array([best_car_move]))
 
                 for s in range(self.num_scenarios):
                     self.assigned_car_moves[best_employee][s].append(best_car_move)
@@ -370,7 +374,7 @@ class ConstructionHeuristic:
                         if best_car_move[s] is not None:
                             self.world_instance.add_car_move_to_employee(best_car_move[s], best_employee[s], s)
 
-                            self.objective_function.update(added_car_moves=[best_car_move[s]], scenario=s)
+                            self.objective_function.update(added_car_moves=np.array([best_car_move[s]]), scenario=s)
 
                             self.assigned_car_moves[best_employee[s]][s].append(best_car_move[s])
                             self.unused_car_moves[s].remove(best_car_move[s])
@@ -391,7 +395,7 @@ class ConstructionHeuristic:
         for s, car_moves in enumerate(car_moves_scenarios):
             for car_move in car_moves:
                 self.world_instance.add_car_move_to_employee(car_move, employee, s)
-                self.objective_function.update(added_car_moves=[car_move], scenario=s)
+                self.objective_function.update(added_car_moves=np.array([car_move]), scenario=s)
                 self.assigned_car_moves[employee][s].append(car_move)
                 self.unused_car_moves[s].remove(car_move)
                 self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(car_move,
