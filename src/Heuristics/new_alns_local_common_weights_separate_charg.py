@@ -37,7 +37,7 @@ _IS_REJECTED
 
 class ALNS():
 
-    def __init__(self, filename, acceptance_percentage=0.7):
+    def __init__(self, filename, acceptance_percentage=1):
         self.filename = filename
 
         self.best_solution = None
@@ -448,7 +448,7 @@ if __name__ == "__main__":
     try:
         profiler = Profiler()
         profiler.start()
-        alns = ALNS(filename + ".pkl", acceptance_percentage=1)
+        alns = ALNS(filename + ".pkl", acceptance_percentage=0.7)
 
         profiler.stop()
         print("best solution")
