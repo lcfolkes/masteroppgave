@@ -56,7 +56,7 @@ class ObjectiveFunction:
         return np.array([num_cars_in_need_of_charging for _ in range(self.num_scenarios)])
 
     def evaluate(self, added_car_moves: [CarMove] = None, removed_car_moves: [CarMove] = None, scenario: int = None,
-                 both="both"):
+                 mode="both"):
         """
         :param added_car_moves: list of car moves, e.g: [cm1, cm2]
         :param removed_car_moves: list of car moves, e.g: [cm1, cm2]
@@ -79,11 +79,11 @@ class ObjectiveFunction:
         self._update_relocation_time(list(removed_car_moves), list(added_car_moves), scenario)
         self._update_charging_deviation(list(removed_car_moves), list(added_car_moves), scenario)
 
-        if both == "both":
+        if mode == "both":
             return true_objective_value, heuristic_objective_value
-        elif both == "true":
+        elif mode == "true":
             return true_objective_value
-        elif both == "heuristic":
+        elif mode == "heuristic":
             return heuristic_objective_value
 
     def update(self, added_car_moves: [CarMove] = None, removed_car_moves: [CarMove] = None, scenario: int = None):
