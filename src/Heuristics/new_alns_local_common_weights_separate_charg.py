@@ -117,7 +117,7 @@ class ALNS():
                 # print(f"Iteration {i * 10}")
                 # print(f"Best objective value {best_solution[1]}")
                 # print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
-                loop = tqdm(range(iterations_segment), total=iterations_segment, leave=True)
+                loop = tqdm(range(iterations_segment), total=iterations_segment, leave=True, ascii=True)
                 loop.set_description(f"Segment[{i}/{iterations_alns}]")
                 loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val,
                              best_true_obj_val=best_solution[1])
