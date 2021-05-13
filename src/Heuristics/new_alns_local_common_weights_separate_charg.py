@@ -71,13 +71,13 @@ class ALNS():
         start = time.perf_counter()
         visited_hash_keys = set()
 
-        iterations_alns = 50
-        iterations_segment = 15
-        time_limit = 60
+        iterations_alns = HeuristicsConstants.ITERATIONS_ALNS
+        iterations_segment = HeuristicsConstants.ITERATIONS_SEGMENT
+        time_limit = HeuristicsConstants.TIME_LIMIT
 
         finish_times_segments = []
-        first_checkpoint = 20
-        second_checkpoint = 40
+        first_checkpoint = HeuristicsConstants.FIRST_CHECKPOINT
+        second_checkpoint = HeuristicsConstants.SECOND_CHECKPOINT
         first_checkpoint_reached = False
         second_checkpoint_reached = False
         obj_val_first_checkpoint = None
