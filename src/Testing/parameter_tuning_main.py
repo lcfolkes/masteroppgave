@@ -39,11 +39,10 @@ def run_sequential(filename, n):
 
 
 if __name__ == "__main__":
-
-    filename = "InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
-    n = 10
-
     try:
+        filename = "InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
+        n = 10
+
         ### PARALLEL
         #run_parallell(filename, n)
 

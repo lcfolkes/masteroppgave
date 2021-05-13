@@ -509,7 +509,7 @@ class ALNS():
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
-    filename = "InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
+    filename = "./InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
 
     try:
         #profiler = Profiler()
