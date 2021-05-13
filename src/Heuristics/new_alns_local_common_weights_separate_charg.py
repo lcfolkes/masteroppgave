@@ -2,6 +2,9 @@ import copy
 import sys
 from collections import OrderedDict
 import random
+
+from termcolor import colored
+
 from DestroyAndRepairHeuristics.destroy import Destroy, RandomRemoval, WorstRemoval, ShawRemoval, ChargeRemoval
 from DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretInsertion, ChargeInsertion
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
@@ -36,7 +39,7 @@ _IS_REJECTED
 
 class ALNS():
 
-    def __init__(self, filename, acceptance_percentage=1):
+    def __init__(self, filename, acceptance_percentage=1.0):
         self.filename = filename
 
         self.best_solution = None
@@ -55,7 +58,9 @@ class ALNS():
     def _initialize_new_iteration(self, current_unused_car_moves, current_solution):
 
         candidate_unused_car_moves = copy_unused_car_moves_2d_list(current_unused_car_moves)
+
         candidate_solution = copy_solution_dict(current_solution)
+
         for cn in self._world_instance.charging_nodes:
             cn.reset()
         return candidate_unused_car_moves, candidate_solution
@@ -65,15 +70,20 @@ class ALNS():
         start = time.perf_counter()
         visited_hash_keys = set()
 
+        iterations_alns = 50
+        iterations_segment = 15
+        time_limit = 60
+
         finish_times_segments = []
-        first_checkpoint = 80
-        second_checkpoint = 200
+        first_checkpoint = 20
+        second_checkpoint = 40
         first_checkpoint_reached = False
         second_checkpoint_reached = False
         obj_val_first_checkpoint = None
         heur_val_first_checkpoint = None
         obj_val_second_checkpoint = None
         heur_val_second_checkpoint = None
+        finish = None
 
         self.solution.construct(verbose=True)
         self.solution.print_solution()
@@ -81,6 +91,7 @@ class ALNS():
         current_obj_val = best_obj_val
         true_obj_vals = [true_obj_val]
         heuristic_obj_vals = [best_obj_val]
+        iterations = [0]
         best_solution = (copy_solution_dict(self.solution.assigned_car_moves), true_obj_val)
         print(f"Construction heuristic true obj. val {true_obj_val}")
         print(f"Heuristic obj. val {heuristic_obj_vals[0]}")
@@ -95,9 +106,6 @@ class ALNS():
         temperature = (-np.abs(heuristic_obj_vals[0])) * 0.05 / np.log(0.5)
         # cooling_rate = 0.5  # cooling_rate in (0,1)
         cooling_rate = np.exp(np.log(0.002) / 200)
-        iterations_alns = 10
-        iterations_segment = 10
-        time_limit = 300
 
         # SEGMENTS
         try:
@@ -159,7 +167,7 @@ class ALNS():
                         # repair_heuristic.to_string()
                         hash_key = repair_heuristic.hash_key
                         if hash_key in visited_hash_keys:
-                            output_text += str(counter) + " Already visited solution\n"
+                            output_text += str(counter) + f" {colored('Already visited solution', 'yellow')}\n"
                             counter += 1
                             continue
                         visited_hash_keys.add(hash_key)
@@ -173,22 +181,22 @@ class ALNS():
 
                     true_obj_val, candidate_obj_val = self.solution.get_obj_val(both=True)
                     true_obj_vals.append(true_obj_val)
-                    # print(f"true_obj_val {true_obj_val}")
-                    # print(f"\ncurrent_obj_val {current_obj_val}")
-                    # print(f"heuristic_obj_val {obj_val}")
                     heuristic_obj_vals.append(candidate_obj_val)
+
+                    iterations.append((j + 1) + (i * iterations_segment))
 
                     if self._accept(candidate_obj_val, current_obj_val, temperature):
 
                         # IMPROVING
-                        if candidate_obj_val > current_obj_val:
+                        if round(candidate_obj_val, 2) > round(current_obj_val, 2):
                             # print("current_obj_val: ", current_obj_val)
                             # print("candidate_obj_val: ", candidate_obj_val)
                             # NEW GLOBAL BEST
-                            if candidate_obj_val > best_obj_val:
+                            if round(candidate_obj_val, 2) > round(best_obj_val, 2):
                                 best_obj_val = candidate_obj_val
                                 best_solution = (copy_solution_dict(self.solution.assigned_car_moves), true_obj_val)
-                                output_text += str(counter) + f" New best solution globally: {candidate_obj_val}\n"
+                                output_text += str(
+                                    counter) + f" {colored('New best solution globally:', 'green')} {colored(round(candidate_obj_val, 2), 'green')}\n"
                                 counter += 1
                                 # print("NEW GLOBAL SOLUTION")
                                 # self.solution.print_solution()
@@ -196,7 +204,8 @@ class ALNS():
                                     self._update_weight_record(_IS_BEST, destroy_heuristic, repair_heuristic)
                             # NEW LOCAL BEST
                             else:
-                                output_text += str(counter) + f" New local best solution locally: {candidate_obj_val}\n"
+                                output_text += str(
+                                    counter) + f" {colored('New best solution locally:', 'blue')} {colored(round(candidate_obj_val, 2), 'blue')}\n"
                                 counter += 1
                                 if MODE == "LNS":
                                     self._update_weight_record(_IS_BETTER, destroy_heuristic, repair_heuristic)
@@ -207,7 +216,7 @@ class ALNS():
                         else:
                             p = np.exp(- (current_obj_val - candidate_obj_val) / temperature)
                             output_text += str(
-                                counter) + f" New accepted solution: {candidate_obj_val}, acceptance probability was {p}, temperature was {temperature} \n"
+                                counter) + f" New accepted solution: {round(candidate_obj_val, 2)}, acceptance probability was {round(p, 2)}, temperature was {round(temperature, 2)} \n"
                             counter += 1
                             if MODE == "LNS":
                                 self._update_weight_record(_IS_ACCEPTED, destroy_heuristic, repair_heuristic)
@@ -221,20 +230,24 @@ class ALNS():
                         current_unused_car_moves = candidate_unused_car_moves
 
                     else:
-                        output_text += str(counter) + " Not accepted solution\n"
+                        output_text += str(
+                            counter) + f" {colored('Not accepted solution:', 'red')} {colored(round(candidate_obj_val, 2), 'red')}\n"
                         counter += 1
                         MODE = "LNS"
 
                     if time.perf_counter() > time_limit:
                         print("Time limit reached!")
                         finish = time.perf_counter()
-                        exit()
+                        return
+
                     if time.perf_counter() > first_checkpoint and not first_checkpoint_reached:
                         first_checkpoint_reached = True
-                        obj_val_first_checkpoint, heur_val_first_checkpoint = best_solution[0].get_obj_val(both=True)
+                        heur_val_first_checkpoint = best_obj_val
+                        obj_val_first_checkpoint = best_solution[1]
                     if time.perf_counter() > second_checkpoint and not second_checkpoint_reached:
                         second_checkpoint_reached = True
-                        obj_val_second_checkpoint, heur_val_second_checkpoint = best_solution[0].get_obj_val(both=True)
+                        heur_val_second_checkpoint = best_obj_val
+                        obj_val_second_checkpoint = best_solution[1]
 
                 print(output_text)
                 time_segment = time.perf_counter()
@@ -253,14 +266,15 @@ class ALNS():
 
         except KeyboardInterrupt:
             print("Keyboard Interrupt")
-        except exit():
-            print("Time limit reached!")
         except:
             print("Unexpected error:", sys.exc_info()[0])
             raise
         finally:
+            if finish is None:
+                finish = time.perf_counter()
             self.best_solution = best_solution
             self.best_obj_val = best_obj_val
+            '''
             plt.plot(heuristic_obj_vals, c="red", label="Heuristic obj. val")
             plt.plot(true_obj_vals, c="green", label="True obj. val")
             plt.suptitle('Objective value comparison')
@@ -268,21 +282,36 @@ class ALNS():
             plt.ylabel('obj. val')
             plt.legend(bbox_to_anchor=(.75, 1.0))
             plt.show()
-            # print(obj_vals)
-            # print(self.operators_pairs)
-            # print(self.repair_operators)
-            print(self.operator_pairs)
+            '''
+
+            f, (ax1, ax2) = plt.subplots(2, 1)
+            #print("iterations", iterations)
+            #print("true_obj_vals", true_obj_vals)
+            obj_plot = ax1.plot(iterations, true_obj_vals, c="green", label="True obj. val")
+            heur_plot = ax2.plot(iterations, heuristic_obj_vals, c="red", label="Heur. obj. val")
+
+            ax1.set_title("True obj. value")
+            ax2.set_title("Heuristic obj. value")
+
+            f.subplots_adjust(hspace=0.4)
+
+            lns = obj_plot + heur_plot
+            labs = [l.get_label() for l in lns]
+            plt.legend(lns, labs, bbox_to_anchor=(1.03, 2.7),
+                       fancybox=True, shadow=False)
+
+            f.show()
 
             # Strings to save to file
             obj_val_txt = f"Objective value: {str(best_solution[1])}\n"
-            heur_val_txt = f"Heuristic value: {str(best_solution[0])}\n"
+            heur_val_txt = f"Heuristic value: {str(best_obj_val)}\n"
             first_checkpoint_txt1 = f"Objective value after {first_checkpoint} s: {obj_val_first_checkpoint}\n"
             first_checkpoint_txt2 = f"Heuristic value after {first_checkpoint} s: {heur_val_first_checkpoint}\n"
             second_checkpoint_txt1 = f"Objective value after {second_checkpoint} s: {obj_val_second_checkpoint}\n"
             second_checkpoint_txt2 = f"Heuristic value after {second_checkpoint} s: {heur_val_second_checkpoint}\n"
             time_spent_txt = f"Time used: {finish}\n"
             finish_times_segments_txt = f"Finish time segments:\n{finish_times_segments}\n"
-            iterations_done_txt = f"Iterations completed: {len(finish_times_segments) * iterations_segment} iterations in {len(finish_times_segments)} segments\n"
+            iterations_done_txt = f"Iterations completed: {len(finish_times_segments) * iterations_segment} iterations in {len(finish_times_segments)} segments\n\n"
 
             # Write to file
             f = open(filename + "_results.txt", "a")
@@ -290,8 +319,6 @@ class ALNS():
                           second_checkpoint_txt1, second_checkpoint_txt2, time_spent_txt, finish_times_segments_txt,
                           iterations_done_txt])
             f.close()
-
-    # best_solution.print_solution()
 
     def _initialize_operators(self):
         if self._num_employees < 3:
@@ -352,7 +379,7 @@ class ALNS():
         return operators_record
 
     def _accept(self, new_obj_val, current_obj_val, temperature) -> bool:
-        if new_obj_val > current_obj_val:
+        if round(new_obj_val, 2) > round(current_obj_val, 2):
             acceptance_probability = 1
         else:
             p = np.exp(- (current_obj_val - new_obj_val) / temperature)
@@ -482,7 +509,8 @@ if __name__ == "__main__":
     try:
         profiler = Profiler()
         profiler.start()
-        alns = ALNS(filename + ".pkl", acceptance_percentage=0.7)
+
+        alns = ALNS(filename + ".pkl", acceptance_percentage=0.75)
 
         profiler.stop()
         print("best solution")
@@ -498,7 +526,6 @@ if __name__ == "__main__":
         print("\n############## Reoptimized solution ##############")
         gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=True)
         run_model(gi)
-
         print("\n############## Optimal solution ##############")
         gi2 = GurobiInstance(filename + ".yaml")
         run_model(gi2, time_limit=300)'''

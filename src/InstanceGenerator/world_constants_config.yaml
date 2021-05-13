@@ -13,7 +13,8 @@
 # This must be replaced by estimates derived from vy data
 charging_probs:
     0: 0.75
-    1: 0.25
+    1: 0.2
+    2: 0.05
 
 
 # HANDLING TIME
