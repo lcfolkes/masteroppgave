@@ -71,13 +71,14 @@ class ALNS():
         start = time.perf_counter()
         visited_hash_keys = set()
 
-        iterations_alns = 15
-        iterations_segment = 50
-        time_limit = 600
+        iterations_alns = HeuristicsConstants.ITERATIONS_ALNS
+        iterations_segment = HeuristicsConstants.ITERATIONS_SEGMENT
+        time_limit = HeuristicsConstants.TIME_LIMIT
 
         finish_times_segments = []
-        first_checkpoint = 100
-        second_checkpoint = 400
+        first_checkpoint = HeuristicsConstants.FIRST_CHECKPOINT
+        second_checkpoint = HeuristicsConstants.SECOND_CHECKPOINT
+
         first_checkpoint_reached = False
         second_checkpoint_reached = False
         obj_val_first_checkpoint = None
@@ -87,7 +88,6 @@ class ALNS():
         finish = None
 
         self.solution.construct(verbose=verbose)
-        self.solution.print_solution()
         true_obj_val, best_obj_val = self.solution.get_obj_val(both=True)
         current_obj_val = best_obj_val
         true_obj_vals = [true_obj_val]
@@ -233,16 +233,16 @@ class ALNS():
                         counter += 1
                         MODE = "LNS"
 
-                    if time.perf_counter() > time_limit:
+                    if time.perf_counter() - start > time_limit:
                         print("Time limit reached!")
                         finish = time.perf_counter()
                         return
 
-                    if time.perf_counter() > first_checkpoint and not first_checkpoint_reached:
+                    if time.perf_counter() - start > first_checkpoint and not first_checkpoint_reached:
                         first_checkpoint_reached = True
                         heur_val_first_checkpoint = best_obj_val
                         obj_val_first_checkpoint = best_solution[1]
-                    if time.perf_counter() > second_checkpoint and not second_checkpoint_reached:
+                    if time.perf_counter() - start > second_checkpoint and not second_checkpoint_reached:
                         second_checkpoint_reached = True
                         heur_val_second_checkpoint = best_obj_val
                         obj_val_second_checkpoint = best_solution[1]
@@ -314,13 +314,13 @@ class ALNS():
             iterations_done_txt = f"Iterations completed: {len(finish_times_segments) * iterations_segment} iterations in {len(finish_times_segments)} segments\n\n"
 
             # Write to file
-            f = open(filename + "_results.txt", "a")
+            f = open(self.filename + "_results.txt", "a")
             f.writelines([obj_val_txt, heur_val_txt, first_checkpoint_txt1, first_checkpoint_txt2,
                           second_checkpoint_txt1, second_checkpoint_txt2, time_spent_txt, finish_times_segments_txt,
                           iterations_done_txt])
             f.close()
 
-            return best_solution[1]
+            return f"obj_val: {best_solution[1]}, n_iterations: {i*iterations_segment + j}"
 
     def _initialize_operators(self):
         if self._num_employees < 3:
@@ -510,7 +510,7 @@ class ALNS():
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
-    filename = "InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
+    filename = "./InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
 
     try:
 

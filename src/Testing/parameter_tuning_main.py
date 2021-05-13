@@ -17,33 +17,38 @@ def parallel_runs(filename, n):
     #obj_vals = alns.run(verbose=False)
     #return obj_vals
 
+def run_parallell(filename, n):
+    print(f"Running {n} processes in parallel\n")
+    start = time.perf_counter()
+    obj_vals = parallel_runs(filename, n)
+    finish = time.perf_counter()
+    print(f"Parallel: Finished {n} runs in {round(finish - start, 2)} seconds(s)")
+    print(obj_vals)
+
+def run_sequential(filename, n):
+    print(f"Running {n} processes in sequence\n")
+    start = time.perf_counter()
+    obj_vals = []
+    for _ in range(n):
+        alns = ALNS(filename + ".pkl", acceptance_percentage=1)
+        obj_val = alns.run(False)
+        print(obj_val)
+        obj_vals.append(obj_val)
+    finish = time.perf_counter()
+    print(f"Sequential: Finished {n} runs in {round(finish - start, 2)} seconds(s)")
+    print(obj_vals)
+
+
 if __name__ == "__main__":
-
-    filename = "InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
-
     try:
+        filename = "InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
         n = 10
 
         ### PARALLEL
-        print(f"Running {n} processes in parallel\n")
-        start = time.perf_counter()
-        obj_vals = parallel_runs(filename, n)
-        finish = time.perf_counter()
-        print(f"Parallel: Finished {n} runs in {round(finish - start, 2)} seconds(s)")
-        print(obj_vals)
+        #run_parallell(filename, n)
 
         ### SEQUENTIAL
-        print(f"Running {n} processes in sequence\n")
-        start = time.perf_counter()
-        obj_vals = []
-        for _ in range(n):
-            alns = ALNS(filename + ".pkl", acceptance_percentage=1)
-            obj_val = alns.run(False)
-            obj_vals.append(obj_val)
-        finish = time.perf_counter()
-        print(f"Sequential: Finished {n} runs in {round(finish - start, 2)} seconds(s)")
-        print(obj_vals)
-
+        run_sequential(filename, n)
 
     except KeyboardInterrupt:
         print('Interrupted')
