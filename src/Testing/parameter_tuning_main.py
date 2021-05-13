@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
     try:
         ### PARALLEL
-        run_parallell(filename, n)
+        #run_parallell(filename, n)
 
         ### SEQUENTIAL
         run_sequential(filename, n)

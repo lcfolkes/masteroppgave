@@ -87,7 +87,6 @@ class ALNS():
         finish = None
 
         self.solution.construct(verbose=verbose)
-        self.solution.print_solution()
         true_obj_val, best_obj_val = self.solution.get_obj_val(both=True)
         current_obj_val = best_obj_val
         true_obj_vals = [true_obj_val]
