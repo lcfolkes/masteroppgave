@@ -85,14 +85,14 @@ class RandomRemoval(Destroy):
 
 class WorstRemoval(Destroy):
 
-    def __init__(self, solution, world_instance, neighborhood_size, randomization_degree):
+    def __init__(self, solution, world_instance, neighborhood_size, determinism_parameter):
         '''
 		Worst removal removes solutions that have a bad influence on the objective value.
 		In this case, that means moves where the objective function decreases little when they are removed.
-		:param randomization_degree: (p) parameter that determines the degree of randomization, p>=1.
+		:param determinism_parameter: (p) parameter that determines the degree of randomization, p>=1.
 				Low value of p corresponds to much randomness
 		'''
-        self.randomization_degree = randomization_degree
+        self.determinism_parameter = determinism_parameter
         super().__init__(solution, world_instance, neighborhood_size)
         self.objective_function = self._initialize_objective_function(world_instance)
 
@@ -131,7 +131,7 @@ class WorstRemoval(Destroy):
         removed_car_moves = []
         while n_size > 0 and len(obj_val_list) > 0:
             # Handle randomization (y^p*|L|)
-            index = np.floor(np.power(random.random(), self.randomization_degree) * len(obj_val_list)).astype(int)
+            index = np.floor(np.power(random.random(), self.determinism_parameter) * len(obj_val_list)).astype(int)
 
             try:
                 idx = obj_val_list[index][0]
@@ -160,12 +160,12 @@ class WorstRemoval(Destroy):
 
 class ShawRemoval(Destroy):
 
-    def __init__(self, solution, world_instance, neighborhood_size, randomization_degree):
+    def __init__(self, solution, world_instance, neighborhood_size, determinism_parameter):
         """
         Shaw removal removes car-moves that are somewhat similar to each other. It takes in a solution, the number of car moves to remove, and a randomness parameter p >= 1.
-        :param randomization_degree: (p) parameter that determines the degree of randomization
+        :param determinism_parameter: (p) parameter that determines the degree of randomization
         """
-        self.randomization_degree = randomization_degree
+        self.determinism_parameter = determinism_parameter
         self.world_instance = world_instance
         super().__init__(solution, world_instance, neighborhood_size)
 
@@ -192,7 +192,7 @@ class ShawRemoval(Destroy):
             # Handle randomization (y^p*|L|)
             try:
                 index = np.floor(
-                    np.power(random.random(), self.randomization_degree) * len(car_moves_not_removed)).astype(int)
+                    np.power(random.random(), self.determinism_parameter) * len(car_moves_not_removed)).astype(int)
 
                 # Charging node states are updated and employees are removed
                 car_moves_not_removed[index].reset()
@@ -297,7 +297,7 @@ if __name__ == "__main__":
     # rr.to_string()
 
     wr = WorstRemoval(solution=ch.assigned_car_moves, world_instance=ch.world_instance, neighborhood_size=2,
-                      randomization_degree=10)
+                      determinism_parameter=10)
     wr.to_string()
     print("solution\n", ch.assigned_car_moves)
     # sr = ShawRemoval(solution=ch.assigned_car_moves, num_first_stage_tasks=ch.world_instance.first_stage_tasks,
