@@ -2,8 +2,9 @@ import copy
 import sys
 from collections import OrderedDict
 import random
-from DestroyAndRepairHeuristics.destroy import Destroy, RandomRemoval, WorstRemoval, ShawRemoval, ChargeRemoval
-from DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretInsertion, ChargeInsertion
+import time
+from Heuristics.DestroyAndRepairHeuristics.destroy import Destroy, RandomRemoval, WorstRemoval, ShawRemoval, ChargeRemoval
+from Heuristics.DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretInsertion, ChargeInsertion
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from Heuristics.LocalSearch.local_search import LocalSearch
@@ -14,6 +15,7 @@ from Heuristics.heuristics_constants import HeuristicsConstants
 #from Heuristics.parallel_construction_heuristic import ConstructionHeuristic
 from path_manager import path_to_src
 import numpy as np
+import traceback
 import os
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -52,7 +54,7 @@ class ALNS():
         self._world_instance = self.solution.world_instance
         self.operator_pairs = self._initialize_operators()
         self.operators_record = self._initialize_operator_records()
-        self.run()
+        #self.run()
 
 
     def _initialize_new_iteration(self, current_unused_car_moves, current_solution):
@@ -63,21 +65,22 @@ class ALNS():
             cn.reset()
         return candidate_unused_car_moves, candidate_solution
 
-    def run(self):
-        # TODO: in order to save time, this could be implemented as a queue (as in tabu search)
+    def run(self, verbose=True):
         start = time.perf_counter()
         visited_hash_keys = set()
 
-        self.solution.construct(verbose=True)
-        self.solution.print_solution()
+        self.solution.construct(verbose=verbose)
+
         true_obj_val, best_obj_val = self.solution.get_obj_val(both=True)
         current_obj_val = best_obj_val
         true_obj_vals = [true_obj_val]
         heuristic_obj_vals = [best_obj_val]
         best_solution = (copy_solution_dict(self.solution.assigned_car_moves), true_obj_val)
-        print(f"Construction heuristic true obj. val {true_obj_val}")
-        print(f"Heuristic obj. val {heuristic_obj_vals[0]}")
-        print(f"Heuristic obj. val {heuristic_obj_vals[0]}")
+        if verbose:
+            self.solution.print_solution()
+            print(f"Construction heuristic true obj. val {true_obj_val}")
+            print(f"Heuristic obj. val {heuristic_obj_vals[0]}")
+            print(f"Heuristic obj. val {heuristic_obj_vals[0]}")
         current_solution = copy_solution_dict(self.solution.assigned_car_moves)
         current_unused_car_moves = copy_unused_car_moves_2d_list(self.solution.unused_car_moves)
         visited_hash_keys.add(self.solution.hash_key)
@@ -88,7 +91,7 @@ class ALNS():
         temperature = (-np.abs(heuristic_obj_vals[0])) * 0.05 / np.log(0.5)
         # cooling_rate = 0.5  # cooling_rate in (0,1)
         cooling_rate = np.exp(np.log(0.002) / 200)
-        iterations_alns = 10
+        iterations_alns = 5
         iterations_segment = 10
 
         # SEGMENTS
@@ -102,7 +105,8 @@ class ALNS():
                 loop = tqdm(range(iterations_segment), total=iterations_segment, leave=True)
                 loop.set_description(f"Segment[{i}/{iterations_alns}]")
                 loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val,
-                                 best_true_obj_val=best_solution[1])
+                             best_true_obj_val=best_solution[1])
+
                 output_text = "\n"
                 counter = 1
 
@@ -158,26 +162,17 @@ class ALNS():
                             continue
                         visited_hash_keys.add(hash_key)
                         self.solution.rebuild(repair_heuristic.solution)
-                        '''
-                        hash_key = candidate_solution.hash_key
-                        if hash_key in visited_hash_keys:
-                            continue
-                        visited_hash_keys.add(hash_key)
-                        '''
+
 
                     true_obj_val, candidate_obj_val = self.solution.get_obj_val(both=True)
                     true_obj_vals.append(true_obj_val)
-                    # print(f"true_obj_val {true_obj_val}")
-                    # print(f"\ncurrent_obj_val {current_obj_val}")
-                    # print(f"heuristic_obj_val {obj_val}")
+
                     heuristic_obj_vals.append(candidate_obj_val)
 
                     if self._accept(candidate_obj_val, current_obj_val, temperature):
 
                         # IMPROVING
                         if candidate_obj_val > current_obj_val:
-                            # print("current_obj_val: ", current_obj_val)
-                            # print("candidate_obj_val: ", candidate_obj_val)
                             # NEW GLOBAL BEST
                             if candidate_obj_val > best_obj_val:
                                 best_obj_val = candidate_obj_val
@@ -200,8 +195,7 @@ class ALNS():
                         # NON-IMPROVING BUT ACCEPTED
                         else:
                             p = np.exp(- (current_obj_val - candidate_obj_val) / temperature)
-                            output_text += str(
-                                counter) + f" New accepted solution: {candidate_obj_val}, acceptance probability was {p}, temperature was {temperature} \n"
+                            output_text += str(counter) + f" New accepted solution: {candidate_obj_val}, acceptance probability was {p}, temperature was {temperature} \n"
                             counter += 1
                             if MODE == "LNS":
                                 self._update_weight_record(_IS_ACCEPTED, destroy_heuristic, repair_heuristic)
@@ -218,23 +212,24 @@ class ALNS():
                         output_text += str(counter) + " Not accepted solution\n"
                         counter += 1
                         MODE = "LNS"
-                print(output_text)
 
-                # print statistics
-                # loop.set_description(f"Segment[{i}/{100}]")
+                if verbose:
+                    print(output_text)
                 loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val,
-                                 best_true_obj_val=best_solution[1])
+                             best_true_obj_val=best_solution[1])
 
                 temperature *= cooling_rate
                 self._update_score_adjustment_parameters()
 
             finish = time.perf_counter()
-            print(f"Finished in {round(finish - start, 2)} seconds(s)")
+            if verbose:
+                print(f"Finished in {round(finish - start, 2)} seconds(s)")
 
         except KeyboardInterrupt:
             print("Keyboard Interrupt")
         except:
             print("Unexpected error:", sys.exc_info()[0])
+            print(traceback.format_exc())
             raise
         finally:
             self.best_solution = best_solution
@@ -249,9 +244,11 @@ class ALNS():
             # print(obj_vals)
             # print(self.operators_pairs)
             # print(self.repair_operators)
-            print(self.operator_pairs)
+            if verbose:
+                print(self.operator_pairs)
             first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(
                 best_solution[0], self.solution.world_instance.first_stage_tasks)
+            return best_obj_val
 
 
 
@@ -432,13 +429,11 @@ class ALNS():
                 self.operators_record['charge_charge'][0] += operator_score
 
     def _update_score_adjustment_parameters(self):
-        reaction_factor = 0.1
-
         for k, v in self.operator_pairs.items():
-            self.operator_pairs[k] = self.operator_pairs[k] * (1.0 - reaction_factor) + \
-                                     safe_zero_division(reaction_factor, self.operators_record[k][1]) * \
+            self.operator_pairs[k] = self.operator_pairs[k] * (1.0 - HeuristicsConstants.REWARD_DECAY_PARAMETER) + \
+                                     safe_zero_division(HeuristicsConstants.REWARD_DECAY_PARAMETER, self.operators_record[k][1]) * \
                                      self.operators_record[k][0]
-            # lower threshold
+
             if self.operator_pairs[k] < HeuristicsConstants.LOWER_THRESHOLD:
                 self.operator_pairs[k] = HeuristicsConstants.LOWER_THRESHOLD
             self.operators_record[k][0] = self.operator_pairs[k]
@@ -447,13 +442,13 @@ class ALNS():
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
-    import time
     filename = "InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
 
     try:
         #profiler = Profiler()
         #profiler.start()
         alns = ALNS(filename + ".pkl", acceptance_percentage=0.7)
+        alns.run()
 
         #profiler.stop()
         print("best solution")
