@@ -313,7 +313,7 @@ class ALNS():
             iterations_done_txt = f"Iterations completed: {len(finish_times_segments) * iterations_segment} iterations in {len(finish_times_segments)} segments\n\n"
 
             # Write to file
-            f = open(filename + "_results.txt", "a")
+            f = open(self.filename + "_results.txt", "a")
             f.writelines([obj_val_txt, heur_val_txt, first_checkpoint_txt1, first_checkpoint_txt2,
                           second_checkpoint_txt1, second_checkpoint_txt2, time_spent_txt, finish_times_segments_txt,
                           iterations_done_txt])
