@@ -15,16 +15,16 @@ tasks:
   num_first_stage: 1
 
 # NUMBER OF PARKING NODES IN INSTANCE
-num_parking_nodes: 3
+num_parking_nodes: 10
 
 # NUMBER OF AVAILABLE/CHARGED CARS IN INSTANCE
-num_charged_cars: 3
+num_charged_cars: 20
 
 #CHARGING NODES
 charging_nodes:
-  num_charging: 1
-  parking_nodes: [3]
-  capacities: [2]
+  num_charging: 3
+  parking_nodes: [3,5,9]
+  capacities: [2,2,2]
 
 #EMPLOYEES
 employees:
