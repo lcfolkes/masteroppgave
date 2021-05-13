@@ -232,16 +232,16 @@ class ALNS():
                         counter += 1
                         MODE = "LNS"
 
-                    if time.perf_counter() > time_limit:
+                    if time.perf_counter() - start > time_limit:
                         print("Time limit reached!")
                         finish = time.perf_counter()
                         return
 
-                    if time.perf_counter() > first_checkpoint and not first_checkpoint_reached:
+                    if time.perf_counter() - start > first_checkpoint and not first_checkpoint_reached:
                         first_checkpoint_reached = True
                         heur_val_first_checkpoint = best_obj_val
                         obj_val_first_checkpoint = best_solution[1]
-                    if time.perf_counter() > second_checkpoint and not second_checkpoint_reached:
+                    if time.perf_counter() - start > second_checkpoint and not second_checkpoint_reached:
                         second_checkpoint_reached = True
                         heur_val_second_checkpoint = best_obj_val
                         obj_val_second_checkpoint = best_solution[1]
