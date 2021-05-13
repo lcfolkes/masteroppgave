@@ -14,8 +14,7 @@ os.chdir(path_to_src)
 
 
 class World:
-    #TODO: make class constants
-
+    # TODO: make class constants
 
     cf = read_config('InstanceGenerator/world_constants_config.yaml')
     # COST CONSTANTS #
@@ -26,10 +25,10 @@ class World:
     # TIME CONSTANTS #
     HANDLING_TIME_PARKING = cf['time_constants']['handling_parking']
     HANDLING_TIME_CHARGING = cf['time_constants']['handling_charging']
-    #PLANNING_PERIOD = cf['time_constants']['planning_period']
+    # PLANNING_PERIOD = cf['time_constants']['planning_period']
 
     # NODE STATES
-    CHARGING_STATE = cf['charging_probs']
+    #CHARGING_STATE = cf['charging_probs']
 
     '''
     # COST CONSTANTS #
@@ -105,7 +104,7 @@ class World:
         for node in parking_nodes:
             net_flow = node.ideal_state + node.customer_requests - node.car_returns - node.parking_state
             count = sum(1 for s in net_flow if s <= 0)
-            if count/len(net_flow) >= acceptance_percentage:
+            if count / len(net_flow) >= acceptance_percentage:
                 out_list.append(node)
         return out_list
 
@@ -114,7 +113,7 @@ class World:
         for node in parking_nodes:
             net_flow = node.ideal_state + node.customer_requests - node.car_returns - node.parking_state
             count = sum(1 for s in net_flow if s > 0)
-            if count/len(net_flow) >= acceptance_percentage:
+            if count / len(net_flow) >= acceptance_percentage:
                 out_list.append(node)
         return out_list
 
@@ -123,10 +122,10 @@ class World:
         irrelevant_end_nodes = self._irrelevant_end_nodes(self.parking_nodes, acceptance_percentage)
         irrelevant_start_nodes = self._irrelevant_start_nodes(self.parking_nodes, acceptance_percentage)
         for cm in self.car_moves:
-            if (cm.end_node not in irrelevant_end_nodes and cm.start_node not in irrelevant_start_nodes) or cm.is_charging_move:
+            if (
+                    cm.end_node not in irrelevant_end_nodes and cm.start_node not in irrelevant_start_nodes) or cm.is_charging_move:
                 relevant_car_moves.append(cm)
         self.relevant_car_moves = relevant_car_moves
-
 
     def add_car_move_to_employee(self, car_move: CarMove, employee: Employee, scenario: int = None):
 
@@ -171,7 +170,6 @@ class World:
 
         employee.remove_car_move(idx=idx, new_travel_time_to_car_move=new_travel_time_to_car_move)
         '''
-
 
     def get_employee_travel_time_to_node(self, start_node: Node, end_node: Node):
         employee_start_node = start_node.node_id - 1
@@ -297,8 +295,8 @@ def set_demands(world: World, time_of_day: int):
 
 
 def create_parking_nodes(world: World, num_parking_nodes: int, time_of_day: int, num_cars: int):
-    possible_charging_states = [s for s in world.CHARGING_STATE]
-    charging_state_probs = [world.CHARGING_STATE[s] for s in world.CHARGING_STATE]
+    #possible_charging_states = [s for s in world.CHARGING_STATE]
+    #charging_state_probs = [world.CHARGING_STATE[s] for s in world.CHARGING_STATE]
 
     distributions_df = pd.read_csv('../data/pickup_delivery_distributions_every_hour.csv', index_col=0)
     distributions_next_time_step = distributions_df.loc[distributions_df.Period == time_of_day + 1]
@@ -311,8 +309,9 @@ def create_parking_nodes(world: World, num_parking_nodes: int, time_of_day: int,
     deliveries_prob = []
     chosen_nrs = []
     parking_states = {}
-    charging_states = []
+
     ideal_states = []
+    expected_num_deliveries_former = []
 
     for i in range(num_parking_nodes):
         node_nr = np.random.choice(all_node_nrs)
@@ -320,7 +319,7 @@ def create_parking_nodes(world: World, num_parking_nodes: int, time_of_day: int,
         chosen_nrs.append(node_nr)
 
         # CHARGING STATE
-        charging_states.append(int(np.random.choice(possible_charging_states, p=charging_state_probs)))
+        #charging_states.append(int(np.random.choice(possible_charging_states, p=charging_state_probs)))
 
         # IDEAL STATE
         # Ideal state should be the index of the element which crosses a given percentile, such as 0.9. This means that
@@ -343,6 +342,11 @@ def create_parking_nodes(world: World, num_parking_nodes: int, time_of_day: int,
             [float(i) for i in delivery_distribution_former_time_step.item()[1:-1].split(', ')]
 
         deliveries_prob.append(1 - delivery_distribution_former_as_list[0])
+        possible_nrs_of_deliveries = [i for i in range(len(delivery_distribution_former_as_list))]
+        expected_deliveries_former = [possible_nrs_of_deliveries[i] * delivery_distribution_former_as_list[i]
+                                      for i in range(len(delivery_distribution_former_as_list))]
+
+        expected_num_deliveries_former.append(sum(expected_deliveries_former) / len(expected_deliveries_former))
 
     normalized_delivery_probs = normalize_list(deliveries_prob)
 
@@ -352,6 +356,20 @@ def create_parking_nodes(world: World, num_parking_nodes: int, time_of_day: int,
     for i in range(num_cars):
         node = np.random.choice(chosen_nrs, p=normalized_delivery_probs)
         parking_states[node] += 1
+
+    # SET CHARGING STATE
+
+    charging_states = [0 for i in range(len(chosen_nrs))]
+    # ratio of cars in need of charging to number of charged cars, a random number between 0.1 and 0.2
+    ratio_charging = random.uniform(0.1, 0.2)
+
+    # Fill the parking nodes with cars in need of charging until the desired number of cars in need of charging have
+    # been placed. Cars with a high expected number of deliveries in the former time period are more likely to have
+    # cars in need of charging.
+    for i in range(round(num_cars * ratio_charging)):
+        dist = normalize_list(expected_num_deliveries_former)
+        node = np.random.choice([i for i in range(len(chosen_nrs))], p=dist)
+        charging_states[node] += 1
 
     for i in range(len(chosen_nrs)):
         node = ParkingNode(node_nr=chosen_nrs[i], parking_state=parking_states[chosen_nrs[i]],
@@ -368,7 +386,7 @@ def create_charging_nodes(world: World, num_charging_nodes: int, parking_nodes: 
         parking_node = world.parking_nodes[parking_node_num - 1]
         capacity = capacities[i]
         charging_node = ChargingNode(parking_node=parking_node, capacity=capacity)
-        #charging_node.initialize_charging_node_state(world.num_scenarios)
+        # charging_node.initialize_charging_node_state(world.num_scenarios)
         world.add_charging_node(charging_node)
         world.add_node(charging_node)
 
