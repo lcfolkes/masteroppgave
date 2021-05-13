@@ -319,7 +319,7 @@ class ALNS():
                           iterations_done_txt])
             f.close()
 
-            return best_solution[1]
+            return f"obj_val: {best_solution[1]}, n_iterations: {i*iterations_segment + j}"
 
     def _initialize_operators(self):
         if self._num_employees < 3:
