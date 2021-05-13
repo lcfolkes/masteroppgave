@@ -248,7 +248,7 @@ class ALNS():
                 print(self.operator_pairs)
             first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(
                 best_solution[0], self.solution.world_instance.first_stage_tasks)
-            return best_obj_val
+            return best_solution[1]
 
 
 

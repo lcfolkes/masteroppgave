@@ -21,7 +21,7 @@ if __name__ == "__main__":
     filename = "InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
 
     try:
-       obj_vals = parallel_runs(filename, 2)
+       obj_vals = parallel_runs(filename, 10)
        print(obj_vals)
 
     except KeyboardInterrupt:
