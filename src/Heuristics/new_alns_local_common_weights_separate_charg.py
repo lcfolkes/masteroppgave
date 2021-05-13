@@ -78,6 +78,7 @@ class ALNS():
         finish_times_segments = []
         first_checkpoint = HeuristicsConstants.FIRST_CHECKPOINT
         second_checkpoint = HeuristicsConstants.SECOND_CHECKPOINT
+
         first_checkpoint_reached = False
         second_checkpoint_reached = False
         obj_val_first_checkpoint = None
@@ -512,6 +513,7 @@ if __name__ == "__main__":
     filename = "./InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
 
     try:
+
         #profiler = Profiler()
         #profiler.start()
         alns = ALNS(filename + ".pkl", acceptance_percentage=0.7)
