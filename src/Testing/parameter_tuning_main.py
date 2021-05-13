@@ -32,6 +32,7 @@ def run_sequential(filename, n):
     for _ in range(n):
         alns = ALNS(filename + ".pkl", acceptance_percentage=1)
         obj_val = alns.run(False)
+        print(obj_val)
         obj_vals.append(obj_val)
     finish = time.perf_counter()
     print(f"Sequential: Finished {n} runs in {round(finish - start, 2)} seconds(s)")
