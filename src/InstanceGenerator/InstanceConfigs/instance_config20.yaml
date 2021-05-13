@@ -7,30 +7,30 @@ time_of_day: 16
 examples: 1
 
 # SCENARIOS
-num_scenarios: 2
+num_scenarios: 25
 
 # TASKS
 tasks:
   num_all: 4
-  num_first_stage: 1
+  num_first_stage: 2
 
 # NUMBER OF PARKING NODES IN INSTANCE
-num_parking_nodes: 10
+num_parking_nodes: 50
 
 # NUMBER OF AVAILABLE/CHARGED CARS IN INSTANCE
-num_charged_cars: 20
+num_charged_cars: 40
 
 #CHARGING NODES
 charging_nodes:
-  num_charging: 3
-  parking_nodes: [3,5,9]
-  capacities: [2,2,2]
+  num_charging: 5
+  parking_nodes: [2,10,20,30,40]
+  capacities: [2,2,2,2,2]
 
 #EMPLOYEES
 employees:
-  num_employees: 1
-  start_time: [0]
-  handling: [0]
+  num_employees: 6
+  start_time: [0,0,0,0,0,0]
+  handling: [0,0,0,0,0,0]
 
 planning_period: 60
 
