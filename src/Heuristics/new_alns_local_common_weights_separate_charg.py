@@ -58,7 +58,9 @@ class ALNS():
     def _initialize_new_iteration(self, current_unused_car_moves, current_solution):
 
         candidate_unused_car_moves = copy_unused_car_moves_2d_list(current_unused_car_moves)
+
         candidate_solution = copy_solution_dict(current_solution)
+
         for cn in self._world_instance.charging_nodes:
             cn.reset()
         return candidate_unused_car_moves, candidate_solution
@@ -68,13 +70,13 @@ class ALNS():
         start = time.perf_counter()
         visited_hash_keys = set()
 
-        iterations_alns = 30
-        iterations_segment = 10
-        time_limit = 10000
+        iterations_alns = 50
+        iterations_segment = 15
+        time_limit = 60
 
         finish_times_segments = []
-        first_checkpoint = 600
-        second_checkpoint = 1800
+        first_checkpoint = 20
+        second_checkpoint = 40
         first_checkpoint_reached = False
         second_checkpoint_reached = False
         obj_val_first_checkpoint = None
@@ -181,16 +183,16 @@ class ALNS():
                     true_obj_vals.append(true_obj_val)
                     heuristic_obj_vals.append(candidate_obj_val)
 
-                    iterations.append((j+1)+(i*10))
+                    iterations.append((j + 1) + (i * iterations_segment))
 
                     if self._accept(candidate_obj_val, current_obj_val, temperature):
 
                         # IMPROVING
-                        if candidate_obj_val > current_obj_val:
+                        if round(candidate_obj_val, 2) > round(current_obj_val, 2):
                             # print("current_obj_val: ", current_obj_val)
                             # print("candidate_obj_val: ", candidate_obj_val)
                             # NEW GLOBAL BEST
-                            if candidate_obj_val > best_obj_val:
+                            if round(candidate_obj_val, 2) > round(best_obj_val, 2):
                                 best_obj_val = candidate_obj_val
                                 best_solution = (copy_solution_dict(self.solution.assigned_car_moves), true_obj_val)
                                 output_text += str(
@@ -236,7 +238,7 @@ class ALNS():
                     if time.perf_counter() > time_limit:
                         print("Time limit reached!")
                         finish = time.perf_counter()
-                        exit()
+                        return
 
                     if time.perf_counter() > first_checkpoint and not first_checkpoint_reached:
                         first_checkpoint_reached = True
@@ -244,8 +246,8 @@ class ALNS():
                         obj_val_first_checkpoint = best_solution[1]
                     if time.perf_counter() > second_checkpoint and not second_checkpoint_reached:
                         second_checkpoint_reached = True
-                        heur_val_first_checkpoint = best_obj_val
-                        obj_val_first_checkpoint = best_solution[1]
+                        heur_val_second_checkpoint = best_obj_val
+                        obj_val_second_checkpoint = best_solution[1]
 
                 print(output_text)
                 time_segment = time.perf_counter()
@@ -264,8 +266,6 @@ class ALNS():
 
         except KeyboardInterrupt:
             print("Keyboard Interrupt")
-        #except exit():
-        #    print("Time limit reached!")
         except:
             print("Unexpected error:", sys.exc_info()[0])
             raise
@@ -284,58 +284,34 @@ class ALNS():
             plt.show()
             '''
 
-
-            obj_val_min = min(true_obj_vals)
-            obj_val_max = max(true_obj_vals)
-            heur_val_min = min(heuristic_obj_vals)
-            heur_val_max = max(heuristic_obj_vals)
-
-
-            f, ax1 = plt.subplots()
-            print("iterations", iterations)
-            print("true_obj_vals", true_obj_vals)
+            f, (ax1, ax2) = plt.subplots(2, 1)
+            #print("iterations", iterations)
+            #print("true_obj_vals", true_obj_vals)
             obj_plot = ax1.plot(iterations, true_obj_vals, c="green", label="True obj. val")
-
-            ax2 = ax1.twinx()
             heur_plot = ax2.plot(iterations, heuristic_obj_vals, c="red", label="Heur. obj. val")
 
+            ax1.set_title("True obj. value")
+            ax2.set_title("Heuristic obj. value")
 
-            ax1.set_title("Objective value comparison")
-
-            ax1.set_ylim([obj_val_min-0.1*abs(obj_val_min), obj_val_max+0.1*abs(obj_val_max)])
-
-            ax2.set_ylim([heur_val_min-0.1*abs(heur_val_min), heur_val_max+0.1*abs(heur_val_max)])
-
-            ax1.set_ylabel('', color = 'tab:red')
-            ax1.set_xlabel('iteration')
-
-            ax2.set_ylabel('', color = 'green')
-            ax1.tick_params(axis='y', labelcolor = 'green')
-
-            ax2.tick_params(axis='y', labelcolor = 'red')
-
+            f.subplots_adjust(hspace=0.4)
 
             lns = obj_plot + heur_plot
             labs = [l.get_label() for l in lns]
-            plt.legend(lns, labs, bbox_to_anchor=(1, 1.12),
+            plt.legend(lns, labs, bbox_to_anchor=(1.03, 2.7),
                        fancybox=True, shadow=False)
 
             f.show()
-            # print(obj_vals)
-            # print(self.operators_pairs)
-            # print(self.repair_operators)
-            print(self.operator_pairs)
 
             # Strings to save to file
             obj_val_txt = f"Objective value: {str(best_solution[1])}\n"
-            heur_val_txt = f"Heuristic value: {str(best_solution[0])}\n"
+            heur_val_txt = f"Heuristic value: {str(best_obj_val)}\n"
             first_checkpoint_txt1 = f"Objective value after {first_checkpoint} s: {obj_val_first_checkpoint}\n"
             first_checkpoint_txt2 = f"Heuristic value after {first_checkpoint} s: {heur_val_first_checkpoint}\n"
             second_checkpoint_txt1 = f"Objective value after {second_checkpoint} s: {obj_val_second_checkpoint}\n"
             second_checkpoint_txt2 = f"Heuristic value after {second_checkpoint} s: {heur_val_second_checkpoint}\n"
             time_spent_txt = f"Time used: {finish}\n"
             finish_times_segments_txt = f"Finish time segments:\n{finish_times_segments}\n"
-            iterations_done_txt = f"Iterations completed: {len(finish_times_segments) * iterations_segment} iterations in {len(finish_times_segments)} segments\n"
+            iterations_done_txt = f"Iterations completed: {len(finish_times_segments) * iterations_segment} iterations in {len(finish_times_segments)} segments\n\n"
 
             # Write to file
             f = open(filename + "_results.txt", "a")
@@ -403,7 +379,7 @@ class ALNS():
         return operators_record
 
     def _accept(self, new_obj_val, current_obj_val, temperature) -> bool:
-        if round(new_obj_val, 5) > round(current_obj_val, 5):
+        if round(new_obj_val, 2) > round(current_obj_val, 2):
             acceptance_probability = 1
         else:
             p = np.exp(- (current_obj_val - new_obj_val) / temperature)
@@ -534,8 +510,7 @@ if __name__ == "__main__":
         profiler = Profiler()
         profiler.start()
 
-        alns = ALNS(filename + ".pkl", acceptance_percentage=0.15)
-
+        alns = ALNS(filename + ".pkl", acceptance_percentage=0.75)
 
         profiler.stop()
         print("best solution")
