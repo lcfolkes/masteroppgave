@@ -241,7 +241,7 @@ class ConstructionHeuristic:
 
                     obj_val = self.objective_function.evaluate(added_car_moves=[self.car_moves_second_stage[s][r]],
                                                                scenario=s, mode="heuristic")
-
+                    '''
                     if self.car_moves_second_stage[s][r].car_move_id == 8:
                         if s == 4:
                             print("start", self.car_moves_second_stage[s][r].start_node.node_id)
@@ -249,7 +249,7 @@ class ConstructionHeuristic:
 
                             print("obj_val", obj_val)
                             print("best obj val", best_obj_val_second_stage[s])
-
+                    '''
 
 
                     if obj_val > best_obj_val_second_stage[s]:
@@ -366,7 +366,7 @@ class ConstructionHeuristic:
                     self.unused_car_moves[s].remove(best_car_move)
 
                 self.car_moves = remove_all_car_moves_of_car_in_car_move(best_car_move, self.car_moves)
-
+                '''
                 self.first_stage = False
                 for employee in self.employees:
                     task_num = len(employee.car_moves)
@@ -375,8 +375,9 @@ class ConstructionHeuristic:
                 if not self.first_stage:
                     # initialize charging and parking moves for second stage
                     self.car_moves_second_stage = [self.car_moves for _ in range(self.num_scenarios)]
-            else:
-                self.available_employees = False
+                '''
+            #else:
+            #    self.available_employees = False
         # Second stage
         else:
             # print(best_car_move_second_stage)

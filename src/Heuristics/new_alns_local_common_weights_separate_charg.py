@@ -105,9 +105,8 @@ class ALNS():
         # MODE = "LOCAL"
         MODE = "LOCAL_FIRST"
 
-        # temperature = 1000  # Start temperature must be set differently. High temperature --> more randomness
-        temperature = 100#(-np.abs(heuristic_obj_vals[0])) * 0.05 / np.log(0.5)
-        # cooling_rate = 0.5  # cooling_rate in (0,1)
+        temperature = (-np.abs(heuristic_obj_vals[0])) * 0.05 / np.log(0.5)
+        #cooling_rate = 0.5  # cooling_rate in (0,1)
         cooling_rate = np.exp(np.log(0.002) / 200)
 
         # SEGMENTS
@@ -137,8 +136,10 @@ class ALNS():
                                                    self._num_first_stage_tasks,
                                                    self._feasibility_checker)
                         local_search.search("best_first")
+                        print("before rebuild")
                         self.solution.rebuild(local_search.solution, "second_stage")
                         visited_hash_keys.update(local_search.visited_list)
+                        print("after rebuild")
 
                     elif MODE == "LOCAL_FULL":
                         # print("\n----- LOCAL SEARCH FULL -----")
@@ -392,9 +393,9 @@ class ALNS():
 
     def _get_destroy_operator(self, solution, world_instance) -> \
             (Destroy, str):
-
-        neighborhood_size = 1#int(self._num_employees * self._num_first_stage_tasks * random.uniform(
-            #HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1]))
+        neighborhood_size = 2
+        #neighborhood_size = int(self._num_employees * self._num_first_stage_tasks * random.uniform(
+        #    HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1]))
         w_sum = sum(w for o, w in self.operator_pairs.items())
         # dist = distribution
         w_dist = [w / w_sum for o, w in self.operator_pairs.items()]
