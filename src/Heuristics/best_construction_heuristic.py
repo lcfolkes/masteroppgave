@@ -42,7 +42,7 @@ class ConstructionHeuristic:
         self.employees_dict = {k.employee_id: k for k in self.employees}
         self.car_moves_dict = {}
         self.car_moves = []  # self.world_instance.car_moves
-        self.car_moves_second_stage = []
+        self.car_moves_second_stage = [[] for _ in range(self.num_scenarios)]
         self._initialize_car_moves()
         self.available_employees = True
         self.first_stage = True
@@ -74,7 +74,7 @@ class ConstructionHeuristic:
                                    self.employees}  # [gamma_k] dictionary containing ordered list of car_moves,
         # assigned to employee k in scenario s
         self.car_moves = []  # self.world_instance.car_moves
-        self.car_moves_second_stage = []
+        self.car_moves_second_stage = [[] for _ in range(self.num_scenarios)]
         self._initialize_car_moves()
         self._initialize_charging_nodes()
         self.available_employees = True
@@ -111,6 +111,8 @@ class ConstructionHeuristic:
         else:
             first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(
                 solution, self.world_instance.first_stage_tasks)
+            print("first_stage_solution", first_stage_solution)
+            print("second_stage_solution",second_stage_solution)
 
             for employee_obj, car_move_objs in first_stage_solution.items():
                 for cm_obj in car_move_objs:
@@ -137,10 +139,11 @@ class ConstructionHeuristic:
     def construct(self, verbose=False):
         if verbose:
             print("------- CONSTRUCTION HEURISTIC -------\n")
-        improving_car_move_exists = True
+        improving_car_move_exists_first_stage = True
+        improving_car_move_exists_second_stage = True
         second_stage_move_counter = 0
         first_stage_move_counter = 0
-        while self.available_employees and improving_car_move_exists:
+        while self.available_employees and (improving_car_move_exists_first_stage or improving_car_move_exists_second_stage):
 
             if self.first_stage:
                 #### GET BEST CAR MOVE ###
@@ -148,7 +151,9 @@ class ConstructionHeuristic:
                 best_car_move_first_stage = self._get_best_car_move()
 
                 if best_car_move_first_stage is None:
-                    improving_car_move_exists = False
+                    improving_car_move_exists_first_stage = False
+                    self.first_stage = False
+                    self.car_moves_second_stage = [self.car_moves for _ in range(self.num_scenarios)]
                     continue
                 #### GET BEST EMPLOYEE ###
                 best_employee_first_stage = self._get_best_employee(best_car_move_first_stage)
@@ -168,7 +173,8 @@ class ConstructionHeuristic:
                 best_car_move_second_stage = self._get_best_car_move()
                 # print(f"Best car_move second stage: {[cm.car_move_id for cm in best_car_move_second_stage]}")
                 if all(cm is None for cm in best_car_move_second_stage):
-                    improving_car_move_exists = False
+                    print([cm for cm in best_car_move_second_stage])
+                    improving_car_move_exists_second_stage = False
 
                 ### GET BEST EMPLOYEE ###
                 best_employee_second_stage = self._get_best_employee(best_car_move=best_car_move_second_stage)
@@ -237,6 +243,16 @@ class ConstructionHeuristic:
 
                     obj_val = self.objective_function.evaluate(added_car_moves=[self.car_moves_second_stage[s][r]],
                                                                scenario=s, mode="heuristic")
+
+                    if self.car_moves_second_stage[s][r].car_move_id == 8:
+                        if s == 4:
+                            print("start", self.car_moves_second_stage[s][r].start_node.node_id)
+                            print("end", self.car_moves_second_stage[s][r].end_node.node_id)
+
+                            print("obj_val", obj_val)
+                            print("best obj val", best_obj_val_second_stage[s])
+
+
 
                     if obj_val > best_obj_val_second_stage[s]:
                         '''
@@ -386,18 +402,21 @@ class ConstructionHeuristic:
                                                                                                      s])
 
                 # print(f"car_moves: {len(car_moves[s])}")
-                if not any(self.car_moves_second_stage):
-                    self.available_employees = False
-            else:
-                self.available_employees = False
+                #if not any(self.car_moves_second_stage):
+                #    self.available_employees = False
+            #else:
+            #    self.available_employees = False
 
     def _add_car_move_to_employee_from_dict(self, employee, car_moves_scenarios):
+        for k, v in enumerate(car_moves_scenarios):
+            print(k,v)
         for s, car_moves in enumerate(car_moves_scenarios):
             for car_move in car_moves:
                 self.world_instance.add_car_move_to_employee(car_move, employee, s)
-                self.objective_function.update(added_car_moves=np.array([car_move]), scenario=s)
+                self.objective_function.update(added_car_moves=[car_move], scenario=s)
                 self.assigned_car_moves[employee][s].append(car_move)
                 self.unused_car_moves[s].remove(car_move)
+                print(s)
                 self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(car_move,
                                                                                          self.car_moves_second_stage[s])
 
@@ -531,20 +550,33 @@ class ConstructionHeuristic:
 if __name__ == "__main__":
     from pyinstrument import Profiler
 
-    filename = "InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
-    ch = ConstructionHeuristic(filename + ".pkl", acceptance_percentage=0.3)
-    profiler = Profiler()
-    profiler.start()
+    filename = "InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a"
+    ch = ConstructionHeuristic(filename + ".pkl", acceptance_percentage=1)
+    emp1 = ch.employees_dict[1]
+    emp2 = ch.employees_dict[2]
+    cm20 = ch.car_moves_dict[20]
+    cm16 = ch.car_moves_dict[16]
+    cm8 = ch.car_moves_dict[8]
+    cm9 = ch.car_moves_dict[9]
 
-    ch.construct()
+    solution_dict = {emp1: [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+                     emp2: [[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16, cm8],[cm20, cm16],
+                            [cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16, cm9],[cm20, cm16],
+                            [cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],
+                            [cm20, cm16],[cm20, cm16, cm9],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16], [cm20, cm16]]}
+    ch.rebuild(solution_dict, stage="second", verbose=True)
+    #profiler = Profiler()
+    #profiler.start()
+
+    #ch.construct()
 
 
-    profiler.stop()
+    #profiler.stop()
     ch.print_solution()
-    print(profiler.output_text(unicode=True, color=True))
+    #print(profiler.output_text(unicode=True, color=True))
     # print(f"Construction heuristic true obj. val {true_obj_val}")
 
 
     print("\n############## Evaluate solution ##############")
-    gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)
+    gi = GurobiInstance(filename + ".yaml", employees=ch.employees)#, optimize=False)
     run_model(gi)
