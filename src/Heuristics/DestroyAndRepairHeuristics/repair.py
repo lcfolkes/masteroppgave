@@ -1,5 +1,8 @@
 import os
 import random
+from collections import OrderedDict
+
+import numpy as np
 
 from Heuristics.feasibility_checker import FeasibilityChecker
 from path_manager import path_to_src
@@ -147,6 +150,66 @@ class GreedyInsertion(Repair):
                             best_employee = employee
 
         return best_car_move, best_employee
+
+class GreedyRandomInsertion(Repair):
+
+    def __init__(self, destroyed_solution_object: Destroy, unused_car_moves: [[CarMove]], world_instance: World, determinism_parameter):
+        self.determinism_parameter = determinism_parameter
+        super().__init__(destroyed_solution_object, unused_car_moves, world_instance)
+
+
+    def repair(self) -> {Employee: [CarMove]}:
+        """
+        Greedily assigns car moves to employees and returns the repaired solution
+        :return: a repaired solution in the form of a dictionary with key: employee id and value: a list of car moves
+        """
+        q = self.neighborhood_size
+        current_solution = self.solution
+        sorted_obj_val_list = self._get_best_insertion(current_solution)
+
+        while q > 0 and len(sorted_obj_val_list) > 0:
+            idx = np.floor(np.power(random.random(), self.determinism_parameter) * len(sorted_obj_val_list)).astype(int)
+            car_move_employee, _ = sorted_obj_val_list[idx]
+            car_move, employee = car_move_employee[0], car_move_employee[1]
+            sorted_obj_val_list.pop(idx)
+            insert_car_move(current_solution, car_move, employee)
+
+            self.objective_function.update(added_car_moves=[car_move])
+            self.unused_car_moves = remove_all_car_moves_of_car_in_car_move(car_move, self.unused_car_moves)
+            q -= 1
+        # return current_solution
+
+    def _get_best_insertion(self, current_solution: {Employee: [CarMove]}, regret_nr=None) -> (CarMove, Employee):
+        """
+        Finds the best car_move to insert, and the id of the employee that should perform it
+        :param current_solution: a dictionary with key: employee id and value: list of car moves
+        :return best car move, best employee
+        """
+        obj_val_dict = {} # {index: obj val}
+
+        for car_move in self.unused_car_moves:
+            # Checks if best car move is a charging move to a node where the remaining charging capacity is zero
+            if car_move.is_charging_move:
+                # print(f"car move {car_move.car_move_id} cap", car_move.end_node.capacity)
+                # print(f"car move {car_move.car_move_id} num c", car_move.end_node.num_charging[0])
+                if car_move.end_node.capacity == car_move.end_node.num_charging[0]:
+                    self.unused_car_moves.remove(car_move)
+                    continue
+
+            for employee, employee_moves in current_solution.items():
+                if len(employee_moves) < self.num_first_stage_tasks:
+
+                    if self.feasibility_checker.is_first_stage_solution_feasible(
+                            {employee: current_solution[employee] + [car_move]}):
+                        obj_val = self.objective_function.evaluate(added_car_moves=[car_move], mode="heuristic")
+
+                        obj_val_dict[(car_move, employee)] = obj_val
+
+
+        obj_val_ordered_list = sorted(obj_val_dict.items(), key=lambda x: x[-1],reverse=True)
+
+        return obj_val_ordered_list
+
 
 
 class RegretInsertion(Repair):

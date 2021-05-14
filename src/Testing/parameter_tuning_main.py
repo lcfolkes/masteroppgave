@@ -25,30 +25,40 @@ def run_parallell(filename, n):
     print(f"Parallel: Finished {n} runs in {round(finish - start, 2)} seconds(s)")
     print(obj_vals)
 
-def run_sequential(filename, n):
+def run_sequential(filename, n, verbose):
     print(f"Running {n} processes in sequence\n")
     start = time.perf_counter()
     obj_vals = []
     for _ in range(n):
         alns = ALNS(filename + ".pkl", acceptance_percentage=1)
-        obj_val = alns.run(False)
+        obj_val = alns.run(verbose)
         print(obj_val)
         obj_vals.append(obj_val)
     finish = time.perf_counter()
     print(f"Sequential: Finished {n} runs in {round(finish - start, 2)} seconds(s)")
     print(obj_vals)
+    return alns
 
 
 if __name__ == "__main__":
     try:
-        filename = "InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
-        n = 10
+        filename = "InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a"
+        n = 2
 
         ### PARALLEL
         #run_parallell(filename, n)
 
         ### SEQUENTIAL
-        run_sequential(filename, n)
+        alns = run_sequential(filename, 1, True)
+
+        print("\n############## Evaluate solution ##############")
+        gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=False)
+        run_model(gi)
+
+        print("\n############## Optimal solution ##############")
+        gi2 = GurobiInstance(filename + ".yaml")
+        run_model(gi2, time_limit=300)
+
 
     except KeyboardInterrupt:
         print('Interrupted')
