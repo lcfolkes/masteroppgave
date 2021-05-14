@@ -106,7 +106,7 @@ class ALNS():
         MODE = "LOCAL_FIRST"
 
         # temperature = 1000  # Start temperature must be set differently. High temperature --> more randomness
-        temperature = (-np.abs(heuristic_obj_vals[0])) * 0.05 / np.log(0.5)
+        temperature = 100#(-np.abs(heuristic_obj_vals[0])) * 0.05 / np.log(0.5)
         # cooling_rate = 0.5  # cooling_rate in (0,1)
         cooling_rate = np.exp(np.log(0.002) / 200)
 
@@ -393,8 +393,8 @@ class ALNS():
     def _get_destroy_operator(self, solution, world_instance) -> \
             (Destroy, str):
 
-        neighborhood_size = int(self._num_employees * self._num_first_stage_tasks * random.uniform(
-            HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1]))
+        neighborhood_size = 1#int(self._num_employees * self._num_first_stage_tasks * random.uniform(
+            #HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1]))
         w_sum = sum(w for o, w in self.operator_pairs.items())
         # dist = distribution
         w_dist = [w / w_sum for o, w in self.operator_pairs.items()]
@@ -510,13 +510,13 @@ class ALNS():
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
-    filename = "./InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
+    filename = "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a"
 
     try:
 
         #profiler = Profiler()
         #profiler.start()
-        alns = ALNS(filename + ".pkl", acceptance_percentage=0.7)
+        alns = ALNS(filename + ".pkl", acceptance_percentage=1)
         alns.run()
 
         #profiler.stop()
@@ -527,7 +527,7 @@ if __name__ == "__main__":
         #print(profiler.output_text(unicode=True, color=True))
 
         print("\n############## Evaluate solution ##############")
-        gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=False)
+        gi = GurobiInstance(filename + ".yaml")#, employees=alns.solution.employees)
         run_model(gi)
         '''
         print("\n############## Reoptimized solution ##############")
