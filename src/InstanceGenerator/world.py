@@ -361,7 +361,7 @@ def create_parking_nodes(world: World, num_parking_nodes: int, time_of_day: int,
 
     charging_states = [0 for i in range(len(chosen_nrs))]
     # ratio of cars in need of charging to number of charged cars, a random number between 0.1 and 0.2
-    ratio_charging = random.uniform(0.1, 0.2)
+    ratio_charging = random.uniform(0.125, 0.1875)
 
     # Fill the parking nodes with cars in need of charging until the desired number of cars in need of charging have
     # been placed. Cars with a high expected number of deliveries in the former time period are more likely to have
