@@ -119,11 +119,14 @@ class World:
 
     def initialize_relevant_car_moves(self, acceptance_percentage):
         relevant_car_moves = []
-        irrelevant_end_nodes = self._irrelevant_end_nodes(self.parking_nodes, acceptance_percentage)
-        irrelevant_start_nodes = self._irrelevant_start_nodes(self.parking_nodes, acceptance_percentage)
-        for cm in self.car_moves:
-            if (cm.end_node not in irrelevant_end_nodes and cm.start_node not in irrelevant_start_nodes) or cm.is_charging_move:
-                relevant_car_moves.append(cm)
+        if acceptance_percentage == 2:
+            relevant_car_moves = [cm for cm in self.car_moves]
+        else:
+            irrelevant_end_nodes = self._irrelevant_end_nodes(self.parking_nodes, acceptance_percentage)
+            irrelevant_start_nodes = self._irrelevant_start_nodes(self.parking_nodes, acceptance_percentage)
+            for cm in self.car_moves:
+                if (cm.end_node not in irrelevant_end_nodes and cm.start_node not in irrelevant_start_nodes) or cm.is_charging_move:
+                    relevant_car_moves.append(cm)
         self.relevant_car_moves = relevant_car_moves
 
     def add_car_move_to_employee(self, car_move: CarMove, employee: Employee, scenario: int = None):

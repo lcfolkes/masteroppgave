@@ -111,6 +111,14 @@ class ConstructionHeuristic:
         else:
             first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(
                 solution, self.world_instance.first_stage_tasks)
+            for emp, cms in first_stage_solution.items():
+                print(emp.employee_id)
+                print([cm.car_move_id for cm in cms])
+
+            for emp, scenario in second_stage_solution.items():
+                print(emp.employee_id)
+                print([[cm.car_move_id for cm in cms] for cms in scenario])
+
             ### FIRST STAGE ###
             for employee_obj, car_move_objs in first_stage_solution.items():
                 for cm_obj in car_move_objs:
@@ -406,6 +414,9 @@ class ConstructionHeuristic:
                 self.world_instance.add_car_move_to_employee(car_move, employee, s)
                 self.objective_function.update(added_car_moves=[car_move], scenario=s)
                 self.assigned_car_moves[employee][s].append(car_move)
+                print(car_move.car_move_id)
+                print(s)
+                print([[cm.car_move_id for cm in scenario] for scenario in self.unused_car_moves])
                 self.unused_car_moves[s].remove(car_move)
                 self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(
                     car_move, self.car_moves_second_stage[s])
@@ -541,41 +552,51 @@ if __name__ == "__main__":
     from pyinstrument import Profiler
 
     filename = "InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_c"
-    ch = ConstructionHeuristic(filename + ".pkl", acceptance_percentage=1)
+    ch = ConstructionHeuristic(filename + ".pkl", acceptance_percentage=2)
 
 
     #ch.construct()
 
+    print(ch.car_moves_dict)
 
     emp1 = ch.employees_dict[1]
     emp2 = ch.employees_dict[2]
-    cm20 = ch.car_moves_dict[20]
+    cm1 = ch.car_moves_dict[1]
+    cm15 = ch.car_moves_dict[15]
     cm26 = ch.car_moves_dict[26]
-    cm8 = ch.car_moves_dict[8]
+    cm4 = ch.car_moves_dict[4]
+    cm12 = ch.car_moves_dict[12]
     cm9 = ch.car_moves_dict[9]
-    cm16 = ch.car_moves_dict[16]
-    cm26 = ch.car_moves_dict[26]
+    cm2 = ch.car_moves_dict[2]
+    cm5 = ch.car_moves_dict[5]
+    #cm16 = ch.car_moves_dict[16]
+    #cm26 = ch.car_moves_dict[26]
 
     #solution_dict = {emp1:[], emp2:[cm20, cm16]}
-    solution_dict = {emp1: [cm26], emp2: []}
+    #solution_dict = {emp1: [cm26], emp2: []}
     #ch.rebuild(solution_dict, stage="first", optimize=True)
     #ch.rebuild(solution_dict, stage="first")
     #ch.construct()
     #ch.print_solution()
 
+    # 4 eller 9
 
-    '''
-    solution_dict = {emp1: [[]*25],
-                     emp2: [[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],
-                            [cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],
-                            [cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],
-                            [cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16], [cm20, cm16]]}
-    '''
+    second_solution_dict = {emp1: [[cm15, cm26]]*25,
+                     emp2: [[cm4, cm12, cm9], [cm4, cm12, cm9], [cm4, cm12, cm1], [cm4, cm12, cm9], [cm4, cm12],
+                            [cm4, cm12, cm1], [cm4, cm12, cm9], [cm4, cm12, cm2], [cm4, cm12], [cm4, cm12, cm9],
+                            [cm4, cm12, cm5], [cm4, cm12], [cm4, cm12], [cm4, cm12], [cm4, cm12, cm9],
+                            [cm4, cm12], [cm4, cm12, cm9], [cm4, cm12, cm9], [cm4, cm12, cm9], [cm4, cm12, cm9],
+                            [cm4, cm12], [cm4, cm12, cm9],[cm4, cm12, cm1],[cm4, cm12, cm9],[cm4, cm12, cm9]]}
 
+    #first_solution_dict = {emp1: [cm15, cm26],
+    #                 emp2: [cm4, cm12]}
 
-    ch.rebuild(solution_dict, stage="second")
+    ch.rebuild(second_solution_dict, stage="second")
 
     ch.print_solution()
+
+
+
     '''
     print("Add car moves 6 to 4 and 4 to 7 in first stage")
     obj, heur = ch.objective_function.evaluate(added_car_moves=[cm20, cm16])

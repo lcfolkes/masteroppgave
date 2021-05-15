@@ -117,7 +117,7 @@ class GurobiInstance:
                 car_move_id = car_moves[i].car_move_id
                 for scenario in self.SCENARIOS:
                     krms = (employee_id, car_move_id, task, scenario)
-                    print(f"x[{krms}] ({car_moves[i].start_node.node_id} --> {car_moves[i].end_node.node_id})")
+                    #print(f"x[{krms}] ({car_moves[i].start_node.node_id} --> {car_moves[i].end_node.node_id})")
                     # x_krms, employee, car_move, task, scenario
                     initial_solution.append(krms)
             task_employee[employee_id] = task
