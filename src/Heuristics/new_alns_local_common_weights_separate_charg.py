@@ -523,20 +523,23 @@ if __name__ == "__main__":
         #alns.solution.rebuild(alns.best_solution[0], "second_stage")
         #alns.solution.print_solution()
         #print(profiler.output_text(unicode=True, color=True))
+
+        print("\n############## Optimal solution ##############")
         gi = GurobiInstance(filename + ".yaml")
         run_model(gi)
-
+        '''
         print("\n############## Evaluate solution ##############")
         gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees)
         run_model(gi)
-        '''print("\n############## Reoptimized solution ##############")
+        
+        print("\n############## Reoptimized solution ##############")
         gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=True)
         run_model(gi)
-        '''
+        
         print("\n############## Optimal solution ##############")
         gi2 = GurobiInstance(filename + ".yaml")
         run_model(gi2, time_limit=300)
-
+        '''
     except KeyboardInterrupt:
         print('Interrupted')
         try:
