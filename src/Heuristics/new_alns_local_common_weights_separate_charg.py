@@ -136,10 +136,8 @@ class ALNS():
                                                    self._num_first_stage_tasks,
                                                    self._feasibility_checker)
                         local_search.search("best_first")
-                        print("before rebuild")
                         self.solution.rebuild(local_search.solution, "second_stage")
                         visited_hash_keys.update(local_search.visited_list)
-                        print("after rebuild")
 
                     elif MODE == "LOCAL_FULL":
                         # print("\n----- LOCAL SEARCH FULL -----")
@@ -158,7 +156,7 @@ class ALNS():
                             world_instance=self._world_instance)
                         destroy_heuristic.destroy()
 
-                        print(f"Destroy: {destroy_heuristic}\n{destroy_heuristic.to_string()}")
+                        #print(f"Destroy: {destroy_heuristic}\n{destroy_heuristic.to_string()}")
 
                         repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
                                                                      unused_car_moves=candidate_unused_car_moves,
@@ -166,7 +164,7 @@ class ALNS():
                                                                      operator_pair=operator_pair)
                         repair_heuristic.repair()
 
-                        print(f"Repair: {repair_heuristic} {repair_heuristic.to_string()}")
+                        #print(f"Repair: {repair_heuristic} {repair_heuristic.to_string()}")
 
                         hash_key = repair_heuristic.hash_key
                         if hash_key in visited_hash_keys:
@@ -384,8 +382,8 @@ class ALNS():
     def _get_destroy_operator(self, solution, world_instance) -> \
             (Destroy, str):
         #neighborhood_size = 2
-        neighborhood_size = int(self._num_employees * self._num_first_stage_tasks * random.uniform(
-            HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1]))
+        neighborhood_size = random.uniform(
+            HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1])
         if neighborhood_size == 0:
             neighborhood_size = 1
         w_sum = sum(w for o, w in self.operator_pairs.items())
