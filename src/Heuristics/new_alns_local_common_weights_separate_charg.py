@@ -131,7 +131,7 @@ class ALNS():
                         current_unused_car_moves, current_solution)
 
                     if MODE == "LOCAL_FIRST":
-                        # print("\n----- LOCAL SEARCH FIRST BEST -----")
+                        #print("\n----- LOCAL SEARCH FIRST BEST -----")
                         local_search = LocalSearch(candidate_solution,
                                                    self._num_first_stage_tasks,
                                                    self._feasibility_checker)
@@ -150,13 +150,15 @@ class ALNS():
 
 
                     elif MODE == "LNS":
-                        # print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
+                        #print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
                         destroy_heuristic, operator_pair = self._get_destroy_operator(
                             solution=candidate_solution,
                             world_instance=self._world_instance)
+                        #print(f"Destroy before: {destroy_heuristic}\n{destroy_heuristic.to_string()}")
                         destroy_heuristic.destroy()
 
-                        print(f"{destroy_heuristic}\n{destroy_heuristic.to_string()}")
+
+                        #print(f"Destroy after: {destroy_heuristic}\n{destroy_heuristic.to_string()}")
 
                         repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
                                                                      unused_car_moves=candidate_unused_car_moves,
@@ -164,7 +166,8 @@ class ALNS():
                                                                      operator_pair=operator_pair)
                         repair_heuristic.repair()
 
-                        print(f"{repair_heuristic} {repair_heuristic.to_string()}")
+                        #print(f"Repair: {repair_heuristic} {repair_heuristic.to_string()}")
+
 
                         hash_key = repair_heuristic.hash_key
                         if hash_key in visited_hash_keys:
@@ -383,9 +386,9 @@ class ALNS():
 
     def _get_destroy_operator(self, solution, world_instance) -> \
             (Destroy, str):
-        #neighborhood_size = 1
-        #neighborhood_size = int(self._num_employees * self._num_first_stage_tasks * random.uniform(
-        #    HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1]))
+
+        #neighborhood_size = 2
+
         neighborhood_size = random.uniform(
             HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1])
         if neighborhood_size == 0:
@@ -526,16 +529,17 @@ if __name__ == "__main__":
         #print(profiler.output_text(unicode=True, color=True))
         gi = GurobiInstance(filename + ".yaml")
         run_model(gi)
-        '''
+
         print("\n############## Evaluate solution ##############")
         gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees)
         run_model(gi)
-        print("\n############## Reoptimized solution ##############")
+        '''print("\n############## Reoptimized solution ##############")
         gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=True)
         run_model(gi)
+        '''
         print("\n############## Optimal solution ##############")
         gi2 = GurobiInstance(filename + ".yaml")
-        run_model(gi2, time_limit=300)'''
+        run_model(gi2, time_limit=300)
 
     except KeyboardInterrupt:
         print('Interrupted')

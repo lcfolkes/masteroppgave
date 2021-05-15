@@ -41,7 +41,7 @@ class ConstructionHeuristic:
         # assigned to employee k in scenario s
         self.employees_dict = {k.employee_id: k for k in self.employees}
         self.car_moves_dict = {}
-        self.car_moves = []  # self.world_instance.car_moves
+        self.car_moves_first_stage = []  # self.world_instance.car_moves
         self.car_moves_second_stage = [[] for _ in range(self.num_scenarios)]
         self._initialize_car_moves()
         self.available_employees = True
@@ -73,7 +73,7 @@ class ConstructionHeuristic:
         self.assigned_car_moves = {k: [[] for _ in range(self.num_scenarios)] for k in
                                    self.employees}  # [gamma_k] dictionary containing ordered list of car_moves,
         # assigned to employee k in scenario s
-        self.car_moves = []  # self.world_instance.car_moves
+        self.car_moves_first_stage = []  # self.world_instance.car_moves
         self.car_moves_second_stage = [[] for _ in range(self.num_scenarios)]
         self._initialize_car_moves()
         self._initialize_charging_nodes()
@@ -101,7 +101,6 @@ class ConstructionHeuristic:
         self._initialize_for_rebuild()
 
         if stage == "first":
-            #print("first rebuild")
             first_stage_solution = solution
             for employee_obj, car_move_objs in first_stage_solution.items():
                 emp = self.employees_dict[employee_obj.employee_id]
@@ -110,27 +109,27 @@ class ConstructionHeuristic:
                     self._add_car_move_to_employee(best_car_move=cm, best_employee=emp)
 
         else:
-            #print("second rebuild")
             first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(
                 solution, self.world_instance.first_stage_tasks)
-
+            ### FIRST STAGE ###
             for employee_obj, car_move_objs in first_stage_solution.items():
                 for cm_obj in car_move_objs:
                     cm = self.car_moves_dict[cm_obj.car_move_id]
                     self._add_car_move_to_employee(best_car_move=cm, best_employee=employee_obj)
 
+            ### SECOND STAGE ###
+            #self.first_stage = False
+            #self.car_moves_second_stage = [[cm for cm in self.car_moves] for _ in range(self.num_scenarios)]
             for employee_obj, car_moves_scenarios in second_stage_solution.items():
                 self._add_car_move_to_employee_from_dict(employee=employee_obj, car_moves_scenarios=car_moves_scenarios)
         if optimize:
             self.construct()
-            #print("CH: printsolution")
-            #self.print_solution()
 
-        
+
     def _initialize_car_moves(self):
         for car_move in self.world_instance.relevant_car_moves:
         # car_move in self.world_instance.car_moves:
-            self.car_moves.append(car_move)
+            self.car_moves_first_stage.append(car_move)
             #self.car_moves.append(car_move.car_move_id)
             self.car_moves_dict[car_move.car_move_id] = car_move
             for s in range(self.num_scenarios):
@@ -159,7 +158,7 @@ class ConstructionHeuristic:
                 if best_car_move_first_stage is None:
                     improving_car_move_exists_first_stage = False
                     self.first_stage = False
-                    self.car_moves_second_stage = [[cm for cm in self.car_moves] for _ in range(self.num_scenarios)]
+                    self.car_moves_second_stage = [[cm for cm in self.car_moves_first_stage] for _ in range(self.num_scenarios)]
                     continue
                 #### GET BEST EMPLOYEE ###
                 best_employee_first_stage = self._get_best_employee(best_car_move_first_stage)
@@ -211,7 +210,7 @@ class ConstructionHeuristic:
             best_obj_val_first_stage = self.objective_function.heuristic_objective_value
 
             # print("Iteration")
-            for car_move in self.car_moves:
+            for car_move in self.car_moves_first_stage:
                 #car_move = self.car_moves_dict[cm_id]
                 if car_move.is_charging_move:
                     # Checking if charging node has space for another car
@@ -272,7 +271,7 @@ class ConstructionHeuristic:
                                 continue
 
                             else:
-                        
+
                                 best_obj_val_second_stage[s] = obj_val
                                 best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
                                 # car_moves[s][r].end_node.add_car(scenario=s)
@@ -341,7 +340,7 @@ class ConstructionHeuristic:
         if self.first_stage:
             if best_employee_first_stage is None and best_car_move is not None:
                 #self.car_moves.remove(best_car_move.car_move_id)
-                self.car_moves.remove(best_car_move)
+                self.car_moves_first_stage.remove(best_car_move)
             return best_employee_first_stage
         else:
             for s, emp in enumerate(best_employee_second_stage):
@@ -361,7 +360,8 @@ class ConstructionHeuristic:
                     self.assigned_car_moves[best_employee][s].append(best_car_move)
                     #self.unused_car_moves[s].remove(best_car_move.car_move_id)
                     self.unused_car_moves[s].remove(best_car_move)
-                self.car_moves = remove_all_car_moves_of_car_in_car_move(best_car_move, self.car_moves)
+                self.car_moves_first_stage = remove_all_car_moves_of_car_in_car_move(
+                    best_car_move, self.car_moves_first_stage)
                 '''
                 self.first_stage = False
                 for employee in self.employees:
@@ -370,7 +370,7 @@ class ConstructionHeuristic:
                         self.first_stage = True
                 if not self.first_stage:
                     # initialize charging and parking moves for second stage
-                    self.car_moves_second_stage = [self.car_moves for _ in range(self.num_scenarios)]
+                    self.car_moves_second_stage = [[cm for cm in self.car_moves] for _ in range(self.num_scenarios)]
                 '''
             #else:
             #    self.available_employees = False
@@ -572,10 +572,10 @@ if __name__ == "__main__":
                             [cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16], [cm20, cm16]]}
     '''
 
-    ch.rebuild(solution_dict, stage="first")
-    #ch.construct()
-    ch.print_solution()
 
+    ch.rebuild(solution_dict, stage="second")
+
+    ch.print_solution()
     '''
     print("Add car moves 6 to 4 and 4 to 7 in first stage")
     obj, heur = ch.objective_function.evaluate(added_car_moves=[cm20, cm16])
@@ -591,7 +591,7 @@ if __name__ == "__main__":
     #obj, heur = ch.objective_function.evaluate(added_car_moves=[cm9])
     ch.objective_function.update(added_car_moves=[cm9], scenario=10)
     ch.objective_function.update(added_car_moves=[cm9], scenario=19)
-    
+
     print("Objective value is ", ch.objective_function.true_objective_value, "should be -6.72")
     print("Remove car moves to second stage")
     #obj, heur = ch.objective_function.evaluate(added_car_moves=[cm9])
@@ -602,7 +602,7 @@ if __name__ == "__main__":
     ch.objective_function.update(added_car_moves=[cm9], scenario=19)
     ch.objective_function.update(added_car_moves=[cm8], scenario=4)
     print("Objective value is ", ch.objective_function.true_objective_value, "should be -5.78")
-    
+
     ch.objective_function.update(added_car_moves=[cm20, cm16])
     ch.objective_function.update(added_car_moves=[cm9], scenario=10)
     ch.objective_function.update(added_car_moves=[cm9], scenario=19)
@@ -610,7 +610,7 @@ if __name__ == "__main__":
     ch.objective_function.update(removed_car_moves=[cm9], scenario=10)
     ch.objective_function.update(removed_car_moves=[cm9], scenario=19)
     print(ch.objective_function.true_objective_value)
-    '''
+
 
     #profiler = Profiler()
     #profiler.start()
@@ -619,7 +619,6 @@ if __name__ == "__main__":
 
 
     #profiler.stop()
-    '''
     print("z25", ch.objective_function._z[1][4])
     print("w25", ch.objective_function._w[1][4])
     print("z2,11", ch.objective_function._z[1][10])
