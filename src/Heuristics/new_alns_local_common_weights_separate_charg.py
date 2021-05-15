@@ -131,7 +131,7 @@ class ALNS():
                         current_unused_car_moves, current_solution)
 
                     if MODE == "LOCAL_FIRST":
-                        # print("\n----- LOCAL SEARCH FIRST BEST -----")
+                        #print("\n----- LOCAL SEARCH FIRST BEST -----")
                         local_search = LocalSearch(candidate_solution,
                                                    self._num_first_stage_tasks,
                                                    self._feasibility_checker)
@@ -150,13 +150,14 @@ class ALNS():
 
 
                     elif MODE == "LNS":
-                        # print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
+                        #print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
                         destroy_heuristic, operator_pair = self._get_destroy_operator(
                             solution=candidate_solution,
                             world_instance=self._world_instance)
+                        #print(f"Destroy before: {destroy_heuristic}\n{destroy_heuristic.to_string()}")
                         destroy_heuristic.destroy()
 
-                        #print(f"Destroy: {destroy_heuristic}\n{destroy_heuristic.to_string()}")
+                        #print(f"Destroy after: {destroy_heuristic}\n{destroy_heuristic.to_string()}")
 
                         repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
                                                                      unused_car_moves=candidate_unused_car_moves,
@@ -507,7 +508,7 @@ class ALNS():
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
-    filename = "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_b"
+    filename = "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_c"
 
     try:
 
@@ -524,16 +525,17 @@ if __name__ == "__main__":
         #print(profiler.output_text(unicode=True, color=True))
         gi = GurobiInstance(filename + ".yaml")
         run_model(gi)
-        '''
+
         print("\n############## Evaluate solution ##############")
         gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees)
         run_model(gi)
-        print("\n############## Reoptimized solution ##############")
+        '''print("\n############## Reoptimized solution ##############")
         gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=True)
         run_model(gi)
+        '''
         print("\n############## Optimal solution ##############")
         gi2 = GurobiInstance(filename + ".yaml")
-        run_model(gi2, time_limit=300)'''
+        run_model(gi2, time_limit=300)
 
     except KeyboardInterrupt:
         print('Interrupted')

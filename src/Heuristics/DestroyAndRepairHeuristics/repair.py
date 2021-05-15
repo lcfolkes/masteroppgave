@@ -167,7 +167,6 @@ class GreedyRandomInsertion(Repair):
         q = self.neighborhood_size
         current_solution = self.solution
         sorted_obj_val_list = self._get_best_insertion(current_solution)
-
         while q > 0 and len(sorted_obj_val_list) > 0:
             idx = np.floor(np.power(random.random(), self.determinism_parameter) * len(sorted_obj_val_list)).astype(int)
             car_move_employee, _ = sorted_obj_val_list[idx]

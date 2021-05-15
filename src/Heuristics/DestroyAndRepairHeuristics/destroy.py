@@ -71,16 +71,18 @@ class RandomRemoval(Destroy):
         solution = self.solution
 
         n_size = self.neighborhood_size
-        while n_size > 0:
-            k = random.choice(list(solution.keys()))
+        solution_with_moves = {k: v for k, v in self.solution.items() if len(v) > 0}
+        while n_size > 0 and solution_with_moves:
+            k = random.choice(list(solution_with_moves.keys()))
             # ensures list of chosen key is not empty
-            if not any(solution[k]):
-                continue
             i = random.randrange(0, len(solution[k]), 1)
             # Charging node states are updated
             solution[k][i].reset()
             self.removed_moves.append(solution[k][i])
             solution[k] = solution[k][:i] + solution[k][i + 1:]
+            solution_with_moves[k] = solution_with_moves[k][:i] + solution_with_moves[k][i + 1:]
+            if not solution_with_moves[k]:
+                del solution_with_moves[k]
             n_size -= 1
 
 
