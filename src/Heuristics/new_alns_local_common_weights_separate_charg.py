@@ -284,7 +284,7 @@ class ALNS():
             plt.legend(bbox_to_anchor=(.75, 1.0))
             plt.show()
             '''
-
+            '''
             f, (ax1, ax2) = plt.subplots(2, 1)
             #print("iterations", iterations)
             #print("true_obj_vals", true_obj_vals)
@@ -302,7 +302,7 @@ class ALNS():
                        fancybox=True, shadow=False)
 
             f.show()
-
+            '''
             # Strings to save to file
             obj_val_txt = f"Objective value: {str(best_solution[1])}\n"
             heur_val_txt = f"Heuristic value: {str(best_obj_val)}\n"
@@ -523,20 +523,21 @@ if __name__ == "__main__":
         #profiler.stop()
         print("best solution")
         print("obj_val", alns.best_solution[1])
-        alns.solution.rebuild(alns.best_solution[0], "second_stage")
-        alns.solution.print_solution()
+        #alns.solution.rebuild(alns.best_solution[0], "second_stage")
+        #alns.solution.print_solution()
         #print(profiler.output_text(unicode=True, color=True))
 
-        print("\n############## Evaluate solution ##############")
-        gi = GurobiInstance(filename + ".yaml")#, employees=alns.solution.employees)
-        run_model(gi)
         '''
+        print("\n############## Evaluate solution ##############")
+        gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees)
+        run_model(gi)
         print("\n############## Reoptimized solution ##############")
         gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=True)
         run_model(gi)
         print("\n############## Optimal solution ##############")
         gi2 = GurobiInstance(filename + ".yaml")
         run_model(gi2, time_limit=300)'''
+
     except KeyboardInterrupt:
         print('Interrupted')
         try:

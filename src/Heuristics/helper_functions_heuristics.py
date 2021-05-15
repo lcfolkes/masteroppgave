@@ -111,9 +111,9 @@ def remove_all_car_moves_of_car_in_car_move(chosen_car_move: CarMove, car_moves:
     :param car_moves: the list of car moves to remove a car move from
     :return: list of car moves that are not associated with the car of the chosen car move
     """
-    car = chosen_car_move.car.car_id
-    # return
-    return [cm for cm in car_moves if cm.car.car_id != car]
+    car = chosen_car_move.car
+    car_moves_to_remove = [cm.car_move_id for cm in car.car_moves]
+    return [cm_id for cm_id in car_moves if (cm_id not in car_moves_to_remove)]
 
 
 def get_assigned_car_moves(employees, scenario: int = None):
