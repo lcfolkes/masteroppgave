@@ -71,6 +71,7 @@ class RandomRemoval(Destroy):
         solution = self.solution
 
         n_size = self.neighborhood_size
+
         solution_with_moves = {k: v for k, v in self.solution.items() if len(v) > 0}
         while n_size > 0 and solution_with_moves:
             k = random.choice(list(solution_with_moves.keys()))

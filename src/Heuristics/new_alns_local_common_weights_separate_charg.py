@@ -157,6 +157,7 @@ class ALNS():
                         #print(f"Destroy before: {destroy_heuristic}\n{destroy_heuristic.to_string()}")
                         destroy_heuristic.destroy()
 
+
                         #print(f"Destroy after: {destroy_heuristic}\n{destroy_heuristic.to_string()}")
 
                         repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
@@ -166,6 +167,7 @@ class ALNS():
                         repair_heuristic.repair()
 
                         #print(f"Repair: {repair_heuristic} {repair_heuristic.to_string()}")
+
 
                         hash_key = repair_heuristic.hash_key
                         if hash_key in visited_hash_keys:
@@ -384,7 +386,9 @@ class ALNS():
 
     def _get_destroy_operator(self, solution, world_instance) -> \
             (Destroy, str):
+
         #neighborhood_size = 2
+
         neighborhood_size = random.uniform(
             HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1])
         if neighborhood_size == 0:

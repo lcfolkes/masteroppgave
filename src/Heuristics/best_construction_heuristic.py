@@ -540,7 +540,7 @@ class ConstructionHeuristic:
 if __name__ == "__main__":
     from pyinstrument import Profiler
 
-    filename = "InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a"
+    filename = "InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_c"
     ch = ConstructionHeuristic(filename + ".pkl", acceptance_percentage=1)
 
 
@@ -550,28 +550,31 @@ if __name__ == "__main__":
     emp1 = ch.employees_dict[1]
     emp2 = ch.employees_dict[2]
     cm20 = ch.car_moves_dict[20]
-    cm16 = ch.car_moves_dict[16]
+    cm26 = ch.car_moves_dict[26]
     cm8 = ch.car_moves_dict[8]
     cm9 = ch.car_moves_dict[9]
     cm16 = ch.car_moves_dict[16]
     cm26 = ch.car_moves_dict[26]
 
     #solution_dict = {emp1:[], emp2:[cm20, cm16]}
-    solution_dict = {emp1: [], emp2: [cm20]}
+    solution_dict = {emp1: [cm26], emp2: []}
     #ch.rebuild(solution_dict, stage="first", optimize=True)
     #ch.rebuild(solution_dict, stage="first")
     #ch.construct()
     #ch.print_solution()
 
 
-
+    '''
     solution_dict = {emp1: [[]*25],
                      emp2: [[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],
                             [cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],
                             [cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],
                             [cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16], [cm20, cm16]]}
+    '''
+
 
     ch.rebuild(solution_dict, stage="second")
+
     ch.print_solution()
     '''
     print("Add car moves 6 to 4 and 4 to 7 in first stage")
