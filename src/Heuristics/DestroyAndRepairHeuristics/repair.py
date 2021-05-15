@@ -171,7 +171,8 @@ class GreedyRandomInsertion(Repair):
             idx = np.floor(np.power(random.random(), self.determinism_parameter) * len(sorted_obj_val_list)).astype(int)
             car_move_employee, _ = sorted_obj_val_list[idx]
             car_move, employee = car_move_employee[0], car_move_employee[1]
-            sorted_obj_val_list.pop(idx)
+            sorted_obj_val_list = [(car_move_employee, idx) for (car_move_employee, idx) in sorted_obj_val_list if (
+                    car_move_employee[0] != car_move)]
             insert_car_move(current_solution, car_move, employee)
 
             self.objective_function.update(added_car_moves=[car_move])

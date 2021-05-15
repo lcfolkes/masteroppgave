@@ -158,7 +158,7 @@ class ALNS():
                             world_instance=self._world_instance)
                         destroy_heuristic.destroy()
 
-                        #print(f"Destroy: {destroy_heuristic}\n{destroy_heuristic.to_string()}")
+                        print(f"Destroy: {destroy_heuristic}\n{destroy_heuristic.to_string()}")
 
                         repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
                                                                      unused_car_moves=candidate_unused_car_moves,
@@ -166,7 +166,7 @@ class ALNS():
                                                                      operator_pair=operator_pair)
                         repair_heuristic.repair()
 
-                        #print(f"Repair: {repair_heuristic} {repair_heuristic.to_string()}")
+                        print(f"Repair: {repair_heuristic} {repair_heuristic.to_string()}")
 
                         hash_key = repair_heuristic.hash_key
                         if hash_key in visited_hash_keys:
@@ -328,10 +328,10 @@ class ALNS():
     def _initialize_operators(self):
         if self._num_employees < 3:
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_random': 1.0, 'random_regret2': 1.0, 'random_charge': 3.0,
-                 'worst_greedy': 1.0,  'worst_random': 1.0,  'worst_regret2': 1.0, 'worst_charge': 3.0,
-                 'shaw_greedy': 1.0,   'shaw_random': 1.0,   'shaw_regret2': 1.0, 'shaw_charge': 3.0,
-                 'charge_greedy': 3.0, 'charge_random': 3.0, 'charge_regret2': 3.0, 'charge_charge': 3.0})
+                {'random_greedy': 1.0, 'random_random': 1.0, 'random_regret2': 1.0, 'random_charge': 1.0,
+                 'worst_greedy': 1.0,  'worst_random': 1.0,  'worst_regret2': 1.0, 'worst_charge': 1.0,
+                 'shaw_greedy': 1.0,   'shaw_random': 1.0,   'shaw_regret2': 1.0, 'shaw_charge': 1.0,
+                 'charge_greedy': 1.0, 'charge_random': 1.0, 'charge_regret2': 1.0, 'charge_charge': 1.0})
 
         elif self._num_employees < 4:
             operators = OrderedDict(
@@ -383,9 +383,11 @@ class ALNS():
 
     def _get_destroy_operator(self, solution, world_instance) -> \
             (Destroy, str):
-        neighborhood_size = 2
-        #neighborhood_size = int(self._num_employees * self._num_first_stage_tasks * random.uniform(
-        #    HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1]))
+        #neighborhood_size = 2
+        neighborhood_size = int(self._num_employees * self._num_first_stage_tasks * random.uniform(
+            HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1]))
+        if neighborhood_size == 0:
+            neighborhood_size = 1
         w_sum = sum(w for o, w in self.operator_pairs.items())
         # dist = distribution
         w_dist = [w / w_sum for o, w in self.operator_pairs.items()]
