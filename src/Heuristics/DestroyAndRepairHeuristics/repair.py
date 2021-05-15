@@ -191,7 +191,7 @@ class GreedyRandomInsertion(Repair):
 
 
 
-    def _get_best_insertion(self, current_solution: {Employee: [CarMove]}, regret_nr=None) -> (CarMove, Employee):
+    def _get_best_insertion(self, current_solution: {Employee: [CarMove]}) -> (CarMove, Employee):
         """
         Finds the best car_move to insert, and the id of the employee that should perform it
         :param current_solution: a dictionary with key: employee id and value: list of car moves
@@ -223,6 +223,9 @@ class GreedyRandomInsertion(Repair):
                             obj_val_dict[(car_move, employee, idx)] = feasible_obj_val
 
                         current_solution[employee].remove(car_move)
+
+        if not obj_val_dict.items():
+            return None, None, None
 
         sorted_obj_val_list = sorted(obj_val_dict.items(), key=lambda x: x[-1], reverse=True)
 
@@ -259,7 +262,7 @@ class RegretInsertion(Repair):
         while q > 0:
             best_car_move, best_employee, idx = self._get_best_insertion(current_solution, self.regret_nr)
             if None in (best_car_move, best_employee):
-                print(f"Cannot insert more than {self.neighborhood_size - q} move(s)")
+                #print(f"Cannot insert more than {self.neighborhood_size - q} move(s)")
                 break
 
             insert_car_move(current_solution, best_car_move, best_employee, idx)
