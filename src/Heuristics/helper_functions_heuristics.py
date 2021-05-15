@@ -259,21 +259,16 @@ def get_first_stage_solution(input_solution, num_first_stage_tasks):
     return first_stage_solution
 
 def get_first_and_second_stage_solution(input_solution, num_first_stage_tasks):
-    print(input_solution)
     first_stage_solution = {}
     second_stage_solution = {}
-    # print(self.input_solution)
+
     for k, v in input_solution.items():
-        #print(f"emp[{k.employee_id}]")
-        #print(input_solution)
         # For solutions where number of assigned tasks are less than the number of first stage tasks
         # First stage
         first_stage_solution[k] = input_solution[k][0][:min(num_first_stage_tasks, len(input_solution[k][0]))]
-        #print(input_solution)
         # Second stage
         second_stage_solution[k] = []
         for s in range(len(v)):
-            #print(f"s[{s}]: {[cm.car_move_id for cm in v[s]]}")
             second_stage_solution[k].append(input_solution[k][s][min(num_first_stage_tasks, len(v[s])):])
 
     return first_stage_solution, second_stage_solution

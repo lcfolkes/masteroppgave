@@ -122,7 +122,7 @@ class FeasibilityChecker():
 		print(f"planning_period: {World.PLANNING_PERIOD}")
 		'''
 
-		if total_time < self.world_instance.planning_period:
+		if total_time <= self.world_instance.planning_period:
 			'''
 			print()
 			print(f"\nEmployee {employee.employee_id}")

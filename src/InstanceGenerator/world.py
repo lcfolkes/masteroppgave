@@ -104,6 +104,10 @@ class World:
         for node in parking_nodes:
             net_flow = node.ideal_state + node.customer_requests - node.car_returns - node.parking_state
             count = sum(1 for s in net_flow if s <= 0)
+            if node.node_id == 2:
+                print(net_flow)
+            if node.node_id == 5:
+                print(net_flow)
             if count / len(net_flow) >= acceptance_percentage:
                 out_list.append(node)
         return out_list

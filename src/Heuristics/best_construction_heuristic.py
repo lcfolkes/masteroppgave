@@ -111,13 +111,6 @@ class ConstructionHeuristic:
         else:
             first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(
                 solution, self.world_instance.first_stage_tasks)
-            for emp, cms in first_stage_solution.items():
-                print(emp.employee_id)
-                print([cm.car_move_id for cm in cms])
-
-            for emp, scenario in second_stage_solution.items():
-                print(emp.employee_id)
-                print([[cm.car_move_id for cm in cms] for cms in scenario])
 
             ### FIRST STAGE ###
             for employee_obj, car_move_objs in first_stage_solution.items():
@@ -180,7 +173,6 @@ class ConstructionHeuristic:
                         print(f"{first_stage_move_counter} first stage insertions completed\n")
 
             else:
-
                 ### GET BEST CAR MOVE ###
                 best_car_move_second_stage = self._get_best_car_move()
                 # print(f"Best car_move second stage: {[cm.car_move_id for cm in best_car_move_second_stage]}")
@@ -190,8 +182,9 @@ class ConstructionHeuristic:
 
                 ### GET BEST EMPLOYEE ###
                 best_employee_second_stage = self._get_best_employee(best_car_move=best_car_move_second_stage)
+
                 ### ADD CAR MOVE TO EMPLOYEE ###
-                if best_employee_second_stage is not None:
+                if not all(cm is None for cm in best_employee_second_stage):
                     self._add_car_move_to_employee(best_car_move=best_car_move_second_stage,
                                                    best_employee=best_employee_second_stage)
 
@@ -340,7 +333,7 @@ class ConstructionHeuristic:
                         if best_car_move[s] is not None:
                             legal_move, travel_time_to_car_move = self.feasibility_checker.check_legal_move(
                                 car_move=best_car_move[s], employee=employee, scenario=s, get_employee_travel_time=True)
-                            if legal_move and travel_time_to_car_move < best_travel_time_to_car_move_second_stage[s]:
+                            if legal_move and (travel_time_to_car_move < best_travel_time_to_car_move_second_stage[s]):
                                 best_travel_time_to_car_move_second_stage[s] = travel_time_to_car_move
                                 best_employee_second_stage[s] = employee
 
@@ -414,9 +407,6 @@ class ConstructionHeuristic:
                 self.world_instance.add_car_move_to_employee(car_move, employee, s)
                 self.objective_function.update(added_car_moves=[car_move], scenario=s)
                 self.assigned_car_moves[employee][s].append(car_move)
-                print(car_move.car_move_id)
-                print(s)
-                print([[cm.car_move_id for cm in scenario] for scenario in self.unused_car_moves])
                 self.unused_car_moves[s].remove(car_move)
                 self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(
                     car_move, self.car_moves_second_stage[s])
@@ -551,7 +541,7 @@ class ConstructionHeuristic:
 if __name__ == "__main__":
     from pyinstrument import Profiler
 
-    filename = "InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_c"
+    filename = "InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_a"
     ch = ConstructionHeuristic(filename + ".pkl", acceptance_percentage=2)
 
 
@@ -561,14 +551,15 @@ if __name__ == "__main__":
 
     emp1 = ch.employees_dict[1]
     emp2 = ch.employees_dict[2]
+    cm21 = ch.car_moves_dict[21]
     cm1 = ch.car_moves_dict[1]
-    cm15 = ch.car_moves_dict[15]
-    cm26 = ch.car_moves_dict[26]
-    cm4 = ch.car_moves_dict[4]
-    cm12 = ch.car_moves_dict[12]
-    cm9 = ch.car_moves_dict[9]
-    cm2 = ch.car_moves_dict[2]
-    cm5 = ch.car_moves_dict[5]
+    cm24 = ch.car_moves_dict[24]
+    cm71 = ch.car_moves_dict[71]
+    cm60 = ch.car_moves_dict[60]
+    cm10 = ch.car_moves_dict[10]
+    cm55 = ch.car_moves_dict[55]
+    cm40 = ch.car_moves_dict[40]
+
     #cm16 = ch.car_moves_dict[16]
     #cm26 = ch.car_moves_dict[26]
 
@@ -580,18 +571,25 @@ if __name__ == "__main__":
     #ch.print_solution()
 
     # 4 eller 9
+    '''
+    second_solution_dict = {emp1: [[cm60, cm10, cm21], [cm60, cm10], [cm60, cm10, cm21], [cm60, cm10, cm21], [cm60, cm10, cm1],
+                           [cm60, cm10], [cm60, cm10], [cm60, cm10, cm1], [cm60, cm10, cm21], [cm60, cm10, cm21],
+                           [cm60, cm10, cm21], [cm60, cm10, cm24], [cm60, cm10], [cm60, cm10], [cm60, cm10],
+                           [cm60, cm10], [cm60, cm10], [cm60, cm10], [cm60, cm10], [cm60, cm10],
+                           [cm60, cm10], [cm60, cm10], [cm60, cm10], [cm60, cm10], [cm60, cm10]],
+                     emp2: [[cm55, cm40], [cm55, cm40], [cm55, cm40], [cm55, cm40], [cm55, cm40],
+                           [cm55, cm40, cm71], [cm55, cm40, cm71], [cm55, cm40], [cm55, cm40], [cm55, cm40],
+                           [cm55, cm40], [cm55, cm40], [cm55, cm40], [cm55, cm40], [cm55, cm40],
+                           [cm55, cm40], [cm55, cm40, cm71], [cm55, cm40], [cm55, cm40], [cm55, cm40],
+                           [cm55, cm40, cm71], [cm55, cm40, cm71], [cm55, cm40, cm71], [cm55, cm40], [cm55, cm40]]}
+    '''
 
-    second_solution_dict = {emp1: [[cm15, cm26]]*25,
-                     emp2: [[cm4, cm12, cm9], [cm4, cm12, cm9], [cm4, cm12, cm1], [cm4, cm12, cm9], [cm4, cm12],
-                            [cm4, cm12, cm1], [cm4, cm12, cm9], [cm4, cm12, cm2], [cm4, cm12], [cm4, cm12, cm9],
-                            [cm4, cm12, cm5], [cm4, cm12], [cm4, cm12], [cm4, cm12], [cm4, cm12, cm9],
-                            [cm4, cm12], [cm4, cm12, cm9], [cm4, cm12, cm9], [cm4, cm12, cm9], [cm4, cm12, cm9],
-                            [cm4, cm12], [cm4, cm12, cm9],[cm4, cm12, cm1],[cm4, cm12, cm9],[cm4, cm12, cm9]]}
+    first_solution_dict = {emp1: [cm60, cm10], emp2: [cm55, cm40]}
 
     #first_solution_dict = {emp1: [cm15, cm26],
     #                 emp2: [cm4, cm12]}
 
-    ch.rebuild(second_solution_dict, stage="second")
+    ch.rebuild(first_solution_dict, stage="first")
 
     ch.print_solution()
 

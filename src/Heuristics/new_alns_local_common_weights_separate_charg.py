@@ -249,11 +249,15 @@ class ALNS():
                         heur_val_second_checkpoint = best_obj_val
                         obj_val_second_checkpoint = best_solution[1]
 
+
+
                 time_segment = time.perf_counter()
                 finish_times_segments.append(time_segment)
 
                 if verbose:
                     print(output_text)
+                    output_text = "\n"
+
                 loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val,
                              best_true_obj_val=best_solution[1])
 
@@ -331,24 +335,24 @@ class ALNS():
     def _initialize_operators(self):
         if self._num_employees < 3:
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_random': 0.0, 'random_regret2': 1.0, 'random_charge': 1.0,
-                 'worst_greedy': 1.0,  'worst_random': 0.0,  'worst_regret2': 1.0, 'worst_charge': 1.0,
-                 'shaw_greedy': 1.0,   'shaw_random': 0.0,   'shaw_regret2': 1.0, 'shaw_charge': 1.0,
-                 'charge_greedy': 1.0, 'charge_random': 0.0, 'charge_regret2': 1.0, 'charge_charge': 1.0})
+                {'random_greedy': 1.0, 'random_random': 1.0, 'random_regret2': 1.0, 'random_charge': 1.0,
+                 'worst_greedy': 1.0,  'worst_random': 1.0,  'worst_regret2': 1.0, 'worst_charge': 1.0,
+                 'shaw_greedy': 1.0,   'shaw_random': 1.0,   'shaw_regret2': 1.0, 'shaw_charge': 1.0,
+                 'charge_greedy': 1.0, 'charge_random': 1.0, 'charge_regret2': 1.0, 'charge_charge': 1.0})
 
         elif self._num_employees < 4:
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_random': 0.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': 3.0,
-                 'worst_greedy': 1.0, 'worst_random': 0.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_charge': 3.0,
-                 'shaw_greedy': 1.0, 'shaw_random': 0.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 3.0,
-                 'charge_greedy': 3.0, 'charge_random': 0.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_charge': 3.0})
+                {'random_greedy': 1.0, 'random_random': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': 3.0,
+                 'worst_greedy': 1.0, 'worst_random': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_charge': 3.0,
+                 'shaw_greedy': 1.0, 'shaw_random': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_random': 1.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_charge': 3.0})
 
         else:
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_random': 0.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0, 'random_charge': 3.0,
-                 'worst_greedy': 1.0, 'worst_random': 0.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0, 'worst_charge': 3.0,
-                 'shaw_greedy': 1.0, 'shaw_random': 0.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0, 'shaw_charge': 3.0,
-                 'charge_greedy': 3.0, 'charge_random': 0.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_regret4': 3.0, 'charge_charge': 3.0})
+                {'random_greedy': 1.0, 'random_random': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0, 'random_charge': 3.0,
+                 'worst_greedy': 1.0, 'worst_random': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0, 'worst_charge': 3.0,
+                 'shaw_greedy': 1.0, 'shaw_random': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0, 'shaw_charge': 3.0,
+                 'charge_greedy': 3.0, 'charge_random': 1.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_regret4': 3.0, 'charge_charge': 3.0})
 
         return operators
 
@@ -512,13 +516,13 @@ class ALNS():
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
-    filename = "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_c"
+    filename = "./InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_a"
 
     try:
 
         #profiler = Profiler()
         #profiler.start()
-        alns = ALNS(filename + ".pkl", acceptance_percentage=1)
+        alns = ALNS(filename + ".pkl", acceptance_percentage=HeuristicsConstants.ACCEPTANCE_PERCENTAGE)
         alns.run()
 
         #profiler.stop()
