@@ -359,7 +359,7 @@ class ChargeInsertion(Repair):
         unused_charging_moves = [cm for cm in self.unused_car_moves if (
                 cm.is_charging_move)]
 
-        print(f"charge_insertion charging moves: {[cm.car_move_id for cm in unused_charging_moves]}")
+        #print(f"charge_insertion charging moves: {[cm.car_move_id for cm in unused_charging_moves]}")
 
         '''unused_charging_moves = []
         for cm in unused_moves:

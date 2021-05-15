@@ -136,10 +136,8 @@ class ALNS():
                                                    self._num_first_stage_tasks,
                                                    self._feasibility_checker)
                         local_search.search("best_first")
-                        print("before rebuild")
                         self.solution.rebuild(local_search.solution, "second_stage")
                         visited_hash_keys.update(local_search.visited_list)
-                        print("after rebuild")
 
                     elif MODE == "LOCAL_FULL":
                         # print("\n----- LOCAL SEARCH FULL -----")
@@ -158,7 +156,7 @@ class ALNS():
                             world_instance=self._world_instance)
                         destroy_heuristic.destroy()
 
-                        print(f"Destroy: {destroy_heuristic}\n{destroy_heuristic.to_string()}")
+                        #print(f"{destroy_heuristic}\n{destroy_heuristic.to_string()}")
 
                         repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
                                                                      unused_car_moves=candidate_unused_car_moves,
@@ -166,7 +164,7 @@ class ALNS():
                                                                      operator_pair=operator_pair)
                         repair_heuristic.repair()
 
-                        print(f"Repair: {repair_heuristic} {repair_heuristic.to_string()}")
+                        #print(f"{repair_heuristic} {repair_heuristic.to_string()}")
 
                         hash_key = repair_heuristic.hash_key
                         if hash_key in visited_hash_keys:
@@ -321,6 +319,8 @@ class ALNS():
             f.close()
 
             if verbose:
+                print("BEST SOLUTION")
+                print(self.best_solution[0])
                 self.solution.rebuild(self.best_solution[0], "second_stage")
                 self.solution.print_solution()
             return f"obj_val: {best_solution[1]}, n_iterations: {i*iterations_segment + j}"
@@ -384,8 +384,10 @@ class ALNS():
     def _get_destroy_operator(self, solution, world_instance) -> \
             (Destroy, str):
         #neighborhood_size = 2
-        neighborhood_size = int(self._num_employees * self._num_first_stage_tasks * random.uniform(
-            HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1]))
+        #neighborhood_size = int(self._num_employees * self._num_first_stage_tasks * random.uniform(
+        #    HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1]))
+        neighborhood_size = random.uniform(
+            HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1])
         if neighborhood_size == 0:
             neighborhood_size = 1
         w_sum = sum(w for o, w in self.operator_pairs.items())
@@ -507,7 +509,7 @@ class ALNS():
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
-    filename = "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a"
+    filename = "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_b"
 
     try:
 
@@ -522,7 +524,8 @@ if __name__ == "__main__":
         #alns.solution.rebuild(alns.best_solution[0], "second_stage")
         #alns.solution.print_solution()
         #print(profiler.output_text(unicode=True, color=True))
-
+        gi = GurobiInstance(filename + ".yaml")
+        run_model(gi)
         '''
         print("\n############## Evaluate solution ##############")
         gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees)

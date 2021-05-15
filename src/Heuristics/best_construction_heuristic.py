@@ -101,7 +101,7 @@ class ConstructionHeuristic:
         self._initialize_for_rebuild()
 
         if stage == "first":
-            print("first rebuild")
+            #print("first rebuild")
             first_stage_solution = solution
             for employee_obj, car_move_objs in first_stage_solution.items():
                 emp = self.employees_dict[employee_obj.employee_id]
@@ -110,7 +110,7 @@ class ConstructionHeuristic:
                     self._add_car_move_to_employee(best_car_move=cm, best_employee=emp)
 
         else:
-            print("second rebuild")
+            #print("second rebuild")
             first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(
                 solution, self.world_instance.first_stage_tasks)
 
@@ -123,8 +123,8 @@ class ConstructionHeuristic:
                 self._add_car_move_to_employee_from_dict(employee=employee_obj, car_moves_scenarios=car_moves_scenarios)
         if optimize:
             self.construct()
-            print("CH: printsolution")
-            self.print_solution()
+            #print("CH: printsolution")
+            #self.print_solution()
 
         
     def _initialize_car_moves(self):
@@ -406,7 +406,7 @@ class ConstructionHeuristic:
                 self.world_instance.add_car_move_to_employee(car_move, employee, s)
                 self.objective_function.update(added_car_moves=[car_move], scenario=s)
                 self.assigned_car_moves[employee][s].append(car_move)
-                self.unused_car_moves[s].remove(car_move.car_move_id)
+                self.unused_car_moves[s].remove(car_move)
                 self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(
                     car_move, self.car_moves_second_stage[s])
 
@@ -559,21 +559,23 @@ if __name__ == "__main__":
     #solution_dict = {emp1:[], emp2:[cm20, cm16]}
     solution_dict = {emp1: [], emp2: [cm20]}
     #ch.rebuild(solution_dict, stage="first", optimize=True)
-    ch.rebuild(solution_dict, stage="first")
+    #ch.rebuild(solution_dict, stage="first")
     #ch.construct()
-    ch.print_solution()
+    #ch.print_solution()
 
 
-    '''
+
     solution_dict = {emp1: [[]*25],
-                     emp2: [[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16, cm8],[cm20, cm16],
+                     emp2: [[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],
                             [cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],
                             [cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],
                             [cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16], [cm20, cm16]]}
 
-    
+
+    ch.rebuild(solution_dict, stage="second")
+    #ch.construct()
     ch.print_solution()
-    '''
+
     '''
     print("Add car moves 6 to 4 and 4 to 7 in first stage")
     obj, heur = ch.objective_function.evaluate(added_car_moves=[cm20, cm16])
