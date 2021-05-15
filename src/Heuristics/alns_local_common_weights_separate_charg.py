@@ -42,14 +42,14 @@ class ALNS():
         self.best_solutions = None
         self.best_obj_val = 0
 
-        solution = ConstructionHeuristic(self.filename, acceptance_percentage)
-        self.num_employees = len(solution.employees)
+        self.solution = ConstructionHeuristic(self.filename, acceptance_percentage)
+        self.num_employees = len(self.solution.employees)
         self._num_first_stage_tasks = self.solution.num_first_stage_tasks
         self._feasibility_checker = self.solution.feasibility_checker
         self._world_instance = self.solution.world_instance
         self.operator_pairs = self._initialize_operators()
         self.operators_record = self._initialize_operator_records()
-        self.run(solution)
+        self.run(self.solution)
 
     def _initialize_new_iteration(self, current_unused_car_moves, current_solution):
 
@@ -140,7 +140,6 @@ class ALNS():
                         # print("\n----- LARGE NEIGHBORHOOD SEARCH -----")
                         destroy_heuristic, operator_pair = self._get_destroy_operator(
                             solution=candidate_solution.assigned_car_moves,
-                            neighborhood_size=1, randomization_degree=40,
                             world_instance=candidate_solution.world_instance)
                         destroy_heuristic.destroy()
                         # print("Destroy: ", destroy_heuristic, destroy_heuristic.solution)
@@ -476,7 +475,7 @@ if __name__ == "__main__":
     import time
     from best_objective_function import get_parking_nodes_in_out
 
-    filename = "InstanceGenerator/InstanceFiles/14nodes/14-10-1-1_a"
+    filename = "InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a"
 
     try:
         profiler = Profiler()
@@ -493,5 +492,5 @@ if __name__ == "__main__":
     # profiler.stop()
     # print(profiler.output_text(unicode=True, color=True))
     # print("\n############## Optimal solution ##############")
-    # gi2 = GurobiInstance(filename + ".yaml")
-    # run_model(gi2, time_limit=300)
+    gi2 = GurobiInstance(filename + ".yaml")
+    run_model(gi2, time_limit=300)

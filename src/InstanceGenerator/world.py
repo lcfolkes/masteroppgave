@@ -122,8 +122,7 @@ class World:
         irrelevant_end_nodes = self._irrelevant_end_nodes(self.parking_nodes, acceptance_percentage)
         irrelevant_start_nodes = self._irrelevant_start_nodes(self.parking_nodes, acceptance_percentage)
         for cm in self.car_moves:
-            if (
-                    cm.end_node not in irrelevant_end_nodes and cm.start_node not in irrelevant_start_nodes) or cm.is_charging_move:
+            if (cm.end_node not in irrelevant_end_nodes and cm.start_node not in irrelevant_start_nodes) or cm.is_charging_move:
                 relevant_car_moves.append(cm)
         self.relevant_car_moves = relevant_car_moves
 
