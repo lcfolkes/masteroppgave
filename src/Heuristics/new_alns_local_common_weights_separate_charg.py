@@ -328,7 +328,7 @@ class ALNS():
     def _initialize_operators(self):
         if self._num_employees < 3:
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_random': 1.0, 'random_regret2': 1.0, 'random_charge': 1.0,
+                {'random_greedy': 1.0, 'random_random': 10.0, 'random_regret2': 1.0, 'random_charge': 1.0,
                  'worst_greedy': 1.0,  'worst_random': 1.0,  'worst_regret2': 1.0, 'worst_charge': 1.0,
                  'shaw_greedy': 1.0,   'shaw_random': 1.0,   'shaw_regret2': 1.0, 'shaw_charge': 1.0,
                  'charge_greedy': 1.0, 'charge_random': 1.0, 'charge_regret2': 1.0, 'charge_charge': 1.0})

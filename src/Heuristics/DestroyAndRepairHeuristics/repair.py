@@ -4,6 +4,7 @@ from collections import OrderedDict
 
 import numpy as np
 
+from Heuristics.heuristics_constants import HeuristicsConstants
 from Heuristics.feasibility_checker import FeasibilityChecker
 from path_manager import path_to_src
 from abc import ABC, abstractmethod
@@ -367,16 +368,17 @@ class ChargeInsertion(Repair):
         '''
         while q > 0 and len(unused_charging_moves) > 0:
             unused_charging_moves = [cm for cm in unused_charging_moves if cm.end_node.num_charging[0] < cm.end_node.capacity]
-            #random_charging_move, best_employee, best_idx = self._get_best_insertion(current_solution,
-            #                                                                         unused_charging_moves)
-            random_charging_move, best_employee = self._get_best_insertion(current_solution, unused_charging_moves)
+            random_charging_move, best_employee, best_idx = self._get_best_insertion(current_solution,
+                                                                                     unused_charging_moves)
+
+            #random_charging_move, best_employee = self._get_best_insertion(current_solution, unused_charging_moves)
             #if random_charging_move is None or best_employee is None or best_idx is None:
             if random_charging_move is None or best_employee is None:
                 break
             #if random_charging_move.end_node.num_charging[0] == random_charging_move.end_node.capacity:
             #    continue
-            #insert_car_move(current_solution, random_charging_move, best_employee, best_idx)
-            insert_car_move(current_solution, random_charging_move, best_employee)
+            insert_car_move(current_solution, random_charging_move, best_employee, best_idx)
+            #insert_car_move(current_solution, random_charging_move, best_employee)
             # random_charging_move.end_node.add_car()
             self.unused_car_moves = remove_all_car_moves_of_car_in_car_move(random_charging_move, self.unused_car_moves)
             unused_charging_moves = remove_all_car_moves_of_car_in_car_move(random_charging_move, unused_charging_moves)
@@ -389,7 +391,8 @@ class ChargeInsertion(Repair):
         try:
             random_charging_move = random.choice(unused_charging_moves)
         except:
-            return None, None
+            return None, None, None
+        '''
         feasible_employees = []
         for employee, employee_moves in current_solution.items():
             if len(employee_moves) < self.num_first_stage_tasks:
@@ -404,9 +407,8 @@ class ChargeInsertion(Repair):
             return random_charging_move, random_employee
         except:
             return None, None
-
-
         '''
+
         obj_val_dict = {}
         feasible_idx = []
         
@@ -421,7 +423,7 @@ class ChargeInsertion(Repair):
                         return_inter_node_travel_time=True)
                     if feasible:
                         feasible_idx.append(idx)
-                        cost_travel_time_between_car_moves = 0.05 * inter_node_travel_time
+                        cost_travel_time_between_car_moves = HeuristicsConstants.TRAVEL_DISTANCE_WEIGHT * inter_node_travel_time
                         obj_val_dict[(employee, idx)] = obj_val - cost_travel_time_between_car_moves
                     current_solution[employee].remove(random_charging_move)
 
@@ -435,7 +437,7 @@ class ChargeInsertion(Repair):
         best_employee, best_idx = random.choice(best_employees_and_idx)
     
         return random_charging_move, best_employee, best_idx
-        '''
+
 
 
 if __name__ == "__main__":
