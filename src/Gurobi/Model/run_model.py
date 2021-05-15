@@ -82,10 +82,10 @@ def run_model(model, stochastic=True, time_limit=None, reset=False):
 
 		# initialize dataframes of routes and schedules
 		df_firststage_routes = pd.DataFrame(
-			columns=["Employee", "Task", "Route", "Travel Time to Task", "Start time", "Relocation Time",
+			columns=["Employee", "Task", "Car-move", "Route", "Travel Time to Task", "Start time", "Relocation Time",
 					 "End time"])
 		df_secondstage_routes = pd.DataFrame(
-			columns=["Employee", "Task", "Scenario", "Route", "Travel Time to Task", "Start time", "Relocation Time",
+			columns=["Employee", "Task", "Scenario", "Car-move", "Route", "Travel Time to Task", "Start time", "Relocation Time",
 					 "End time"])
 
 		# calculate travel times
@@ -117,13 +117,13 @@ def run_model(model, stochastic=True, time_limit=None, reset=False):
 				# first stage routes
 				if x[1] <= len(model.TASKS_FIRST_STAGE):
 					if (x[2] == 1):
-						first_stage_row = [k, x[1], (model.CARMOVE_ORIGIN[x[0]], model.CARMOVE_DESTINATION[x[0]]), tt, t[x[2]], rt,
+						first_stage_row = [k,  x[1], x[0], (model.CARMOVE_ORIGIN[x[0]], model.CARMOVE_DESTINATION[x[0]]), tt, t[x[2]], rt,
 										   t[x[2]] + rt]
 						df_firststage_routes.loc[len(df_firststage_routes)] = first_stage_row
 
 				# second stage routes
 				else:
-					second_stage_row = [k, x[1], x[2], (model.CARMOVE_ORIGIN[x[0]], model.CARMOVE_DESTINATION[x[0]]), tt, t[x[2]],
+					second_stage_row = [k,  x[1], x[2], x[0], (model.CARMOVE_ORIGIN[x[0]], model.CARMOVE_DESTINATION[x[0]]), tt, t[x[2]],
 										rt, t[x[2]] + rt]
 					df_secondstage_routes.loc[len(df_secondstage_routes)] = second_stage_row
 				# print("Task: {0}, Scenario: {1}, ({2} --> {3}), Travel Time to Task: {4:.1f}, Start time: {5:.1f}, "

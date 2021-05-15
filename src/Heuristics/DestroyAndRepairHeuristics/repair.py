@@ -105,14 +105,14 @@ class GreedyInsertion(Repair):
         current_solution = self.solution
 
         while q > 0:
-            best_car_move, best_employee = self._get_best_insertion(current_solution)
+            best_car_move, best_employee, best_idx = self._get_best_insertion(current_solution)
 
             # Handles cases when you cannot insert q car_moves to the solution
-            if None in (best_car_move, best_employee):
+            if None in (best_car_move, best_employee, best_idx):
                 # print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
                 break
 
-            insert_car_move(current_solution, best_car_move, best_employee)
+            insert_car_move(current_solution, best_car_move, best_employee, best_idx)
 
             self.objective_function.update(added_car_moves=[best_car_move])
             self.unused_car_moves = remove_all_car_moves_of_car_in_car_move(best_car_move, self.unused_car_moves)
@@ -128,6 +128,7 @@ class GreedyInsertion(Repair):
         best_car_move = None
         best_employee = None
         best_obj_val = self.objective_function.heuristic_objective_value
+        best_idx = None
 
         for car_move in self.unused_car_moves:
             # Checks if best car move is a charging move to a node where the remaining charging capacity is zero
@@ -140,17 +141,23 @@ class GreedyInsertion(Repair):
 
             for employee, employee_moves in current_solution.items():
                 if len(employee_moves) < self.num_first_stage_tasks:
+                    obj_val = self.objective_function.evaluate(added_car_moves=[car_move], mode="heuristic")
+                    for idx in range(len(employee_moves) + 1):
+                        current_solution[employee].insert(idx, car_move)
+                        # insert_car_move(current_solution, car_move, employee, idx)
+                        feasible, inter_node_travel_time = self.feasibility_checker.is_first_stage_solution_feasible(
+                            solution={employee: current_solution[employee]},
+                            return_inter_node_travel_time=True)
+                        if feasible:
+                            cost_travel_time_between_car_moves = 0.05 * inter_node_travel_time
+                            feasible_obj_val = obj_val - cost_travel_time_between_car_moves
+                            if feasible_obj_val > best_obj_val:
+                                best_car_move = car_move
+                                best_employee = employee
+                                best_idx = idx
+                        current_solution[employee].remove(car_move)
 
-                    if self.feasibility_checker.is_first_stage_solution_feasible(
-                            {employee: current_solution[employee] + [car_move]}):
-                        obj_val = self.objective_function.evaluate(added_car_moves=[car_move], mode="heuristic")
-
-                        if obj_val > best_obj_val:
-                            best_obj_val = obj_val
-                            best_car_move = car_move
-                            best_employee = employee
-
-        return best_car_move, best_employee
+        return best_car_move, best_employee, best_idx
 
 class GreedyRandomInsertion(Repair):
 
@@ -164,21 +171,25 @@ class GreedyRandomInsertion(Repair):
         Greedily assigns car moves to employees and returns the repaired solution
         :return: a repaired solution in the form of a dictionary with key: employee id and value: a list of car moves
         """
+
         q = self.neighborhood_size
         current_solution = self.solution
-        sorted_obj_val_list = self._get_best_insertion(current_solution)
-        while q > 0 and len(sorted_obj_val_list) > 0:
-            idx = np.floor(np.power(random.random(), self.determinism_parameter) * len(sorted_obj_val_list)).astype(int)
-            car_move_employee, _ = sorted_obj_val_list[idx]
-            car_move, employee = car_move_employee[0], car_move_employee[1]
-            sorted_obj_val_list = [(car_move_employee, idx) for (car_move_employee, idx) in sorted_obj_val_list if (
-                    car_move_employee[0] != car_move)]
-            insert_car_move(current_solution, car_move, employee)
 
-            self.objective_function.update(added_car_moves=[car_move])
-            self.unused_car_moves = remove_all_car_moves_of_car_in_car_move(car_move, self.unused_car_moves)
+        while q > 0:
+            best_car_move, best_employee, best_idx = self._get_best_insertion(current_solution)
+
+            # Handles cases when you cannot insert q car_moves to the solution
+            if None in (best_car_move, best_employee, best_idx):
+                # print(f"Cannot insert more than {self.neighborhood_size-q} move(s)")
+                break
+
+            insert_car_move(current_solution, best_car_move, best_employee, best_idx)
+
+            self.objective_function.update(added_car_moves=[best_car_move])
+            self.unused_car_moves = remove_all_car_moves_of_car_in_car_move(best_car_move, self.unused_car_moves)
             q -= 1
-        # return current_solution
+
+
 
     def _get_best_insertion(self, current_solution: {Employee: [CarMove]}, regret_nr=None) -> (CarMove, Employee):
         """
@@ -199,17 +210,27 @@ class GreedyRandomInsertion(Repair):
 
             for employee, employee_moves in current_solution.items():
                 if len(employee_moves) < self.num_first_stage_tasks:
+                    obj_val = self.objective_function.evaluate(added_car_moves=[car_move], mode="heuristic")
+                    for idx in range(len(employee_moves) + 1):
+                        current_solution[employee].insert(idx, car_move)
+                        # insert_car_move(current_solution, car_move, employee, idx)
+                        feasible, inter_node_travel_time = self.feasibility_checker.is_first_stage_solution_feasible(
+                            solution={employee: current_solution[employee]},
+                            return_inter_node_travel_time=True)
+                        if feasible:
+                            cost_travel_time_between_car_moves = 0.05 * inter_node_travel_time
+                            feasible_obj_val = obj_val - cost_travel_time_between_car_moves
+                            obj_val_dict[(car_move, employee, idx)] = feasible_obj_val
 
-                    if self.feasibility_checker.is_first_stage_solution_feasible(
-                            {employee: current_solution[employee] + [car_move]}):
-                        obj_val = self.objective_function.evaluate(added_car_moves=[car_move], mode="heuristic")
+                        current_solution[employee].remove(car_move)
 
-                        obj_val_dict[(car_move, employee)] = obj_val
+        sorted_obj_val_list = sorted(obj_val_dict.items(), key=lambda x: x[-1], reverse=True)
 
+        idx = np.floor(np.power(random.random(), self.determinism_parameter) * len(sorted_obj_val_list)).astype(int)
+        car_move_employee_idx, _ = sorted_obj_val_list[idx]
+        best_car_move, best_employee, best_idx = car_move_employee_idx[0], car_move_employee_idx[1], car_move_employee_idx[2]
 
-        obj_val_ordered_list = sorted(obj_val_dict.items(), key=lambda x: x[-1],reverse=True)
-
-        return obj_val_ordered_list
+        return best_car_move, best_employee, best_idx
 
 
 
