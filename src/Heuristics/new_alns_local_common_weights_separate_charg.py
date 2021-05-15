@@ -58,7 +58,6 @@ class ALNS():
         self.operators_record = self._initialize_operator_records()
 
     def _initialize_new_iteration(self, current_unused_car_moves, current_solution):
-
         candidate_unused_car_moves = copy_unused_car_moves_2d_list(current_unused_car_moves)
 
         candidate_solution = copy_solution_dict(current_solution)
@@ -158,7 +157,7 @@ class ALNS():
                             world_instance=self._world_instance)
                         destroy_heuristic.destroy()
 
-                        # print(f"Destroy: {destroy_heuristic}\n{destroy_heuristic.solution}\n{destroy_heuristic.to_string()}")
+                        print(f"Destroy: {destroy_heuristic}\n{destroy_heuristic.to_string()}")
                         # print(destroy)
 
                         repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
@@ -167,7 +166,7 @@ class ALNS():
                                                                      operator_pair=operator_pair)
                         repair_heuristic.repair()
 
-                        # print("Repair: ", repair_heuristic, repair_heuristic.solution)
+                        print(f"Repair: {repair_heuristic}\n{repair_heuristic.to_string()}")
                         # repair_heuristic.to_string()
                         hash_key = repair_heuristic.hash_key
                         if hash_key in visited_hash_keys:
@@ -326,10 +325,10 @@ class ALNS():
     def _initialize_operators(self):
         if self._num_employees < 3:
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_charge': 3.0,
-                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_charge': 3.0,
-                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_charge': 3.0,
-                 'charge_greedy': 3.0, 'charge_regret2': 3.0, 'charge_charge': 20.0})
+                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_charge': 1.0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_charge': 1.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_charge': 1.0,
+                 'charge_greedy': 1.0, 'charge_regret2': 1.0, 'charge_charge': 1.0})
 
         elif self._num_employees < 4:
             operators = OrderedDict(
