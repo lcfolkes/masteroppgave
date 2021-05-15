@@ -528,6 +528,10 @@ if __name__ == "__main__":
         #alns.solution.print_solution()
         #print(profiler.output_text(unicode=True, color=True))
 
+        print("\n############## Evaluate solution ##############")
+        gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees)
+        run_model(gi)
+
         print("\n############## Optimal solution ##############")
         gi = GurobiInstance(filename + ".yaml")
         run_model(gi)
