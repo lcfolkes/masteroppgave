@@ -71,6 +71,9 @@ class RandomRemoval(Destroy):
         solution = self.solution
 
         n_size = self.neighborhood_size
+
+        legal_employees = []
+
         while n_size > 0:
             k = random.choice(list(solution.keys()))
             # ensures list of chosen key is not empty

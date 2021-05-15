@@ -156,7 +156,7 @@ class ALNS():
                             world_instance=self._world_instance)
                         destroy_heuristic.destroy()
 
-                        #print(f"{destroy_heuristic}\n{destroy_heuristic.to_string()}")
+                        print(f"{destroy_heuristic}\n{destroy_heuristic.to_string()}")
 
                         repair_heuristic = self._get_repair_operator(destroyed_solution_object=destroy_heuristic,
                                                                      unused_car_moves=candidate_unused_car_moves,
@@ -164,7 +164,7 @@ class ALNS():
                                                                      operator_pair=operator_pair)
                         repair_heuristic.repair()
 
-                        #print(f"{repair_heuristic} {repair_heuristic.to_string()}")
+                        print(f"{repair_heuristic} {repair_heuristic.to_string()}")
 
                         hash_key = repair_heuristic.hash_key
                         if hash_key in visited_hash_keys:
@@ -383,7 +383,7 @@ class ALNS():
 
     def _get_destroy_operator(self, solution, world_instance) -> \
             (Destroy, str):
-        #neighborhood_size = 2
+        #neighborhood_size = 1
         #neighborhood_size = int(self._num_employees * self._num_first_stage_tasks * random.uniform(
         #    HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1]))
         neighborhood_size = random.uniform(
@@ -509,7 +509,7 @@ class ALNS():
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
-    filename = "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_b"
+    filename = "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_c"
 
     try:
 
