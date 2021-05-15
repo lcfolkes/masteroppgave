@@ -59,7 +59,6 @@ class ALNS():
         self.operators_record = self._initialize_operator_records()
 
     def _initialize_new_iteration(self, current_unused_car_moves, current_solution):
-
         candidate_unused_car_moves = copy_unused_car_moves_2d_list(current_unused_car_moves)
 
         candidate_solution = copy_solution_dict(current_solution)
@@ -106,9 +105,8 @@ class ALNS():
         # MODE = "LOCAL"
         MODE = "LOCAL_FIRST"
 
-        # temperature = 1000  # Start temperature must be set differently. High temperature --> more randomness
         temperature = (-np.abs(heuristic_obj_vals[0])) * 0.05 / np.log(0.5)
-        # cooling_rate = 0.5  # cooling_rate in (0,1)
+        #cooling_rate = 0.5  # cooling_rate in (0,1)
         cooling_rate = np.exp(np.log(0.002) / 200)
 
         # SEGMENTS
@@ -138,8 +136,10 @@ class ALNS():
                                                    self._num_first_stage_tasks,
                                                    self._feasibility_checker)
                         local_search.search("best_first")
+                        print("before rebuild")
                         self.solution.rebuild(local_search.solution, "second_stage")
                         visited_hash_keys.update(local_search.visited_list)
+                        print("after rebuild")
 
                     elif MODE == "LOCAL_FULL":
                         # print("\n----- LOCAL SEARCH FULL -----")
@@ -283,7 +283,7 @@ class ALNS():
             plt.legend(bbox_to_anchor=(.75, 1.0))
             plt.show()
             '''
-
+            '''
             f, (ax1, ax2) = plt.subplots(2, 1)
             #print("iterations", iterations)
             #print("true_obj_vals", true_obj_vals)
@@ -301,7 +301,7 @@ class ALNS():
                        fancybox=True, shadow=False)
 
             f.show()
-
+            '''
             # Strings to save to file
             obj_val_txt = f"Objective value: {str(best_solution[1])}\n"
             heur_val_txt = f"Heuristic value: {str(best_obj_val)}\n"
@@ -383,9 +383,9 @@ class ALNS():
 
     def _get_destroy_operator(self, solution, world_instance) -> \
             (Destroy, str):
-
-        neighborhood_size = int(self._num_employees * self._num_first_stage_tasks * random.uniform(
-            HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1]))
+        neighborhood_size = 2
+        #neighborhood_size = int(self._num_employees * self._num_first_stage_tasks * random.uniform(
+        #    HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1]))
         w_sum = sum(w for o, w in self.operator_pairs.items())
         # dist = distribution
         w_dist = [w / w_sum for o, w in self.operator_pairs.items()]
@@ -505,32 +505,33 @@ class ALNS():
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
-    filename = "./InstanceGenerator/InstanceFiles/30nodes/30-10-2-1_a"
+    filename = "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a"
 
     try:
 
         #profiler = Profiler()
         #profiler.start()
-        alns = ALNS(filename + ".pkl", acceptance_percentage=0.7)
+        alns = ALNS(filename + ".pkl", acceptance_percentage=1)
         alns.run()
 
         #profiler.stop()
         print("best solution")
         print("obj_val", alns.best_solution[1])
-        alns.solution.rebuild(alns.best_solution[0], "second_stage")
-        alns.solution.print_solution()
+        #alns.solution.rebuild(alns.best_solution[0], "second_stage")
+        #alns.solution.print_solution()
         #print(profiler.output_text(unicode=True, color=True))
 
-        print("\n############## Evaluate solution ##############")
-        gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=False)
-        run_model(gi)
         '''
+        print("\n############## Evaluate solution ##############")
+        gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees)
+        run_model(gi)
         print("\n############## Reoptimized solution ##############")
         gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=True)
         run_model(gi)
         print("\n############## Optimal solution ##############")
         gi2 = GurobiInstance(filename + ".yaml")
         run_model(gi2, time_limit=300)'''
+
     except KeyboardInterrupt:
         print('Interrupted')
         try:

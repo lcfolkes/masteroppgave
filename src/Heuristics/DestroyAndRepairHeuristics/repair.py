@@ -349,40 +349,66 @@ class ChargeInsertion(Repair):
         """
         q = self.neighborhood_size
         current_solution = self.solution
+        '''    
+        unused_charging_moves = [cm for cm in self.unused_car_moves if (
+                cm.is_charging_move and
+                cm not in self.moves_not_insert)]
+        '''
+        unused_charging_moves = [cm for cm in self.unused_car_moves if (
+                cm.is_charging_move)]
 
-        unused_moves = self.unused_car_moves
-        unused_charging_moves = []
+        print(f"charge_insertion charging moves: {[cm.car_move_id for cm in unused_charging_moves]}")
+
+        '''unused_charging_moves = []
         for cm in unused_moves:
             if cm.is_charging_move and cm not in self.moves_not_insert:
                 unused_charging_moves.append(cm)
-
+        '''
         while q > 0 and len(unused_charging_moves) > 0:
-            random_charging_move, best_employee, best_idx = self._get_best_insertion(current_solution,
-                                                                                     unused_charging_moves)
-            if random_charging_move is None or best_employee is None or best_idx is None:
+            unused_charging_moves = [cm for cm in unused_charging_moves if cm.end_node.num_charging[0] < cm.end_node.capacity]
+            #random_charging_move, best_employee, best_idx = self._get_best_insertion(current_solution,
+            #                                                                         unused_charging_moves)
+            random_charging_move, best_employee = self._get_best_insertion(current_solution, unused_charging_moves)
+            #if random_charging_move is None or best_employee is None or best_idx is None:
+            if random_charging_move is None or best_employee is None:
                 break
-            if random_charging_move.end_node.num_charging[0] == random_charging_move.end_node.capacity:
-                continue
-            insert_car_move(current_solution, random_charging_move, best_employee, best_idx)
+            #if random_charging_move.end_node.num_charging[0] == random_charging_move.end_node.capacity:
+            #    continue
+            #insert_car_move(current_solution, random_charging_move, best_employee, best_idx)
+            insert_car_move(current_solution, random_charging_move, best_employee)
             # random_charging_move.end_node.add_car()
             self.unused_car_moves = remove_all_car_moves_of_car_in_car_move(random_charging_move, self.unused_car_moves)
+            unused_charging_moves = remove_all_car_moves_of_car_in_car_move(random_charging_move, unused_charging_moves)
 
             self.objective_function.update(added_car_moves=[random_charging_move])
             q -= 1
 
     def _get_best_insertion(self, current_solution: {Employee: [CarMove]}, unused_charging_moves) -> (
-            CarMove, Employee):
-        random_charging_move = random.choice(unused_charging_moves)
-        tries = 0
-        while random_charging_move.end_node.num_charging[0] == random_charging_move.end_node.capacity:
+            CarMove, Employee, int):
+        try:
             random_charging_move = random.choice(unused_charging_moves)
-            tries += 1
-            if tries > 10:
-                return None, None, None
+        except:
+            return None, None
+        feasible_employees = []
+        for employee, employee_moves in current_solution.items():
+            if len(employee_moves) < self.num_first_stage_tasks:
+                obj_val = self.objective_function.evaluate(added_car_moves=[random_charging_move], mode="heuristic")
+                feasible, inter_node_travel_time = self.feasibility_checker.is_first_stage_solution_feasible(
+                        solution={employee: current_solution[employee] + [random_charging_move]},
+                        return_inter_node_travel_time=True)
+                if feasible:
+                    feasible_employees.append(employee)
+        try:
+            random_employee = random.choice(feasible_employees)
+            return random_charging_move, random_employee
+        except:
+            return None, None
 
+
+        '''
         obj_val_dict = {}
         feasible_idx = []
-
+        
         for employee, employee_moves in current_solution.items():
             if len(employee_moves) < self.num_first_stage_tasks:
                 obj_val = self.objective_function.evaluate(added_car_moves=[random_charging_move], mode="heuristic")
@@ -406,8 +432,9 @@ class ChargeInsertion(Repair):
             if value == obj_values_sorted[0]:
                 best_employees_and_idx.append(key)
         best_employee, best_idx = random.choice(best_employees_and_idx)
-
+    
         return random_charging_move, best_employee, best_idx
+        '''
 
 
 if __name__ == "__main__":
