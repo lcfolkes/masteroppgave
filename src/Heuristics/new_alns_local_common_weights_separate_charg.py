@@ -98,7 +98,6 @@ class ALNS():
             self.solution.print_solution()
             print(f"Construction heuristic true obj. val {true_obj_val}")
             print(f"Heuristic obj. val {heuristic_obj_vals[0]}")
-            print(f"Heuristic obj. val {heuristic_obj_vals[0]}")
         current_solution = copy_solution_dict(self.solution.assigned_car_moves)
         current_unused_car_moves = copy_unused_car_moves_2d_list(self.solution.unused_car_moves)
         visited_hash_keys.add(self.solution.hash_key)
@@ -246,6 +245,7 @@ class ALNS():
                         obj_val_first_checkpoint = best_solution[1]
                     if time.perf_counter() - start > second_checkpoint and not second_checkpoint_reached:
                         second_checkpoint_reached = True
+
                         heur_val_second_checkpoint = best_obj_val
                         obj_val_second_checkpoint = best_solution[1]
 
@@ -516,7 +516,7 @@ class ALNS():
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
-    filename = "./InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_a"
+    filename = "./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_a"
 
     try:
 
@@ -526,8 +526,6 @@ if __name__ == "__main__":
         alns.run()
 
         #profiler.stop()
-        print("best solution")
-        print("obj_val", alns.best_solution[1])
         #alns.solution.rebuild(alns.best_solution[0], "second_stage")
         #alns.solution.print_solution()
         #print(profiler.output_text(unicode=True, color=True))
