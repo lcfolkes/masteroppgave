@@ -3,6 +3,8 @@ import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 from itertools import product
+
+import Heuristics.heuristics_constants
 from HelperFiles.helper_functions import read_config, read_2d_array_to_dict, create_dict_of_indices, create_car_moves_origin_destination
 from path_manager import path_to_src
 import os
@@ -59,9 +61,12 @@ class GurobiInstance:
             'cars_in_need_of_charging_at_nodes']))  # S_i^C, Initial number of cars that require charging at parking node i
         self.INITIAL_AVAILABLE_CAPACITY = dict(zip(self.CHARGING_NODES, self.cf[
             'charging_slots_available']))  # N_i^(CS), Initial available capacity of charging node i
-        self.TASKS_FIRST_STAGE = np.arange(1, self.cf[
-            'num_first_stage_tasks'] + 1)  # F, number of tasks in first stage, check that F is smaller or equal to len(M)
-        self.TASKS_SECOND_STAGE = np.arange(self.cf['num_first_stage_tasks'] + 1, self.cf['num_tasks'] + 1)
+        self.TASKS_FIRST_STAGE = np.arange(1, Heuristics.heuristics_constants.HeuristicsConstants.NUM_FIRST_STAGE_TASKS + 1)
+
+        #self.TASKS_FIRST_STAGE = np.arange(1, self.cf[
+        #    'num_first_stage_tasks'] + 1)  # F, number of tasks in first stage, check that F is smaller or equal to len(M)
+        #self.TASKS_SECOND_STAGE = np.arange(self.cf['num_first_stage_tasks'] + 1, self.cf['num_tasks'] + 1)
+        self.TASKS_SECOND_STAGE = np.arange(self.TASKS_FIRST_STAGE + 1, self.cf['num_tasks'] + 1)
         self.PARKING_MOVES_ORIGINATING_IN_NODE, self.PARKING_MOVES_ENDING_IN_NODE, self.CHARGING_MOVES_ORIGINATING_IN_NODE, self.CHARGING_MOVES_ENDING_IN_NODE \
             = create_car_moves_origin_destination(self.PARKING_NODES, self.CHARGING_NODES, self.cf['car_move_origin'],
                                                   self.cf['car_move_destination'])
@@ -77,7 +82,7 @@ class GurobiInstance:
         self.EMPLOYEE_START_LOCATION = dict(
             zip(self.EMPLOYEES, self.cf['start_node_employee']))  # o(k), location of employee k at time T^(SO)_k
         self.TRAVEL_TIME = self.cf['travel_time_bike'][0]  # T_(ij), travel times between node i and j
-        self.PLANNING_PERIOD = self.cf['planning_period']  # T^bar, planning period
+        self.PLANNING_PERIOD = Heuristics.heuristics_constants.HeuristicsConstants.PLANNING_PERIOD#self.cf['planning_period']  # T^bar, planning period
         self.BIGM = dict(zip(self.CARMOVES, self.cf['bigM']))
         self.scenarios = np.arange(1, self.cf['num_scenarios'] + 1)
 

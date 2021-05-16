@@ -162,7 +162,7 @@ num_parking_nodes: 20
 num_scenarios: 25
 num_tasks: 4
 parking_state: [0, 2, 0, 1, 3, 0, 2, 1, 1, 1, 0, 1, 0, 1, 0, 2, 1, 0, 0, 0]
-planning_period: 60
+planning_period: 80
 profit_rental: 40.5
 start_node_employee: [12, 1, 20, 1]
 start_time_car: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]

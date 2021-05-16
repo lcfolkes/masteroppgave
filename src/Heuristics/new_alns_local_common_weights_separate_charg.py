@@ -195,7 +195,7 @@ class ALNS():
                                 best_obj_val = candidate_obj_val
                                 best_solution = (copy_solution_dict(self.solution.assigned_car_moves), true_obj_val)
                                 output_text += str(
-                                    counter) + f" {colored('New best solution globally:', 'green')} {colored(round(candidate_obj_val, 2), 'green')}\n"
+                                    counter) + f" {colored('New best solution globally:', 'green')} {colored(round(candidate_obj_val, 2), 'green')}{colored(', found by ', 'green')}{colored(MODE, 'green')}\n"
                                 counter += 1
                                 # print("NEW GLOBAL SOLUTION")
                                 # self.solution.print_solution()
@@ -204,7 +204,7 @@ class ALNS():
                             # NEW LOCAL BEST
                             else:
                                 output_text += str(
-                                    counter) + f" {colored('New best solution locally:', 'blue')} {colored(round(candidate_obj_val, 2), 'blue')}\n"
+                                    counter) + f" {colored('New best solution locally:', 'blue')} {colored(round(candidate_obj_val, 2), 'blue')}{colored(', found by ', 'blue')}{colored(MODE, 'blue')}\n"
                                 counter += 1
                                 if MODE == "LNS":
                                     self._update_weight_record(_IS_BETTER, destroy_heuristic, repair_heuristic)
@@ -215,7 +215,7 @@ class ALNS():
                         else:
                             p = np.exp(- (current_obj_val - candidate_obj_val) / temperature)
                             output_text += str(
-                                counter) + f"{colored(' New accepted solution: ', 'magenta')}{colored(round(candidate_obj_val, 2), 'magenta')}{colored(', acceptance probability was' , 'magenta')} {colored(round(p, 2), 'magenta')}{colored(', temperature was ', 'magenta')}{colored(round(temperature, 2), 'magenta')} \n"
+                                counter) + f"{colored(' New accepted solution: ', 'magenta')}{colored(round(candidate_obj_val, 2), 'magenta')}{colored(', found by ', 'magenta')}{colored(MODE, 'magenta')}{colored(', acceptance probability was' , 'magenta')} {colored(round(p, 2), 'magenta')}{colored(', temperature was ', 'magenta')}{colored(round(temperature, 2), 'magenta')} \n"
                             counter += 1
                             if MODE == "LNS":
                                 self._update_weight_record(_IS_ACCEPTED, destroy_heuristic, repair_heuristic)
@@ -230,7 +230,7 @@ class ALNS():
 
                     else:
                         output_text += str(
-                            counter) + f" {colored('Not accepted solution:', 'red')} {colored(round(candidate_obj_val, 2), 'red')}\n"
+                            counter) + f" {colored('Not accepted solution:', 'red')} {colored(round(candidate_obj_val, 2), 'red')}{colored(', found by ', 'red')}{colored(MODE, 'red')}\n"
                         counter += 1
                         MODE = "LNS"
 

@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 
+import Heuristics.heuristics_constants
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Heuristics.feasibility_checker import FeasibilityChecker
 from Heuristics.helper_functions_heuristics import remove_all_car_moves_of_car_in_car_move, \
@@ -28,10 +29,11 @@ class ConstructionHeuristic:
         self.world_instance = load_object_from_file(instance_file)
         self.world_instance.initialize_relevant_car_moves(acceptance_percentage)
         self.objective_function = ObjectiveFunction(self.world_instance)
-        # self.world_instance.planning_period = 100
+        self.world_instance.planning_period = Heuristics.heuristics_constants.HeuristicsConstants.PLANNING_PERIOD
         self.feasibility_checker = FeasibilityChecker(self.world_instance)
         self.num_scenarios = self.world_instance.num_scenarios
-        self.num_first_stage_tasks = self.world_instance.first_stage_tasks
+        self.num_first_stage_tasks = Heuristics.heuristics_constants.HeuristicsConstants.NUM_FIRST_STAGE_TASKS
+        #self.num_first_stage_tasks = self.world_instance.first_stage_tasks
         self.employees = self.world_instance.employees
         self.parking_nodes = self.world_instance.parking_nodes
         self.cars = self.world_instance.cars
