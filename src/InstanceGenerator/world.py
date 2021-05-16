@@ -104,6 +104,10 @@ class World:
         for node in parking_nodes:
             net_flow = node.ideal_state + node.customer_requests - node.car_returns - node.parking_state
             count = sum(1 for s in net_flow if s <= 0)
+            if node.node_id == 2:
+                print(net_flow)
+            if node.node_id == 5:
+                print(net_flow)
             if count / len(net_flow) >= acceptance_percentage:
                 out_list.append(node)
         return out_list
@@ -119,11 +123,14 @@ class World:
 
     def initialize_relevant_car_moves(self, acceptance_percentage):
         relevant_car_moves = []
-        irrelevant_end_nodes = self._irrelevant_end_nodes(self.parking_nodes, acceptance_percentage)
-        irrelevant_start_nodes = self._irrelevant_start_nodes(self.parking_nodes, acceptance_percentage)
-        for cm in self.car_moves:
-            if (cm.end_node not in irrelevant_end_nodes and cm.start_node not in irrelevant_start_nodes) or cm.is_charging_move:
-                relevant_car_moves.append(cm)
+        if acceptance_percentage == 2:
+            relevant_car_moves = [cm for cm in self.car_moves]
+        else:
+            irrelevant_end_nodes = self._irrelevant_end_nodes(self.parking_nodes, acceptance_percentage)
+            irrelevant_start_nodes = self._irrelevant_start_nodes(self.parking_nodes, acceptance_percentage)
+            for cm in self.car_moves:
+                if (cm.end_node not in irrelevant_end_nodes and cm.start_node not in irrelevant_start_nodes) or cm.is_charging_move:
+                    relevant_car_moves.append(cm)
         self.relevant_car_moves = relevant_car_moves
 
     def add_car_move_to_employee(self, car_move: CarMove, employee: Employee, scenario: int = None):

@@ -261,7 +261,7 @@ def get_first_stage_solution(input_solution, num_first_stage_tasks):
 def get_first_and_second_stage_solution(input_solution, num_first_stage_tasks):
     first_stage_solution = {}
     second_stage_solution = {}
-    # print(self.input_solution)
+
     for k, v in input_solution.items():
         # For solutions where number of assigned tasks are less than the number of first stage tasks
         # First stage

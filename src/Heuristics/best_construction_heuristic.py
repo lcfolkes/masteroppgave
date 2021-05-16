@@ -111,6 +111,7 @@ class ConstructionHeuristic:
         else:
             first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(
                 solution, self.world_instance.first_stage_tasks)
+
             ### FIRST STAGE ###
             for employee_obj, car_move_objs in first_stage_solution.items():
                 for cm_obj in car_move_objs:
@@ -172,7 +173,6 @@ class ConstructionHeuristic:
                         print(f"{first_stage_move_counter} first stage insertions completed\n")
 
             else:
-
                 ### GET BEST CAR MOVE ###
                 best_car_move_second_stage = self._get_best_car_move()
                 # print(f"Best car_move second stage: {[cm.car_move_id for cm in best_car_move_second_stage]}")
@@ -182,8 +182,9 @@ class ConstructionHeuristic:
 
                 ### GET BEST EMPLOYEE ###
                 best_employee_second_stage = self._get_best_employee(best_car_move=best_car_move_second_stage)
+
                 ### ADD CAR MOVE TO EMPLOYEE ###
-                if best_employee_second_stage is not None:
+                if not all(cm is None for cm in best_employee_second_stage):
                     self._add_car_move_to_employee(best_car_move=best_car_move_second_stage,
                                                    best_employee=best_employee_second_stage)
 
@@ -332,7 +333,7 @@ class ConstructionHeuristic:
                         if best_car_move[s] is not None:
                             legal_move, travel_time_to_car_move = self.feasibility_checker.check_legal_move(
                                 car_move=best_car_move[s], employee=employee, scenario=s, get_employee_travel_time=True)
-                            if legal_move and travel_time_to_car_move < best_travel_time_to_car_move_second_stage[s]:
+                            if legal_move and (travel_time_to_car_move < best_travel_time_to_car_move_second_stage[s]):
                                 best_travel_time_to_car_move_second_stage[s] = travel_time_to_car_move
                                 best_employee_second_stage[s] = employee
 
@@ -540,42 +541,60 @@ class ConstructionHeuristic:
 if __name__ == "__main__":
     from pyinstrument import Profiler
 
-    filename = "InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_c"
-    ch = ConstructionHeuristic(filename + ".pkl", acceptance_percentage=1)
+    filename = "InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_a"
+    ch = ConstructionHeuristic(filename + ".pkl", acceptance_percentage=2)
 
 
     #ch.construct()
 
+    print(ch.car_moves_dict)
 
     emp1 = ch.employees_dict[1]
     emp2 = ch.employees_dict[2]
-    cm20 = ch.car_moves_dict[20]
-    cm26 = ch.car_moves_dict[26]
-    cm8 = ch.car_moves_dict[8]
-    cm9 = ch.car_moves_dict[9]
-    cm16 = ch.car_moves_dict[16]
-    cm26 = ch.car_moves_dict[26]
+    cm21 = ch.car_moves_dict[21]
+    cm1 = ch.car_moves_dict[1]
+    cm24 = ch.car_moves_dict[24]
+    cm71 = ch.car_moves_dict[71]
+    cm60 = ch.car_moves_dict[60]
+    cm10 = ch.car_moves_dict[10]
+    cm55 = ch.car_moves_dict[55]
+    cm40 = ch.car_moves_dict[40]
+
+    #cm16 = ch.car_moves_dict[16]
+    #cm26 = ch.car_moves_dict[26]
 
     #solution_dict = {emp1:[], emp2:[cm20, cm16]}
-    solution_dict = {emp1: [cm26], emp2: []}
+    #solution_dict = {emp1: [cm26], emp2: []}
     #ch.rebuild(solution_dict, stage="first", optimize=True)
     #ch.rebuild(solution_dict, stage="first")
     #ch.construct()
     #ch.print_solution()
 
-
+    # 4 eller 9
     '''
-    solution_dict = {emp1: [[]*25],
-                     emp2: [[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],
-                            [cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],
-                            [cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],
-                            [cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16],[cm20, cm16], [cm20, cm16]]}
+    second_solution_dict = {emp1: [[cm60, cm10, cm21], [cm60, cm10], [cm60, cm10, cm21], [cm60, cm10, cm21], [cm60, cm10, cm1],
+                           [cm60, cm10], [cm60, cm10], [cm60, cm10, cm1], [cm60, cm10, cm21], [cm60, cm10, cm21],
+                           [cm60, cm10, cm21], [cm60, cm10, cm24], [cm60, cm10], [cm60, cm10], [cm60, cm10],
+                           [cm60, cm10], [cm60, cm10], [cm60, cm10], [cm60, cm10], [cm60, cm10],
+                           [cm60, cm10], [cm60, cm10], [cm60, cm10], [cm60, cm10], [cm60, cm10]],
+                     emp2: [[cm55, cm40], [cm55, cm40], [cm55, cm40], [cm55, cm40], [cm55, cm40],
+                           [cm55, cm40, cm71], [cm55, cm40, cm71], [cm55, cm40], [cm55, cm40], [cm55, cm40],
+                           [cm55, cm40], [cm55, cm40], [cm55, cm40], [cm55, cm40], [cm55, cm40],
+                           [cm55, cm40], [cm55, cm40, cm71], [cm55, cm40], [cm55, cm40], [cm55, cm40],
+                           [cm55, cm40, cm71], [cm55, cm40, cm71], [cm55, cm40, cm71], [cm55, cm40], [cm55, cm40]]}
     '''
 
+    first_solution_dict = {emp1: [cm60, cm10], emp2: [cm55, cm40]}
 
-    ch.rebuild(solution_dict, stage="second")
+    #first_solution_dict = {emp1: [cm15, cm26],
+    #                 emp2: [cm4, cm12]}
+
+    ch.rebuild(first_solution_dict, stage="first")
 
     ch.print_solution()
+
+
+
     '''
     print("Add car moves 6 to 4 and 4 to 7 in first stage")
     obj, heur = ch.objective_function.evaluate(added_car_moves=[cm20, cm16])
