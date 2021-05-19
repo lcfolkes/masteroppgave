@@ -61,12 +61,12 @@ class GurobiInstance:
             'cars_in_need_of_charging_at_nodes']))  # S_i^C, Initial number of cars that require charging at parking node i
         self.INITIAL_AVAILABLE_CAPACITY = dict(zip(self.CHARGING_NODES, self.cf[
             'charging_slots_available']))  # N_i^(CS), Initial available capacity of charging node i
-        self.TASKS_FIRST_STAGE = np.arange(1, Heuristics.heuristics_constants.HeuristicsConstants.NUM_FIRST_STAGE_TASKS + 1)
+        #self.TASKS_FIRST_STAGE = np.arange(1, Heuristics.heuristics_constants.HeuristicsConstants.NUM_FIRST_STAGE_TASKS + 1)
 
-        #self.TASKS_FIRST_STAGE = np.arange(1, self.cf[
-        #    'num_first_stage_tasks'] + 1)  # F, number of tasks in first stage, check that F is smaller or equal to len(M)
-        #self.TASKS_SECOND_STAGE = np.arange(self.cf['num_first_stage_tasks'] + 1, self.cf['num_tasks'] + 1)
-        self.TASKS_SECOND_STAGE = np.arange(self.TASKS_FIRST_STAGE + 1, self.cf['num_tasks'] + 1)
+        self.TASKS_FIRST_STAGE = np.arange(1, self.cf[
+            'num_first_stage_tasks'] + 1)  # F, number of tasks in first stage, check that F is smaller or equal to len(M)
+        self.TASKS_SECOND_STAGE = np.arange(self.cf['num_first_stage_tasks'] + 1, self.cf['num_tasks'] + 1)
+        #self.TASKS_SECOND_STAGE = np.arange(self.TASKS_FIRST_STAGE + 1, self.cf['num_tasks'] + 1)
         self.PARKING_MOVES_ORIGINATING_IN_NODE, self.PARKING_MOVES_ENDING_IN_NODE, self.CHARGING_MOVES_ORIGINATING_IN_NODE, self.CHARGING_MOVES_ENDING_IN_NODE \
             = create_car_moves_origin_destination(self.PARKING_NODES, self.CHARGING_NODES, self.cf['car_move_origin'],
                                                   self.cf['car_move_destination'])

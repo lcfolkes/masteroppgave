@@ -32,8 +32,8 @@ class ConstructionHeuristic:
         self.world_instance.planning_period = Heuristics.heuristics_constants.HeuristicsConstants.PLANNING_PERIOD
         self.feasibility_checker = FeasibilityChecker(self.world_instance)
         self.num_scenarios = self.world_instance.num_scenarios
-        self.num_first_stage_tasks = Heuristics.heuristics_constants.HeuristicsConstants.NUM_FIRST_STAGE_TASKS
-        #self.num_first_stage_tasks = self.world_instance.first_stage_tasks
+        #self.num_first_stage_tasks = Heuristics.heuristics_constants.HeuristicsConstants.NUM_FIRST_STAGE_TASKS
+        self.num_first_stage_tasks = self.world_instance.first_stage_tasks
         self.employees = self.world_instance.employees
         self.parking_nodes = self.world_instance.parking_nodes
         self.cars = self.world_instance.cars

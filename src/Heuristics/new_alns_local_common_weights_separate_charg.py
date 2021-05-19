@@ -326,8 +326,8 @@ class ALNS():
             f.close()
 
             if verbose:
-                print("BEST SOLUTION")
-                print(self.best_solution[0])
+                #print("BEST SOLUTION")
+                #print(self.best_solution[0])
                 self.solution.rebuild(self.best_solution[0], "second_stage")
                 self.solution.print_solution()
             return f"obj_val: {best_solution[1]}, n_iterations: {i*iterations_segment + j}"
