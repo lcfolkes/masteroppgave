@@ -251,7 +251,7 @@ class ALNS():
 
 
 
-                time_segment = time.perf_counter()
+                time_segment = time.perf_counter() - start
                 finish_times_segments.append(time_segment)
 
                 if verbose:
@@ -318,7 +318,7 @@ class ALNS():
             second_checkpoint_txt1 = f"Objective value after {second_checkpoint} s: {obj_val_second_checkpoint}\n"
             second_checkpoint_txt2 = f"Heuristic value after {second_checkpoint} s: {heur_val_second_checkpoint}\n"
             time_spent_txt = f"Time used: {finish}\n"
-            finish_times_segments_txt = f"Finish time segments:\n{finish_times_segments}\n"
+            #finish_times_segments_txt = f"Finish time segments:\n{finish_times_segments}\n"
             iterations_done_txt = f"Iterations completed: {len(finish_times_segments) * iterations_segment} iterations in {len(finish_times_segments)} segments\n"
             parameter_tuning_txt = f"Acceptance percentage: {self.solution.acceptance_percentage}, " \
                                    f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}, " \
