@@ -191,7 +191,7 @@ class GreedyRandomInsertion(Repair):
 
 
 
-    def _get_best_insertion(self, current_solution: {Employee: [CarMove]}, regret_nr=None) -> (CarMove, Employee):
+    def _get_best_insertion(self, current_solution: {Employee: [CarMove]}) -> (CarMove, Employee):
         """
         Finds the best car_move to insert, and the id of the employee that should perform it
         :param current_solution: a dictionary with key: employee id and value: list of car moves
@@ -221,6 +221,9 @@ class GreedyRandomInsertion(Repair):
                             obj_val_dict[(car_move, employee, idx)] = (obj_val, inter_node_travel_time)
 
                         current_solution[employee].remove(car_move)
+
+        if not obj_val_dict.items():
+            return None, None, None
 
         sorted_obj_val_list = sorted(obj_val_dict.items(), key=lambda x: (x[1][0], -x[1][1]), reverse=True)
 
@@ -257,7 +260,7 @@ class RegretInsertion(Repair):
         while q > 0:
             best_car_move, best_employee, idx = self._get_best_insertion(current_solution, self.regret_nr)
             if None in (best_car_move, best_employee):
-                print(f"Cannot insert more than {self.neighborhood_size - q} move(s)")
+                #print(f"Cannot insert more than {self.neighborhood_size - q} move(s)")
                 break
 
             insert_car_move(current_solution, best_car_move, best_employee, idx)
@@ -369,7 +372,7 @@ class ChargeInsertion(Repair):
         """
         q = self.neighborhood_size
         current_solution = self.solution
-        '''    
+        '''
         unused_charging_moves = [cm for cm in self.unused_car_moves if (
                 cm.is_charging_move and
                 cm not in self.moves_not_insert)]
@@ -429,7 +432,7 @@ class ChargeInsertion(Repair):
 
         obj_val_dict = {}
         feasible_idx = []
-        
+
         for employee, employee_moves in current_solution.items():
             if len(employee_moves) < self.num_first_stage_tasks:
                 obj_val = self.objective_function.evaluate(added_car_moves=[random_charging_move], mode="heuristic")
@@ -453,7 +456,7 @@ class ChargeInsertion(Repair):
             if value == obj_values_sorted[0]:
                 best_employees_and_idx.append(key)
         best_employee, best_idx = random.choice(best_employees_and_idx)
-    
+
         return random_charging_move, best_employee, best_idx
 
 

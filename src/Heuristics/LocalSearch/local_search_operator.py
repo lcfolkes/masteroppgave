@@ -240,17 +240,22 @@ class InterSwap(LocalSearchOperator):
 			for i, j in itertools.combinations(range(len(emp_pair_lists)), 2):
 				emp_pairs.append(itertools.product(emp_pair_lists[i], emp_pair_lists[j]))
 			emp_pairs = [emp_pair for itertools_obj in emp_pairs for emp_pair in itertools_obj]
+			#print("emp pairs")
+			#print([[(tup2[0].employee_id, tup2[1]) for tup2 in tup1] for tup1 in emp_pairs])
+
 		else:
-			solution = get_second_stage_solution_dict(solution, self.feasibility_checker.world_instance.first_stage_tasks)
+			first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(solution, self.feasibility_checker.world_instance.first_stage_tasks)
+			#solution = get_second_stage_solution_dict(solution, self.feasibility_checker.world_instance.first_stage_tasks)
 			for _ in range(self.feasibility_checker.world_instance.num_scenarios):
 				emp_pair_lists.append([])
-			for k, scenarios in solution.items():
+			for k, scenarios in second_stage_solution.items():
 				for s, car_moves in enumerate(scenarios):
 					emp = []
 					for i, cm in enumerate(car_moves):
 						emp.append((k, i))
 					if not car_moves:
-						emp.append((k, 0))
+						if len(first_stage_solution[k]) == self.feasibility_checker.world_instance.first_stage_tasks:
+							emp.append((k, 0))
 					emp_pair_lists[s].append(emp)
 			emp_pairs = []
 			for s in range(len(emp_pair_lists)):
@@ -259,6 +264,9 @@ class InterSwap(LocalSearchOperator):
 					emp_pairs_scenario.append(itertools.product(emp_pair_lists[s][i], emp_pair_lists[s][j]))
 				emp_pairs_scenario = [emp_pair for itertools_obj in emp_pairs_scenario for emp_pair in itertools_obj]
 				emp_pairs.append(emp_pairs_scenario)
+			#print(emp_pairs)
+			#print("emp pairs")
+			#print([[[(tup2[0].employee_id, tup2[1]) for tup2 in tup1] for tup1 in scenario] for scenario in emp_pairs])
 		return emp_pairs
 
 	def _mutate(self, emp1, emp2, s=None):
