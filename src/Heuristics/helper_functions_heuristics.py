@@ -262,14 +262,14 @@ def get_first_and_second_stage_solution(input_solution, num_first_stage_tasks):
     first_stage_solution = {}
     second_stage_solution = {}
 
-    for k, v in input_solution.items():
+    for emp, car_moves_list in input_solution.items():
         # For solutions where number of assigned tasks are less than the number of first stage tasks
         # First stage
-        first_stage_solution[k] = input_solution[k][0][:min(num_first_stage_tasks, len(input_solution[k][0]))]
+        first_stage_solution[emp] = input_solution[emp][0][:min(num_first_stage_tasks, len(input_solution[emp][0]))]
         # Second stage
-        second_stage_solution[k] = []
-        for s in range(len(v)):
-            second_stage_solution[k].append(input_solution[k][s][min(num_first_stage_tasks, len(v[s])):])
+        second_stage_solution[emp] = []
+        for s in range(len(car_moves_list)):
+            second_stage_solution[emp].append(input_solution[emp][s][min(num_first_stage_tasks, len(car_moves_list[s])):])
 
     return first_stage_solution, second_stage_solution
 

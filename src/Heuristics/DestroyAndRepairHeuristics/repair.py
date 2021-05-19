@@ -218,16 +218,14 @@ class GreedyRandomInsertion(Repair):
                             solution={employee: current_solution[employee]},
                             return_inter_node_travel_time=True)
                         if feasible:
-                            cost_travel_time_between_car_moves = 0.05 * inter_node_travel_time
-                            feasible_obj_val = obj_val - cost_travel_time_between_car_moves
-                            obj_val_dict[(car_move, employee, idx)] = feasible_obj_val
+                            obj_val_dict[(car_move, employee, idx)] = (obj_val, inter_node_travel_time)
 
                         current_solution[employee].remove(car_move)
 
         if not obj_val_dict.items():
             return None, None, None
 
-        sorted_obj_val_list = sorted(obj_val_dict.items(), key=lambda x: x[-1], reverse=True)
+        sorted_obj_val_list = sorted(obj_val_dict.items(), key=lambda x: (x[1][0], -x[1][1]), reverse=True)
 
         idx = np.floor(np.power(random.random(), self.determinism_parameter) * len(sorted_obj_val_list)).astype(int)
         car_move_employee_idx, _ = sorted_obj_val_list[idx]

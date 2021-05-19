@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 
+import Heuristics.heuristics_constants
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Heuristics.feasibility_checker import FeasibilityChecker
 from Heuristics.helper_functions_heuristics import remove_all_car_moves_of_car_in_car_move, \
@@ -10,6 +11,7 @@ from Heuristics.helper_functions_heuristics import remove_all_car_moves_of_car_i
     get_first_stage_solution_list_from_solution
 from Heuristics.best_objective_function import ObjectiveFunction
 from HelperFiles.helper_functions import load_object_from_file
+from Heuristics.helper_functions_heuristics import copy_unused_car_moves_2d_list
 from Gurobi.Model.run_model import run_model
 import pandas as pd
 from path_manager import path_to_src
@@ -27,9 +29,10 @@ class ConstructionHeuristic:
         self.world_instance = load_object_from_file(instance_file)
         self.world_instance.initialize_relevant_car_moves(acceptance_percentage)
         self.objective_function = ObjectiveFunction(self.world_instance)
-        # self.world_instance.planning_period = 100
+        self.world_instance.planning_period = Heuristics.heuristics_constants.HeuristicsConstants.PLANNING_PERIOD
         self.feasibility_checker = FeasibilityChecker(self.world_instance)
         self.num_scenarios = self.world_instance.num_scenarios
+        #self.num_first_stage_tasks = Heuristics.heuristics_constants.HeuristicsConstants.NUM_FIRST_STAGE_TASKS
         self.num_first_stage_tasks = self.world_instance.first_stage_tasks
         self.employees = self.world_instance.employees
         self.parking_nodes = self.world_instance.parking_nodes
@@ -107,6 +110,8 @@ class ConstructionHeuristic:
                 for cm_obj in car_move_objs:
                     cm = self.car_moves_dict[cm_obj.car_move_id]
                     self._add_car_move_to_employee(best_car_move=cm, best_employee=emp)
+            if optimize:
+                self.construct()
 
         else:
             first_stage_solution, second_stage_solution = get_first_and_second_stage_solution(
@@ -120,21 +125,19 @@ class ConstructionHeuristic:
 
             ### SECOND STAGE ###
             #self.first_stage = False
-            #self.car_moves_second_stage = [[cm for cm in self.car_moves] for _ in range(self.num_scenarios)]
+            self.car_moves_second_stage = [[cm for cm in self.car_moves_first_stage] for _ in range(self.num_scenarios)]
+            #print(second_stage_solution.items())
             for employee_obj, car_moves_scenarios in second_stage_solution.items():
                 self._add_car_move_to_employee_from_dict(employee=employee_obj, car_moves_scenarios=car_moves_scenarios)
-        if optimize:
-            self.construct()
+            if optimize:
+                self.construct(stage="second")
 
 
     def _initialize_car_moves(self):
         for car_move in self.world_instance.relevant_car_moves:
-        # car_move in self.world_instance.car_moves:
             self.car_moves_first_stage.append(car_move)
-            #self.car_moves.append(car_move.car_move_id)
             self.car_moves_dict[car_move.car_move_id] = car_move
             for s in range(self.num_scenarios):
-                #self.unused_car_moves[s].append(car_move.car_move_id)
                 self.unused_car_moves[s].append(car_move)
 
 
@@ -142,7 +145,7 @@ class ConstructionHeuristic:
         for cn in self.world_instance.charging_nodes:
             cn.reset()
 
-    def construct(self, verbose=False):
+    def construct(self, verbose=False, stage=None):
         if verbose:
             print("------- CONSTRUCTION HEURISTIC -------\n")
         improving_car_move_exists_first_stage = True
@@ -159,7 +162,8 @@ class ConstructionHeuristic:
                 if best_car_move_first_stage is None:
                     improving_car_move_exists_first_stage = False
                     self.first_stage = False
-                    self.car_moves_second_stage = [[cm for cm in self.car_moves_first_stage] for _ in range(self.num_scenarios)]
+                    if stage != "second":
+                        self.car_moves_second_stage = [[cm for cm in self.car_moves_first_stage] for _ in range(self.num_scenarios)]
                     continue
                 #### GET BEST EMPLOYEE ###
                 best_employee_first_stage = self._get_best_employee(best_car_move_first_stage)
@@ -359,7 +363,6 @@ class ConstructionHeuristic:
 
                 for s in range(self.num_scenarios):
                     self.assigned_car_moves[best_employee][s].append(best_car_move)
-                    #self.unused_car_moves[s].remove(best_car_move.car_move_id)
                     self.unused_car_moves[s].remove(best_car_move)
                 self.car_moves_first_stage = remove_all_car_moves_of_car_in_car_move(
                     best_car_move, self.car_moves_first_stage)
@@ -388,7 +391,13 @@ class ConstructionHeuristic:
                             self.objective_function.update(added_car_moves=[best_car_move[s]], scenario=s)
                             self.assigned_car_moves[best_employee[s]][s].append(best_car_move[s])
                             #self.unused_car_moves[s].remove(best_car_move[s].car_move_id)
-                            self.unused_car_moves[s].remove(best_car_move[s])
+                            try:
+                                self.unused_car_moves[s].remove(best_car_move[s])
+                            except:
+                                print("scenario", s)
+                                print("emp", best_employee[s].employee_id)
+                                print("cm", best_car_move[s].car_move_id)
+                                raise
 
                         # When first stage is finished, initialize car_moves to be list of copies of
                         # car_moves (number of copies = num_scenarios)
@@ -540,95 +549,87 @@ class ConstructionHeuristic:
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
+    from Heuristics.LocalSearch.local_search import LocalSearch
 
-    filename = "InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_a"
+    filename = "InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_a"
     ch = ConstructionHeuristic(filename + ".pkl", acceptance_percentage=2)
 
 
     #ch.construct()
 
-    print(ch.car_moves_dict)
 
     emp1 = ch.employees_dict[1]
     emp2 = ch.employees_dict[2]
-    cm21 = ch.car_moves_dict[21]
-    cm1 = ch.car_moves_dict[1]
-    cm24 = ch.car_moves_dict[24]
-    cm71 = ch.car_moves_dict[71]
+    emp3 = ch.employees_dict[3]
+    emp4 = ch.employees_dict[4]
+    cm2 = ch.car_moves_dict[2]
+    cm300 = ch.car_moves_dict[300]
+    cm6 = ch.car_moves_dict[6]
+    cm242 = ch.car_moves_dict[242]
+    cm207 = ch.car_moves_dict[207]
+    cm157 = ch.car_moves_dict[157]
+    cm112 = ch.car_moves_dict[112]
+    cm137 = ch.car_moves_dict[137]
+    cm141 = ch.car_moves_dict[141]
+    cm248 = ch.car_moves_dict[248]
+    cm193 = ch.car_moves_dict[193]
+    cm47 = ch.car_moves_dict[47]
+    cm184 = ch.car_moves_dict[184]
+    cm204 = ch.car_moves_dict[204]
+    cm159 = ch.car_moves_dict[159]
+    cm155 = ch.car_moves_dict[155]
     cm60 = ch.car_moves_dict[60]
-    cm10 = ch.car_moves_dict[10]
-    cm55 = ch.car_moves_dict[55]
-    cm40 = ch.car_moves_dict[40]
+    cm216 = ch.car_moves_dict[216]
+    cm80 = ch.car_moves_dict[80]
+    cm93 = ch.car_moves_dict[93]
+    cm273 = ch.car_moves_dict[273]
+    cm122 = ch.car_moves_dict[122]
 
-    #cm16 = ch.car_moves_dict[16]
-    #cm26 = ch.car_moves_dict[26]
 
-    #solution_dict = {emp1:[], emp2:[cm20, cm16]}
-    #solution_dict = {emp1: [cm26], emp2: []}
-    #ch.rebuild(solution_dict, stage="first", optimize=True)
-    #ch.rebuild(solution_dict, stage="first")
-    #ch.construct()
-    #ch.print_solution()
 
-    # 4 eller 9
-    '''
-    second_solution_dict = {emp1: [[cm60, cm10, cm21], [cm60, cm10], [cm60, cm10, cm21], [cm60, cm10, cm21], [cm60, cm10, cm1],
-                           [cm60, cm10], [cm60, cm10], [cm60, cm10, cm1], [cm60, cm10, cm21], [cm60, cm10, cm21],
-                           [cm60, cm10, cm21], [cm60, cm10, cm24], [cm60, cm10], [cm60, cm10], [cm60, cm10],
-                           [cm60, cm10], [cm60, cm10], [cm60, cm10], [cm60, cm10], [cm60, cm10],
-                           [cm60, cm10], [cm60, cm10], [cm60, cm10], [cm60, cm10], [cm60, cm10]],
-                     emp2: [[cm55, cm40], [cm55, cm40], [cm55, cm40], [cm55, cm40], [cm55, cm40],
-                           [cm55, cm40, cm71], [cm55, cm40, cm71], [cm55, cm40], [cm55, cm40], [cm55, cm40],
-                           [cm55, cm40], [cm55, cm40], [cm55, cm40], [cm55, cm40], [cm55, cm40],
-                           [cm55, cm40], [cm55, cm40, cm71], [cm55, cm40], [cm55, cm40], [cm55, cm40],
-                           [cm55, cm40, cm71], [cm55, cm40, cm71], [cm55, cm40, cm71], [cm55, cm40], [cm55, cm40]]}
-    '''
+    second_solution_dict = {emp1: [[cm273, cm122]]*25,
+                     emp2: [[cm2, cm300], [cm2, cm300, cm6], [cm2, cm300], [cm2, cm300, cm242], [cm2, cm300, cm207, cm157],
+                           [cm2, cm300, cm112], [cm2, cm300, cm242], [cm2, cm300, cm157], [cm2, cm300, cm137], [cm2, cm300, cm141],
+                           [cm2, cm300, cm248], [cm2, cm300, cm193], [cm2, cm300, cm242], [cm2, cm300, cm242], [cm2, cm300, cm47],
+                           [cm2, cm300, cm242], [cm2, cm300, cm242], [cm2, cm300, cm47], [cm2, cm300, cm242], [cm2, cm300, cm242],
+                           [cm2, cm300, cm204], [cm2, cm300, cm207], [cm2, cm300, cm242], [cm2, cm300, cm184], [cm2, cm300, cm159]],
+                    emp3: [[]]*25,
+                    emp4: [[cm155, cm60], [cm155, cm60, cm216]]+[[cm155, cm60]]*3+[[cm155, cm60, cm80]]+
+                          [[cm155, cm60]]*11+[[cm155, cm60, cm216]]+[[cm155, cm60]]+[[cm155, cm60, cm80]]
+                          +[[cm155, cm60]]*3+[[cm155, cm60, cm93]]+[[cm155, cm60]]}
 
-    first_solution_dict = {emp1: [cm60, cm10], emp2: [cm55, cm40]}
+
+    #first_solution_dict = {emp1: [cm60, cm10], emp2: [cm55, cm40]}
+    first_solution_dict = {emp1: [], emp2: []}
 
     #first_solution_dict = {emp1: [cm15, cm26],
     #                 emp2: [cm4, cm12]}
 
-    ch.rebuild(first_solution_dict, stage="first")
-
+    ch.construct()
     ch.print_solution()
 
+    local_search = LocalSearch(ch.assigned_car_moves,
+                               2, ch.feasibility_checker)
+    local_search.search("best_first")
+    print(local_search.solution)
+    for emp, cms in local_search.solution.items():
+        print(emp.employee_id)
+        for s in cms:
+            print("scenario", cms.index(s))
+            if s:
+                print([cm.car_move_id for cm in s])
+            else:
+                print("[]")
+
+    #print(ch.car_moves_dict)
+    #print(local_search.solution)
+    ch.rebuild(local_search.solution, stage="second", optimize=True)
+    ch.print_solution()
+    #ch.print_solution()
+    #ch.rebuild(local_search.solution, stage="second")
+    #ch.print_solution()
 
 
-    '''
-    print("Add car moves 6 to 4 and 4 to 7 in first stage")
-    obj, heur = ch.objective_function.evaluate(added_car_moves=[cm20, cm16])
-    ch.objective_function.update(added_car_moves=[cm20, cm16])
-    print("Objective value is ", obj, "should be 8.36")
-    print("Remove car moves 6 to 4 and 4 to 7 in first stage")
-    obj, heur = ch.objective_function.evaluate(removed_car_moves=[cm20, cm16])
-    ch.objective_function.update(removed_car_moves=[cm20, cm16])
-    print("Objective value is ", obj, "should be -10")
-    print(ch.objective_function.true_objective_value)
-    ch.objective_function.update(added_car_moves=[cm20, cm16])
-    print("Add car moves to second stage")
-    #obj, heur = ch.objective_function.evaluate(added_car_moves=[cm9])
-    ch.objective_function.update(added_car_moves=[cm9], scenario=10)
-    ch.objective_function.update(added_car_moves=[cm9], scenario=19)
-
-    print("Objective value is ", ch.objective_function.true_objective_value, "should be -6.72")
-    print("Remove car moves to second stage")
-    #obj, heur = ch.objective_function.evaluate(added_car_moves=[cm9])
-    ch.objective_function.update(removed_car_moves=[cm9], scenario=10)
-    ch.objective_function.update(removed_car_moves=[cm9], scenario=19)
-    print("Objective value is ", ch.objective_function.true_objective_value, "should be -8")
-    ch.objective_function.update(added_car_moves=[cm9], scenario=10)
-    ch.objective_function.update(added_car_moves=[cm9], scenario=19)
-    ch.objective_function.update(added_car_moves=[cm8], scenario=4)
-    print("Objective value is ", ch.objective_function.true_objective_value, "should be -5.78")
-
-    ch.objective_function.update(added_car_moves=[cm20, cm16])
-    ch.objective_function.update(added_car_moves=[cm9], scenario=10)
-    ch.objective_function.update(added_car_moves=[cm9], scenario=19)
-    ch.objective_function.update(added_car_moves=[cm8], scenario=4)
-    ch.objective_function.update(removed_car_moves=[cm9], scenario=10)
-    ch.objective_function.update(removed_car_moves=[cm9], scenario=19)
-    print(ch.objective_function.true_objective_value)
 
 
     #profiler = Profiler()
@@ -638,22 +639,9 @@ if __name__ == "__main__":
 
 
     #profiler.stop()
-    print("z25", ch.objective_function._z[1][4])
-    print("w25", ch.objective_function._w[1][4])
-    print("z2,11", ch.objective_function._z[1][10])
-    print("w2,11", ch.objective_function._w[1][10])
-    print("z2,20", ch.objective_function._z[1][19])
-    print("w2,20", ch.objective_function._w[1][19])
-    print("z45", ch.objective_function._z[3][4])
-    print("w45", ch.objective_function._w[3][4])
-    print("z5,11", ch.objective_function._z[4][10])
-    print("w5,11", ch.objective_function._w[4][10])
-    print("z5,20", ch.objective_function._z[4][19])
-    print("w5,20", ch.objective_function._w[4][19])
-    #print(profiler.output_text(unicode=True, color=True))
-    # print(f"Construction heuristic true obj. val {true_obj_val}")
-    '''
 
+
+    '''
     print("\n############## Evaluate solution ##############")
     gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)#, optimize=False)
     run_model(gi)
@@ -661,3 +649,4 @@ if __name__ == "__main__":
     print("\n############## Reoptimized solution ##############")
     gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=True)
     run_model(gi)
+    '''

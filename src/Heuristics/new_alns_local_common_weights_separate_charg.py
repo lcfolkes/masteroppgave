@@ -98,7 +98,6 @@ class ALNS():
             self.solution.print_solution()
             print(f"Construction heuristic true obj. val {true_obj_val}")
             print(f"Heuristic obj. val {heuristic_obj_vals[0]}")
-            print(f"Heuristic obj. val {heuristic_obj_vals[0]}")
         current_solution = copy_solution_dict(self.solution.assigned_car_moves)
         current_unused_car_moves = copy_unused_car_moves_2d_list(self.solution.unused_car_moves)
         visited_hash_keys.add(self.solution.hash_key)
@@ -196,7 +195,7 @@ class ALNS():
                                 best_obj_val = candidate_obj_val
                                 best_solution = (copy_solution_dict(self.solution.assigned_car_moves), true_obj_val)
                                 output_text += str(
-                                    counter) + f" {colored('New best solution globally:', 'green')} {colored(round(candidate_obj_val, 2), 'green')}\n"
+                                    counter) + f" {colored('New best solution globally:', 'green')} {colored(round(candidate_obj_val, 2), 'green')}{colored(', found by ', 'green')}{colored(MODE, 'green')}\n"
                                 counter += 1
                                 # print("NEW GLOBAL SOLUTION")
                                 # self.solution.print_solution()
@@ -205,7 +204,7 @@ class ALNS():
                             # NEW LOCAL BEST
                             else:
                                 output_text += str(
-                                    counter) + f" {colored('New best solution locally:', 'blue')} {colored(round(candidate_obj_val, 2), 'blue')}\n"
+                                    counter) + f" {colored('New best solution locally:', 'blue')} {colored(round(candidate_obj_val, 2), 'blue')}{colored(', found by ', 'blue')}{colored(MODE, 'blue')}\n"
                                 counter += 1
                                 if MODE == "LNS":
                                     self._update_weight_record(_IS_BETTER, destroy_heuristic, repair_heuristic)
@@ -216,7 +215,7 @@ class ALNS():
                         else:
                             p = np.exp(- (current_obj_val - candidate_obj_val) / temperature)
                             output_text += str(
-                                counter) + f"{colored(' New accepted solution: ', 'magenta')}{colored(round(candidate_obj_val, 2), 'magenta')}{colored(', acceptance probability was' , 'magenta')} {colored(round(p, 2), 'magenta')}{colored(', temperature was ', 'magenta')}{colored(round(temperature, 2), 'magenta')} \n"
+                                counter) + f"{colored(' New accepted solution: ', 'magenta')}{colored(round(candidate_obj_val, 2), 'magenta')}{colored(', found by ', 'magenta')}{colored(MODE, 'magenta')}{colored(', acceptance probability was' , 'magenta')} {colored(round(p, 2), 'magenta')}{colored(', temperature was ', 'magenta')}{colored(round(temperature, 2), 'magenta')} \n"
                             counter += 1
                             if MODE == "LNS":
                                 self._update_weight_record(_IS_ACCEPTED, destroy_heuristic, repair_heuristic)
@@ -231,7 +230,7 @@ class ALNS():
 
                     else:
                         output_text += str(
-                            counter) + f" {colored('Not accepted solution:', 'red')} {colored(round(candidate_obj_val, 2), 'red')}\n"
+                            counter) + f" {colored('Not accepted solution:', 'red')} {colored(round(candidate_obj_val, 2), 'red')}{colored(', found by ', 'red')}{colored(MODE, 'red')}\n"
                         counter += 1
                         MODE = "LNS"
 
@@ -246,6 +245,7 @@ class ALNS():
                         obj_val_first_checkpoint = best_solution[1]
                     if time.perf_counter() - start > second_checkpoint and not second_checkpoint_reached:
                         second_checkpoint_reached = True
+
                         heur_val_second_checkpoint = best_obj_val
                         obj_val_second_checkpoint = best_solution[1]
 
@@ -326,8 +326,8 @@ class ALNS():
             f.close()
 
             if verbose:
-                print("BEST SOLUTION")
-                print(self.best_solution[0])
+                #print("BEST SOLUTION")
+                #print(self.best_solution[0])
                 self.solution.rebuild(self.best_solution[0], "second_stage")
                 self.solution.print_solution()
             return f"obj_val: {best_solution[1]}, n_iterations: {i*iterations_segment + j}"
@@ -516,7 +516,7 @@ class ALNS():
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
-    filename = "./InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_a"
+    filename = "./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_a"
 
     try:
 
@@ -526,8 +526,6 @@ if __name__ == "__main__":
         alns.run()
 
         #profiler.stop()
-        print("best solution")
-        print("obj_val", alns.best_solution[1])
         #alns.solution.rebuild(alns.best_solution[0], "second_stage")
         #alns.solution.print_solution()
         #print(profiler.output_text(unicode=True, color=True))
