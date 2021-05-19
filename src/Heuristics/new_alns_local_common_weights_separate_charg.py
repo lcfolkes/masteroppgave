@@ -21,6 +21,7 @@ from path_manager import path_to_src
 import numpy as np
 import traceback
 import os
+from datetime import datetime
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
@@ -43,14 +44,12 @@ _IS_REJECTED
 
 class ALNS():
 
-    def __init__(self, filename, acceptance_percentage=1.0):
+    def __init__(self, filename, param):
         self.filename = filename
-
         self.best_solution = None
         self.best_solutions = None
         self.best_obj_val = 0
-
-        self.solution = ConstructionHeuristic(self.filename, acceptance_percentage)
+        self.solution = ConstructionHeuristic(self.filename, param)#HeuristicsConstants.ACCEPTANCE_PERCENTAGE)
         self._num_employees = len(self.solution.employees)
         self._num_first_stage_tasks = self.solution.num_first_stage_tasks
         self._feasibility_checker = self.solution.feasibility_checker
@@ -67,7 +66,8 @@ class ALNS():
             cn.reset()
         return candidate_unused_car_moves, candidate_solution
 
-    def run(self, verbose=True):
+    def run(self, verbose=True, run=0):
+
         start = time.perf_counter()
         visited_hash_keys = set()
 
@@ -308,6 +308,9 @@ class ALNS():
             f.show()
             '''
             # Strings to save to file
+            dateTimeObj = datetime.now()
+            timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S)")
+            run_txt = f"\nRun: {str(run)}, {timestampStr}\n"
             obj_val_txt = f"Objective value: {str(best_solution[1])}\n"
             heur_val_txt = f"Heuristic value: {str(best_obj_val)}\n"
             first_checkpoint_txt1 = f"Objective value after {first_checkpoint} s: {obj_val_first_checkpoint}\n"
@@ -316,13 +319,24 @@ class ALNS():
             second_checkpoint_txt2 = f"Heuristic value after {second_checkpoint} s: {heur_val_second_checkpoint}\n"
             time_spent_txt = f"Time used: {finish}\n"
             finish_times_segments_txt = f"Finish time segments:\n{finish_times_segments}\n"
-            iterations_done_txt = f"Iterations completed: {len(finish_times_segments) * iterations_segment} iterations in {len(finish_times_segments)} segments\n\n"
+            iterations_done_txt = f"Iterations completed: {len(finish_times_segments) * iterations_segment} iterations in {len(finish_times_segments)} segments\n"
+            parameter_tuning_txt = f"Acceptance percentage: {self.solution.acceptance_percentage}, " \
+                                   f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}, " \
+                                   f"Determinism Worst: {HeuristicsConstants.DETERMINISM_PARAMETER_WORST}, " \
+                                   f"Determinism Related: {HeuristicsConstants.DETERMINISM_PARAMETER_RELATED}, " \
+                                   f"Determinism Greedy: {HeuristicsConstants.DETERMINISM_PARAMETER_GREEDY}, " \
+                                   f"Adaptive Weight Rewards (Best, Better, Accepted): ({HeuristicsConstants.BEST}, {HeuristicsConstants.BETTER}, {HeuristicsConstants.ACCEPTED})\n\n"
 
             # Write to file
-            f = open(self.filename + "_results.txt", "a")
-            f.writelines([obj_val_txt, heur_val_txt, first_checkpoint_txt1, first_checkpoint_txt2,
+            test_dir = "./Testing/Results/" + self.filename.split('/')[-2] + "/"
+            if not os.path.exists(test_dir):
+                os.makedirs(test_dir)
+            filename = self.filename.split('/')[-1].split('.')[0]
+            filepath = test_dir + filename
+            f = open(filepath + "_results.txt", "a")
+            f.writelines([run_txt, obj_val_txt, heur_val_txt, first_checkpoint_txt1, first_checkpoint_txt2,
                           second_checkpoint_txt1, second_checkpoint_txt2, time_spent_txt, finish_times_segments_txt,
-                          iterations_done_txt])
+                          iterations_done_txt, parameter_tuning_txt])
             f.close()
 
             if verbose:
@@ -516,13 +530,13 @@ class ALNS():
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
-    filename = "./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_a"
+    filename = "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a"
 
     try:
 
         #profiler = Profiler()
         #profiler.start()
-        alns = ALNS(filename + ".pkl", acceptance_percentage=HeuristicsConstants.ACCEPTANCE_PERCENTAGE)
+        alns = ALNS(filename + ".pkl")
         alns.run()
 
         #profiler.stop()
@@ -530,7 +544,7 @@ if __name__ == "__main__":
         #alns.solution.print_solution()
         #print(profiler.output_text(unicode=True, color=True))
 
-
+        '''
         print("\n############## Evaluate solution ##############")
         gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees)
         run_model(gi)
@@ -539,7 +553,6 @@ if __name__ == "__main__":
         print("\n############## Optimal solution ##############")
         gi = GurobiInstance(filename + ".yaml")
         run_model(gi)
-        '''
         print("\n############## Evaluate solution ##############")
         gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees)
         run_model(gi)

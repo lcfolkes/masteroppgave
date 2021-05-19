@@ -24,7 +24,7 @@ class ConstructionHeuristic:
     # filename = "InstanceFiles/6nodes/6-3-1-1_b.yaml"
 
     def __init__(self, instance_file, acceptance_percentage):
-
+        self.acceptance_percentage = acceptance_percentage
         self.instance_file = instance_file
         self.world_instance = load_object_from_file(instance_file)
         self.world_instance.initialize_relevant_car_moves(acceptance_percentage)
