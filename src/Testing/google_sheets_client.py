@@ -4,6 +4,7 @@ import pandas as pd
 import json
 from path_manager import path_to_src
 import os
+import numpy as np
 os.chdir(path_to_src)
 
 class GoogleSheetClient():
@@ -39,15 +40,51 @@ if __name__ == "__main__":
 	sheet = gcs.get_sheet()
 
 	# Create empty dataframe
-	df = pd.DataFrame()
+	#df = pd.DataFrame()
 
 	# Create a column
-	df['pikk'] = ['penis', 'Steve', 'Sarah']
 
 	# open the google spreadsheet (where 'PY to Gsheet Test' is the name of my sheet)
 
 	# select the first sheet
 	work_sheet = sheet[0]
-
+	#print(work_sheet)
 	# update the first sheet with df, starting at cell B2.
-	work_sheet.set_dataframe(df, (1, 1))
+
+	test_results = pd.DataFrame()
+	test_dir = "./Testing/Results"
+	acceptance_percentage_dict = {"2.0": 2, "1.0": 3, "0.8": 4, "0.5": 5, "0.2": 6}
+	start_row = 3
+	for dir in os.listdir(test_dir):
+		sub_dir = test_dir + "/" + dir
+		for file in os.listdir(sub_dir):
+			filepath = sub_dir + "/" + file
+			f = open(filepath, "r")
+			result = m = np.zeros(shape=[5, 7]).astype(str)
+			filename = file.split(".")[0][:-8]
+			result[:, 0] = filename
+			result[:, 1] = [x+1 for x in range(5)]
+			for x in f:
+				line_list = x.split(':')
+				if line_list[0] == "Run":
+					run = int(line_list[1].split(',')[0].strip())
+				elif line_list[0] == "Objective value":
+					obj_val = line_list[1].strip()
+				elif line_list[0] == "Acceptance percentage":
+					acceptance_percentage = line_list[1].split(',')[0].strip()
+					result[run-1][acceptance_percentage_dict[acceptance_percentage]] = obj_val
+
+			avg_row = np.array(["Average", ""])
+			relevant_cols = np.array(result[:, 2:], dtype=np.float64)
+			avgs = np.mean(relevant_cols, axis=0)
+			avg_row = np.concatenate((avg_row, avgs), axis=0)
+			result = np.vstack([result, avg_row])
+			gap_row = np.array(["Gap (%)", ""])
+			max_val = np.amax(relevant_cols)
+			gaps = np.abs((max_val-avgs)/max_val)
+			gap_row = np.concatenate((gap_row, gaps), axis=0)
+			result = np.vstack([result, gap_row])
+
+			result_df = pd.DataFrame(result)
+			work_sheet.set_dataframe(result_df, (start_row, 0), copy_head=False)
+			start_row += 7
