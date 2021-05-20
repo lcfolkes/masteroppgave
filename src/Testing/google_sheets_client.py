@@ -54,10 +54,12 @@ if __name__ == "__main__":
 	test_results = pd.DataFrame()
 	test_dir = "./Testing/Results"
 	acceptance_percentage_dict = {"2.0": 2, "1.0": 4, "0.9": 6, "0.8": 8, "0.7": 10, "0.6": 12, "0.5": 14}
-	header = np.array([["", "Acceptance Percentage", 2, 2, 1, 1, 0.9, 0.9, 0.8, 0.8, 0.7, 0.7, 0.6, 0.6, 0.5, 0.5],
+	header = np.array([["", "Acceptance Percentage", "2 Obj. Val.", "2 Time found (s)", "1 Obj. Val.", "1 Time found (s)",
+						"0.9 Obj. Val.", "0.9 Time found (s)", "0.8 Obj. Val.", "0.8 Time found (s)", "0.7 Obj. Val.",
+						"0.7 Time found (s)", "0.6 Obj. Val.", "0.6 Time found (s)", "0.5 Obj. Val.", "0.5 Time found (s)"],
 					   ["Instance", "Run", "Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
-						"Obj. Val.", "Time found (s)","Obj. Val.", "Time found (s)","Obj. Val.", "Time found (s)",
-					   "Obj. Val.", "Time found (s)","Obj. Val.", "Time found (s)"]])
+						"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
+					   "Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)"]])
 	header_df = pd.DataFrame(header)
 	work_sheet.set_dataframe(header_df, (1, 0), copy_head=False)
 	start_row = 3
@@ -75,12 +77,8 @@ if __name__ == "__main__":
 				line_list = x.split(':')
 				if line_list[0] == "Run":
 					run = int(line_list[1].split(',')[0].strip())
-				elif line_list[0].split(" ")[0] == "Best":
-					time = line_list[0].split(" ")[-2]
-					try:
-						time = round(float(time.strip()), 2)
-					except:
-						time = 0
+				elif line_list[0] == "Best objective value found after (s)":
+					time = round(float(line_list[1].strip()), 2)
 				elif line_list[0] == "Objective value":
 					obj_val = line_list[1].strip()
 				elif line_list[0] == "Acceptance percentage":

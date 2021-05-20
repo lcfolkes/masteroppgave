@@ -57,8 +57,8 @@ if __name__ == "__main__":
 		n = 5
 		for filename in files:
 			### PARALLEL
-			run_parallel(filename, n, [2.0, 1.0, 0.9])
-			run_parallel(filename, n, [0.8, 0.7, 0.6, 0.5])
+			run_parallel(filename, n, [1.0, 0.9, 0.8, 0.7])
+			run_parallel(filename, n, [0.6, 0.5, 0.4, 0.2])
 		'''
 		### SEQUENTIAL
 		#alns = run_sequential(filename, 1, True)

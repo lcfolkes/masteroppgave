@@ -129,19 +129,26 @@ class World:
                     relevant_car_moves.append(cm)
         self.relevant_car_moves = relevant_car_moves
 
-    def initialize_relevant_car_moves_distance(self, handling_time_frac: int):
+    def initialize_relevant_car_moves_distance(self, distance_inclusion_fraction: float):
         '''
-        :param distance_fraction: float (0,1). 1 if include all moves and 0 to remove all moves. if e.g. distance_fraction is 0.4
+        :param distance_inclusion_fraction:
+                float (0,1). 1 if include all moves and 0 to remove all moves. if e.g. distance_fraction is 0.4
                 then only moves that are shorter than or equal to 0.4*max_travel_distance, where max_travel_distance is the
                 distance of the longest car-move
         :return:
         '''
-        max_handling_time = max(cm.handling_time for cm in self.car_moves)
 
-        for cm in self.relevant_car_moves:
-            cm_handling_time_frac = cm.handling_time/max_handling_time
-            if cm_handling_time_frac <= handling_time_frac:
-                self.relevant_car_moves.remove(cm)
+        if distance_inclusion_fraction == 1:
+            return
+        else:
+            max_handling_time = max(cm.handling_time for cm in self.car_moves)
+            relevant_car_moves = []
+            for cm in self.relevant_car_moves:
+                cm_handling_time_frac = cm.handling_time/max_handling_time
+                if cm_handling_time_frac <= distance_inclusion_fraction or cm.is_charging_move:
+                    relevant_car_moves.append(cm)
+
+            self.relevant_car_moves = relevant_car_moves
 
 
     def add_car_move_to_employee(self, car_move: CarMove, employee: Employee, scenario: int = None):

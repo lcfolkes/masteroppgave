@@ -1,8 +1,7 @@
 import os
 
 import numpy as np
-
-import Heuristics.heuristics_constants
+from Heuristics.heuristics_constants import HeuristicsConstants
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Heuristics.feasibility_checker import FeasibilityChecker
 from Heuristics.helper_functions_heuristics import remove_all_car_moves_of_car_in_car_move, \
@@ -23,13 +22,15 @@ class ConstructionHeuristic:
     # instance_file = "InstanceFiles/6nodes/6-3-1-1_d.pkl"
     # filename = "InstanceFiles/6nodes/6-3-1-1_b.yaml"
 
-    def __init__(self, instance_file, acceptance_percentage):
-        self.acceptance_percentage = acceptance_percentage
+    def __init__(self, instance_file, distance_inclusion_factor):
+        self.acceptance_percentage = HeuristicsConstants.ACCEPTANCE_PERCENTAGE
+        self.distance_inclusion_factor = distance_inclusion_factor
         self.instance_file = instance_file
         self.world_instance = load_object_from_file(instance_file)
-        self.world_instance.initialize_relevant_car_moves(acceptance_percentage)
+        self.world_instance.initialize_relevant_car_moves(self.acceptance_percentage)
+        self.world_instance.initialize_relevant_car_moves_distance(self.distance_inclusion_factor)
         self.objective_function = ObjectiveFunction(self.world_instance)
-        self.world_instance.planning_period = Heuristics.heuristics_constants.HeuristicsConstants.PLANNING_PERIOD
+        self.world_instance.planning_period = HeuristicsConstants.PLANNING_PERIOD
         self.feasibility_checker = FeasibilityChecker(self.world_instance)
         self.num_scenarios = self.world_instance.num_scenarios
         #self.num_first_stage_tasks = Heuristics.heuristics_constants.HeuristicsConstants.NUM_FIRST_STAGE_TASKS
@@ -98,6 +99,30 @@ class ConstructionHeuristic:
 
         # self.hash_key = hash(str(hash_dict))
         return hash(str(hash_dict))
+
+    @property
+    def num_charging_moves(self):
+        num_charging_moves = 0
+        for emp in self.assigned_car_moves.keys():
+            for cm in self.assigned_car_moves[emp][0][:self.world_instance.first_stage_tasks]:
+                if cm.is_charging_move:
+                    num_charging_moves += 1
+
+        for emp in self.assigned_car_moves.keys():
+            for scenario in self.assigned_car_moves[emp]:
+                for cm in scenario[self.world_instance.first_stage_tasks:]:
+                    if cm.is_charging_move:
+                        num_charging_moves += round(1 / self.num_scenarios, 2)
+
+        return round(num_charging_moves, 2)
+
+    @property
+    def num_cars_in_need(self):
+        cars_in_need = 0
+        for car in self.world_instance.cars:
+            if car.needs_charging:
+                cars_in_need += 1
+        return cars_in_need
 
     def rebuild(self, solution, stage="first", verbose=False, optimize=True):
         #print("\n --- REBUILD ---")
@@ -376,26 +401,11 @@ class ConstructionHeuristic:
         true_obj_val, heuristic_obj_val = self.get_obj_val(both=True)
 
         # Computing number of charging moves performed
-        num_charging_moves = 0
-
-        for emp in self.assigned_car_moves.keys():
-            for cm in self.assigned_car_moves[emp][0][:self.world_instance.first_stage_tasks]:
-                if cm.is_charging_move:
-                    num_charging_moves += 1
-
-        for emp in self.assigned_car_moves.keys():
-            for scenario in self.assigned_car_moves[emp]:
-                for cm in scenario[self.world_instance.first_stage_tasks:]:
-                    if cm.is_charging_move:
-                        num_charging_moves += round(1 / self.num_scenarios, 2)
-
-        num_charging_moves = round(num_charging_moves, 2)
+        num_charging_moves = self.num_charging_moves
 
         # Computing number of cars in need of charging
-        cars_in_need = 0
-        for car in self.world_instance.cars:
-            if car.needs_charging:
-                cars_in_need += 1
+        num_car_in_need = self.num_cars_in_need
+
 
         df_firststage_routes = pd.DataFrame(
             columns=["           Type", "  Employee", "  Task number", "  Car Move", "  Car ID", "  Employee Route",
@@ -410,7 +420,7 @@ class ConstructionHeuristic:
         print("----------- CONSTRUCTION HEURISTIC SOLUTION -----------\n")
         print(f"True objective value: {round(self.objective_function.true_objective_value, 2)}")
         print(f"Heuristic objective value: {round(self.objective_function.heuristic_objective_value, 2)}")
-        print(f"\nNumber of charging moves performed: {num_charging_moves}/{cars_in_need}")
+        print(f"\nNumber of charging moves performed: {num_charging_moves}/{num_car_in_need}")
         # print(f"Number of cars charged: {num_charging_moves}\n")
 
         # print("-------------- First stage routes --------------")

@@ -103,7 +103,7 @@ class ALNS():
         true_obj_vals = [true_obj_val]
         heuristic_obj_vals = [best_obj_val]
         iterations = [0]
-        best_solution = (copy_solution_dict(self.solution.assigned_car_moves), true_obj_val)
+        best_solution = (copy_solution_dict(self.solution.assigned_car_moves), true_obj_val, self.solution.num_charging_moves)
         if verbose:
             self.solution.print_solution()
             print(f"Construction heuristic true obj. val {true_obj_val}")
@@ -206,7 +206,7 @@ class ALNS():
                                 best_obj_val_found_time = current_time
                                 best_obj_val = candidate_obj_val
 
-                                best_solution = (copy_solution_dict(self.solution.assigned_car_moves), true_obj_val)
+                                best_solution = (copy_solution_dict(self.solution.assigned_car_moves), true_obj_val, self.solution.num_charging_moves)
                                 output_text += str(
                                     counter) + f" {colored('New best solution globally:', 'green')} {colored(round(candidate_obj_val, 2), 'green')}{colored(', found by ', 'green')}{colored(MODE, 'green')}\n"
                                 counter += 1
@@ -325,6 +325,7 @@ class ALNS():
             obj_val_found_txt = f"Best objective value found after (s): {best_obj_val_found_time}\n"
             obj_val_txt = f"Objective value: {str(best_solution[1])}\n"
             heur_val_txt = f"Heuristic value: {str(best_obj_val)}\n"
+            charging_txt = f"Cars charged: {str(best_solution[2])}\nCars in need of charging: {self.solution.num_cars_in_need}\n"
             construction_heur_txt = f"Construction heuristic, true objective value: {str(construction_true_obj_val)}\n"
             construction_heur_txt += f"Construction heuristic, heuristic objective value: {str(construction_heur_obj_val)}\n"
             check_points_txt = ""
@@ -349,7 +350,7 @@ class ALNS():
             filename = self.filename.split('/')[-1].split('.')[0]
             filepath = test_dir + filename
             f = open(filepath + "_results.txt", "a")
-            f.writelines([run_txt, date_time_txt, obj_val_found_txt, obj_val_txt, heur_val_txt, construction_heur_txt,
+            f.writelines([run_txt, date_time_txt, obj_val_found_txt, obj_val_txt, heur_val_txt, charging_txt, construction_heur_txt,
                           check_points_txt, time_spent_txt, iterations_done_txt, parameter_tuning_txt])
             f.close()
 
@@ -547,10 +548,9 @@ if __name__ == "__main__":
     filename = "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_b"
 
     try:
-
         #profiler = Profiler()
         #profiler.start()
-        alns = ALNS(filename + ".pkl", 2)
+        alns = ALNS(filename + ".pkl", 0.5)
         alns.run(verbose=True)
 
         #profiler.stop()
