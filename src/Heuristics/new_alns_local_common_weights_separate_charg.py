@@ -94,6 +94,7 @@ class ALNS():
         finish = None
 
         self.solution.construct(verbose=verbose)
+        best_obj_val_found_time = time.perf_counter() - start
         true_obj_val, best_obj_val = self.solution.get_obj_val(both=True)
         construction_heur_obj_val = best_obj_val
         construction_true_obj_val = true_obj_val
@@ -321,7 +322,7 @@ class ALNS():
             timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S)")
             run_txt = f"\nRun: {str(run)}\n"
             date_time_txt = f"DateTime: {timestampStr}\n"
-            obj_val_found_txt = f"Best objective value found after {best_obj_val_found_time} s:\n"
+            obj_val_found_txt = f"Best objective value found after (s): {best_obj_val_found_time}\n"
             obj_val_txt = f"Objective value: {str(best_solution[1])}\n"
             heur_val_txt = f"Heuristic value: {str(best_obj_val)}\n"
             construction_heur_txt = f"Construction heuristic, true objective value: {str(construction_true_obj_val)}\n"
@@ -409,7 +410,6 @@ class ALNS():
         if round(new_obj_val, 2) > round(current_obj_val, 2):
             acceptance_probability = 1
         else:
-            print(temperature)
             p = np.exp(- (current_obj_val - new_obj_val) / temperature)
             acceptance_probability = p
 

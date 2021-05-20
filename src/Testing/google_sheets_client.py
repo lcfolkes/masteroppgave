@@ -53,14 +53,21 @@ if __name__ == "__main__":
 
 	test_results = pd.DataFrame()
 	test_dir = "./Testing/Results"
-	acceptance_percentage_dict = {"2.0": 2, "1.0": 3, "0.8": 4, "0.5": 5, "0.2": 6}
+	acceptance_percentage_dict = {"2.0": 2, "1.0": 4, "0.9": 6, "0.8": 8, "0.7": 10, "0.6": 12, "0.5": 14}
+	header = np.array([["", "Acceptance Percentage", 2, 2, 1, 1, 0.9, 0.9, 0.8, 0.8, 0.7, 0.7, 0.6, 0.6, 0.5, 0.5],
+					   ["Instance", "Run", "Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
+						"Obj. Val.", "Time found (s)","Obj. Val.", "Time found (s)","Obj. Val.", "Time found (s)",
+					   "Obj. Val.", "Time found (s)","Obj. Val.", "Time found (s)"]])
+	header_df = pd.DataFrame(header)
+	work_sheet.set_dataframe(header_df, (1, 0), copy_head=False)
 	start_row = 3
+
 	for dir in os.listdir(test_dir):
 		sub_dir = test_dir + "/" + dir
 		for file in os.listdir(sub_dir):
 			filepath = sub_dir + "/" + file
 			f = open(filepath, "r")
-			result = m = np.zeros(shape=[5, 7]).astype(str)
+			result = m = np.zeros(shape=[5, 16]).astype(str)
 			filename = file.split(".")[0][:-8]
 			result[:, 0] = filename
 			result[:, 1] = [x+1 for x in range(5)]
@@ -68,23 +75,35 @@ if __name__ == "__main__":
 				line_list = x.split(':')
 				if line_list[0] == "Run":
 					run = int(line_list[1].split(',')[0].strip())
+				elif line_list[0].split(" ")[0] == "Best":
+					time = line_list[0].split(" ")[-2]
+					try:
+						time = round(float(time.strip()), 2)
+					except:
+						time = 0
 				elif line_list[0] == "Objective value":
 					obj_val = line_list[1].strip()
 				elif line_list[0] == "Acceptance percentage":
-					acceptance_percentage = line_list[1].split(',')[0].strip()
-					result[run-1][acceptance_percentage_dict[acceptance_percentage]] = obj_val
+					acceptance_percentage = line_list[1].strip()
+					result[run - 1][acceptance_percentage_dict[acceptance_percentage]] = obj_val
+					result[run - 1][acceptance_percentage_dict[acceptance_percentage]+1] = time
 
 			avg_row = np.array([filename, "Average"])
 			relevant_cols = np.array(result[:, 2:], dtype=np.float64)
-			avgs = np.mean(relevant_cols, axis=0)
-			avg_row = np.concatenate((avg_row, avgs), axis=0)
+			avg_obj_val = np.mean(relevant_cols[:, ::2], axis=0)
+			avg_time_val = np.mean(relevant_cols[:, 1::2], axis=0)
+
+			avg_row = np.concatenate((avg_row, np.ravel([avg_obj_val, avg_time_val], 'F')), axis=0)
+
 			result = np.vstack([result, avg_row])
 			gap_row = np.array([filename, "Gap (%)"])
-			max_val = np.amax(relevant_cols)
-			gaps = np.abs((max_val-avgs)/max_val)
-			gap_row = np.concatenate((gap_row, gaps), axis=0)
-			result = np.vstack([result, gap_row])
+			max_val_obj = np.amax(relevant_cols[:, ::2])
+			max_val_time = np.mean(relevant_cols[:, 1::2])
+			obj_val_gaps = np.abs(np.divide(max_val_obj-avg_obj_val, max_val_obj))
+			time_val_gaps = np.abs(np.divide(max_val_time-avg_time_val, max_val_time))
+			gap_row = np.concatenate((gap_row, np.ravel([obj_val_gaps, time_val_gaps],'F')), axis=0)
 
+			result = np.vstack([result, gap_row])
 			result_df = pd.DataFrame(result)
 			work_sheet.set_dataframe(result_df, (start_row, 0), copy_head=False)
 			start_row += 7
