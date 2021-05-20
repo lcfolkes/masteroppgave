@@ -47,7 +47,7 @@ if __name__ == "__main__":
 	# open the google spreadsheet (where 'PY to Gsheet Test' is the name of my sheet)
 
 	# select the first sheet
-	work_sheet = sheet[0]
+	work_sheet = sheet[1]
 	#print(work_sheet)
 	# update the first sheet with df, starting at cell B2.
 
@@ -74,12 +74,12 @@ if __name__ == "__main__":
 					acceptance_percentage = line_list[1].split(',')[0].strip()
 					result[run-1][acceptance_percentage_dict[acceptance_percentage]] = obj_val
 
-			avg_row = np.array(["Average", ""])
+			avg_row = np.array([filename, "Average"])
 			relevant_cols = np.array(result[:, 2:], dtype=np.float64)
 			avgs = np.mean(relevant_cols, axis=0)
 			avg_row = np.concatenate((avg_row, avgs), axis=0)
 			result = np.vstack([result, avg_row])
-			gap_row = np.array(["Gap (%)", ""])
+			gap_row = np.array([filename, "Gap (%)"])
 			max_val = np.amax(relevant_cols)
 			gaps = np.abs((max_val-avgs)/max_val)
 			gap_row = np.concatenate((gap_row, gaps), axis=0)

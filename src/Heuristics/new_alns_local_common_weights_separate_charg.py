@@ -66,7 +66,7 @@ class ALNS():
             cn.reset()
         return candidate_unused_car_moves, candidate_solution
 
-    def run(self, verbose=True, run=0):
+    def run(self, run=0, verbose=False):
 
         start = time.perf_counter()
         visited_hash_keys = set()
@@ -76,19 +76,28 @@ class ALNS():
         time_limit = HeuristicsConstants.TIME_LIMIT
 
         finish_times_segments = []
-        first_checkpoint = HeuristicsConstants.FIRST_CHECKPOINT
-        second_checkpoint = HeuristicsConstants.SECOND_CHECKPOINT
+        #first_checkpoint = HeuristicsConstants.FIRST_CHECKPOINT
+        #second_checkpoint = HeuristicsConstants.SECOND_CHECKPOINT
 
-        first_checkpoint_reached = False
-        second_checkpoint_reached = False
-        obj_val_first_checkpoint = None
-        heur_val_first_checkpoint = None
-        obj_val_second_checkpoint = None
-        heur_val_second_checkpoint = None
+
+        checkpoints_reached = [False for _ in range(10)]
+        time_checkpoints = [60*(x+1) for x in range(10)]
+
+        true_obj_val_checkpoints = [None for _ in range(10)]
+        heur_obj_val_checkpoints = [None for _ in range(10)]
+
+        construction_true_obj_val = None
+        construction_heur_obj_val = None
+
+        best_obj_val_found_time = None
+
         finish = None
 
         self.solution.construct(verbose=verbose)
         true_obj_val, best_obj_val = self.solution.get_obj_val(both=True)
+        construction_heur_obj_val = best_obj_val
+        construction_true_obj_val = true_obj_val
+
         current_obj_val = best_obj_val
         true_obj_vals = [true_obj_val]
         heuristic_obj_vals = [best_obj_val]
@@ -192,7 +201,10 @@ class ALNS():
                             # print("candidate_obj_val: ", candidate_obj_val)
                             # NEW GLOBAL BEST
                             if round(candidate_obj_val, 2) > round(best_obj_val, 2):
+                                current_time = time.perf_counter() - start
+                                best_obj_val_found_time = current_time
                                 best_obj_val = candidate_obj_val
+
                                 best_solution = (copy_solution_dict(self.solution.assigned_car_moves), true_obj_val)
                                 output_text += str(
                                     counter) + f" {colored('New best solution globally:', 'green')} {colored(round(candidate_obj_val, 2), 'green')}{colored(', found by ', 'green')}{colored(MODE, 'green')}\n"
@@ -234,21 +246,18 @@ class ALNS():
                         counter += 1
                         MODE = "LNS"
 
-                    if time.perf_counter() - start > time_limit:
+                    current_time = time.perf_counter() - start
+                    if current_time > time_limit:
                         print("Time limit reached!")
-                        finish = time.perf_counter()
+                        finish = current_time
                         return
 
-                    if time.perf_counter() - start > first_checkpoint and not first_checkpoint_reached:
-                        first_checkpoint_reached = True
-                        heur_val_first_checkpoint = best_obj_val
-                        obj_val_first_checkpoint = best_solution[1]
-                    if time.perf_counter() - start > second_checkpoint and not second_checkpoint_reached:
-                        second_checkpoint_reached = True
-
-                        heur_val_second_checkpoint = best_obj_val
-                        obj_val_second_checkpoint = best_solution[1]
-
+                    for i in range(len(time_checkpoints)):
+                        if current_time >= time_checkpoints[i] and not checkpoints_reached[i]:
+                            checkpoints_reached[i] = True
+                            true_obj_val_checkpoints[i] = best_solution[1]
+                            heur_obj_val_checkpoints[i] = best_obj_val
+                            break
 
 
                 time_segment = time.perf_counter() - start
@@ -310,21 +319,26 @@ class ALNS():
             # Strings to save to file
             dateTimeObj = datetime.now()
             timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S)")
-            run_txt = f"\nRun: {str(run)}, {timestampStr}\n"
+            run_txt = f"\nRun: {str(run)}\n"
+            date_time_txt = f"DateTime: {timestampStr}\n"
+            obj_val_found_txt = f"Best objective value found after {best_obj_val_found_time} s:\n"
             obj_val_txt = f"Objective value: {str(best_solution[1])}\n"
             heur_val_txt = f"Heuristic value: {str(best_obj_val)}\n"
-            first_checkpoint_txt1 = f"Objective value after {first_checkpoint} s: {obj_val_first_checkpoint}\n"
-            first_checkpoint_txt2 = f"Heuristic value after {first_checkpoint} s: {heur_val_first_checkpoint}\n"
-            second_checkpoint_txt1 = f"Objective value after {second_checkpoint} s: {obj_val_second_checkpoint}\n"
-            second_checkpoint_txt2 = f"Heuristic value after {second_checkpoint} s: {heur_val_second_checkpoint}\n"
+            construction_heur_txt = f"Construction heuristic, true objective value: {str(construction_true_obj_val)}\n"
+            construction_heur_txt += f"Construction heuristic, heuristic objective value: {str(construction_heur_obj_val)}\n"
+            check_points_txt = ""
+            for t in range(len(time_checkpoints)):
+                check_points_txt += f"Objective value after {time_checkpoints[t]} s: {true_obj_val_checkpoints[t]}\n"
+                check_points_txt += f"Heuristic value after {time_checkpoints[t]} s: {heur_obj_val_checkpoints[t]}\n"
+
             time_spent_txt = f"Time used: {finish}\n"
-            #finish_times_segments_txt = f"Finish time segments:\n{finish_times_segments}\n"
+            finish_times_segments_txt = f"Finish time segments:\n{finish_times_segments}\n"
             iterations_done_txt = f"Iterations completed: {len(finish_times_segments) * iterations_segment} iterations in {len(finish_times_segments)} segments\n"
-            parameter_tuning_txt = f"Acceptance percentage: {self.solution.acceptance_percentage}, " \
-                                   f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}, " \
-                                   f"Determinism Worst: {HeuristicsConstants.DETERMINISM_PARAMETER_WORST}, " \
-                                   f"Determinism Related: {HeuristicsConstants.DETERMINISM_PARAMETER_RELATED}, " \
-                                   f"Determinism Greedy: {HeuristicsConstants.DETERMINISM_PARAMETER_GREEDY}, " \
+            parameter_tuning_txt = f"Acceptance percentage: {self.solution.acceptance_percentage}\n" \
+                                   f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}\n" \
+                                   f"Determinism Worst: {HeuristicsConstants.DETERMINISM_PARAMETER_WORST}\n" \
+                                   f"Determinism Related: {HeuristicsConstants.DETERMINISM_PARAMETER_RELATED}\n" \
+                                   f"Determinism Greedy: {HeuristicsConstants.DETERMINISM_PARAMETER_GREEDY}\n" \
                                    f"Adaptive Weight Rewards (Best, Better, Accepted): ({HeuristicsConstants.BEST}, {HeuristicsConstants.BETTER}, {HeuristicsConstants.ACCEPTED})\n\n"
 
             # Write to file
@@ -334,9 +348,8 @@ class ALNS():
             filename = self.filename.split('/')[-1].split('.')[0]
             filepath = test_dir + filename
             f = open(filepath + "_results.txt", "a")
-            f.writelines([run_txt, obj_val_txt, heur_val_txt, first_checkpoint_txt1, first_checkpoint_txt2,
-                          second_checkpoint_txt1, second_checkpoint_txt2, time_spent_txt, finish_times_segments_txt,
-                          iterations_done_txt, parameter_tuning_txt])
+            f.writelines([run_txt, date_time_txt, obj_val_found_txt, obj_val_txt, heur_val_txt, construction_heur_txt,
+                          check_points_txt, time_spent_txt, iterations_done_txt, parameter_tuning_txt])
             f.close()
 
             if verbose:
@@ -536,7 +549,7 @@ if __name__ == "__main__":
 
         #profiler = Profiler()
         #profiler.start()
-        alns = ALNS(filename + ".pkl")
+        alns = ALNS(filename + ".pkl", 2.0)
         alns.run()
 
         #profiler.stop()

@@ -10,25 +10,19 @@ os.chdir(path_to_src)
 import multiprocessing as mp
 
 
-def parallel_runs(filename, n, param):
-	alns = ALNS(filename + ".pkl", param)
-	with mp.Pool(processes=n) as pool:
-		args = [(False, i + 1) for i in range(n)]
-		obj_vals = pool.starmap(alns.run, args)
-	return obj_vals
+def run_parallel(filename, n, param):
+	num_processes = n * len(param)
+	args = []
+	for x in range(len(param)):
+		for i in range(n):
+			args.append((filename + ".pkl", param[x], i + 1))
+	with mp.Pool(processes=num_processes) as pool:
+		pool.starmap(run_process, args)
 
 
-# obj_vals = alns.run(verbose=False)
-# return obj_vals
-
-def run_parallell(filename, n, param):
-	print(f"Running {n} processes in parallel\n")
-	print(f"Acceptance percentage, {param}")
-	start = time.perf_counter()
-	obj_vals = parallel_runs(filename, n, param)
-	finish = time.perf_counter()
-	print(f"Parallel: Finished {n} runs in {round(finish - start, 2)} seconds(s)")
-	print(obj_vals)
+def run_process(filename, param, process_num):
+	alns = ALNS(filename, param)
+	alns.run(process_num)
 
 
 def run_sequential(filename, n, verbose):
@@ -50,7 +44,7 @@ if __name__ == "__main__":
 	from Heuristics.heuristics_constants import HeuristicsConstants
 
 	files = []
-	for n in [30]:# 30, 40, 50]:
+	for n in [30]:#, 40, 50]:
 		directory = f"./InstanceGenerator/InstanceFiles/{n}nodes/"
 		for filename in os.listdir(directory):
 			filename_list = filename.split(".")
@@ -60,17 +54,12 @@ if __name__ == "__main__":
 	# for f in files:
 	#    print(f)
 	try:
-
 		# filename = "InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a"
 		n = 5
 		for filename in files:
 			### PARALLEL
-			run_parallell(filename, n, 2.0)
-			run_parallell(filename, n, 1.0)
-			run_parallell(filename, n, 0.8)
-			run_parallell(filename, n, 0.5)
-			run_parallell(filename, n, 0.2)
-
+			run_parallel(filename, n, [2.0, 1.0, 0.9])
+			run_parallel(filename, n, [0.8, 0.7, 0.6, 0.5])
 		'''
 		### SEQUENTIAL
 		#alns = run_sequential(filename, 1, True)
