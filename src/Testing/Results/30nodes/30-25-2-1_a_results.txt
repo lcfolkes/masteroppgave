@@ -553,3 +553,743 @@ Determinism Related: 10
 Determinism Greedy: 10
 Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
 
+
+Run: 1
+DateTime: 20-May-2021 (17:20:24)
+Best objective value found after 597.524455472827 s:
+Objective value: 120.70296000000097
+Heuristic value: 120.70296000000012
+Construction heuristic, true objective value: 105.42983999999993
+Construction heuristic, heuristic objective value: 105.4298399999995
+Objective value after 60 s: 117.46704000000146
+Heuristic value after 60 s: 117.46704000000103
+Objective value after 120 s: 117.46704000000146
+Heuristic value after 120 s: 117.46704000000103
+Objective value after 180 s: 117.46704000000146
+Heuristic value after 180 s: 117.46704000000103
+Objective value after 240 s: 117.46704000000146
+Heuristic value after 240 s: 117.46704000000103
+Objective value after 300 s: 119.80368000000023
+Heuristic value after 300 s: 119.80367999999974
+Objective value after 360 s: 119.80368000000023
+Heuristic value after 360 s: 119.80367999999974
+Objective value after 420 s: 119.80368000000023
+Heuristic value after 420 s: 119.80367999999974
+Objective value after 480 s: 119.80368000000023
+Heuristic value after 480 s: 119.80367999999974
+Objective value after 540 s: 119.80368000000023
+Heuristic value after 540 s: 119.80367999999974
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 600.0480349119753
+Iterations completed: 333 iterations in 7 segments
+Acceptance percentage: 0.6
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 5
+DateTime: 20-May-2021 (17:20:25)
+Best objective value found after 549.1144825071096 s:
+Objective value: 127.46256000000015
+Heuristic value: 127.46255999999987
+Construction heuristic, true objective value: 105.42983999999993
+Construction heuristic, heuristic objective value: 105.4298399999995
+Objective value after 60 s: 117.46704000000146
+Heuristic value after 60 s: 117.46704000000103
+Objective value after 120 s: 117.46704000000146
+Heuristic value after 120 s: 117.46704000000103
+Objective value after 180 s: 120.70296000000097
+Heuristic value after 180 s: 120.70296000000012
+Objective value after 240 s: 120.70296000000097
+Heuristic value after 240 s: 120.70296000000012
+Objective value after 300 s: 120.70296000000097
+Heuristic value after 300 s: 120.70296000000012
+Objective value after 360 s: 120.70296000000097
+Heuristic value after 360 s: 120.70296000000012
+Objective value after 420 s: 120.70296000000097
+Heuristic value after 420 s: 120.70296000000012
+Objective value after 480 s: 120.70296000000097
+Heuristic value after 480 s: 120.70296000000012
+Objective value after 540 s: 120.70296000000097
+Heuristic value after 540 s: 120.70296000000012
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 600.2261313386261
+Iterations completed: 360 iterations in 8 segments
+Acceptance percentage: 0.5
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 2
+DateTime: 20-May-2021 (17:20:25)
+Best objective value found after 272.9642747854814 s:
+Objective value: 125.89919999999957
+Heuristic value: 125.89919999999886
+Construction heuristic, true objective value: 105.42983999999993
+Construction heuristic, heuristic objective value: 105.4298399999995
+Objective value after 60 s: 117.46704000000146
+Heuristic value after 60 s: 117.46704000000103
+Objective value after 120 s: 119.6500800000005
+Heuristic value after 120 s: 119.65007999999982
+Objective value after 180 s: 119.6500800000005
+Heuristic value after 180 s: 119.65007999999982
+Objective value after 240 s: 119.6500800000005
+Heuristic value after 240 s: 119.65007999999982
+Objective value after 300 s: 125.89919999999957
+Heuristic value after 300 s: 125.89919999999886
+Objective value after 360 s: 125.89919999999957
+Heuristic value after 360 s: 125.89919999999886
+Objective value after 420 s: 125.89919999999957
+Heuristic value after 420 s: 125.89919999999886
+Objective value after 480 s: 125.89919999999957
+Heuristic value after 480 s: 125.89919999999886
+Objective value after 540 s: 125.89919999999957
+Heuristic value after 540 s: 125.89919999999886
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 600.260028835386
+Iterations completed: 412 iterations in 9 segments
+Acceptance percentage: 0.5
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 2
+DateTime: 20-May-2021 (17:20:25)
+Best objective value found after 520.4592081606388 s:
+Objective value: 134.84087999999525
+Heuristic value: 134.8408799999951
+Construction heuristic, true objective value: 110.355600000001
+Construction heuristic, heuristic objective value: 110.3556000000008
+Objective value after 60 s: 127.10351999999995
+Heuristic value after 60 s: 127.10351999999952
+Objective value after 120 s: 127.10351999999995
+Heuristic value after 120 s: 127.10351999999952
+Objective value after 180 s: 127.10351999999995
+Heuristic value after 180 s: 127.10351999999952
+Objective value after 240 s: 127.10351999999995
+Heuristic value after 240 s: 127.10351999999952
+Objective value after 300 s: 127.10351999999995
+Heuristic value after 300 s: 127.10351999999952
+Objective value after 360 s: 127.10351999999995
+Heuristic value after 360 s: 127.10351999999952
+Objective value after 420 s: 132.02663999995823
+Heuristic value after 420 s: 132.02663999995755
+Objective value after 480 s: 132.02663999995823
+Heuristic value after 480 s: 132.02663999995755
+Objective value after 540 s: 134.84087999999525
+Heuristic value after 540 s: 134.8408799999951
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 600.4845925811678
+Iterations completed: 127 iterations in 3 segments
+Acceptance percentage: 0.8
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 5
+DateTime: 20-May-2021 (17:20:25)
+Best objective value found after 377.6156368292868 s:
+Objective value: 122.3971200000002
+Heuristic value: 122.39711999999983
+Construction heuristic, true objective value: 105.42983999999993
+Construction heuristic, heuristic objective value: 105.4298399999995
+Objective value after 60 s: 117.46704000000146
+Heuristic value after 60 s: 117.46704000000103
+Objective value after 120 s: 117.46704000000146
+Heuristic value after 120 s: 117.46704000000103
+Objective value after 180 s: 117.46704000000146
+Heuristic value after 180 s: 117.46704000000103
+Objective value after 240 s: 117.46704000000146
+Heuristic value after 240 s: 117.46704000000103
+Objective value after 300 s: 117.46704000000146
+Heuristic value after 300 s: 117.46704000000103
+Objective value after 360 s: 117.46704000000146
+Heuristic value after 360 s: 117.46704000000103
+Objective value after 420 s: 122.3971200000002
+Heuristic value after 420 s: 122.39711999999983
+Objective value after 480 s: 122.3971200000002
+Heuristic value after 480 s: 122.39711999999983
+Objective value after 540 s: 122.3971200000002
+Heuristic value after 540 s: 122.39711999999983
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 600.7318076854572
+Iterations completed: 343 iterations in 7 segments
+Acceptance percentage: 0.6
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 3
+DateTime: 20-May-2021 (17:20:25)
+Best objective value found after 468.1798627404496 s:
+Objective value: 122.3971200000002
+Heuristic value: 122.39711999999983
+Construction heuristic, true objective value: 105.42983999999993
+Construction heuristic, heuristic objective value: 105.4298399999995
+Objective value after 60 s: 117.46704000000146
+Heuristic value after 60 s: 117.46704000000103
+Objective value after 120 s: 117.46704000000146
+Heuristic value after 120 s: 117.46704000000103
+Objective value after 180 s: 119.6500800000005
+Heuristic value after 180 s: 119.65007999999982
+Objective value after 240 s: 119.6500800000005
+Heuristic value after 240 s: 119.65007999999982
+Objective value after 300 s: 119.6500800000005
+Heuristic value after 300 s: 119.65007999999982
+Objective value after 360 s: 119.6500800000005
+Heuristic value after 360 s: 119.65007999999982
+Objective value after 420 s: 119.6500800000005
+Heuristic value after 420 s: 119.65007999999982
+Objective value after 480 s: 122.3971200000002
+Heuristic value after 480 s: 122.39711999999983
+Objective value after 540 s: 122.3971200000002
+Heuristic value after 540 s: 122.39711999999983
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 600.7941095484421
+Iterations completed: 365 iterations in 8 segments
+Acceptance percentage: 0.6
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 4
+DateTime: 20-May-2021 (17:20:25)
+Best objective value found after 345.15001979470253 s:
+Objective value: 123.65112000000005
+Heuristic value: 123.65112000000028
+Construction heuristic, true objective value: 105.42983999999993
+Construction heuristic, heuristic objective value: 105.4298399999995
+Objective value after 60 s: 117.46704000000146
+Heuristic value after 60 s: 117.46704000000103
+Objective value after 120 s: 119.6500800000005
+Heuristic value after 120 s: 119.65007999999982
+Objective value after 180 s: 119.6500800000005
+Heuristic value after 180 s: 119.65007999999982
+Objective value after 240 s: 119.6500800000005
+Heuristic value after 240 s: 119.65007999999982
+Objective value after 300 s: 119.6500800000005
+Heuristic value after 300 s: 119.65007999999982
+Objective value after 360 s: 123.65112000000005
+Heuristic value after 360 s: 123.65112000000028
+Objective value after 420 s: 123.65112000000005
+Heuristic value after 420 s: 123.65112000000028
+Objective value after 480 s: 123.65112000000005
+Heuristic value after 480 s: 123.65112000000028
+Objective value after 540 s: 123.65112000000005
+Heuristic value after 540 s: 123.65112000000028
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 600.959713098593
+Iterations completed: 381 iterations in 8 segments
+Acceptance percentage: 0.6
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 2
+DateTime: 20-May-2021 (17:20:25)
+Best objective value found after 166.21556122787297 s:
+Objective value: 122.3971200000002
+Heuristic value: 122.39711999999983
+Construction heuristic, true objective value: 105.42983999999993
+Construction heuristic, heuristic objective value: 105.4298399999995
+Objective value after 60 s: 119.6500800000005
+Heuristic value after 60 s: 119.65007999999982
+Objective value after 120 s: 119.6500800000005
+Heuristic value after 120 s: 119.65007999999982
+Objective value after 180 s: 122.3971200000002
+Heuristic value after 180 s: 122.39711999999983
+Objective value after 240 s: 122.3971200000002
+Heuristic value after 240 s: 122.39711999999983
+Objective value after 300 s: 122.3971200000002
+Heuristic value after 300 s: 122.39711999999983
+Objective value after 360 s: 122.3971200000002
+Heuristic value after 360 s: 122.39711999999983
+Objective value after 420 s: 122.3971200000002
+Heuristic value after 420 s: 122.39711999999983
+Objective value after 480 s: 122.3971200000002
+Heuristic value after 480 s: 122.39711999999983
+Objective value after 540 s: 122.3971200000002
+Heuristic value after 540 s: 122.39711999999983
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 601.1461916388944
+Iterations completed: 402 iterations in 9 segments
+Acceptance percentage: 0.6
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 3
+DateTime: 20-May-2021 (17:20:26)
+Best objective value found after 60.475989297032356 s:
+Objective value: 119.6500800000005
+Heuristic value: 119.65007999999982
+Construction heuristic, true objective value: 105.42983999999993
+Construction heuristic, heuristic objective value: 105.4298399999995
+Objective value after 60 s: 119.6500800000005
+Heuristic value after 60 s: 119.65007999999982
+Objective value after 120 s: 119.6500800000005
+Heuristic value after 120 s: 119.65007999999982
+Objective value after 180 s: 119.6500800000005
+Heuristic value after 180 s: 119.65007999999982
+Objective value after 240 s: 119.6500800000005
+Heuristic value after 240 s: 119.65007999999982
+Objective value after 300 s: 119.6500800000005
+Heuristic value after 300 s: 119.65007999999982
+Objective value after 360 s: 119.6500800000005
+Heuristic value after 360 s: 119.65007999999982
+Objective value after 420 s: 119.6500800000005
+Heuristic value after 420 s: 119.65007999999982
+Objective value after 480 s: 119.6500800000005
+Heuristic value after 480 s: 119.65007999999982
+Objective value after 540 s: 119.6500800000005
+Heuristic value after 540 s: 119.65007999999982
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 602.0859281299636
+Iterations completed: 375 iterations in 8 segments
+Acceptance percentage: 0.5
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 2
+DateTime: 20-May-2021 (17:20:27)
+Best objective value found after 176.78342575766146 s:
+Objective value: 124.36416000000051
+Heuristic value: 124.36415999999983
+Construction heuristic, true objective value: 106.72679999999951
+Construction heuristic, heuristic objective value: 106.72679999999909
+Objective value after 60 s: 122.46000000000318
+Heuristic value after 60 s: 122.46000000000275
+Objective value after 120 s: 122.46000000000318
+Heuristic value after 120 s: 122.46000000000275
+Objective value after 180 s: 124.36416000000051
+Heuristic value after 180 s: 124.36415999999983
+Objective value after 240 s: 124.36416000000051
+Heuristic value after 240 s: 124.36415999999983
+Objective value after 300 s: 124.36416000000051
+Heuristic value after 300 s: 124.36415999999983
+Objective value after 360 s: 124.36416000000051
+Heuristic value after 360 s: 124.36415999999983
+Objective value after 420 s: 124.36416000000051
+Heuristic value after 420 s: 124.36415999999983
+Objective value after 480 s: 124.36416000000051
+Heuristic value after 480 s: 124.36415999999983
+Objective value after 540 s: 124.36416000000051
+Heuristic value after 540 s: 124.36415999999983
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 602.2591938283294
+Iterations completed: 331 iterations in 7 segments
+Acceptance percentage: 0.7
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 1
+DateTime: 20-May-2021 (17:20:28)
+Best objective value found after 500.8503189617768 s:
+Objective value: 128.17943999999417
+Heuristic value: 128.1794399999936
+Construction heuristic, true objective value: 105.42983999999993
+Construction heuristic, heuristic objective value: 105.4298399999995
+Objective value after 60 s: 117.46704000000146
+Heuristic value after 60 s: 117.46704000000103
+Objective value after 120 s: 117.46704000000146
+Heuristic value after 120 s: 117.46704000000103
+Objective value after 180 s: 119.6500800000005
+Heuristic value after 180 s: 119.65007999999982
+Objective value after 240 s: 119.6500800000005
+Heuristic value after 240 s: 119.65007999999982
+Objective value after 300 s: 119.6500800000005
+Heuristic value after 300 s: 119.65007999999982
+Objective value after 360 s: 119.6500800000005
+Heuristic value after 360 s: 119.65007999999982
+Objective value after 420 s: 119.6500800000005
+Heuristic value after 420 s: 119.65007999999982
+Objective value after 480 s: 119.6500800000005
+Heuristic value after 480 s: 119.65007999999982
+Objective value after 540 s: 128.17943999999417
+Heuristic value after 540 s: 128.1794399999936
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 603.2709583537653
+Iterations completed: 358 iterations in 8 segments
+Acceptance percentage: 0.5
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 4
+DateTime: 20-May-2021 (17:20:28)
+Best objective value found after 339.77094418834895 s:
+Objective value: 121.84368000000062
+Heuristic value: 121.84368000000005
+Construction heuristic, true objective value: 105.42983999999993
+Construction heuristic, heuristic objective value: 105.4298399999995
+Objective value after 60 s: 117.46704000000146
+Heuristic value after 60 s: 117.46704000000103
+Objective value after 120 s: 117.46704000000146
+Heuristic value after 120 s: 117.46704000000103
+Objective value after 180 s: 120.10631999999976
+Heuristic value after 180 s: 120.10631999999947
+Objective value after 240 s: 120.10631999999976
+Heuristic value after 240 s: 120.10631999999947
+Objective value after 300 s: 120.10631999999976
+Heuristic value after 300 s: 120.10631999999947
+Objective value after 360 s: 121.84368000000062
+Heuristic value after 360 s: 121.84368000000005
+Objective value after 420 s: 121.84368000000062
+Heuristic value after 420 s: 121.84368000000005
+Objective value after 480 s: 121.84368000000062
+Heuristic value after 480 s: 121.84368000000005
+Objective value after 540 s: 121.84368000000062
+Heuristic value after 540 s: 121.84368000000005
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 603.3904219837859
+Iterations completed: 405 iterations in 9 segments
+Acceptance percentage: 0.5
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 4
+DateTime: 20-May-2021 (17:20:28)
+Best objective value found after 211.3083957536146 s:
+Objective value: 125.09616000000051
+Heuristic value: 125.0961599999998
+Construction heuristic, true objective value: 106.72679999999951
+Construction heuristic, heuristic objective value: 106.72679999999909
+Objective value after 60 s: 124.36416000000051
+Heuristic value after 60 s: 124.36415999999983
+Objective value after 120 s: 124.36416000000051
+Heuristic value after 120 s: 124.36415999999983
+Objective value after 180 s: 124.36416000000051
+Heuristic value after 180 s: 124.36415999999983
+Objective value after 240 s: 125.09616000000051
+Heuristic value after 240 s: 125.0961599999998
+Objective value after 300 s: 125.09616000000051
+Heuristic value after 300 s: 125.0961599999998
+Objective value after 360 s: 125.09616000000051
+Heuristic value after 360 s: 125.0961599999998
+Objective value after 420 s: 125.09616000000051
+Heuristic value after 420 s: 125.0961599999998
+Objective value after 480 s: 125.09616000000051
+Heuristic value after 480 s: 125.0961599999998
+Objective value after 540 s: 125.09616000000051
+Heuristic value after 540 s: 125.0961599999998
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 603.6117821959779
+Iterations completed: 289 iterations in 6 segments
+Acceptance percentage: 0.7
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 5
+DateTime: 20-May-2021 (17:20:28)
+Best objective value found after 381.4584379326552 s:
+Objective value: 124.36416000000051
+Heuristic value: 124.36415999999983
+Construction heuristic, true objective value: 106.72679999999951
+Construction heuristic, heuristic objective value: 106.72679999999909
+Objective value after 60 s: 122.46000000000318
+Heuristic value after 60 s: 122.46000000000275
+Objective value after 120 s: 122.46000000000318
+Heuristic value after 120 s: 122.46000000000275
+Objective value after 180 s: 122.46000000000318
+Heuristic value after 180 s: 122.46000000000275
+Objective value after 240 s: 122.46000000000318
+Heuristic value after 240 s: 122.46000000000275
+Objective value after 300 s: 122.46000000000318
+Heuristic value after 300 s: 122.46000000000275
+Objective value after 360 s: 122.46000000000318
+Heuristic value after 360 s: 122.46000000000275
+Objective value after 420 s: 124.36416000000051
+Heuristic value after 420 s: 124.36415999999983
+Objective value after 480 s: 124.36416000000051
+Heuristic value after 480 s: 124.36415999999983
+Objective value after 540 s: 124.36416000000051
+Heuristic value after 540 s: 124.36415999999983
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 603.8718309411779
+Iterations completed: 293 iterations in 6 segments
+Acceptance percentage: 0.7
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 1
+DateTime: 20-May-2021 (17:20:29)
+Best objective value found after 370.8802578309551 s:
+Objective value: 131.11103999999946
+Heuristic value: 131.11103999999867
+Construction heuristic, true objective value: 106.72679999999951
+Construction heuristic, heuristic objective value: 106.72679999999909
+Objective value after 60 s: 122.46000000000318
+Heuristic value after 60 s: 122.46000000000275
+Objective value after 120 s: 122.46000000000318
+Heuristic value after 120 s: 122.46000000000275
+Objective value after 180 s: 122.46000000000318
+Heuristic value after 180 s: 122.46000000000275
+Objective value after 240 s: 124.36416000000051
+Heuristic value after 240 s: 124.36415999999983
+Objective value after 300 s: 124.36416000000051
+Heuristic value after 300 s: 124.36415999999983
+Objective value after 360 s: 124.36416000000051
+Heuristic value after 360 s: 124.36415999999983
+Objective value after 420 s: 131.11103999999946
+Heuristic value after 420 s: 131.11103999999867
+Objective value after 480 s: 131.11103999999946
+Heuristic value after 480 s: 131.11103999999867
+Objective value after 540 s: 131.11103999999946
+Heuristic value after 540 s: 131.11103999999867
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 604.4512327509001
+Iterations completed: 304 iterations in 7 segments
+Acceptance percentage: 0.7
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 3
+DateTime: 20-May-2021 (17:20:29)
+Best objective value found after 579.1116100512445 s:
+Objective value: 131.87496000001758
+Heuristic value: 131.87496000001676
+Construction heuristic, true objective value: 106.72679999999951
+Construction heuristic, heuristic objective value: 106.72679999999909
+Objective value after 60 s: 122.46000000000318
+Heuristic value after 60 s: 122.46000000000275
+Objective value after 120 s: 124.36416000000051
+Heuristic value after 120 s: 124.36415999999983
+Objective value after 180 s: 124.36416000000051
+Heuristic value after 180 s: 124.36415999999983
+Objective value after 240 s: 124.36416000000051
+Heuristic value after 240 s: 124.36415999999983
+Objective value after 300 s: 124.36416000000051
+Heuristic value after 300 s: 124.36415999999983
+Objective value after 360 s: 124.36416000000051
+Heuristic value after 360 s: 124.36415999999983
+Objective value after 420 s: 124.36416000000051
+Heuristic value after 420 s: 124.36415999999983
+Objective value after 480 s: 124.36416000000051
+Heuristic value after 480 s: 124.36415999999983
+Objective value after 540 s: 124.36416000000051
+Heuristic value after 540 s: 124.36415999999983
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 604.7793460274115
+Iterations completed: 309 iterations in 7 segments
+Acceptance percentage: 0.7
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 3
+DateTime: 20-May-2021 (17:20:29)
+Best objective value found after 266.5425710575655 s:
+Objective value: 132.02663999995823
+Heuristic value: 132.02663999995755
+Construction heuristic, true objective value: 110.355600000001
+Construction heuristic, heuristic objective value: 110.3556000000008
+Objective value after 60 s: 127.10351999999995
+Heuristic value after 60 s: 127.10351999999952
+Objective value after 120 s: 127.10351999999995
+Heuristic value after 120 s: 127.10351999999952
+Objective value after 180 s: 127.10351999999995
+Heuristic value after 180 s: 127.10351999999952
+Objective value after 240 s: 127.10351999999995
+Heuristic value after 240 s: 127.10351999999952
+Objective value after 300 s: 132.02663999995823
+Heuristic value after 300 s: 132.02663999995755
+Objective value after 360 s: 132.02663999995823
+Heuristic value after 360 s: 132.02663999995755
+Objective value after 420 s: 132.02663999995823
+Heuristic value after 420 s: 132.02663999995755
+Objective value after 480 s: 132.02663999995823
+Heuristic value after 480 s: 132.02663999995755
+Objective value after 540 s: 132.02663999995823
+Heuristic value after 540 s: 132.02663999995755
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 604.8344843788072
+Iterations completed: 130 iterations in 3 segments
+Acceptance percentage: 0.8
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 4
+DateTime: 20-May-2021 (17:20:29)
+Best objective value found after 578.4163995571434 s:
+Objective value: 135.82367999999525
+Heuristic value: 135.82367999999488
+Construction heuristic, true objective value: 110.355600000001
+Construction heuristic, heuristic objective value: 110.3556000000008
+Objective value after 60 s: 127.10351999999995
+Heuristic value after 60 s: 127.10351999999952
+Objective value after 120 s: 127.10351999999995
+Heuristic value after 120 s: 127.10351999999952
+Objective value after 180 s: 127.10351999999995
+Heuristic value after 180 s: 127.10351999999952
+Objective value after 240 s: 127.10351999999995
+Heuristic value after 240 s: 127.10351999999952
+Objective value after 300 s: 127.10351999999995
+Heuristic value after 300 s: 127.10351999999952
+Objective value after 360 s: 127.10351999999995
+Heuristic value after 360 s: 127.10351999999952
+Objective value after 420 s: 127.10351999999995
+Heuristic value after 420 s: 127.10351999999952
+Objective value after 480 s: 127.10351999999995
+Heuristic value after 480 s: 127.10351999999952
+Objective value after 540 s: 127.10351999999995
+Heuristic value after 540 s: 127.10351999999952
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 604.9771834490821
+Iterations completed: 130 iterations in 3 segments
+Acceptance percentage: 0.8
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 1
+DateTime: 20-May-2021 (17:20:30)
+Best objective value found after 394.34414302930236 s:
+Objective value: 133.48079999999996
+Heuristic value: 133.48079999999948
+Construction heuristic, true objective value: 110.355600000001
+Construction heuristic, heuristic objective value: 110.3556000000008
+Objective value after 60 s: 127.10351999999995
+Heuristic value after 60 s: 127.10351999999952
+Objective value after 120 s: 127.10351999999995
+Heuristic value after 120 s: 127.10351999999952
+Objective value after 180 s: 131.39399999999574
+Heuristic value after 180 s: 131.39399999999526
+Objective value after 240 s: 132.02663999995823
+Heuristic value after 240 s: 132.02663999995755
+Objective value after 300 s: 132.02663999995823
+Heuristic value after 300 s: 132.02663999995755
+Objective value after 360 s: 132.02663999995823
+Heuristic value after 360 s: 132.02663999995755
+Objective value after 420 s: 133.48079999999996
+Heuristic value after 420 s: 133.48079999999948
+Objective value after 480 s: 133.48079999999996
+Heuristic value after 480 s: 133.48079999999948
+Objective value after 540 s: 133.48079999999996
+Heuristic value after 540 s: 133.48079999999948
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 605.8232943108305
+Iterations completed: 119 iterations in 3 segments
+Acceptance percentage: 0.8
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
+
+Run: 5
+DateTime: 20-May-2021 (17:20:32)
+Best objective value found after 56.41107025370002 s:
+Objective value: 135.2001599999972
+Heuristic value: 135.2001599999964
+Construction heuristic, true objective value: 110.355600000001
+Construction heuristic, heuristic objective value: 110.3556000000008
+Objective value after 60 s: 135.2001599999972
+Heuristic value after 60 s: 135.2001599999964
+Objective value after 120 s: 135.2001599999972
+Heuristic value after 120 s: 135.2001599999964
+Objective value after 180 s: 135.2001599999972
+Heuristic value after 180 s: 135.2001599999964
+Objective value after 240 s: 135.2001599999972
+Heuristic value after 240 s: 135.2001599999964
+Objective value after 300 s: 135.2001599999972
+Heuristic value after 300 s: 135.2001599999964
+Objective value after 360 s: 135.2001599999972
+Heuristic value after 360 s: 135.2001599999964
+Objective value after 420 s: 135.2001599999972
+Heuristic value after 420 s: 135.2001599999964
+Objective value after 480 s: 135.2001599999972
+Heuristic value after 480 s: 135.2001599999964
+Objective value after 540 s: 135.2001599999972
+Heuristic value after 540 s: 135.2001599999964
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 607.81130258739
+Iterations completed: 144 iterations in 3 segments
+Acceptance percentage: 0.8
+Neighborhood Size: (0.15, 0.5)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33.0, 9.0, 13.0)
+
