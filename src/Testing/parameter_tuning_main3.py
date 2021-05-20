@@ -44,7 +44,7 @@ if __name__ == "__main__":
 	from Heuristics.heuristics_constants import HeuristicsConstants
 
 	files = []
-	for n in [30]:#, 40, 50]:
+	for n in [30]:  # , 25, 30, 40, 50]:
 		directory = f"./InstanceGenerator/InstanceFiles/{n}nodes/"
 		for filename in os.listdir(directory):
 			filename_list = filename.split(".")
@@ -54,7 +54,6 @@ if __name__ == "__main__":
 	# for f in files:
 	#    print(f)
 	try:
-		# filename = "InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a"
 		n = 5
 		for filename in files:
 			### PARALLEL
