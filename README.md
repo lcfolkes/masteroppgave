@@ -80,7 +80,7 @@ ssh compute-<rack>-<node_id>
 ```
 
 ## Run from terminal
-To run a file from the terminal one must first set the <code>PYTHONPATH</code>. First, navigate to the root directory.
+Navigate to the root directory and run
 ```
 cd masteroppgave/src
 python Testing/main.py
