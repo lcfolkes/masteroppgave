@@ -164,6 +164,8 @@ class ConstructionHeuristic:
                     self.first_stage = False
                     if stage != "second":
                         self.car_moves_second_stage = [[cm for cm in self.car_moves_first_stage] for _ in range(self.num_scenarios)]
+                    else:
+                        self.car_moves_second_stage = [[cm for cm in self.car_moves_second_stage[s] if cm in self.car_moves_first_stage] for s in range(self.num_scenarios)]
                     continue
                 #### GET BEST EMPLOYEE ###
                 best_employee_first_stage = self._get_best_employee(best_car_move_first_stage)
@@ -236,6 +238,7 @@ class ConstructionHeuristic:
 
         # SECOND STAGE
         else:
+
             best_car_move_second_stage = [None for _ in range(self.num_scenarios)]
             best_obj_val_second_stage = [self.objective_function.heuristic_objective_value for _ in range(self.num_scenarios)]
 
@@ -255,33 +258,9 @@ class ConstructionHeuristic:
 
                     obj_val = self.objective_function.evaluate(added_car_moves=[car_move],
                                                                scenario=s, mode="heuristic")
-                    '''
-                    if self.car_moves_second_stage[s][r].car_move_id == 8:
-                        if s == 4:
-                            print("start", self.car_moves_second_stage[s][r].start_node.node_id)
-                            print("end", self.car_moves_second_stage[s][r].end_node.node_id)
-
-                            print("obj_val", obj_val)
-                            print("best obj val", best_obj_val_second_stage[s])
-                    '''
 
 
                     if obj_val > best_obj_val_second_stage[s]:
-                        '''
-                        if self.car_moves_second_stage[s][r].is_charging_move:
-
-                            # Checking if charging node has space for another car
-                            if self.car_moves_second_stage[s][r].end_node.capacity == \
-                                    self.car_moves_second_stage[s][r].end_node.num_charging[s]:
-                                continue
-
-                            else:
-
-                                best_obj_val_second_stage[s] = obj_val
-                                best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
-                                # car_moves[s][r].end_node.add_car(scenario=s)
-                        else:
-                        '''
                         best_obj_val_second_stage[s] = obj_val
                         best_car_move_second_stage[s] = car_move
 
@@ -289,25 +268,7 @@ class ConstructionHeuristic:
                         if car_move.handling_time < best_car_move_second_stage[s].handling_time:
                             best_obj_val_second_stage[s] = obj_val
                             best_car_move_second_stage[s] = car_move
-                    '''
-                        best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
-                        if self.car_moves_second_stage[s][r].is_charging_move:
 
-                            # Checking if charging node has space for another car
-                            if self.car_moves_second_stage[s][r].end_node.capacity == \
-                                    self.car_moves_second_stage[s][r].end_node.num_charging[s]:
-                                continue
-
-                            elif self.car_moves_second_stage[s][r].handling_time < best_car_move_second_stage.handling_time:
-                                best_obj_val_second_stage[s] = obj_val
-                                best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
-                                # car_moves[s][r].end_node.add_car(scenario=s)
-                        elif self.car_moves_second_stage[s][r].handling_time < best_car_move_second_stage[s].handling_time:
-                            best_obj_val_second_stage[s] = obj_val
-                            best_car_move_second_stage[s] = self.car_moves_second_stage[s][r]
-                    '''
-
-            # print([round(o,2) for o in best_obj_val_second_stage])
             return best_car_move_second_stage
 
     def _get_best_employee(self, best_car_move):
@@ -360,22 +321,12 @@ class ConstructionHeuristic:
 
                 self.world_instance.add_car_move_to_employee(best_car_move, best_employee)
                 self.objective_function.update(added_car_moves=[best_car_move])
-
                 for s in range(self.num_scenarios):
                     self.assigned_car_moves[best_employee][s].append(best_car_move)
                     self.unused_car_moves[s].remove(best_car_move)
                 self.car_moves_first_stage = remove_all_car_moves_of_car_in_car_move(
                     best_car_move, self.car_moves_first_stage)
-                '''
-                self.first_stage = False
-                for employee in self.employees:
-                    task_num = len(employee.car_moves)
-                    if task_num < self.world_instance.first_stage_tasks:
-                        self.first_stage = True
-                if not self.first_stage:
-                    # initialize charging and parking moves for second stage
-                    self.car_moves_second_stage = [[cm for cm in self.car_moves] for _ in range(self.num_scenarios)]
-                '''
+
             #else:
             #    self.available_employees = False
         # Second stage
@@ -397,12 +348,13 @@ class ConstructionHeuristic:
                                 print("scenario", s)
                                 print("emp", best_employee[s].employee_id)
                                 print("cm", best_car_move[s].car_move_id)
+                                print("car", best_car_move[s].car.car_id)
                                 raise
 
-                        # When first stage is finished, initialize car_moves to be list of copies of
-                        # car_moves (number of copies = num_scenarios)
-                        self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(
-                            best_car_move[s], self.car_moves_second_stage[s])
+                            # When first stage is finished, initialize car_moves to be list of copies of
+                            # car_moves (number of copies = num_scenarios)
+                            self.car_moves_second_stage[s] = remove_all_car_moves_of_car_in_car_move(
+                                best_car_move[s], self.car_moves_second_stage[s])
 
                 # print(f"car_moves: {len(car_moves[s])}")
                 #if not any(self.car_moves_second_stage):

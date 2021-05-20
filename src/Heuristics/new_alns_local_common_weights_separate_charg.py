@@ -115,25 +115,25 @@ class ALNS():
 
         temperature = (-np.abs(heuristic_obj_vals[0])) * 0.05 / np.log(0.5)
         #cooling_rate = 0.5  # cooling_rate in (0,1)
-        cooling_rate = np.exp(np.log(0.002) / 200)
+        cooling_rate = np.exp(np.log(0.02) / iterations_alns*iterations_segment)
 
         # SEGMENTS
         try:
-            for i in range(iterations_alns):
+            for i_alns in range(iterations_alns):
                 # print(i)
 
                 # print(f"Iteration {i * 10}")
                 # print(f"Best objective value {best_solution[1]}")
                 # print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
                 loop = tqdm(range(iterations_segment), total=iterations_segment, leave=True, ascii=True)
-                loop.set_description(f"Segment[{i}/{iterations_alns}]")
+                loop.set_description(f"Segment[{i_alns}/{iterations_alns}]")
                 loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val,
                              best_true_obj_val=best_solution[1])
 
                 output_text = "\n"
                 counter = 1
 
-                for j in loop:
+                for i_segment in loop:
                     # print(f"Iteration {i*10 + j}")
                     candidate_unused_car_moves, candidate_solution = self._initialize_new_iteration(
                         current_unused_car_moves, current_solution)
@@ -191,7 +191,7 @@ class ALNS():
                     true_obj_vals.append(true_obj_val)
                     heuristic_obj_vals.append(candidate_obj_val)
 
-                    iterations.append((j + 1) + (i * iterations_segment))
+                    iterations.append((i_segment + 1) + (i_alns * iterations_segment))
 
                     if self._accept(candidate_obj_val, current_obj_val, temperature):
 
@@ -225,7 +225,7 @@ class ALNS():
 
                         # NON-IMPROVING BUT ACCEPTED
                         else:
-                            p = np.exp(- (current_obj_val - candidate_obj_val) / temperature)
+                            p = np.exp(- np.divide(current_obj_val - candidate_obj_val, temperature))
                             output_text += str(
                                 counter) + f"{colored(' New accepted solution: ', 'magenta')}{colored(round(candidate_obj_val, 2), 'magenta')}{colored(', found by ', 'magenta')}{colored(MODE, 'magenta')}{colored(', acceptance probability was' , 'magenta')} {colored(round(p, 2), 'magenta')}{colored(', temperature was ', 'magenta')}{colored(round(temperature, 2), 'magenta')} \n"
                             counter += 1
@@ -259,6 +259,7 @@ class ALNS():
                             heur_obj_val_checkpoints[i] = best_obj_val
                             break
 
+                    temperature *= cooling_rate
 
                 time_segment = time.perf_counter() - start
                 finish_times_segments.append(time_segment)
@@ -270,7 +271,6 @@ class ALNS():
                 loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val,
                              best_true_obj_val=best_solution[1])
 
-                temperature *= cooling_rate
                 self._update_score_adjustment_parameters()
 
             finish = time.perf_counter()
@@ -333,7 +333,7 @@ class ALNS():
 
             time_spent_txt = f"Time used: {finish}\n"
             finish_times_segments_txt = f"Finish time segments:\n{finish_times_segments}\n"
-            iterations_done_txt = f"Iterations completed: {len(finish_times_segments) * iterations_segment} iterations in {len(finish_times_segments)} segments\n"
+            iterations_done_txt = f"Iterations completed: {i_alns*iterations_segment + i_segment} iterations in {i_alns+1} segments\n"
             parameter_tuning_txt = f"Acceptance percentage: {self.solution.acceptance_percentage}\n" \
                                    f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}\n" \
                                    f"Determinism Worst: {HeuristicsConstants.DETERMINISM_PARAMETER_WORST}\n" \
@@ -357,7 +357,7 @@ class ALNS():
                 #print(self.best_solution[0])
                 self.solution.rebuild(self.best_solution[0], "second_stage")
                 self.solution.print_solution()
-            return f"obj_val: {best_solution[1]}, n_iterations: {i*iterations_segment + j}"
+            return f"obj_val: {best_solution[1]}, n_iterations: {i_alns*iterations_segment + i_segment}"
 
     def _initialize_operators(self):
         if self._num_employees < 3:
@@ -409,6 +409,7 @@ class ALNS():
         if round(new_obj_val, 2) > round(current_obj_val, 2):
             acceptance_probability = 1
         else:
+            print(temperature)
             p = np.exp(- (current_obj_val - new_obj_val) / temperature)
             acceptance_probability = p
 
@@ -543,14 +544,14 @@ class ALNS():
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
-    filename = "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a"
+    filename = "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_b"
 
     try:
 
         #profiler = Profiler()
         #profiler.start()
-        alns = ALNS(filename + ".pkl", 2.0)
-        alns.run()
+        alns = ALNS(filename + ".pkl", 2)
+        alns.run(verbose=True)
 
         #profiler.stop()
         #alns.solution.rebuild(alns.best_solution[0], "second_stage")
