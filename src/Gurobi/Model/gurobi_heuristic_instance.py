@@ -4,7 +4,7 @@ from gurobipy import GRB
 import numpy as np
 from itertools import product
 
-import Heuristics.heuristics_constants
+import Heuristics.ALNS.heuristics_constants
 from HelperFiles.helper_functions import read_config, read_2d_array_to_dict, create_dict_of_indices, create_car_moves_origin_destination
 from path_manager import path_to_src
 import os
@@ -82,7 +82,7 @@ class GurobiInstance:
         self.EMPLOYEE_START_LOCATION = dict(
             zip(self.EMPLOYEES, self.cf['start_node_employee']))  # o(k), location of employee k at time T^(SO)_k
         self.TRAVEL_TIME = self.cf['travel_time_bike'][0]  # T_(ij), travel times between node i and j
-        self.PLANNING_PERIOD = Heuristics.heuristics_constants.HeuristicsConstants.PLANNING_PERIOD#self.cf['planning_period']  # T^bar, planning period
+        self.PLANNING_PERIOD = Heuristics.ALNS.heuristics_constants.HeuristicsConstants.PLANNING_PERIOD#self.cf['planning_period']  # T^bar, planning period
         self.BIGM = dict(zip(self.CARMOVES, self.cf['bigM']))
         self.scenarios = np.arange(1, self.cf['num_scenarios'] + 1)
 

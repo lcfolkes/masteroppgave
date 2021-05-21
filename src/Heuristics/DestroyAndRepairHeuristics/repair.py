@@ -1,17 +1,13 @@
 import os
 import random
-from collections import OrderedDict
-
 import numpy as np
-
-from Heuristics.heuristics_constants import HeuristicsConstants
-from Heuristics.feasibility_checker import FeasibilityChecker
+from Heuristics.ALNS.heuristics_constants import HeuristicsConstants
+from Heuristics.FeasibilityAndObjectiveFunction.feasibility_checker import FeasibilityChecker
 from path_manager import path_to_src
 from abc import ABC, abstractmethod
-
 from Heuristics.helper_functions_heuristics import insert_car_move, remove_all_car_moves_of_car_in_car_move, \
     get_first_stage_solution_list_from_dict
-from Heuristics.best_objective_function import ObjectiveFunction
+from Heuristics.FeasibilityAndObjectiveFunction.objective_function import ObjectiveFunction
 from InstanceGenerator.instance_components import CarMove, Employee
 from InstanceGenerator.world import World
 from Heuristics.DestroyAndRepairHeuristics.destroy import Destroy, ChargeRemoval
@@ -372,7 +368,7 @@ class ChargeInsertion(Repair):
         """
         q = self.neighborhood_size
         current_solution = self.solution
-        '''    
+        '''
         unused_charging_moves = [cm for cm in self.unused_car_moves if (
                 cm.is_charging_move and
                 cm not in self.moves_not_insert)]
@@ -432,7 +428,7 @@ class ChargeInsertion(Repair):
 
         obj_val_dict = {}
         feasible_idx = []
-        
+
         for employee, employee_moves in current_solution.items():
             if len(employee_moves) < self.num_first_stage_tasks:
                 obj_val = self.objective_function.evaluate(added_car_moves=[random_charging_move], mode="heuristic")
@@ -456,7 +452,7 @@ class ChargeInsertion(Repair):
             if value == obj_values_sorted[0]:
                 best_employees_and_idx.append(key)
         best_employee, best_idx = random.choice(best_employees_and_idx)
-    
+
         return random_charging_move, best_employee, best_idx
 
 
