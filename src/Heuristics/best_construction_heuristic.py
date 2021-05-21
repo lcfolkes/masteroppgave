@@ -22,13 +22,13 @@ class ConstructionHeuristic:
     # instance_file = "InstanceFiles/6nodes/6-3-1-1_d.pkl"
     # filename = "InstanceFiles/6nodes/6-3-1-1_b.yaml"
 
-    def __init__(self, instance_file, distance_inclusion_factor):
+    def __init__(self, instance_file, travel_time_threshold):
         self.acceptance_percentage = HeuristicsConstants.ACCEPTANCE_PERCENTAGE
-        self.distance_inclusion_factor = distance_inclusion_factor
+        self.travel_time_threshold = travel_time_threshold
         self.instance_file = instance_file
         self.world_instance = load_object_from_file(instance_file)
         self.world_instance.initialize_relevant_car_moves(self.acceptance_percentage)
-        self.world_instance.initialize_relevant_car_moves_distance(self.distance_inclusion_factor)
+        self.world_instance.initialize_relevant_car_moves_distance(self.travel_time_threshold)
         self.objective_function = ObjectiveFunction(self.world_instance)
         self.world_instance.planning_period = HeuristicsConstants.PLANNING_PERIOD
         self.feasibility_checker = FeasibilityChecker(self.world_instance)

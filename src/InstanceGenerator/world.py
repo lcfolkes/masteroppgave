@@ -129,7 +129,7 @@ class World:
                     relevant_car_moves.append(cm)
         self.relevant_car_moves = relevant_car_moves
 
-    def initialize_relevant_car_moves_distance(self, distance_inclusion_fraction: float):
+    def initialize_relevant_car_moves_distance(self, travel_time_threshold: float):
         '''
         :param distance_inclusion_fraction:
                 float (0,1). 1 if include all moves and 0 to remove all moves. if e.g. distance_fraction is 0.4
@@ -138,14 +138,14 @@ class World:
         :return:
         '''
 
-        if distance_inclusion_fraction == 1:
+        if travel_time_threshold == 1:
             return
         else:
             max_handling_time = max(cm.handling_time for cm in self.car_moves)
             relevant_car_moves = []
             for cm in self.relevant_car_moves:
                 cm_handling_time_frac = cm.handling_time/max_handling_time
-                if cm_handling_time_frac <= distance_inclusion_fraction or cm.is_charging_move:
+                if cm_handling_time_frac <= travel_time_threshold or cm.is_charging_move:
                     relevant_car_moves.append(cm)
 
             self.relevant_car_moves = relevant_car_moves

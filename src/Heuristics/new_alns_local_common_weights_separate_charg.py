@@ -337,6 +337,7 @@ class ALNS():
             finish_times_segments_txt = f"Finish time segments:\n{finish_times_segments}\n"
             iterations_done_txt = f"Iterations completed: {i_alns*iterations_segment + i_segment} iterations in {i_alns+1} segments\n"
             parameter_tuning_txt = f"Acceptance percentage: {self.solution.acceptance_percentage}\n" \
+                                   f"Travel time threshold: {self.solution.travel_time_threshold}\n" \
                                    f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}\n" \
                                    f"Determinism Worst: {HeuristicsConstants.DETERMINISM_PARAMETER_WORST}\n" \
                                    f"Determinism Related: {HeuristicsConstants.DETERMINISM_PARAMETER_RELATED}\n" \
