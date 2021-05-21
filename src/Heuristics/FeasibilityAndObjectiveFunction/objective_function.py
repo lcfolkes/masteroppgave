@@ -1,8 +1,5 @@
 import copy
 import numpy as np
-
-from Heuristics.helper_functions_heuristics import get_first_stage_solution, copy_numpy_dict, \
-    get_first_stage_solution_list_from_solution
 from InstanceGenerator.instance_components import CarMove, Node
 from InstanceGenerator.world import World
 
@@ -307,9 +304,7 @@ def get_parking_nodes_in_out(added_car_moves: [CarMove], removed_car_moves: [Car
 
 if __name__ == "__main__":
     from pyinstrument import Profiler
-    from src.Gurobi.Model.run_model import run_model
-    from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
-    from best_construction_heuristic import ConstructionHeuristic
+    from Heuristics.ALNS.construction_heuristic import ConstructionHeuristic
 
     filename = "InstanceGenerator/InstanceFiles/20nodes/20-25-1-1_a"
 

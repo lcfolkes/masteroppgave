@@ -1,28 +1,21 @@
-import copy
 import sys
 import time
 from collections import OrderedDict
 import random
-
 from termcolor import colored
-
 from Heuristics.DestroyAndRepairHeuristics.destroy import Destroy, RandomRemoval, WorstRemoval, ShawRemoval, ChargeRemoval
 from Heuristics.DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretInsertion, ChargeInsertion, \
     GreedyRandomInsertion
-from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
-from Gurobi.Model.run_model import run_model
 from Heuristics.LocalSearch.local_search import LocalSearch
-from Heuristics.helper_functions_heuristics import safe_zero_division, get_first_stage_solution, copy_solution_dict, \
-    copy_unused_car_moves_2d_list, get_first_and_second_stage_solution
-from Heuristics.best_construction_heuristic import ConstructionHeuristic
-from Heuristics.heuristics_constants import HeuristicsConstants
-#from Heuristics.parallel_construction_heuristic import ConstructionHeuristic
+from Heuristics.helper_functions_heuristics import safe_zero_division, copy_solution_dict, \
+    copy_unused_car_moves_2d_list
+from Heuristics.ALNS.construction_heuristic import ConstructionHeuristic
+from Heuristics.ALNS.heuristics_constants import HeuristicsConstants
 from path_manager import path_to_src
 import numpy as np
 import traceback
 import os
 from datetime import datetime
-import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 os.chdir(path_to_src)
@@ -45,11 +38,12 @@ _IS_REJECTED
 class ALNS():
 
     def __init__(self, filename, param):
+        self.destroy_repair_factor = param
         self.filename = filename
         self.best_solution = None
         self.best_solutions = None
         self.best_obj_val = 0
-        self.solution = ConstructionHeuristic(self.filename, param)#HeuristicsConstants.ACCEPTANCE_PERCENTAGE)
+        self.solution = ConstructionHeuristic(self.filename)
         self._num_employees = len(self.solution.employees)
         self._num_first_stage_tasks = self.solution.num_first_stage_tasks
         self._feasibility_checker = self.solution.feasibility_checker
@@ -121,11 +115,6 @@ class ALNS():
         # SEGMENTS
         try:
             for i_alns in range(iterations_alns):
-                # print(i)
-
-                # print(f"Iteration {i * 10}")
-                # print(f"Best objective value {best_solution[1]}")
-                # print(f"Best heuristic objective value {max(heuristic_obj_vals)}")
                 loop = tqdm(range(iterations_segment), total=iterations_segment, leave=True, ascii=True)
                 loop.set_description(f"Segment[{i_alns}/{iterations_alns}]")
                 loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val,
@@ -226,7 +215,7 @@ class ALNS():
 
                         # NON-IMPROVING BUT ACCEPTED
                         else:
-                            p = np.exp(- np.divide(current_obj_val - candidate_obj_val, temperature))
+                            p = np.exp(- safe_zero_division(current_obj_val - candidate_obj_val, temperature))
                             output_text += str(
                                 counter) + f"{colored(' New accepted solution: ', 'magenta')}{colored(round(candidate_obj_val, 2), 'magenta')}{colored(', found by ', 'magenta')}{colored(MODE, 'magenta')}{colored(', acceptance probability was' , 'magenta')} {colored(round(p, 2), 'magenta')}{colored(', temperature was ', 'magenta')}{colored(round(temperature, 2), 'magenta')} \n"
                             counter += 1
@@ -338,7 +327,7 @@ class ALNS():
             iterations_done_txt = f"Iterations completed: {i_alns*iterations_segment + i_segment} iterations in {i_alns+1} segments\n"
             parameter_tuning_txt = f"Acceptance percentage: {self.solution.acceptance_percentage}\n" \
                                    f"Travel time threshold: {self.solution.travel_time_threshold}\n" \
-                                   f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}\n" \
+                                   f"Neighborhood Size: {self.destroy_repair_factor}\n" \
                                    f"Determinism Worst: {HeuristicsConstants.DETERMINISM_PARAMETER_WORST}\n" \
                                    f"Determinism Related: {HeuristicsConstants.DETERMINISM_PARAMETER_RELATED}\n" \
                                    f"Determinism Greedy: {HeuristicsConstants.DETERMINISM_PARAMETER_GREEDY}\n" \
@@ -372,17 +361,17 @@ class ALNS():
 
         elif self._num_employees < 4:
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_random': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': 3.0,
-                 'worst_greedy': 1.0, 'worst_random': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_charge': 3.0,
-                 'shaw_greedy': 1.0, 'shaw_random': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 3.0,
-                 'charge_greedy': 3.0, 'charge_random': 1.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_charge': 3.0})
+                {'random_greedy': 1.0, 'random_random': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': .0,
+                 'worst_greedy': 1.0, 'worst_random': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_charge': 1.0,
+                 'shaw_greedy': 1.0, 'shaw_random': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 1.0,
+                 'charge_greedy': 1.0, 'charge_random': 1.0, 'charge_regret2': 1.0, 'charge_regret3': 1.0, 'charge_charge': .0})
 
         else:
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_random': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0, 'random_charge': 3.0,
-                 'worst_greedy': 1.0, 'worst_random': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0, 'worst_charge': 3.0,
-                 'shaw_greedy': 1.0, 'shaw_random': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0, 'shaw_charge': 3.0,
-                 'charge_greedy': 3.0, 'charge_random': 1.0, 'charge_regret2': 3.0, 'charge_regret3': 3.0, 'charge_regret4': 3.0, 'charge_charge': 3.0})
+                {'random_greedy': 1.0, 'random_random': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0, 'random_charge': 1.0,
+                 'worst_greedy': 1.0, 'worst_random': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0, 'worst_charge': 1.0,
+                 'shaw_greedy': 1.0, 'shaw_random': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0, 'shaw_charge': 1.0,
+                 'charge_greedy': 1.0, 'charge_random': 1.0, 'charge_regret2': 1.0, 'charge_regret3': 1.0, 'charge_regret4': 1.0, 'charge_charge': 1.0})
 
         return operators
 
@@ -412,7 +401,7 @@ class ALNS():
         if round(new_obj_val, 2) > round(current_obj_val, 2):
             acceptance_probability = 1
         else:
-            p = np.exp(- (current_obj_val - new_obj_val) / temperature)
+            p = np.exp(- safe_zero_division(current_obj_val - new_obj_val, temperature))
             acceptance_probability = p
 
         accept = acceptance_probability > random.random()
@@ -421,10 +410,8 @@ class ALNS():
     def _get_destroy_operator(self, solution, world_instance) -> \
             (Destroy, str):
 
-        #neighborhood_size = 2
-
-        neighborhood_size = random.uniform(
-            HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1])
+        neighborhood_size = random.uniform(self.destroy_repair_factor[0], self.destroy_repair_factor[1])
+            #HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1])
         if neighborhood_size == 0:
             neighborhood_size = 1
         w_sum = sum(w for o, w in self.operator_pairs.items())
@@ -545,13 +532,12 @@ class ALNS():
 
 
 if __name__ == "__main__":
-    from pyinstrument import Profiler
     filename = "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_b"
 
     try:
         #profiler = Profiler()
         #profiler.start()
-        alns = ALNS(filename + ".pkl", 0.5)
+        alns = ALNS(filename + ".pkl", [0.05, 0.7])
         alns.run(verbose=True)
 
         #profiler.stop()

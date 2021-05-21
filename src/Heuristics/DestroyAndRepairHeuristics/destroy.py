@@ -5,9 +5,9 @@ import numpy as np
 from path_manager import path_to_src
 from Heuristics.helper_functions_heuristics import get_first_stage_solution_list_from_dict, \
     get_first_stage_solution_and_removed_moves
-from Heuristics.heuristics_constants import HeuristicsConstants
+from Heuristics.ALNS.heuristics_constants import HeuristicsConstants
 from InstanceGenerator.instance_components import CarMove
-from Heuristics.best_objective_function import ObjectiveFunction
+from Heuristics.FeasibilityAndObjectiveFunction.objective_function import ObjectiveFunction
 
 os.chdir(path_to_src)
 

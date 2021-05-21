@@ -1,7 +1,5 @@
-from Heuristics.new_alns_local_common_weights_separate_charg import ALNS
+from Heuristics.ALNS.alns import ALNS
 from path_manager import path_to_src
-from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
-from Gurobi.Model.run_model import run_model
 import os
 import time
 import sys
@@ -41,7 +39,6 @@ def run_sequential(filename, n, verbose):
 
 
 if __name__ == "__main__":
-	from Heuristics.heuristics_constants import HeuristicsConstants
 
 	files = []
 	for n in [30]:  # , 25, 30, 40, 50]:
@@ -57,8 +54,8 @@ if __name__ == "__main__":
 		n = 5
 		for filename in files:
 			### PARALLEL
-			run_parallel(filename, n, [1.0, 0.9, 0.8, 0.7])
-			run_parallel(filename, n, [0.6, 0.5, 0.4, 0.2])
+			run_parallel(filename, n, [[0.05, 0.15], [0.15, 0.30], [0.05, 0.30], [0.15, 0.50]])
+			run_parallel(filename, n, [[0.30, 0.70], [0.50, 0.70], [0.15, 0.70]])
 		'''
 		### SEQUENTIAL
 		#alns = run_sequential(filename, 1, True)

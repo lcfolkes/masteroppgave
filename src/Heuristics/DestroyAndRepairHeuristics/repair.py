@@ -1,17 +1,13 @@
 import os
 import random
-from collections import OrderedDict
-
 import numpy as np
-
-from Heuristics.heuristics_constants import HeuristicsConstants
-from Heuristics.feasibility_checker import FeasibilityChecker
+from Heuristics.ALNS.heuristics_constants import HeuristicsConstants
+from Heuristics.FeasibilityAndObjectiveFunction.feasibility_checker import FeasibilityChecker
 from path_manager import path_to_src
 from abc import ABC, abstractmethod
-
 from Heuristics.helper_functions_heuristics import insert_car_move, remove_all_car_moves_of_car_in_car_move, \
     get_first_stage_solution_list_from_dict
-from Heuristics.best_objective_function import ObjectiveFunction
+from Heuristics.FeasibilityAndObjectiveFunction.objective_function import ObjectiveFunction
 from InstanceGenerator.instance_components import CarMove, Employee
 from InstanceGenerator.world import World
 from Heuristics.DestroyAndRepairHeuristics.destroy import Destroy, ChargeRemoval

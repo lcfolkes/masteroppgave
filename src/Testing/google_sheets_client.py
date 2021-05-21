@@ -74,7 +74,7 @@ if __name__ == "__main__":
 		for file in os.listdir(sub_dir):
 			filepath = sub_dir + "/" + file
 			f = open(filepath, "r")
-			result = m = np.zeros(shape=[5, 16]).astype(str)
+			result = m = np.zeros(shape=[5, 18]).astype(str)
 			filename = file.split(".")[0][:-8]
 			result[:, 0] = filename
 			result[:, 1] = [x+1 for x in range(5)]
@@ -86,10 +86,10 @@ if __name__ == "__main__":
 					time = round(float(line_list[1].strip()), 2)
 				elif line_list[0] == "Objective value":
 					obj_val = line_list[1].strip()
-				elif line_list[0] == "Acceptance percentage":
-					acceptance_percentage = line_list[1].strip()
-					result[run - 1][acceptance_percentage_dict[acceptance_percentage]] = obj_val
-					result[run - 1][acceptance_percentage_dict[acceptance_percentage]+1] = time
+				elif line_list[0] == "Travel time threshold":
+					param = line_list[1].strip()
+					result[run - 1][acceptance_percentage_dict[param]] = obj_val
+					result[run - 1][acceptance_percentage_dict[param]+1] = time
 
 			avg_row = np.array([filename, "Average"])
 			relevant_cols = np.array(result[:, 2:], dtype=np.float64)

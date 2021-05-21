@@ -39,12 +39,7 @@ class HeuristicsConstants:
 
 	# AN ACCEPTANCE PERCENTAGE OF 2 MEANS ALL CAR MOVES ARE INCLUDED
 	ACCEPTANCE_PERCENTAGE = 2.0
-	DISTANCE_INCLUSION_FACTOR = 1
+	TRAVEL_TIME_THRESHOLD = 0.7
 
 	PLANNING_PERIOD = 60
 	#NUM_FIRST_STAGE_TASKS = 2
-
-
-	@staticmethod
-	def set_acceptance_percentage(val):
-		HeuristicsConstants.ACCEPTANCE_PERCENTAGE = val

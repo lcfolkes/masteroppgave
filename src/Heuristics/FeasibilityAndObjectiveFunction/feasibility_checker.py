@@ -1,23 +1,14 @@
 import os
 import copy
-
 import numpy as np
-
 from InstanceGenerator.world import World
 from path_manager import path_to_src
 from InstanceGenerator.instance_components import CarMove, Employee
-
 os.chdir(path_to_src)
-
-
-os.chdir(path_to_src)
-
-#TODO: I think travel times for employees can be class methods in world. this way we do not need to create new world objects nor pass them in
 
 class FeasibilityChecker():
 	def __init__(self, world_instance: World):
 		self.world_instance = world_instance
-		#self.employees = self._initialize_employees()
 
 	def _initialize_employees(self):
 		employees = copy.deepcopy(self.world_instance.employees)
@@ -28,9 +19,7 @@ class FeasibilityChecker():
 	def check_assigned_solution(self, employees):
 		pass
 
-	# check charging capacity constraint
 	def is_first_stage_solution_feasible(self, solution: {Employee: [CarMove]}, return_inter_node_travel_time=False, verbose=False):
-		#employees = self._initialize_employees()
 		if return_inter_node_travel_time:
 			inter_node_travel_time = 0
 		for employee, car_moves in solution.items():
@@ -97,8 +86,6 @@ class FeasibilityChecker():
 		return True
 
 
-
-
 	def check_legal_move(self, car_move: CarMove, employee: Employee, scenario: int = None, get_employee_travel_time=False):  # return total travel time
 		start_node = car_move.start_node
 		if scenario is None:
@@ -113,30 +100,9 @@ class FeasibilityChecker():
 
 		total_time = current_time + employee_travel_time + car_move.handling_time
 
-		'''
-		print(f"\nEmployee {employee.employee_id}")
-		print(f"Current node {current_node.node_id}")
-		print(car_move.to_string())
-		print(f"total_time = current_time + employee_travel_time_to_node + handling_time")
-		print(f" {total_time} = {current_time} + {employee_travel_time} + {car_move.handling_time}")
-		print(f"planning_period: {World.PLANNING_PERIOD}")
-		'''
-
 		if total_time <= self.world_instance.planning_period:
-			'''
-			print()
-			print(f"\nEmployee {employee.employee_id}")
-			print(f"Scenario {scenario+1 if scenario else scenario}")
-			print(f"node before: {current_node.node_id}")
-			print(f"time before: {current_time}")
-			print(f"employee travel time: {employee_travel_time}")
-			print(f"car_move handling time: {car_move.handling_time}")
-			print(f"node after: {car_move.end_node.node_id}")
-			print(f"total time: {total_time}")
-			'''
 			legal_move = True
 		else:
-			# print("Car move exceeds planning period")
 			legal_move = False
 
 		if get_employee_travel_time:
