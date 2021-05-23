@@ -329,8 +329,8 @@ class ALNS():
                                    f"Travel time threshold: {self.solution.travel_time_threshold}\n" \
                                    f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}\n" \
                                    f"Reward decay parameter: {HeuristicsConstants.REWARD_DECAY_PARAMETER}\n" \
-                                   f"Determinism Worst: {self.determinism_parameter}\n" \
-                                   f"Determinism Related: {HeuristicsConstants.DETERMINISM_PARAMETER_RELATED}\n" \
+                                   f"Determinism Worst: {HeuristicsConstants.DETERMINISM_PARAMETER_WORST}\n" \
+                                   f"Determinism Related: {self.determinism_parameter}\n" \
                                    f"Determinism Greedy: {HeuristicsConstants.DETERMINISM_PARAMETER_GREEDY}\n" \
                                    f"Adaptive Weight Rewards (Best, Better, Accepted): ({_IS_BEST}, {_IS_BETTER}, {_IS_ACCEPTED})\n\n"
 
@@ -426,11 +426,11 @@ class ALNS():
         elif operator_pair == "worst_greedy" or operator_pair == "worst_regret2" or operator_pair == "worst_regret3" \
                 or operator_pair == "worst_regret4" or operator_pair == "worst_charge":
             return WorstRemoval(solution, world_instance, neighborhood_size,
-                                self.determinism_parameter), operator_pair
+                                HeuristicsConstants.DETERMINISM_PARAMETER_WORST), operator_pair
         elif operator_pair == "shaw_greedy" or operator_pair == "shaw_regret2" or operator_pair == "shaw_regret3" \
                 or operator_pair == "shaw_regret4" or operator_pair == "shaw_charge":
             return ShawRemoval(solution, world_instance, neighborhood_size,
-                               HeuristicsConstants.DETERMINISM_PARAMETER_RELATED), operator_pair
+                               self.determinism_parameter), operator_pair
         elif operator_pair == "charge_greedy" or operator_pair == "charge_regret2" or \
                 operator_pair == "charge_regret3" or operator_pair == "charge_regret4" \
                 or operator_pair == "charge_charge":

@@ -15,7 +15,7 @@ class HeuristicsConstants:
 	ACCEPTED = 1.0 # initial 13, final 1
 
 	# DETERMINISM PARAMETER
-	DETERMINISM_PARAMETER_WORST = 9 # initial 9
+	DETERMINISM_PARAMETER_WORST = 5 # initial 9, final 5
 	DETERMINISM_PARAMETER_RELATED = 9 # initial 9
 	DETERMINISM_PARAMETER_GREEDY = 9 # initial 9
 

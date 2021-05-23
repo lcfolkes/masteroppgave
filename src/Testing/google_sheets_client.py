@@ -54,19 +54,13 @@ if __name__ == "__main__":
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/reward_decay_factor/"
-param_dict = {"0.05": 2, "0.1": 4,
-			  "0.2": 6, "0.4": 8,
-			  "0.5": 10, "0.6": 12,
-			  "0.8": 14, "1.0": 16}
-header = np.array([["", "Reward Decay Parameter",
-					"0.05 Obj. Val.", "0.05 Time found (s)", "0.1 Obj. Val.", "0.1 Time found (s)",
-					"0.2 Obj. Val.", "0.2 Time found (s)", "0.4 Obj. Val.", "0.4 Time found (s)",
-					"0.5 Obj. Val.", "0.5 Time found (s)", "0.6 Obj. Val.", "0.6 Time found (s)",
-					"0.8 Obj. Val.", "0.8 Time found (s)", "1.0 Obj. Val.", "1.0 Time found (s)"],
+	test_dir = "./Testing/determinism_worst_destroy/"
+param_dict = {"3": 2, "5": 4,
+			  "7": 6, "9": 8}
+header = np.array([["", "Determinism parameter worst destroy",
+					"3 Obj. Val.", "3 Time found (s)", "5 Obj. Val.", "5 Time found (s)",
+					"7 Obj. Val.", "7 Time found (s)", "9 Obj. Val.", "9 Time found (s)"],
 				   ["Instance", "Run",
-					"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
-					"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
 					"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
 					"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)"]])
 
@@ -79,7 +73,7 @@ for dir in os.listdir(test_dir):
 	for file in os.listdir(sub_dir):
 		filepath = sub_dir + "/" + file
 		f = open(filepath, "r")
-		result = m = np.zeros(shape=[5, 18]).astype(str)
+		result = m = np.zeros(shape=[5, 10]).astype(str)
 		filename = file.split(".")[0][:-8]
 		result[:, 0] = filename
 		result[:, 1] = [x+1 for x in range(5)]
@@ -91,9 +85,8 @@ for dir in os.listdir(test_dir):
 				time = round(float(line_list[1].strip()), 2)
 			elif line_list[0] == "Objective value":
 				obj_val = line_list[1].strip()
-			elif line_list[0] == "Reward decay parameter":
+			elif line_list[0] == "Determinism Worst":
 				param = line_list[1].strip()
-				param = ''.join(ch for ch in param if ch.isdigit() or ch == ".")
 				result[run - 1][param_dict[param]] = obj_val
 				result[run - 1][param_dict[param]+1] = time
 
