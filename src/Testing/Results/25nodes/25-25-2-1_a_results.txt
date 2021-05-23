@@ -1,0 +1,1600 @@
+
+Run: 4
+DateTime: 23-May-2021 (15:12:35)
+Best objective value found after (s): 33.700309697538614
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 121.21895999999944
+Heuristic value after 60 s: 121.21895999999961
+Objective value after 120 s: 121.21895999999944
+Heuristic value after 120 s: 121.21895999999961
+Objective value after 180 s: 121.21895999999944
+Heuristic value after 180 s: 121.21895999999961
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 600.166185582988
+Iterations completed: 389 iterations in 8 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (9, 1, 9)
+
+
+Run: 1
+DateTime: 23-May-2021 (15:12:36)
+Best objective value found after (s): 333.6160936523229
+Objective value: 113.58600000000004
+Heuristic value: 113.58600000000021
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 110.55191999999936
+Heuristic value after 180 s: 110.55191999999964
+Objective value after 240 s: 110.55191999999936
+Heuristic value after 240 s: 110.55191999999964
+Objective value after 300 s: 111.28991999999984
+Heuristic value after 300 s: 111.28991999999995
+Objective value after 360 s: 113.58600000000004
+Heuristic value after 360 s: 113.58600000000021
+Objective value after 420 s: 113.58600000000004
+Heuristic value after 420 s: 113.58600000000021
+Objective value after 480 s: 113.58600000000004
+Heuristic value after 480 s: 113.58600000000021
+Objective value after 540 s: 113.58600000000004
+Heuristic value after 540 s: 113.58600000000021
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 600.5029257386923
+Iterations completed: 281 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 9, 1)
+
+
+Run: 2
+DateTime: 23-May-2021 (15:12:36)
+Best objective value found after (s): 75.29159940592945
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 121.21895999999944
+Heuristic value after 120 s: 121.21895999999961
+Objective value after 180 s: 121.21895999999944
+Heuristic value after 180 s: 121.21895999999961
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 600.5856219353154
+Iterations completed: 342 iterations in 7 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (9, 9, 1)
+
+
+Run: 4
+DateTime: 23-May-2021 (15:12:36)
+Best objective value found after (s): 237.32588473893702
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 111.28991999999981
+Heuristic value after 120 s: 111.28991999999984
+Objective value after 180 s: 111.28991999999981
+Heuristic value after 180 s: 111.28991999999984
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 600.5869794972241
+Iterations completed: 305 iterations in 7 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (9, 9, 9)
+
+
+Run: 5
+DateTime: 23-May-2021 (15:12:36)
+Best objective value found after (s): 63.71491143386811
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 121.21895999999944
+Heuristic value after 120 s: 121.21895999999961
+Objective value after 180 s: 121.21895999999944
+Heuristic value after 180 s: 121.21895999999961
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 600.659143300727
+Iterations completed: 327 iterations in 7 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (9, 9, 9)
+
+
+Run: 5
+DateTime: 23-May-2021 (15:12:36)
+Best objective value found after (s): 82.88690463546664
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 121.21895999999944
+Heuristic value after 120 s: 121.21895999999961
+Objective value after 180 s: 121.21895999999944
+Heuristic value after 180 s: 121.21895999999961
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 601.0161460805684
+Iterations completed: 308 iterations in 7 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (9, 1, 9)
+
+
+Run: 3
+DateTime: 23-May-2021 (15:12:36)
+Best objective value found after (s): 147.90168675780296
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 121.21895999999944
+Heuristic value after 180 s: 121.21895999999961
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 601.1544901737943
+Iterations completed: 308 iterations in 7 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (9, 9, 1)
+
+
+Run: 1
+DateTime: 23-May-2021 (15:12:37)
+Best objective value found after (s): 73.08278878778219
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 121.21895999999944
+Heuristic value after 120 s: 121.21895999999961
+Objective value after 180 s: 121.21895999999944
+Heuristic value after 180 s: 121.21895999999961
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 601.2584086013958
+Iterations completed: 287 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (9, 9, 1)
+
+
+Run: 5
+DateTime: 23-May-2021 (15:12:38)
+Best objective value found after (s): 192.66384422406554
+Objective value: 111.28991999999984
+Heuristic value: 111.28991999999995
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 110.55191999999936
+Heuristic value after 180 s: 110.55191999999964
+Objective value after 240 s: 111.28991999999984
+Heuristic value after 240 s: 111.28991999999995
+Objective value after 300 s: 111.28991999999984
+Heuristic value after 300 s: 111.28991999999995
+Objective value after 360 s: 111.28991999999984
+Heuristic value after 360 s: 111.28991999999995
+Objective value after 420 s: 111.28991999999984
+Heuristic value after 420 s: 111.28991999999995
+Objective value after 480 s: 111.28991999999984
+Heuristic value after 480 s: 111.28991999999995
+Objective value after 540 s: 111.28991999999984
+Heuristic value after 540 s: 111.28991999999995
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 602.9572650333866
+Iterations completed: 332 iterations in 7 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 9, 1)
+
+
+Run: 2
+DateTime: 23-May-2021 (15:12:38)
+Best objective value found after (s): 170.27995375730097
+Objective value: 121.00727999999944
+Heuristic value: 121.00727999999964
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 116.0829599999991
+Heuristic value after 120 s: 116.0829599999993
+Objective value after 180 s: 121.00727999999944
+Heuristic value after 180 s: 121.00727999999964
+Objective value after 240 s: 121.00727999999944
+Heuristic value after 240 s: 121.00727999999964
+Objective value after 300 s: 121.00727999999944
+Heuristic value after 300 s: 121.00727999999964
+Objective value after 360 s: 121.00727999999944
+Heuristic value after 360 s: 121.00727999999964
+Objective value after 420 s: 121.00727999999944
+Heuristic value after 420 s: 121.00727999999964
+Objective value after 480 s: 121.00727999999944
+Heuristic value after 480 s: 121.00727999999964
+Objective value after 540 s: 121.00727999999944
+Heuristic value after 540 s: 121.00727999999964
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 603.1061942093074
+Iterations completed: 310 iterations in 7 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (9, 1, 9)
+
+
+Run: 3
+DateTime: 23-May-2021 (15:12:38)
+Best objective value found after (s): 270.09269668068737
+Objective value: 123.27599999999984
+Heuristic value: 123.27599999999967
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 110.55191999999936
+Heuristic value after 180 s: 110.55191999999964
+Objective value after 240 s: 110.55191999999936
+Heuristic value after 240 s: 110.55191999999964
+Objective value after 300 s: 123.27599999999984
+Heuristic value after 300 s: 123.27599999999967
+Objective value after 360 s: 123.27599999999984
+Heuristic value after 360 s: 123.27599999999967
+Objective value after 420 s: 123.27599999999984
+Heuristic value after 420 s: 123.27599999999967
+Objective value after 480 s: 123.27599999999984
+Heuristic value after 480 s: 123.27599999999967
+Objective value after 540 s: 123.27599999999984
+Heuristic value after 540 s: 123.27599999999967
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 603.20452301763
+Iterations completed: 260 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 9, 1)
+
+
+Run: 4
+DateTime: 23-May-2021 (15:12:39)
+Best objective value found after (s): 229.3076797472313
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 113.77368000000007
+Heuristic value after 120 s: 113.77368000000024
+Objective value after 180 s: 113.77368000000007
+Heuristic value after 180 s: 113.77368000000024
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 603.3866564491764
+Iterations completed: 278 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (9, 9, 1)
+
+
+Run: 4
+DateTime: 23-May-2021 (15:12:39)
+Best objective value found after (s): 257.3676083004102
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 111.28991999999973
+Heuristic value after 180 s: 111.28991999999975
+Objective value after 240 s: 114.94031999999929
+Heuristic value after 240 s: 114.94031999999949
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 603.4474974581972
+Iterations completed: 289 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 9, 1)
+
+
+Run: 1
+DateTime: 23-May-2021 (15:12:39)
+Best objective value found after (s): 346.96090168505907
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 110.55191999999936
+Heuristic value after 180 s: 110.55191999999964
+Objective value after 240 s: 110.55191999999936
+Heuristic value after 240 s: 110.55191999999964
+Objective value after 300 s: 110.55191999999936
+Heuristic value after 300 s: 110.55191999999964
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 603.5501832617447
+Iterations completed: 253 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (9, 1, 9)
+
+
+Run: 3
+DateTime: 23-May-2021 (15:12:39)
+Best objective value found after (s): 152.1405481416732
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 121.21895999999944
+Heuristic value after 180 s: 121.21895999999961
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 603.8375502433628
+Iterations completed: 318 iterations in 7 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (9, 9, 9)
+
+
+Run: 2
+DateTime: 23-May-2021 (15:12:39)
+Best objective value found after (s): 251.63142005633563
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 110.55191999999936
+Heuristic value after 180 s: 110.55191999999964
+Objective value after 240 s: 111.28991999999981
+Heuristic value after 240 s: 111.28991999999984
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 604.1987969567999
+Iterations completed: 274 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (9, 9, 9)
+
+
+Run: 1
+DateTime: 23-May-2021 (15:12:40)
+Best objective value found after (s): 159.4102489212528
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 121.21895999999944
+Heuristic value after 180 s: 121.21895999999961
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 605.2183773415163
+Iterations completed: 261 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (9, 9, 9)
+
+
+Run: 5
+DateTime: 23-May-2021 (15:12:41)
+Best objective value found after (s): 435.8815262299031
+Objective value: 111.35519999999927
+Heuristic value: 111.35519999999947
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 110.55191999999936
+Heuristic value after 180 s: 110.55191999999964
+Objective value after 240 s: 110.55191999999936
+Heuristic value after 240 s: 110.55191999999964
+Objective value after 300 s: 110.55191999999936
+Heuristic value after 300 s: 110.55191999999964
+Objective value after 360 s: 110.55191999999936
+Heuristic value after 360 s: 110.55191999999964
+Objective value after 420 s: 110.55191999999936
+Heuristic value after 420 s: 110.55191999999964
+Objective value after 480 s: 111.35519999999927
+Heuristic value after 480 s: 111.35519999999947
+Objective value after 540 s: 111.35519999999927
+Heuristic value after 540 s: 111.35519999999947
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 605.8153638588265
+Iterations completed: 252 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (9, 9, 1)
+
+
+Run: 2
+DateTime: 23-May-2021 (15:12:42)
+Best objective value found after (s): 248.78579835500568
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 110.55191999999936
+Heuristic value after 180 s: 110.55191999999964
+Objective value after 240 s: 110.55191999999936
+Heuristic value after 240 s: 110.55191999999964
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 606.2299576038495
+Iterations completed: 273 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 9, 1)
+
+
+Run: 3
+DateTime: 23-May-2021 (15:12:43)
+Best objective value found after (s): 354.6545147774741
+Objective value: 121.00727999999944
+Heuristic value: 121.00727999999964
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 111.28991999999981
+Heuristic value after 180 s: 111.28991999999984
+Objective value after 240 s: 111.28991999999981
+Heuristic value after 240 s: 111.28991999999984
+Objective value after 300 s: 111.28991999999981
+Heuristic value after 300 s: 111.28991999999984
+Objective value after 360 s: 121.00727999999944
+Heuristic value after 360 s: 121.00727999999964
+Objective value after 420 s: 121.00727999999944
+Heuristic value after 420 s: 121.00727999999964
+Objective value after 480 s: 121.00727999999944
+Heuristic value after 480 s: 121.00727999999964
+Objective value after 540 s: 121.00727999999944
+Heuristic value after 540 s: 121.00727999999964
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 607.5853969845921
+Iterations completed: 308 iterations in 7 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (9, 1, 9)
+
+
+Run: 4
+DateTime: 23-May-2021 (15:22:43)
+Best objective value found after (s): 372.0144051229581
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 113.77368000000007
+Heuristic value after 180 s: 113.77368000000024
+Objective value after 240 s: 113.77368000000007
+Heuristic value after 240 s: 113.77368000000024
+Objective value after 300 s: 113.77368000000007
+Heuristic value after 300 s: 113.77368000000024
+Objective value after 360 s: 113.77368000000007
+Heuristic value after 360 s: 113.77368000000024
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 600.3743019867688
+Iterations completed: 278 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 9, 9)
+
+
+Run: 3
+DateTime: 23-May-2021 (15:22:44)
+Best objective value found after (s): 158.8212144318968
+Objective value: 121.00727999999944
+Heuristic value: 121.00727999999964
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 121.00727999999944
+Heuristic value after 180 s: 121.00727999999964
+Objective value after 240 s: 121.00727999999944
+Heuristic value after 240 s: 121.00727999999964
+Objective value after 300 s: 121.00727999999944
+Heuristic value after 300 s: 121.00727999999964
+Objective value after 360 s: 121.00727999999944
+Heuristic value after 360 s: 121.00727999999964
+Objective value after 420 s: 121.00727999999944
+Heuristic value after 420 s: 121.00727999999964
+Objective value after 480 s: 121.00727999999944
+Heuristic value after 480 s: 121.00727999999964
+Objective value after 540 s: 121.00727999999944
+Heuristic value after 540 s: 121.00727999999964
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 600.6237226082012
+Iterations completed: 283 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 13, 13)
+
+
+Run: 5
+DateTime: 23-May-2021 (15:22:44)
+Best objective value found after (s): 160.49031594768167
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 121.21895999999944
+Heuristic value after 180 s: 121.21895999999961
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 600.7096010735258
+Iterations completed: 322 iterations in 7 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 13, 13)
+
+
+Run: 3
+DateTime: 23-May-2021 (15:22:44)
+Best objective value found after (s): 165.7774014621973
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 121.21895999999944
+Heuristic value after 180 s: 121.21895999999961
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 600.7208509426564
+Iterations completed: 345 iterations in 7 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 9, 13)
+
+
+Run: 4
+DateTime: 23-May-2021 (15:22:44)
+Best objective value found after (s): 126.25346276722848
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 121.21895999999944
+Heuristic value after 180 s: 121.21895999999961
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 601.4033124502748
+Iterations completed: 252 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 9, 13)
+
+
+Run: 5
+DateTime: 23-May-2021 (15:22:45)
+Best objective value found after (s): 536.4935040324926
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 110.55191999999936
+Heuristic value after 180 s: 110.55191999999964
+Objective value after 240 s: 116.83679999999987
+Heuristic value after 240 s: 116.83680000000004
+Objective value after 300 s: 116.83679999999987
+Heuristic value after 300 s: 116.83680000000004
+Objective value after 360 s: 116.83679999999987
+Heuristic value after 360 s: 116.83680000000004
+Objective value after 420 s: 116.83679999999987
+Heuristic value after 420 s: 116.83680000000004
+Objective value after 480 s: 116.83679999999987
+Heuristic value after 480 s: 116.83680000000004
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 601.5832363199443
+Iterations completed: 302 iterations in 7 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 9, 13)
+
+
+Run: 4
+DateTime: 23-May-2021 (15:22:45)
+Best objective value found after (s): 119.57564686983824
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 121.21895999999944
+Heuristic value after 120 s: 121.21895999999961
+Objective value after 180 s: 121.21895999999944
+Heuristic value after 180 s: 121.21895999999961
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 601.8421503771096
+Iterations completed: 375 iterations in 8 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 13, 13)
+
+
+Run: 1
+DateTime: 23-May-2021 (15:22:45)
+Best objective value found after (s): 103.08538758289069
+Objective value: 111.28991999999981
+Heuristic value: 111.28991999999984
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 111.28991999999981
+Heuristic value after 120 s: 111.28991999999984
+Objective value after 180 s: 111.28991999999981
+Heuristic value after 180 s: 111.28991999999984
+Objective value after 240 s: 111.28991999999981
+Heuristic value after 240 s: 111.28991999999984
+Objective value after 300 s: 111.28991999999981
+Heuristic value after 300 s: 111.28991999999984
+Objective value after 360 s: 111.28991999999981
+Heuristic value after 360 s: 111.28991999999984
+Objective value after 420 s: 111.28991999999981
+Heuristic value after 420 s: 111.28991999999984
+Objective value after 480 s: 111.28991999999981
+Heuristic value after 480 s: 111.28991999999984
+Objective value after 540 s: 111.28991999999981
+Heuristic value after 540 s: 111.28991999999984
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 601.8698736755177
+Iterations completed: 262 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 9, 9)
+
+
+Run: 3
+DateTime: 23-May-2021 (15:22:45)
+Best objective value found after (s): 113.22507924214005
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 121.21895999999944
+Heuristic value after 120 s: 121.21895999999961
+Objective value after 180 s: 121.21895999999944
+Heuristic value after 180 s: 121.21895999999961
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 602.1850519999862
+Iterations completed: 298 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 13, 9)
+
+
+Run: 2
+DateTime: 23-May-2021 (15:22:46)
+Best objective value found after (s): 579.6518292929977
+Objective value: 116.0829599999991
+Heuristic value: 116.0829599999993
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 110.55191999999936
+Heuristic value after 180 s: 110.55191999999964
+Objective value after 240 s: 111.28991999999981
+Heuristic value after 240 s: 111.28991999999984
+Objective value after 300 s: 114.74976000000007
+Heuristic value after 300 s: 114.74976000000024
+Objective value after 360 s: 114.74976000000007
+Heuristic value after 360 s: 114.74976000000024
+Objective value after 420 s: 114.74976000000007
+Heuristic value after 420 s: 114.74976000000024
+Objective value after 480 s: 114.74976000000007
+Heuristic value after 480 s: 114.74976000000024
+Objective value after 540 s: 114.74976000000007
+Heuristic value after 540 s: 114.74976000000024
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 602.6241717785597
+Iterations completed: 276 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 9, 9)
+
+
+Run: 4
+DateTime: 23-May-2021 (15:22:46)
+Best objective value found after (s): 376.8940821150318
+Objective value: 111.28991999999981
+Heuristic value: 111.28991999999984
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 110.55191999999936
+Heuristic value after 180 s: 110.55191999999964
+Objective value after 240 s: 110.55191999999936
+Heuristic value after 240 s: 110.55191999999964
+Objective value after 300 s: 110.55191999999936
+Heuristic value after 300 s: 110.55191999999964
+Objective value after 360 s: 110.55191999999936
+Heuristic value after 360 s: 110.55191999999964
+Objective value after 420 s: 111.28991999999981
+Heuristic value after 420 s: 111.28991999999984
+Objective value after 480 s: 111.28991999999981
+Heuristic value after 480 s: 111.28991999999984
+Objective value after 540 s: 111.28991999999981
+Heuristic value after 540 s: 111.28991999999984
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 603.0971949119121
+Iterations completed: 312 iterations in 7 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 13, 9)
+
+
+Run: 2
+DateTime: 23-May-2021 (15:22:47)
+Best objective value found after (s): 128.59310541208833
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 121.21895999999944
+Heuristic value after 180 s: 121.21895999999961
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 604.2766991304234
+Iterations completed: 352 iterations in 8 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 9, 13)
+
+
+Run: 2
+DateTime: 23-May-2021 (15:22:47)
+Best objective value found after (s): 200.79255701228976
+Objective value: 116.0829599999991
+Heuristic value: 116.0829599999993
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 111.28991999999981
+Heuristic value after 180 s: 111.28991999999984
+Objective value after 240 s: 116.0829599999991
+Heuristic value after 240 s: 116.0829599999993
+Objective value after 300 s: 116.0829599999991
+Heuristic value after 300 s: 116.0829599999993
+Objective value after 360 s: 116.0829599999991
+Heuristic value after 360 s: 116.0829599999993
+Objective value after 420 s: 116.0829599999991
+Heuristic value after 420 s: 116.0829599999993
+Objective value after 480 s: 116.0829599999991
+Heuristic value after 480 s: 116.0829599999993
+Objective value after 540 s: 116.0829599999991
+Heuristic value after 540 s: 116.0829599999993
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 604.3916029827669
+Iterations completed: 295 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 13, 13)
+
+
+Run: 1
+DateTime: 23-May-2021 (15:22:47)
+Best objective value found after (s): 257.32032381836325
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 111.28991999999981
+Heuristic value after 120 s: 111.28991999999984
+Objective value after 180 s: 111.28991999999981
+Heuristic value after 180 s: 111.28991999999984
+Objective value after 240 s: 111.28991999999981
+Heuristic value after 240 s: 111.28991999999984
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 604.407939216122
+Iterations completed: 260 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 9, 13)
+
+
+Run: 3
+DateTime: 23-May-2021 (15:22:48)
+Best objective value found after (s): 54.71720427647233
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 121.21895999999944
+Heuristic value after 60 s: 121.21895999999961
+Objective value after 120 s: 121.21895999999944
+Heuristic value after 120 s: 121.21895999999961
+Objective value after 180 s: 121.21895999999944
+Heuristic value after 180 s: 121.21895999999961
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 604.626401565969
+Iterations completed: 296 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 9, 9)
+
+
+Run: 1
+DateTime: 23-May-2021 (15:22:48)
+Best objective value found after (s): 146.95450308732688
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 111.28991999999981
+Heuristic value after 120 s: 111.28991999999984
+Objective value after 180 s: 121.21895999999944
+Heuristic value after 180 s: 121.21895999999961
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 604.9509823797271
+Iterations completed: 261 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 13, 13)
+
+
+Run: 5
+DateTime: 23-May-2021 (15:22:48)
+Best objective value found after (s): 243.97055690083653
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 111.1840799999998
+Heuristic value after 180 s: 111.18408000000002
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 605.0525089185685
+Iterations completed: 259 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 9, 9)
+
+
+Run: 5
+DateTime: 23-May-2021 (15:22:48)
+Best objective value found after (s): 592.7316853981465
+Objective value: 121.00727999999944
+Heuristic value: 121.00727999999964
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 116.0829599999991
+Heuristic value after 180 s: 116.0829599999993
+Objective value after 240 s: 116.0829599999991
+Heuristic value after 240 s: 116.0829599999993
+Objective value after 300 s: 116.0829599999991
+Heuristic value after 300 s: 116.0829599999993
+Objective value after 360 s: 116.0829599999991
+Heuristic value after 360 s: 116.0829599999993
+Objective value after 420 s: 116.0829599999991
+Heuristic value after 420 s: 116.0829599999993
+Objective value after 480 s: 116.0829599999991
+Heuristic value after 480 s: 116.0829599999993
+Objective value after 540 s: 116.0829599999991
+Heuristic value after 540 s: 116.0829599999993
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 605.2942589232698
+Iterations completed: 309 iterations in 7 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 13, 9)
+
+
+Run: 1
+DateTime: 23-May-2021 (15:22:49)
+Best objective value found after (s): 508.49083357304335
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 110.55191999999936
+Heuristic value after 120 s: 110.55191999999964
+Objective value after 180 s: 110.55191999999936
+Heuristic value after 180 s: 110.55191999999964
+Objective value after 240 s: 110.55191999999936
+Heuristic value after 240 s: 110.55191999999964
+Objective value after 300 s: 110.55191999999936
+Heuristic value after 300 s: 110.55191999999964
+Objective value after 360 s: 111.28991999999938
+Heuristic value after 360 s: 111.28991999999944
+Objective value after 420 s: 111.28991999999938
+Heuristic value after 420 s: 111.28991999999944
+Objective value after 480 s: 111.28991999999938
+Heuristic value after 480 s: 111.28991999999944
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 605.9364409670234
+Iterations completed: 288 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 13, 9)
+
+
+Run: 2
+DateTime: 23-May-2021 (15:22:49)
+Best objective value found after (s): 130.89027000777423
+Objective value: 121.21895999999944
+Heuristic value: 121.21895999999961
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic, true objective value: 110.55191999999936
+Construction heuristic, heuristic objective value: 110.55191999999964
+Objective value after 60 s: 110.55191999999936
+Heuristic value after 60 s: 110.55191999999964
+Objective value after 120 s: 111.28991999999981
+Heuristic value after 120 s: 111.28991999999984
+Objective value after 180 s: 121.21895999999944
+Heuristic value after 180 s: 121.21895999999961
+Objective value after 240 s: 121.21895999999944
+Heuristic value after 240 s: 121.21895999999961
+Objective value after 300 s: 121.21895999999944
+Heuristic value after 300 s: 121.21895999999961
+Objective value after 360 s: 121.21895999999944
+Heuristic value after 360 s: 121.21895999999961
+Objective value after 420 s: 121.21895999999944
+Heuristic value after 420 s: 121.21895999999961
+Objective value after 480 s: 121.21895999999944
+Heuristic value after 480 s: 121.21895999999961
+Objective value after 540 s: 121.21895999999944
+Heuristic value after 540 s: 121.21895999999961
+Objective value after 600 s: None
+Heuristic value after 600 s: None
+Time used: 606.300455506891
+Iterations completed: 284 iterations in 6 segments
+Acceptance percentage: 2.0
+Travel time threshold: 0.7
+Neighborhood Size: (0.3, 0.7)
+Determinism Worst: 10
+Determinism Related: 10
+Determinism Greedy: 10
+Adaptive Weight Rewards (Best, Better, Accepted): (33, 13, 9)
+
