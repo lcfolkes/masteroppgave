@@ -41,6 +41,8 @@ if __name__ == "__main__":
         for filename in os.listdir(directory):
             filename_list = filename.split(".")
             if filename_list[-1] == "pkl":
+                if filename == "20-25-2-1_b.pkl" or "20-25-2-1_c.pkl":
+                    continue
                 files.append(os.path.join(directory, filename_list[0]))
 
     #for f in files:

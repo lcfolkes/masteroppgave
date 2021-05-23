@@ -4,7 +4,7 @@ from collections import OrderedDict
 import random
 from termcolor import colored
 from Heuristics.DestroyAndRepairHeuristics.destroy import Destroy, RandomRemoval, WorstRemoval, ShawRemoval, ChargeRemoval
-from Heuristics.DestroyAndRepairHeuristics.repair import Repair, GreedyInsertion, RegretInsertion, ChargeInsertion, \
+from Heuristics.DestroyAndRepairHeuristics.repair import Repair, RegretInsertion, ChargeInsertion, \
     GreedyRandomInsertion
 from Heuristics.LocalSearch.local_search import LocalSearch
 from Heuristics.helper_functions_heuristics import safe_zero_division, copy_solution_dict, \
@@ -328,6 +328,7 @@ class ALNS():
             parameter_tuning_txt = f"Acceptance percentage: {self.solution.acceptance_percentage}\n" \
                                    f"Travel time threshold: {self.solution.travel_time_threshold}\n" \
                                    f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}\n" \
+                                   f"Reward decay parameter: {self.reward_decay_parameter}" \
                                    f"Determinism Worst: {HeuristicsConstants.DETERMINISM_PARAMETER_WORST}\n" \
                                    f"Determinism Related: {HeuristicsConstants.DETERMINISM_PARAMETER_RELATED}\n" \
                                    f"Determinism Greedy: {HeuristicsConstants.DETERMINISM_PARAMETER_GREEDY}\n" \
@@ -354,46 +355,46 @@ class ALNS():
     def _initialize_operators(self):
         if self._num_employees < 3:
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_random': 1.0, 'random_regret2': 1.0, 'random_charge': 1.0,
-                 'worst_greedy': 1.0,  'worst_random': 1.0,  'worst_regret2': 1.0, 'worst_charge': 1.0,
-                 'shaw_greedy': 1.0,   'shaw_random': 1.0,   'shaw_regret2': 1.0, 'shaw_charge': 1.0,
-                 'charge_greedy': 1.0, 'charge_random': 1.0, 'charge_regret2': 1.0, 'charge_charge': 1.0})
+                {'random_greedy': 1.0,  'random_regret2': 1.0, 'random_charge': 1.0,
+                 'worst_greedy': 1.0,  'worst_regret2': 1.0, 'worst_charge': 1.0,
+                 'shaw_greedy': 1.0,      'shaw_regret2': 1.0, 'shaw_charge': 1.0,
+                 'charge_greedy': 1.0,  'charge_regret2': 1.0, 'charge_charge': 1.0})
 
         elif self._num_employees < 4:
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_random': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': .0,
-                 'worst_greedy': 1.0, 'worst_random': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_charge': 1.0,
-                 'shaw_greedy': 1.0, 'shaw_random': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 1.0,
-                 'charge_greedy': 1.0, 'charge_random': 1.0, 'charge_regret2': 1.0, 'charge_regret3': 1.0, 'charge_charge': .0})
+                {'random_greedy': 1.0,  'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': .0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_charge': 1.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 1.0,
+                 'charge_greedy': 1.0, 'charge_regret2': 1.0, 'charge_regret3': 1.0, 'charge_charge': .0})
 
         else:
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_random': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0, 'random_charge': 1.0,
-                 'worst_greedy': 1.0, 'worst_random': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0, 'worst_charge': 1.0,
-                 'shaw_greedy': 1.0, 'shaw_random': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0, 'shaw_charge': 1.0,
-                 'charge_greedy': 1.0, 'charge_random': 1.0, 'charge_regret2': 1.0, 'charge_regret3': 1.0, 'charge_regret4': 1.0, 'charge_charge': 1.0})
+                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0, 'random_charge': 1.0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0, 'worst_charge': 1.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0, 'shaw_charge': 1.0,
+                 'charge_greedy': 1.0, 'charge_regret2': 1.0, 'charge_regret3': 1.0, 'charge_regret4': 1.0, 'charge_charge': 1.0})
 
         return operators
 
     def _initialize_operator_records(self):
         if self._num_employees < 3:
             operators_record = OrderedDict(
-                {'random_greedy': [1.0, 0], 'random_random': [1.0, 0], 'random_regret2': [1.0, 0], 'random_charge': [1.0, 0],
-                 'worst_greedy': [1.0, 0], 'worst_random': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_charge': [1.0, 0],
-                 'shaw_greedy': [1.0, 0], 'shaw_random': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_charge': [1.0, 0],
-                 'charge_greedy': [1.0, 0], 'charge_random': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_charge': [1.0, 0]})
+                {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'random_charge': [1.0, 0],
+                 'worst_greedy': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_charge': [1.0, 0],
+                 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_charge': [1.0, 0],
+                 'charge_greedy': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_charge': [1.0, 0]})
         elif self._num_employees < 4:
             operators_record = OrderedDict(
-                {'random_greedy': [1.0, 0], 'random_random': [1.0, 0], 'random_regret2': [1.0, 0], 'random_regret3': [1.0, 0], 'random_charge': [1.0, 0],
-                 'worst_greedy': [1.0, 0], 'worst_random': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_regret3': [1.0, 0], 'worst_charge': [1.0, 0],
-                 'shaw_greedy': [1.0, 0], 'shaw_random': [1.0, 0],  'shaw_regret2': [1.0, 0], 'shaw_regret3': [1.0, 0], 'shaw_charge': [1.0, 0],
-                 'charge_greedy': [1.0, 0], 'charge_random': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_regret3': [1.0, 0], 'charge_charge': [1.0, 0]})
+                {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'random_regret3': [1.0, 0], 'random_charge': [1.0, 0],
+                 'worst_greedy': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_regret3': [1.0, 0], 'worst_charge': [1.0, 0],
+                 'shaw_greedy': [1.0, 0],  'shaw_regret2': [1.0, 0], 'shaw_regret3': [1.0, 0], 'shaw_charge': [1.0, 0],
+                 'charge_greedy': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_regret3': [1.0, 0], 'charge_charge': [1.0, 0]})
         else:
             operators_record = OrderedDict(
-                {'random_greedy': [1.0, 0], 'random_random': [1.0, 0], 'random_regret2': [1.0, 0], 'random_regret3': [1.0, 0], 'random_regret4': [1.0, 0], 'random_charge': [1.0, 0],
-                 'worst_greedy': [1.0, 0], 'worst_random': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_regret3': [1.0, 0], 'worst_regret4': [1.0, 0], 'worst_charge': [1.0, 0],
-                 'shaw_greedy': [1.0, 0], 'shaw_random': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_regret3': [1.0, 0], 'shaw_regret4': [1.0, 0], 'shaw_charge': [1.0, 0],
-                 'charge_greedy': [1.0, 0], 'charge_random': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_regret3': [1.0, 0], 'charge_regret4': [1.0, 0], 'charge_charge': [1.0, 0]})
+                {'random_greedy': [1.0, 0], 'random_regret2': [1.0, 0], 'random_regret3': [1.0, 0], 'random_regret4': [1.0, 0], 'random_charge': [1.0, 0],
+                 'worst_greedy': [1.0, 0], 'worst_regret2': [1.0, 0], 'worst_regret3': [1.0, 0], 'worst_regret4': [1.0, 0], 'worst_charge': [1.0, 0],
+                 'shaw_greedy': [1.0, 0], 'shaw_regret2': [1.0, 0], 'shaw_regret3': [1.0, 0], 'shaw_regret4': [1.0, 0], 'shaw_charge': [1.0, 0],
+                 'charge_greedy': [1.0, 0], 'charge_regret2': [1.0, 0], 'charge_regret3': [1.0, 0], 'charge_regret4': [1.0, 0], 'charge_charge': [1.0, 0]})
 
         return operators_record
 
@@ -419,18 +420,18 @@ class ALNS():
         operator_pair = random.choices(list(self.operator_pairs), w_dist)[0]
         self.operators_record[operator_pair][1] += 1
 
-        if operator_pair == "random_greedy" or operator_pair == "random_random" or operator_pair == "random_regret2" or operator_pair == "random_regret3" \
+        if operator_pair == "random_greedy" or operator_pair == "random_regret2" or operator_pair == "random_regret3" \
                 or operator_pair == "random_regret4" or operator_pair == "random_charge":
             return RandomRemoval(solution, world_instance, neighborhood_size), operator_pair
-        elif operator_pair == "worst_greedy" or operator_pair == "worst_random" or operator_pair == "worst_regret2" or operator_pair == "worst_regret3" \
+        elif operator_pair == "worst_greedy" or operator_pair == "worst_regret2" or operator_pair == "worst_regret3" \
                 or operator_pair == "worst_regret4" or operator_pair == "worst_charge":
             return WorstRemoval(solution, world_instance, neighborhood_size,
                                 HeuristicsConstants.DETERMINISM_PARAMETER_WORST), operator_pair
-        elif operator_pair == "shaw_greedy" or operator_pair == "shaw_random" or operator_pair == "shaw_regret2" or operator_pair == "shaw_regret3" \
+        elif operator_pair == "shaw_greedy" or operator_pair == "shaw_regret2" or operator_pair == "shaw_regret3" \
                 or operator_pair == "shaw_regret4" or operator_pair == "shaw_charge":
             return ShawRemoval(solution, world_instance, neighborhood_size,
                                HeuristicsConstants.DETERMINISM_PARAMETER_RELATED), operator_pair
-        elif operator_pair == "charge_greedy" or operator_pair == "charge_random" or operator_pair == "charge_regret2" or \
+        elif operator_pair == "charge_greedy" or operator_pair == "charge_regret2" or \
                 operator_pair == "charge_regret3" or operator_pair == "charge_regret4" \
                 or operator_pair == "charge_charge":
             return ChargeRemoval(solution, world_instance, neighborhood_size), operator_pair
@@ -439,12 +440,8 @@ class ALNS():
 
     def _get_repair_operator(self, destroyed_solution_object, unused_car_moves, world_instance, operator_pair) \
             -> Repair:
-
         if operator_pair == "random_greedy" or operator_pair == "worst_greedy" or operator_pair == "shaw_greedy" or \
                 operator_pair == "charge_greedy":
-            return GreedyInsertion(destroyed_solution_object, unused_car_moves, world_instance)
-        elif operator_pair == "random_random" or operator_pair == "worst_random" or operator_pair == "shaw_random" or \
-                operator_pair == "charge_random":
             return GreedyRandomInsertion(destroyed_solution_object, unused_car_moves, world_instance,
                                          HeuristicsConstants.DETERMINISM_PARAMETER_GREEDY)
         elif operator_pair == "random_regret2" or operator_pair == "worst_regret2" or operator_pair == "shaw_regret2" \
@@ -498,7 +495,7 @@ class ALNS():
                 elif isinstance(destroy, ChargeRemoval):
                     self.operators_record['charge_regret4'][0] += operator_score
 
-        elif isinstance(repair, GreedyInsertion):
+        elif isinstance(repair, GreedyRandomInsertion):
             if isinstance(destroy, RandomRemoval):
                 self.operators_record['random_greedy'][0] += operator_score
             elif isinstance(destroy, WorstRemoval):
