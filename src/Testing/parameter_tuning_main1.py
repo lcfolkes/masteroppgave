@@ -41,7 +41,7 @@ if __name__ == "__main__":
         for filename in os.listdir(directory):
             filename_list = filename.split(".")
             if filename_list[-1] == "pkl":
-                if filename_list[0] in ["20-25-2-1_b"]:
+                if filename_list[0] not in ["20-25-2-1_b", "20-25-2-1_c"]:
                     files.append(os.path.join(directory, filename_list[0]))
 
     #for f in files:
@@ -50,8 +50,7 @@ if __name__ == "__main__":
         n = 5
         for filename in files:
             ### PARALLEL
-            run_parallel(filename, n, [0.05, 0.10, 0.20, 0.40])
-            run_parallel(filename, n, [0.50, 0.60, 0.80, 1.0])
+            run_parallel(filename, n, [3, 5, 7, 9])
 
         '''
         ### SEQUENTIAL
