@@ -328,7 +328,7 @@ class ALNS():
             parameter_tuning_txt = f"Acceptance percentage: {self.solution.acceptance_percentage}\n" \
                                    f"Travel time threshold: {self.solution.travel_time_threshold}\n" \
                                    f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}\n" \
-                                   f"Reward decay parameter: {self.reward_decay_parameter}" \
+                                   f"Reward decay parameter: {self.reward_decay_parameter}\n" \
                                    f"Determinism Worst: {HeuristicsConstants.DETERMINISM_PARAMETER_WORST}\n" \
                                    f"Determinism Related: {HeuristicsConstants.DETERMINISM_PARAMETER_RELATED}\n" \
                                    f"Determinism Greedy: {HeuristicsConstants.DETERMINISM_PARAMETER_GREEDY}\n" \
