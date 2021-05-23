@@ -20,13 +20,12 @@ from tqdm import tqdm
 
 os.chdir(path_to_src)
 
-'''
+
 _IS_BEST = HeuristicsConstants.BEST
 _IS_BETTER = HeuristicsConstants.BETTER
 _IS_ACCEPTED = HeuristicsConstants.ACCEPTED
-'''
-'''
 
+'''
 _IS_BEST (sigma_1): The last remove-insert operation resulted in a new global best solution
 _IS_BETTER (sigma_2): The last remove-insert operation resulted in a solution that has not been accepted before.
          The cost of the new solution is better than the cost of the current solution.
@@ -50,10 +49,7 @@ class ALNS():
         self._world_instance = self.solution.world_instance
         self.operator_pairs = self._initialize_operators()
         self.operators_record = self._initialize_operator_records()
-        self._IS_BEST = param[0]
-        self._IS_BETTER = param[1]
-        self._IS_ACCEPTED = param[2]
-
+        self.reward_decay_parameter = param
 
     def _initialize_new_iteration(self, current_unused_car_moves, current_solution):
         candidate_unused_car_moves = copy_unused_car_moves_2d_list(current_unused_car_moves)
@@ -206,14 +202,14 @@ class ALNS():
                                 # print("NEW GLOBAL SOLUTION")
                                 # self.solution.print_solution()
                                 if MODE == "LNS":
-                                    self._update_weight_record(self._IS_BEST, destroy_heuristic, repair_heuristic)
+                                    self._update_weight_record(_IS_BEST, destroy_heuristic, repair_heuristic)
                             # NEW LOCAL BEST
                             else:
                                 output_text += str(
                                     counter) + f" {colored('New best solution locally:', 'blue')} {colored(round(candidate_obj_val, 2), 'blue')}{colored(', found by ', 'blue')}{colored(MODE, 'blue')}\n"
                                 counter += 1
                                 if MODE == "LNS":
-                                    self._update_weight_record(self._IS_BETTER, destroy_heuristic, repair_heuristic)
+                                    self._update_weight_record(_IS_BETTER, destroy_heuristic, repair_heuristic)
 
                             MODE = "LOCAL_FULL"
 
@@ -224,7 +220,7 @@ class ALNS():
                                 counter) + f"{colored(' New accepted solution: ', 'magenta')}{colored(round(candidate_obj_val, 2), 'magenta')}{colored(', found by ', 'magenta')}{colored(MODE, 'magenta')}{colored(', acceptance probability was' , 'magenta')} {colored(round(p, 2), 'magenta')}{colored(', temperature was ', 'magenta')}{colored(round(temperature, 2), 'magenta')} \n"
                             counter += 1
                             if MODE == "LNS":
-                                self._update_weight_record(self._IS_ACCEPTED, destroy_heuristic, repair_heuristic)
+                                self._update_weight_record(_IS_ACCEPTED, destroy_heuristic, repair_heuristic)
                                 MODE = "LOCAL_FIRST"
                             else:
                                 MODE = "LNS"
@@ -335,7 +331,7 @@ class ALNS():
                                    f"Determinism Worst: {HeuristicsConstants.DETERMINISM_PARAMETER_WORST}\n" \
                                    f"Determinism Related: {HeuristicsConstants.DETERMINISM_PARAMETER_RELATED}\n" \
                                    f"Determinism Greedy: {HeuristicsConstants.DETERMINISM_PARAMETER_GREEDY}\n" \
-                                   f"Adaptive Weight Rewards (Best, Better, Accepted): ({self._IS_BEST}, {self._IS_BETTER}, {self._IS_ACCEPTED})\n\n"
+                                   f"Adaptive Weight Rewards (Best, Better, Accepted): ({_IS_BEST}, {_IS_BETTER}, {_IS_ACCEPTED})\n\n"
 
             # Write to file
             test_dir = "./Testing/Results/" + self.filename.split('/')[-2] + "/"
@@ -524,8 +520,11 @@ class ALNS():
 
     def _update_score_adjustment_parameters(self):
         for k, v in self.operator_pairs.items():
-            self.operator_pairs[k] = self.operator_pairs[k] * (1.0 - HeuristicsConstants.REWARD_DECAY_PARAMETER) + \
-                                     safe_zero_division(HeuristicsConstants.REWARD_DECAY_PARAMETER, self.operators_record[k][1]) * \
+            #self.operator_pairs[k] = self.operator_pairs[k] * (1.0 - HeuristicsConstants.REWARD_DECAY_PARAMETER) + \
+            #                         safe_zero_division(HeuristicsConstants.REWARD_DECAY_PARAMETER, self.operators_record[k][1]) * \
+            #                         self.operators_record[k][0]
+            self.operator_pairs[k] = self.operator_pairs[k] * (1.0 - self.reward_decay_parameter) + \
+                                     safe_zero_division(self.reward_decay_parameter, self.operators_record[k][1]) * \
                                      self.operators_record[k][0]
 
             if self.operator_pairs[k] < HeuristicsConstants.LOWER_THRESHOLD:

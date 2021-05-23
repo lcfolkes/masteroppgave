@@ -49,8 +49,8 @@ if __name__ == "__main__":
         n = 5
         for filename in files:
             ### PARALLEL
-            run_parallel(filename, n, [[33, 9, 1], [9, 9, 9], [9, 9, 1], [9, 1, 9]])
-            run_parallel(filename, n, [[33, 9, 9], [33, 9, 13], [33, 13, 9], [33, 13, 13]])
+            run_parallel(filename, n, [0.05, 0.10, 0.20, 0.40])
+            run_parallel(filename, n, [0.50, 0.60, 0.80, 1.0])
 
         '''
         ### SEQUENTIAL

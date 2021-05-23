@@ -49,67 +49,68 @@ if __name__ == "__main__":
 	# open the google spreadsheet (where 'PY to Gsheet Test' is the name of my sheet)
 
 	# select the first sheet
-	work_sheet = sheet[3]
+	work_sheet = sheet[0]
 	#print(work_sheet)
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/Results/"
-	param_dict = {"[0.05, 0.15]": 2, "[0.15, 0.3]": 4, "[0.05, 0.3]": 6, "[0.15, 0.5]": 8, "[0.3, 0.5]": 10,
-								  "[0.3, 0.7]": 12, "[0.5, 0.7]": 14, "[0.15, 0.7]": 16}
-	header = np.array([["", "Destroy repair factor",
-						"[0.05, 0.15] Obj. Val.", "[0.05, 0.15] Time found (s)", "[0.15, 0.30] Obj. Val.", "[0.15, 0.30] Time found (s)",
-						"[0.05, 0.30] Obj. Val.", "[0.05, 0.30] Time found (s)", "[0.30, 0.50] Obj. Val.", "[0.30, 0.50] Time found (s)",
-						"[0.15, 0.50] Obj. Val.", "[0.15, 0.50] Time found (s)", "[0.30, 0.70] Obj. Val.", "[0.30, 0.70] Time found (s)",
-						"[0.50, 0.70] Obj. Val.", "[0.50, 0.70] Time found (s)", "[0.15, 0.70] Obj. Val.", "[0.15, 0.70] Time found (s)"],
-					   ["Instance", "Run",
-						"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
-						"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
-						"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
-						"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)"]])
+	test_dir = "./Testing/adaptive_weights_rewards/"
 
-	header_df = pd.DataFrame(header)
-	work_sheet.set_dataframe(header_df, (1, 0), copy_head=False)
-	start_row = 3
+param_dict = {"(9, 1, 9)": 2, "(9, 9, 1)": 4, "(9, 9, 9)": 6, "(33, 9, 1)": 8, "(33, 9, 9)": 10,
+							  "(33, 9, 13)": 12, "(33, 13, 9)": 14, "(33, 13, 13)": 16}
+header = np.array([["", "Adaptive Weight Rewards (Best, Better, Accepted)",
+					"[9, 1, 9] Obj. Val.", "[9, 1, 9] Time found (s)", "[9, 9, 1] Obj. Val.", "[9, 9, 1] Time found (s)",
+					"[9, 9, 9] Obj. Val.", "[9, 9, 9] Time found (s)", "[33, 9, 1] Obj. Val.", "[33, 9, 1] Time found (s)",
+					"[33, 9, 9] Obj. Val.", "[33, 9, 9] Time found (s)", "[33, 9, 13] Obj. Val.", "[33, 9, 13] Time found (s)",
+					"[33, 13, 9]] Obj. Val.", "[33, 13, 9] Time found (s)", "[33, 13, 13] Obj. Val.", "[33, 13, 13] Time found (s)"],
+				   ["Instance", "Run",
+					"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
+					"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
+					"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
+					"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)"]])
 
-	for dir in os.listdir(test_dir):
-		sub_dir = test_dir + "/" + dir
-		for file in os.listdir(sub_dir):
-			filepath = sub_dir + "/" + file
-			f = open(filepath, "r")
-			result = m = np.zeros(shape=[5, 18]).astype(str)
-			filename = file.split(".")[0][:-8]
-			result[:, 0] = filename
-			result[:, 1] = [x+1 for x in range(5)]
-			for x in f:
-				line_list = x.split(':')
-				if line_list[0] == "Run":
-					run = int(line_list[1].split(',')[0].strip())
-				elif line_list[0] == "Best objective value found after (s)":
-					time = round(float(line_list[1].strip()), 2)
-				elif line_list[0] == "Objective value":
-					obj_val = line_list[1].strip()
-				elif line_list[0] == "Neighborhood Size":
-					param = line_list[1].strip()
-					result[run - 1][param_dict[param]] = obj_val
-					result[run - 1][param_dict[param]+1] = time
+header_df = pd.DataFrame(header)
+work_sheet.set_dataframe(header_df, (1, 0), copy_head=False)
+start_row = 3
 
-			avg_row = np.array([filename, "Average"])
-			relevant_cols = np.array(result[:, 2:], dtype=np.float64)
-			avg_obj_val = np.mean(relevant_cols[:, ::2], axis=0)
-			avg_time_val = np.mean(relevant_cols[:, 1::2], axis=0)
+for dir in os.listdir(test_dir):
+	sub_dir = test_dir + "/" + dir
+	for file in os.listdir(sub_dir):
+		filepath = sub_dir + "/" + file
+		f = open(filepath, "r")
+		result = m = np.zeros(shape=[5, 18]).astype(str)
+		filename = file.split(".")[0][:-8]
+		result[:, 0] = filename
+		result[:, 1] = [x+1 for x in range(5)]
+		for x in f:
+			line_list = x.split(':')
+			if line_list[0] == "Run":
+				run = int(line_list[1].split(',')[0].strip())
+			elif line_list[0] == "Best objective value found after (s)":
+				time = round(float(line_list[1].strip()), 2)
+			elif line_list[0] == "Objective value":
+				obj_val = line_list[1].strip()
+			elif line_list[0] == "Adaptive Weight Rewards (Best, Better, Accepted)":
+				param = line_list[1].strip()
+				result[run - 1][param_dict[param]] = obj_val
+				result[run - 1][param_dict[param]+1] = time
 
-			avg_row = np.concatenate((avg_row, np.ravel([avg_obj_val, avg_time_val], 'F')), axis=0)
+		avg_row = np.array([filename, "Average"])
+		relevant_cols = np.array(result[:, 2:], dtype=np.float64)
+		avg_obj_val = np.mean(relevant_cols[:, ::2], axis=0)
+		avg_time_val = np.mean(relevant_cols[:, 1::2], axis=0)
 
-			result = np.vstack([result, avg_row])
-			gap_row = np.array([filename, "Gap (%)"])
-			max_val_obj = np.amax(relevant_cols[:, ::2])
-			max_val_time = np.mean(relevant_cols[:, 1::2])
-			obj_val_gaps = np.abs(safe_zero_division(max_val_obj-avg_obj_val, max_val_obj))
-			time_val_gaps = np.abs(safe_zero_division(max_val_time-avg_time_val, max_val_time))
-			gap_row = np.concatenate((gap_row, np.ravel([obj_val_gaps, time_val_gaps],'F')), axis=0)
+		avg_row = np.concatenate((avg_row, np.ravel([avg_obj_val, avg_time_val], 'F')), axis=0)
 
-			result = np.vstack([result, gap_row])
-			result_df = pd.DataFrame(result)
-			work_sheet.set_dataframe(result_df, (start_row, 0), copy_head=False)
-			start_row += 7
+		result = np.vstack([result, avg_row])
+		gap_row = np.array([filename, "Gap (%)"])
+		max_val_obj = np.amax(relevant_cols[:, ::2])
+		max_val_time = np.mean(relevant_cols[:, 1::2])
+		obj_val_gaps = np.abs(safe_zero_division(max_val_obj-avg_obj_val, max_val_obj))
+		time_val_gaps = np.abs(safe_zero_division(max_val_time-avg_time_val, max_val_time))
+		gap_row = np.concatenate((gap_row, np.ravel([obj_val_gaps, time_val_gaps],'F')), axis=0)
+
+		result = np.vstack([result, gap_row])
+		result_df = pd.DataFrame(result)
+		work_sheet.set_dataframe(result_df, (start_row, 0), copy_head=False)
+		start_row += 7
