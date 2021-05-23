@@ -47,18 +47,19 @@ if __name__ == "__main__":
 	# open the google spreadsheet (where 'PY to Gsheet Test' is the name of my sheet)
 
 	# select the first sheet
-	work_sheet = sheet[1]
+	work_sheet = sheet[2]
 	#print(work_sheet)
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/Results"
-	acceptance_percentage_dict = {"1.0": 2, "0.9": 4, "0.8": 6, "0.7": 8, "0.6": 10, "0.5": 12, "0.4": 14, "0.2": 16}
+	test_dir = "./Testing/destroy_repair_factor/"
+	acceptance_percentage_dict = {"[0.05, 0.15]": 2, "[0.15, 0.30]": 4, "[0.05, 0.30]": 6, "[0.15, 0.50]": 8,
+								  "[0.30, 0.70]": 10, "[0.50, 0.70]": 12, "[0.15, 0.70]": 14}
 	header = np.array([["", "Travel time threshold",
-						"1.0 Obj. Val.", "1.0 Time found (s)", "0.9 Obj. Val.", "0.9 Time found (s)",
-						"0.8 Obj. Val.", "0.8 Time found (s)", "0.7 Obj. Val.", "0.7 Time found (s)",
-						"0.6 Obj. Val.", "0.6 Time found (s)", "0.5 Obj. Val.", "0.5 Time found (s)",
-						"0.4 Obj. Val.", "0.4 Time found (s)", "0.2 Obj. Val.", "0.2 Time found (s)"],
+						"[0.05, 0.15] Obj. Val.", "[0.05, 0.15] Time found (s)", "[0.15, 0.30] Obj. Val.", "[0.15, 0.30] Time found (s)",
+						"0.5 Obj. Val.", "0.5 Time found (s)", "0.6 Obj. Val.", "0.6 Time found (s)",
+						"0.7 Obj. Val.", "0.7 Time found (s)", "0.8 Obj. Val.", "0.8 Time found (s)",
+						"0.9 Obj. Val.", "0.9 Time found (s)", "1.0 Obj. Val.", "1.0 Time found (s)"],
 					   ["Instance", "Run",
 						"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
 						"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
