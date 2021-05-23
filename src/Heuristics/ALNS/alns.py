@@ -328,7 +328,7 @@ class ALNS():
             parameter_tuning_txt = f"Acceptance percentage: {self.solution.acceptance_percentage}\n" \
                                    f"Travel time threshold: {self.solution.travel_time_threshold}\n" \
                                    f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}\n" \
-                                   f"Reward decay parameter: {self.reward_decay_parameter}\n" \
+                                   f"Reward decay parameter: {HeuristicsConstants.REWARD_DECAY_PARAMETER}\n" \
                                    f"Determinism Worst: {self.determinism_parameter}\n" \
                                    f"Determinism Related: {HeuristicsConstants.DETERMINISM_PARAMETER_RELATED}\n" \
                                    f"Determinism Greedy: {HeuristicsConstants.DETERMINISM_PARAMETER_GREEDY}\n" \
@@ -517,11 +517,8 @@ class ALNS():
 
     def _update_score_adjustment_parameters(self):
         for k, v in self.operator_pairs.items():
-            #self.operator_pairs[k] = self.operator_pairs[k] * (1.0 - HeuristicsConstants.REWARD_DECAY_PARAMETER) + \
-            #                         safe_zero_division(HeuristicsConstants.REWARD_DECAY_PARAMETER, self.operators_record[k][1]) * \
-            #                         self.operators_record[k][0]
-            self.operator_pairs[k] = self.operator_pairs[k] * (1.0 - self.reward_decay_parameter) + \
-                                     safe_zero_division(self.reward_decay_parameter, self.operators_record[k][1]) * \
+            self.operator_pairs[k] = self.operator_pairs[k] * (1.0 - HeuristicsConstants.REWARD_DECAY_PARAMETER) + \
+                                     safe_zero_division(HeuristicsConstants.REWARD_DECAY_PARAMETER, self.operators_record[k][1]) * \
                                      self.operators_record[k][0]
 
             if self.operator_pairs[k] < HeuristicsConstants.LOWER_THRESHOLD:

@@ -10,9 +10,9 @@ class HeuristicsConstants:
 	START_TIME_WEIGHT = 0.05
 
 	# REWARDS
-	BEST = 33.0 # initial 33
-	BETTER = 9.0 # initial 9
-	ACCEPTED = 1.0 # initial 13
+	BEST = 33.0 # initial 33, final 33
+	BETTER = 9.0 # initial 9, final 9
+	ACCEPTED = 1.0 # initial 13, final 1
 
 	# DETERMINISM PARAMETER
 	DETERMINISM_PARAMETER_WORST = 9 # initial 9
@@ -21,14 +21,14 @@ class HeuristicsConstants:
 
 
 	# ADAPTIVE WEIGHT LOWER THRESHOLD
-	LOWER_THRESHOLD = 0.2 # initial 9
+	LOWER_THRESHOLD = 0.2 # initial 0.2
 
 	# DESTROY/REPAIR FACTOR q hat
-	DESTROY_REPAIR_FACTOR = (0.30, 0.70) # initial (0.15, 0.50)
+	DESTROY_REPAIR_FACTOR = (0.30, 0.70) # initial (0.15, 0.50), final (0.30, 0.70)
 	#DESTROY_REPAIR_FACTOR = (0.10, 0.40)
 
 	# REWARD DECAY PARAMETER / REACTION FACTOR
-	REWARD_DECAY_PARAMETER = 0.1 # initial 0.1
+	REWARD_DECAY_PARAMETER = 0.1 # initial 0.1, final 0.1
 
 	# ITERATIONS
 	ITERATIONS_ALNS = 100
@@ -38,8 +38,8 @@ class HeuristicsConstants:
 	SECOND_CHECKPOINT = 400
 
 	# AN ACCEPTANCE PERCENTAGE OF 2 MEANS ALL CAR MOVES ARE INCLUDED
-	ACCEPTANCE_PERCENTAGE = 2.0 # initial 2
-	TRAVEL_TIME_THRESHOLD = 0.7 # initial 1
+	ACCEPTANCE_PERCENTAGE = 2.0 # initial 2, final 2
+	TRAVEL_TIME_THRESHOLD = 0.7 # initial 1, final 0.7
 
 	PLANNING_PERIOD = 60
 	#NUM_FIRST_STAGE_TASKS = 2
