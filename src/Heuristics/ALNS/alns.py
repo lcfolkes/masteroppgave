@@ -20,10 +20,11 @@ from tqdm import tqdm
 
 os.chdir(path_to_src)
 
+'''
 _IS_BEST = HeuristicsConstants.BEST
 _IS_BETTER = HeuristicsConstants.BETTER
 _IS_ACCEPTED = HeuristicsConstants.ACCEPTED
-
+'''
 '''
 
 _IS_BEST (sigma_1): The last remove-insert operation resulted in a new global best solution
@@ -38,7 +39,6 @@ _IS_REJECTED
 class ALNS():
 
     def __init__(self, filename, param):
-        self.destroy_repair_factor = param
         self.filename = filename
         self.best_solution = None
         self.best_solutions = None
@@ -50,6 +50,10 @@ class ALNS():
         self._world_instance = self.solution.world_instance
         self.operator_pairs = self._initialize_operators()
         self.operators_record = self._initialize_operator_records()
+        self._IS_BEST = param[0]
+        self._IS_BETTER = param[1]
+        self._IS_ACCEPTED = param[2]
+
 
     def _initialize_new_iteration(self, current_unused_car_moves, current_solution):
         candidate_unused_car_moves = copy_unused_car_moves_2d_list(current_unused_car_moves)
@@ -202,14 +206,14 @@ class ALNS():
                                 # print("NEW GLOBAL SOLUTION")
                                 # self.solution.print_solution()
                                 if MODE == "LNS":
-                                    self._update_weight_record(_IS_BEST, destroy_heuristic, repair_heuristic)
+                                    self._update_weight_record(self._IS_BEST, destroy_heuristic, repair_heuristic)
                             # NEW LOCAL BEST
                             else:
                                 output_text += str(
                                     counter) + f" {colored('New best solution locally:', 'blue')} {colored(round(candidate_obj_val, 2), 'blue')}{colored(', found by ', 'blue')}{colored(MODE, 'blue')}\n"
                                 counter += 1
                                 if MODE == "LNS":
-                                    self._update_weight_record(_IS_BETTER, destroy_heuristic, repair_heuristic)
+                                    self._update_weight_record(self._IS_BETTER, destroy_heuristic, repair_heuristic)
 
                             MODE = "LOCAL_FULL"
 
@@ -220,7 +224,7 @@ class ALNS():
                                 counter) + f"{colored(' New accepted solution: ', 'magenta')}{colored(round(candidate_obj_val, 2), 'magenta')}{colored(', found by ', 'magenta')}{colored(MODE, 'magenta')}{colored(', acceptance probability was' , 'magenta')} {colored(round(p, 2), 'magenta')}{colored(', temperature was ', 'magenta')}{colored(round(temperature, 2), 'magenta')} \n"
                             counter += 1
                             if MODE == "LNS":
-                                self._update_weight_record(_IS_ACCEPTED, destroy_heuristic, repair_heuristic)
+                                self._update_weight_record(self._IS_ACCEPTED, destroy_heuristic, repair_heuristic)
                                 MODE = "LOCAL_FIRST"
                             else:
                                 MODE = "LNS"
@@ -327,11 +331,11 @@ class ALNS():
             iterations_done_txt = f"Iterations completed: {i_alns*iterations_segment + i_segment} iterations in {i_alns+1} segments\n"
             parameter_tuning_txt = f"Acceptance percentage: {self.solution.acceptance_percentage}\n" \
                                    f"Travel time threshold: {self.solution.travel_time_threshold}\n" \
-                                   f"Neighborhood Size: {self.destroy_repair_factor}\n" \
+                                   f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}\n" \
                                    f"Determinism Worst: {HeuristicsConstants.DETERMINISM_PARAMETER_WORST}\n" \
                                    f"Determinism Related: {HeuristicsConstants.DETERMINISM_PARAMETER_RELATED}\n" \
                                    f"Determinism Greedy: {HeuristicsConstants.DETERMINISM_PARAMETER_GREEDY}\n" \
-                                   f"Adaptive Weight Rewards (Best, Better, Accepted): ({HeuristicsConstants.BEST}, {HeuristicsConstants.BETTER}, {HeuristicsConstants.ACCEPTED})\n\n"
+                                   f"Adaptive Weight Rewards (Best, Better, Accepted): ({self._IS_BEST}, {self._IS_BETTER}, {self._IS_ACCEPTED})\n\n"
 
             # Write to file
             test_dir = "./Testing/Results/" + self.filename.split('/')[-2] + "/"
@@ -410,8 +414,7 @@ class ALNS():
     def _get_destroy_operator(self, solution, world_instance) -> \
             (Destroy, str):
 
-        neighborhood_size = random.uniform(self.destroy_repair_factor[0], self.destroy_repair_factor[1])
-            #HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1])
+        neighborhood_size = random.uniform(HeuristicsConstants.DESTROY_REPAIR_FACTOR[0], HeuristicsConstants.DESTROY_REPAIR_FACTOR[1])
         if neighborhood_size == 0:
             neighborhood_size = 1
         w_sum = sum(w for o, w in self.operator_pairs.items())

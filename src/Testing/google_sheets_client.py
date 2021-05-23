@@ -2,6 +2,8 @@ from google.oauth2 import service_account
 import pygsheets
 import pandas as pd
 import json
+
+from Heuristics.helper_functions_heuristics import safe_zero_division
 from path_manager import path_to_src
 import os
 import numpy as np
@@ -47,19 +49,19 @@ if __name__ == "__main__":
 	# open the google spreadsheet (where 'PY to Gsheet Test' is the name of my sheet)
 
 	# select the first sheet
-	work_sheet = sheet[2]
+	work_sheet = sheet[3]
 	#print(work_sheet)
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/destroy_repair_factor/"
-	acceptance_percentage_dict = {"[0.05, 0.15]": 2, "[0.15, 0.30]": 4, "[0.05, 0.30]": 6, "[0.15, 0.50]": 8,
-								  "[0.30, 0.70]": 10, "[0.50, 0.70]": 12, "[0.15, 0.70]": 14}
-	header = np.array([["", "Travel time threshold",
+	test_dir = "./Testing/Results/"
+	param_dict = {"[0.05, 0.15]": 2, "[0.15, 0.3]": 4, "[0.05, 0.3]": 6, "[0.15, 0.5]": 8, "[0.3, 0.5]": 10,
+								  "[0.3, 0.7]": 12, "[0.5, 0.7]": 14, "[0.15, 0.7]": 16}
+	header = np.array([["", "Destroy repair factor",
 						"[0.05, 0.15] Obj. Val.", "[0.05, 0.15] Time found (s)", "[0.15, 0.30] Obj. Val.", "[0.15, 0.30] Time found (s)",
-						"0.5 Obj. Val.", "0.5 Time found (s)", "0.6 Obj. Val.", "0.6 Time found (s)",
-						"0.7 Obj. Val.", "0.7 Time found (s)", "0.8 Obj. Val.", "0.8 Time found (s)",
-						"0.9 Obj. Val.", "0.9 Time found (s)", "1.0 Obj. Val.", "1.0 Time found (s)"],
+						"[0.05, 0.30] Obj. Val.", "[0.05, 0.30] Time found (s)", "[0.30, 0.50] Obj. Val.", "[0.30, 0.50] Time found (s)",
+						"[0.15, 0.50] Obj. Val.", "[0.15, 0.50] Time found (s)", "[0.30, 0.70] Obj. Val.", "[0.30, 0.70] Time found (s)",
+						"[0.50, 0.70] Obj. Val.", "[0.50, 0.70] Time found (s)", "[0.15, 0.70] Obj. Val.", "[0.15, 0.70] Time found (s)"],
 					   ["Instance", "Run",
 						"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
 						"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
@@ -87,10 +89,10 @@ if __name__ == "__main__":
 					time = round(float(line_list[1].strip()), 2)
 				elif line_list[0] == "Objective value":
 					obj_val = line_list[1].strip()
-				elif line_list[0] == "Travel time threshold":
+				elif line_list[0] == "Neighborhood Size":
 					param = line_list[1].strip()
-					result[run - 1][acceptance_percentage_dict[param]] = obj_val
-					result[run - 1][acceptance_percentage_dict[param]+1] = time
+					result[run - 1][param_dict[param]] = obj_val
+					result[run - 1][param_dict[param]+1] = time
 
 			avg_row = np.array([filename, "Average"])
 			relevant_cols = np.array(result[:, 2:], dtype=np.float64)
@@ -103,8 +105,8 @@ if __name__ == "__main__":
 			gap_row = np.array([filename, "Gap (%)"])
 			max_val_obj = np.amax(relevant_cols[:, ::2])
 			max_val_time = np.mean(relevant_cols[:, 1::2])
-			obj_val_gaps = np.abs(np.divide(max_val_obj-avg_obj_val, max_val_obj))
-			time_val_gaps = np.abs(np.divide(max_val_time-avg_time_val, max_val_time))
+			obj_val_gaps = np.abs(safe_zero_division(max_val_obj-avg_obj_val, max_val_obj))
+			time_val_gaps = np.abs(safe_zero_division(max_val_time-avg_time_val, max_val_time))
 			gap_row = np.concatenate((gap_row, np.ravel([obj_val_gaps, time_val_gaps],'F')), axis=0)
 
 			result = np.vstack([result, gap_row])
