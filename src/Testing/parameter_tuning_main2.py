@@ -29,9 +29,9 @@ def run_parallel(filename, n, param=None):
 
 
 
-def run_process(filename, param, process_num):
-	alns = ALNS(filename, param)
-	alns.run(process_num)
+def run_process(filename, process_num, param=None):
+    alns = ALNS(filename, param)
+    alns.run(process_num)
 
 
 def run_sequential(filename, n, verbose):
