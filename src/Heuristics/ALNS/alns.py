@@ -81,6 +81,7 @@ class ALNS():
 
         best_obj_val_found_time = None
         construction_heur_time = None
+        cars_charged_construction = None
 
         finish = None
 
@@ -91,6 +92,7 @@ class ALNS():
         true_obj_val, best_obj_val = self.solution.get_obj_val(both=True)
         construction_heur_obj_val = best_obj_val
         construction_true_obj_val = true_obj_val
+        cars_charged_construction = self.solution.num_charging_moves
 
         current_obj_val = best_obj_val
         true_obj_vals = [true_obj_val]
@@ -314,6 +316,7 @@ class ALNS():
             obj_val_txt = f"Objective value: {str(best_solution[1])}\n"
             heur_val_txt = f"Heuristic value: {str(best_obj_val)}\n"
             charging_txt = f"Cars charged: {str(best_solution[2])}\nCars in need of charging: {self.solution.num_cars_in_need}\n"
+            charging_construction_txt = f"Construction heuristic cars charged: {cars_charged_construction}\n"
             construction_heur_time_txt = f"Construction heuristic time (s): {construction_heur_time}\n"
             construction_heur_txt = f"Construction heuristic, true objective value: {str(construction_true_obj_val)}\n"
             construction_heur_txt += f"Construction heuristic, heuristic objective value: {str(construction_heur_obj_val)}\n"
@@ -342,7 +345,7 @@ class ALNS():
             filepath = test_dir + filename
             f = open(filepath + "_results.txt", "a")
             f.writelines([run_txt, date_time_txt, obj_val_found_txt, obj_val_txt, heur_val_txt, charging_txt,
-                          construction_heur_time_txt, construction_heur_txt, check_points_txt, time_spent_txt,
+                          construction_heur_time_txt, construction_heur_txt, charging_construction_txt, time_spent_txt,
                           iterations_done_txt, parameter_tuning_txt])
             f.close()
 

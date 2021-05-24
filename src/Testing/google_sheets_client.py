@@ -79,13 +79,17 @@ for dir in os.listdir(test_dir):
 			if line_list[0] == "Run":
 				run = int(line_list[1].split(',')[0].strip())
 			elif line_list[0] == "Best objective value found after (s)":
-				time = round(float(line_list[1].strip()), 2)
+				time_obj = round(float(line_list[1].strip()), 2)
 			elif line_list[0] == "Objective value":
 				obj_val = line_list[1].strip()
-			elif line_list[0] == "Determinism Greedy":
+			elif line_list[0] == "Construction heuristic time (s)":
+				time_ch = round(float(line_list[1].strip()), 2)
+
+			elif line_list[0] == "Construction heuristic, true objective value":
+				obj_val_ch = line_list[1].strip()
 				param = line_list[1].strip()
-				result[run - 1][param_dict[param]] = obj_val
-				result[run - 1][param_dict[param]+1] = time
+		result[run - 1][param_dict[param]] = obj_val
+		result[run - 1][param_dict[param]+1] = time
 
 		avg_row = np.array([filename, "Average"])
 		relevant_cols = np.array(result[:, 2:], dtype=np.float64)
