@@ -54,10 +54,10 @@ if __name__ == "__main__":
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/determinism_worst_destroy/"
+	test_dir = "./Testing/determinism_related_destroy/"
 param_dict = {"3": 2, "5": 4,
 			  "7": 6, "9": 8}
-header = np.array([["", "Determinism parameter worst destroy",
+header = np.array([["", "Determinism parameter related destroy",
 					"3 Obj. Val.", "3 Time found (s)", "5 Obj. Val.", "5 Time found (s)",
 					"7 Obj. Val.", "7 Time found (s)", "9 Obj. Val.", "9 Time found (s)"],
 				   ["Instance", "Run",
@@ -85,7 +85,7 @@ for dir in os.listdir(test_dir):
 				time = round(float(line_list[1].strip()), 2)
 			elif line_list[0] == "Objective value":
 				obj_val = line_list[1].strip()
-			elif line_list[0] == "Determinism Worst":
+			elif line_list[0] == "Determinism Related":
 				param = line_list[1].strip()
 				result[run - 1][param_dict[param]] = obj_val
 				result[run - 1][param_dict[param]+1] = time

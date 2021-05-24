@@ -330,8 +330,8 @@ class ALNS():
                                    f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}\n" \
                                    f"Reward decay parameter: {HeuristicsConstants.REWARD_DECAY_PARAMETER}\n" \
                                    f"Determinism Worst: {HeuristicsConstants.DETERMINISM_PARAMETER_WORST}\n" \
-                                   f"Determinism Related: {self.determinism_parameter}\n" \
-                                   f"Determinism Greedy: {HeuristicsConstants.DETERMINISM_PARAMETER_GREEDY}\n" \
+                                   f"Determinism Related: {HeuristicsConstants.DETERMINISM_PARAMETER_RELATED}\n" \
+                                   f"Determinism Greedy: {self.determinism_parameter}\n" \
                                    f"Adaptive Weight Rewards (Best, Better, Accepted): ({_IS_BEST}, {_IS_BETTER}, {_IS_ACCEPTED})\n\n"
 
             # Write to file
@@ -430,7 +430,7 @@ class ALNS():
         elif operator_pair == "shaw_greedy" or operator_pair == "shaw_regret2" or operator_pair == "shaw_regret3" \
                 or operator_pair == "shaw_regret4" or operator_pair == "shaw_charge":
             return ShawRemoval(solution, world_instance, neighborhood_size,
-                               self.determinism_parameter), operator_pair
+                               HeuristicsConstants.DETERMINISM_PARAMETER_RELATED), operator_pair
         elif operator_pair == "charge_greedy" or operator_pair == "charge_regret2" or \
                 operator_pair == "charge_regret3" or operator_pair == "charge_regret4" \
                 or operator_pair == "charge_charge":
@@ -443,7 +443,7 @@ class ALNS():
         if operator_pair == "random_greedy" or operator_pair == "worst_greedy" or operator_pair == "shaw_greedy" or \
                 operator_pair == "charge_greedy":
             return GreedyRandomInsertion(destroyed_solution_object, unused_car_moves, world_instance,
-                                         HeuristicsConstants.DETERMINISM_PARAMETER_GREEDY)
+                                         self.determinism_parameter)
         elif operator_pair == "random_regret2" or operator_pair == "worst_regret2" or operator_pair == "shaw_regret2" \
                 or operator_pair == "charge_regret2":
             return RegretInsertion(destroyed_solution_object, unused_car_moves, world_instance, regret_nr=2)
