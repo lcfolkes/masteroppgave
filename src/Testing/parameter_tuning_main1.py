@@ -6,16 +6,26 @@ import sys
 os.chdir(path_to_src)
 import multiprocessing as mp
 
-def run_parallel(filename, n, param):
-    num_processes = n * len(param)
+def run_parallel(filename, n, param=None):
+    try:
+        num_processes = n * len(param)
+        params = len(param)
+    except:
+        num_processes = n
+        params = 1
     args = []
-    for x in range(len(param)):
+
+    for x in range(params):
         for i in range(n):
-            args.append((filename + ".pkl", param[x], i + 1))
+            if param is not None:
+                args.append((filename + ".pkl", i + 1, param[x]))
+            else:
+                args.append((filename + ".pkl", i + 1))
     with mp.Pool(processes=num_processes) as pool:
         pool.starmap(run_process, args)
 
-def run_process(filename, param, process_num):
+
+def run_process(filename, process_num, param=None):
     alns = ALNS(filename, param)
     alns.run(process_num)
 
@@ -47,10 +57,10 @@ if __name__ == "__main__":
     #for f in files:
     #    print(f)
     try:
-        n = 5
+        n = 10
         for filename in files:
             ### PARALLEL
-            run_parallel(filename, n, [3, 5, 7, 9])
+            run_parallel(filename, n)
 
         '''
         ### SEQUENTIAL

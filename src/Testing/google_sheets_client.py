@@ -54,14 +54,11 @@ if __name__ == "__main__":
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/determinism_related_destroy/"
-param_dict = {"3": 2, "5": 4,
-			  "7": 6, "9": 8}
-header = np.array([["", "Determinism parameter related destroy",
-					"3 Obj. Val.", "3 Time found (s)", "5 Obj. Val.", "5 Time found (s)",
-					"7 Obj. Val.", "7 Time found (s)", "9 Obj. Val.", "9 Time found (s)"],
+	test_dir = "./Testing/determinism_greedy_insertion/"
+param_dict = {"9": 2}
+header = np.array([["", "",
+					"Construction Heuristic Obj. Val.", "Construction Heuristic Time found (s)", "Calibrated ALNS Obj. Val.", "Calibrated ALNS Time found (s)"],
 				   ["Instance", "Run",
-					"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
 					"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)"]])
 
 header_df = pd.DataFrame(header)
@@ -73,7 +70,7 @@ for dir in os.listdir(test_dir):
 	for file in os.listdir(sub_dir):
 		filepath = sub_dir + "/" + file
 		f = open(filepath, "r")
-		result = m = np.zeros(shape=[5, 10]).astype(str)
+		result = m = np.zeros(shape=[5, 6]).astype(str)
 		filename = file.split(".")[0][:-8]
 		result[:, 0] = filename
 		result[:, 1] = [x+1 for x in range(5)]
@@ -85,7 +82,7 @@ for dir in os.listdir(test_dir):
 				time = round(float(line_list[1].strip()), 2)
 			elif line_list[0] == "Objective value":
 				obj_val = line_list[1].strip()
-			elif line_list[0] == "Determinism Related":
+			elif line_list[0] == "Determinism Greedy":
 				param = line_list[1].strip()
 				result[run - 1][param_dict[param]] = obj_val
 				result[run - 1][param_dict[param]+1] = time

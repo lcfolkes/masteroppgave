@@ -37,7 +37,7 @@ _IS_REJECTED
 
 class ALNS():
 
-    def __init__(self, filename, param):
+    def __init__(self, filename, param=None):
         self.filename = filename
         self.best_solution = None
         self.best_solutions = None
@@ -49,7 +49,6 @@ class ALNS():
         self._world_instance = self.solution.world_instance
         self.operator_pairs = self._initialize_operators()
         self.operators_record = self._initialize_operator_records()
-        self.determinism_parameter = param
 
     def _initialize_new_iteration(self, current_unused_car_moves, current_solution):
         candidate_unused_car_moves = copy_unused_car_moves_2d_list(current_unused_car_moves)
@@ -61,8 +60,6 @@ class ALNS():
         return candidate_unused_car_moves, candidate_solution
 
     def run(self, run=0, verbose=False):
-
-        start = time.perf_counter()
         visited_hash_keys = set()
 
         iterations_alns = HeuristicsConstants.ITERATIONS_ALNS
@@ -70,12 +67,11 @@ class ALNS():
         time_limit = HeuristicsConstants.TIME_LIMIT
 
         finish_times_segments = []
-        #first_checkpoint = HeuristicsConstants.FIRST_CHECKPOINT
-        #second_checkpoint = HeuristicsConstants.SECOND_CHECKPOINT
-
+        # first_checkpoint = HeuristicsConstants.FIRST_CHECKPOINT
+        # second_checkpoint = HeuristicsConstants.SECOND_CHECKPOINT
 
         checkpoints_reached = [False for _ in range(10)]
-        time_checkpoints = [60*(x+1) for x in range(10)]
+        time_checkpoints = [60 * (x + 1) for x in range(10)]
 
         true_obj_val_checkpoints = [None for _ in range(10)]
         heur_obj_val_checkpoints = [None for _ in range(10)]
@@ -84,11 +80,14 @@ class ALNS():
         construction_heur_obj_val = None
 
         best_obj_val_found_time = None
+        construction_heur_time = None
 
         finish = None
 
+        start = time.perf_counter()
         self.solution.construct(verbose=verbose)
-        best_obj_val_found_time = time.perf_counter() - start
+        construction_heur_time = time.perf_counter() - start
+        best_obj_val_found_time = construction_heur_time
         true_obj_val, best_obj_val = self.solution.get_obj_val(both=True)
         construction_heur_obj_val = best_obj_val
         construction_true_obj_val = true_obj_val
@@ -315,6 +314,7 @@ class ALNS():
             obj_val_txt = f"Objective value: {str(best_solution[1])}\n"
             heur_val_txt = f"Heuristic value: {str(best_obj_val)}\n"
             charging_txt = f"Cars charged: {str(best_solution[2])}\nCars in need of charging: {self.solution.num_cars_in_need}\n"
+            construction_heur_time_txt = f"Construction heuristic time (s): {construction_heur_time}\n"
             construction_heur_txt = f"Construction heuristic, true objective value: {str(construction_true_obj_val)}\n"
             construction_heur_txt += f"Construction heuristic, heuristic objective value: {str(construction_heur_obj_val)}\n"
             check_points_txt = ""
@@ -331,7 +331,7 @@ class ALNS():
                                    f"Reward decay parameter: {HeuristicsConstants.REWARD_DECAY_PARAMETER}\n" \
                                    f"Determinism Worst: {HeuristicsConstants.DETERMINISM_PARAMETER_WORST}\n" \
                                    f"Determinism Related: {HeuristicsConstants.DETERMINISM_PARAMETER_RELATED}\n" \
-                                   f"Determinism Greedy: {self.determinism_parameter}\n" \
+                                   f"Determinism Greedy: {HeuristicsConstants.DETERMINISM_PARAMETER_GREEDY}\n" \
                                    f"Adaptive Weight Rewards (Best, Better, Accepted): ({_IS_BEST}, {_IS_BETTER}, {_IS_ACCEPTED})\n\n"
 
             # Write to file
@@ -341,8 +341,9 @@ class ALNS():
             filename = self.filename.split('/')[-1].split('.')[0]
             filepath = test_dir + filename
             f = open(filepath + "_results.txt", "a")
-            f.writelines([run_txt, date_time_txt, obj_val_found_txt, obj_val_txt, heur_val_txt, charging_txt, construction_heur_txt,
-                          check_points_txt, time_spent_txt, iterations_done_txt, parameter_tuning_txt])
+            f.writelines([run_txt, date_time_txt, obj_val_found_txt, obj_val_txt, heur_val_txt, charging_txt,
+                          construction_heur_time_txt, construction_heur_txt, check_points_txt, time_spent_txt,
+                          iterations_done_txt, parameter_tuning_txt])
             f.close()
 
             if verbose:
@@ -443,7 +444,7 @@ class ALNS():
         if operator_pair == "random_greedy" or operator_pair == "worst_greedy" or operator_pair == "shaw_greedy" or \
                 operator_pair == "charge_greedy":
             return GreedyRandomInsertion(destroyed_solution_object, unused_car_moves, world_instance,
-                                         self.determinism_parameter)
+                                         HeuristicsConstants.DETERMINISM_PARAMETER_GREEDY)
         elif operator_pair == "random_regret2" or operator_pair == "worst_regret2" or operator_pair == "shaw_regret2" \
                 or operator_pair == "charge_regret2":
             return RegretInsertion(destroyed_solution_object, unused_car_moves, world_instance, regret_nr=2)
@@ -533,7 +534,7 @@ if __name__ == "__main__":
     try:
         #profiler = Profiler()
         #profiler.start()
-        alns = ALNS(filename + ".pkl",0.5)
+        alns = ALNS(filename + ".pkl", 0.5)
         alns.run(verbose=True)
 
         #profiler.stop()
