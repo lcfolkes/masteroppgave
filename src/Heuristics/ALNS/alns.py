@@ -368,24 +368,24 @@ class ALNS():
     def _initialize_operators(self):
         if self._num_employees < 3:
             operators = OrderedDict(
-                {'random_greedy': 1.0,  'random_regret2': 1.0, 'random_charge': 1.0,
-                 'worst_greedy': 1.0,  'worst_regret2': 1.0, 'worst_charge': 1.0,
-                 'shaw_greedy': 1.0,      'shaw_regret2': 1.0, 'shaw_charge': 1.0,
-                 'charge_greedy': 1.0,  'charge_regret2': 1.0, 'charge_charge': 1.0})
+                {'random_greedy': 1.0,  'random_regret2': 1.0, 'random_charge': 2.0,
+                 'worst_greedy': 1.0,  'worst_regret2': 1.0, 'worst_charge': 2.0,
+                 'shaw_greedy': 1.0,      'shaw_regret2': 1.0, 'shaw_charge': 2.0,
+                 'charge_greedy': 1.0,  'charge_regret2': 1.0, 'charge_charge': 2.0})
 
         elif self._num_employees < 4:
             operators = OrderedDict(
-                {'random_greedy': 1.0,  'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': .0,
-                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_charge': 1.0,
-                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 1.0,
-                 'charge_greedy': 1.0, 'charge_regret2': 1.0, 'charge_regret3': 1.0, 'charge_charge': .0})
+                {'random_greedy': 1.0,  'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': 2.0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_charge': 2.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 2.0,
+                 'charge_greedy': 1.0, 'charge_regret2': 1.0, 'charge_regret3': 1.0, 'charge_charge': 2.0})
 
         else:
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0, 'random_charge': 1.0,
-                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0, 'worst_charge': 1.0,
-                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0, 'shaw_charge': 1.0,
-                 'charge_greedy': 1.0, 'charge_regret2': 1.0, 'charge_regret3': 1.0, 'charge_regret4': 1.0, 'charge_charge': 1.0})
+                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0, 'random_charge': 2.0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0, 'worst_charge': 2.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0, 'shaw_charge': 2.0,
+                 'charge_greedy': 1.0, 'charge_regret2': 1.0, 'charge_regret3': 1.0, 'charge_regret4': 1.0, 'charge_charge': 2.0})
 
         return operators
 
@@ -543,7 +543,7 @@ class ALNS():
 if __name__ == "__main__":
     from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
     from Gurobi.Model.run_model import run_model
-    filename = "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_b"
+    filename = "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_a"
 
     try:
         #profiler = Profiler()
