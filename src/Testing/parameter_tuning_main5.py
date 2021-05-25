@@ -61,6 +61,7 @@ if __name__ == "__main__":
 
     # for f in files:
     #    print(f)
+    files = ["./InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_c"]
     try:
         n = 10
         for filename in files:

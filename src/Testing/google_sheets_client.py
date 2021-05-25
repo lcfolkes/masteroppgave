@@ -56,75 +56,75 @@ if __name__ == "__main__":
 
 	test_results = pd.DataFrame()
 	test_dir = "./Testing/ComputationalTests/construction_vs_alns"
-#param_dict = {"9": 2}
-header = np.array([["", "",
-					"Construction Heuristic Obj. Val.", "Construction Heuristic Cars Charged",
-					"Construction Heuristic Time found (s)",
-					"Calibrated ALNS Obj. Val.", "Calibrated ALNS Cars Charged", "Calibrated ALNS Time found (s)", "Cars in Need of Charging"],
-				   ["Instance", "Run",
-					"Obj. Val.", "Cars Charged", "Time found (s)", "Obj. Val.", "Cars Charged", "Time found (s)", "Cars in Need of Charging"]])
+	#param_dict = {"9": 2}
+	header = np.array([["", "",
+						"Construction Heuristic Obj. Val.", "Construction Heuristic Cars Charged",
+						"Construction Heuristic Time found (s)",
+						"Calibrated ALNS Obj. Val.", "Calibrated ALNS Cars Charged", "Calibrated ALNS Time found (s)", "Cars in Need of Charging"],
+					   ["Instance", "Run",
+						"Obj. Val.", "Cars Charged", "Time found (s)", "Obj. Val.", "Cars Charged", "Time found (s)", "Cars in Need of Charging"]])
 
-header_df = pd.DataFrame(header)
-work_sheet.set_dataframe(header_df, (1, 0), copy_head=False)
-start_row = 3
+	header_df = pd.DataFrame(header)
+	work_sheet.set_dataframe(header_df, (1, 0), copy_head=False)
+	start_row = 3
 
-for dir in os.listdir(test_dir):
-	sub_dir = test_dir + "/" + dir
-	for file in os.listdir(sub_dir):
-		filepath = sub_dir + "/" + file
-		f = open(filepath, "r")
-		result = m = np.zeros(shape=[10, 9]).astype(str)
-		filename = file.split(".")[0][:-8]
-		result[:, 0] = filename
-		result[:, 1] = [x+1 for x in range(10)]
-		for x in f:
-			line_list = x.split(':')
-			if line_list[0] == "Run":
-				run = int(line_list[1].split(',')[0].strip())
-			elif line_list[0] == "Best objective value found after (s)":
-				time_obj = round(float(line_list[1].strip()), 2)
-			elif line_list[0] == "Objective value":
-				obj_val = line_list[1].strip()
-			elif line_list[0] == "Cars charged":
-				cars_charged = line_list[1].strip()
-			elif line_list[0] == "Cars in need of charging":
-				cars_in_need_of_charging = line_list[1].strip()
-			elif line_list[0] == "Construction heuristic time (s)":
-				time_ch = round(float(line_list[1].strip()), 2)
-			elif line_list[0] == "Construction heuristic, true objective value":
-				obj_val_ch = line_list[1].strip()
-			elif line_list[0] == "Construction heuristic cars charged":
-				cars_charged_ch = line_list[1].strip()
-				param = line_list[1].strip()
-				result[run - 1][2] = obj_val_ch
-				result[run - 1][3] = cars_charged_ch
-				result[run - 1][4] = time_ch
-				result[run - 1][5] = obj_val
-				result[run - 1][6] = cars_charged
-				result[run - 1][7] = time_obj
-				result[run - 1][8] = cars_in_need_of_charging
+	for dir in os.listdir(test_dir):
+		sub_dir = test_dir + "/" + dir
+		for file in os.listdir(sub_dir):
+			filepath = sub_dir + "/" + file
+			f = open(filepath, "r")
+			result = m = np.zeros(shape=[10, 9]).astype(str)
+			filename = file.split(".")[0][:-8]
+			result[:, 0] = filename
+			result[:, 1] = [x+1 for x in range(10)]
+			for x in f:
+				line_list = x.split(':')
+				if line_list[0] == "Run":
+					run = int(line_list[1].split(',')[0].strip())
+				elif line_list[0] == "Best objective value found after (s)":
+					time_obj = round(float(line_list[1].strip()), 2)
+				elif line_list[0] == "Objective value":
+					obj_val = line_list[1].strip()
+				elif line_list[0] == "Cars charged":
+					cars_charged = line_list[1].strip()
+				elif line_list[0] == "Cars in need of charging":
+					cars_in_need_of_charging = line_list[1].strip()
+				elif line_list[0] == "Construction heuristic time (s)":
+					time_ch = round(float(line_list[1].strip()), 2)
+				elif line_list[0] == "Construction heuristic, true objective value":
+					obj_val_ch = line_list[1].strip()
+				elif line_list[0] == "Construction heuristic cars charged":
+					cars_charged_ch = line_list[1].strip()
+					param = line_list[1].strip()
+					result[run - 1][2] = obj_val_ch
+					result[run - 1][3] = cars_charged_ch
+					result[run - 1][4] = time_ch
+					result[run - 1][5] = obj_val
+					result[run - 1][6] = cars_charged
+					result[run - 1][7] = time_obj
+					result[run - 1][8] = cars_in_need_of_charging
 
 
-		avg_row = np.array([filename, "Average"])
-		#relevant_cols = np.array(result[:, 2:], dtype=np.float64)
-		avg_obj_val = np.mean(np.array(result[:, [2, 5]], dtype=np.float64), axis=0)
-		avg_charge_val = np.mean(np.array(result[:, [3, 6]], dtype=np.float64), axis=0)
-		avg_time_val = np.mean(np.array(result[:, [4, 7]], dtype=np.float64), axis=0)
-		avg_row = np.concatenate((avg_row, np.ravel([avg_obj_val, avg_charge_val, avg_time_val], 'F')), axis=0)
-		avg_need_charging = np.mean(np.array(result[:, [8]], dtype=np.float64), axis=0)
-		avg_row = np.concatenate((avg_row, avg_need_charging), axis=0)
-		result = np.vstack([result, avg_row])
+			avg_row = np.array([filename, "Average"])
+			#relevant_cols = np.array(result[:, 2:], dtype=np.float64)
+			avg_obj_val = np.mean(np.array(result[:, [2, 5]], dtype=np.float64), axis=0)
+			avg_charge_val = np.mean(np.array(result[:, [3, 6]], dtype=np.float64), axis=0)
+			avg_time_val = np.mean(np.array(result[:, [4, 7]], dtype=np.float64), axis=0)
+			avg_row = np.concatenate((avg_row, np.ravel([avg_obj_val, avg_charge_val, avg_time_val], 'F')), axis=0)
+			avg_need_charging = np.mean(np.array(result[:, [8]], dtype=np.float64), axis=0)
+			avg_row = np.concatenate((avg_row, avg_need_charging), axis=0)
+			result = np.vstack([result, avg_row])
 
-		gap_row = np.array([filename, "Gap (%)"])
-		max_val_obj = np.amax(np.array(result[:, [2, 5]], dtype=np.float64))
-		max_val_time = np.amax(np.array(result[:, [4, 7]], dtype=np.float64))
-		obj_val_gaps = np.abs(safe_zero_division(max_val_obj-avg_obj_val, max_val_obj))
-		charg_gaps = np.abs(safe_zero_division(avg_need_charging-avg_charge_val, avg_need_charging))
-		time_val_gaps = np.abs(safe_zero_division(max_val_time-avg_time_val, max_val_time))
-		gap_row = np.concatenate((gap_row, np.ravel([obj_val_gaps, charg_gaps, time_val_gaps],'F')), axis=0)
-		gap_row = np.concatenate((gap_row, avg_need_charging), axis=0)
-		result = np.vstack([result, gap_row])
+			gap_row = np.array([filename, "Gap (%)"])
+			max_val_obj = np.amax(np.array(result[:, [2, 5]], dtype=np.float64))
+			max_val_time = np.amax(np.array(result[:, [4, 7]], dtype=np.float64))
+			obj_val_gaps = np.abs(safe_zero_division(max_val_obj-avg_obj_val, max_val_obj))
+			charg_gaps = np.abs(safe_zero_division(avg_need_charging-avg_charge_val, avg_need_charging))
+			time_val_gaps = np.abs(safe_zero_division(max_val_time-avg_time_val, max_val_time))
+			gap_row = np.concatenate((gap_row, np.ravel([obj_val_gaps, charg_gaps, time_val_gaps],'F')), axis=0)
+			gap_row = np.concatenate((gap_row, avg_need_charging), axis=0)
+			result = np.vstack([result, gap_row])
 
-		result_df = pd.DataFrame(result)
-		work_sheet.set_dataframe(result_df, (start_row, 0), copy_head=False)
-		start_row += 12
+			result_df = pd.DataFrame(result)
+			work_sheet.set_dataframe(result_df, (start_row, 0), copy_head=False)
+			start_row += 12

@@ -49,6 +49,9 @@ class ALNS():
         self._world_instance = self.solution.world_instance
         self.operator_pairs = self._initialize_operators()
         self.operators_record = self._initialize_operator_records()
+        self.operators_temporal_weights = {k: [1] for k in self.operator_pairs.keys()}
+
+
 
     def _initialize_new_iteration(self, current_unused_car_moves, current_solution):
         candidate_unused_car_moves = copy_unused_car_moves_2d_list(current_unused_car_moves)
@@ -75,7 +78,7 @@ class ALNS():
 
         true_obj_val_checkpoints = [None for _ in range(10)]
         heur_obj_val_checkpoints = [None for _ in range(10)]
-        best_obj_val_record = [] #(iteration, obj_val, time)
+        best_obj_val_record = [] #(iteration, obj_val, charging_moves time)
 
         construction_true_obj_val = None
         construction_heur_obj_val = None
@@ -100,7 +103,7 @@ class ALNS():
         heuristic_obj_vals = [best_obj_val]
         iterations = [0]
         best_solution = (copy_solution_dict(self.solution.assigned_car_moves), true_obj_val, self.solution.num_charging_moves)
-        best_obj_val_record.append((0, best_solution[1], best_obj_val_found_time))
+        best_obj_val_record.append((0, best_solution[1], best_solution[2], best_obj_val_found_time))
 
         if verbose:
             self.solution.print_solution()
@@ -183,7 +186,6 @@ class ALNS():
 
                     true_obj_val, candidate_obj_val = self.solution.get_obj_val(both=True)
                     current_time = time.perf_counter() - start
-                    best_obj_val_record.append((0, true_obj_val, best_obj_val_found_time))
 
                     true_obj_vals.append(true_obj_val)
                     heuristic_obj_vals.append(candidate_obj_val)
@@ -242,7 +244,7 @@ class ALNS():
                         counter += 1
                         MODE = "LNS"
 
-                    best_obj_val_record.append((iteration, best_solution[1], current_time))
+                    best_obj_val_record.append((iteration, best_solution[1], best_solution[2], current_time))
                     current_time = time.perf_counter() - start
                     if current_time > time_limit:
                         print("Time limit reached!")
@@ -334,7 +336,8 @@ class ALNS():
             time_spent_txt = f"Time used: {finish}\n"
             finish_times_segments_txt = f"Finish time segments:\n{finish_times_segments}\n"
             iterations_done_txt = f"Iterations completed: {i_alns*iterations_segment + i_segment} iterations in {i_alns+1} segments\n"
-            best_obj_val_record_txt = f"Best true objectives record: {best_obj_val_record}\n\n"
+            best_obj_val_record_txt = f"Best true objectives record: {best_obj_val_record}\n"
+            operators_temporal_weights_txt = f"Operator weights: {self.operators_temporal_weights}\n"
             '''
             parameter_tuning_txt = f"Acceptance percentage: {self.solution.acceptance_percentage}\n" \
                                    f"Travel time threshold: {self.solution.travel_time_threshold}\n" \
@@ -355,7 +358,7 @@ class ALNS():
             f = open(filepath + "_results.txt", "a")
             f.writelines([run_txt, date_time_txt, obj_val_found_txt, obj_val_txt, heur_val_txt, charging_txt,
                           construction_heur_time_txt, construction_heur_txt, charging_construction_txt, time_spent_txt,
-                          iterations_done_txt, best_obj_val_record_txt])
+                          iterations_done_txt, best_obj_val_record_txt, operators_temporal_weights_txt, "\n"])
             f.close()
 
             if verbose:
@@ -530,9 +533,11 @@ class ALNS():
 
     def _update_score_adjustment_parameters(self):
         for k, v in self.operator_pairs.items():
-            self.operator_pairs[k] = self.operator_pairs[k] * (1.0 - HeuristicsConstants.REWARD_DECAY_PARAMETER) + \
+            new_weights = self.operator_pairs[k] * (1.0 - HeuristicsConstants.REWARD_DECAY_PARAMETER) + \
                                      safe_zero_division(HeuristicsConstants.REWARD_DECAY_PARAMETER, self.operators_record[k][1]) * \
                                      self.operators_record[k][0]
+
+            self.operators_temporal_weights[k].append(new_weights)
 
             if self.operator_pairs[k] < HeuristicsConstants.LOWER_THRESHOLD:
                 self.operator_pairs[k] = HeuristicsConstants.LOWER_THRESHOLD
