@@ -2,6 +2,8 @@ from google.oauth2 import service_account
 import pygsheets
 import pandas as pd
 import json
+
+from Heuristics.helper_functions_heuristics import safe_zero_division
 from path_manager import path_to_src
 import os
 import numpy as np
@@ -47,66 +49,78 @@ if __name__ == "__main__":
 	# open the google spreadsheet (where 'PY to Gsheet Test' is the name of my sheet)
 
 	# select the first sheet
-	work_sheet = sheet[1]
+	work_sheet = sheet[0]
 	#print(work_sheet)
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/Results"
-	acceptance_percentage_dict = {"1.0": 2, "0.9": 4, "0.8": 6, "0.7": 8, "0.6": 10, "0.5": 12, "0.4": 14, "0.2": 16}
-	header = np.array([["", "Travel time threshold",
-						"1.0 Obj. Val.", "1.0 Time found (s)", "0.9 Obj. Val.", "0.9 Time found (s)",
-						"0.8 Obj. Val.", "0.8 Time found (s)", "0.7 Obj. Val.", "0.7 Time found (s)",
-						"0.6 Obj. Val.", "0.6 Time found (s)", "0.5 Obj. Val.", "0.5 Time found (s)",
-						"0.4 Obj. Val.", "0.4 Time found (s)", "0.2 Obj. Val.", "0.2 Time found (s)"],
-					   ["Instance", "Run",
-						"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
-						"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
-						"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)",
-						"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)"]])
+	test_dir = "./Testing/Results/"
+param_dict = {"9": 2}
+header = np.array([["", "",
+					"Construction Heuristic Obj. Val.", "Construction Heuristic Cars Charged",
+					"Construction Heuristic Time found (s)",
+					"Calibrated ALNS Obj. Val.", "Calibrated ALNS Cars Charged", "Calibrated ALNS Time found (s)", "Cars in Need of Charging"],
+				   ["Instance", "Run",
+					"Obj. Val.", "Cars Charged", "Time found (s)", "Obj. Val.", "Cars Charged", "Time found (s)", "Cars in Need of Charging"]])
 
-	header_df = pd.DataFrame(header)
-	work_sheet.set_dataframe(header_df, (1, 0), copy_head=False)
-	start_row = 3
+header_df = pd.DataFrame(header)
+work_sheet.set_dataframe(header_df, (1, 0), copy_head=False)
+start_row = 3
 
-	for dir in os.listdir(test_dir):
-		sub_dir = test_dir + "/" + dir
-		for file in os.listdir(sub_dir):
-			filepath = sub_dir + "/" + file
-			f = open(filepath, "r")
-			result = m = np.zeros(shape=[5, 18]).astype(str)
-			filename = file.split(".")[0][:-8]
-			result[:, 0] = filename
-			result[:, 1] = [x+1 for x in range(5)]
-			for x in f:
-				line_list = x.split(':')
-				if line_list[0] == "Run":
-					run = int(line_list[1].split(',')[0].strip())
-				elif line_list[0] == "Best objective value found after (s)":
-					time = round(float(line_list[1].strip()), 2)
-				elif line_list[0] == "Objective value":
-					obj_val = line_list[1].strip()
-				elif line_list[0] == "Travel time threshold":
-					param = line_list[1].strip()
-					result[run - 1][acceptance_percentage_dict[param]] = obj_val
-					result[run - 1][acceptance_percentage_dict[param]+1] = time
+for dir in os.listdir(test_dir):
+	sub_dir = test_dir + "/" + dir
+	for file in os.listdir(sub_dir):
+		filepath = sub_dir + "/" + file
+		f = open(filepath, "r")
+		result = m = np.zeros(shape=[10, 9]).astype(str)
+		filename = file.split(".")[0][:-8]
+		result[:, 0] = filename
+		result[:, 1] = [x+1 for x in range(10)]
+		for x in f:
+			line_list = x.split(':')
+			if line_list[0] == "Run":
+				run = int(line_list[1].split(',')[0].strip())
+			elif line_list[0] == "Best objective value found after (s)":
+				time_obj = round(float(line_list[1].strip()), 2)
+			elif line_list[0] == "Objective value":
+				obj_val = line_list[1].strip()
+			elif line_list[0] == "Cars charged":
+				cars_charged = line_list[1].strip()
+			elif line_list[0] == "Cars in need of charging":
+				cars_in_need_of_charging = line_list[1].strip()
+			elif line_list[0] == "Construction heuristic time (s)":
+				time_ch = round(float(line_list[1].strip()), 2)
+			elif line_list[0] == "Construction heuristic, true objective value":
+				obj_val_ch = line_list[1].strip()
+			elif line_list[0] == "Construction heuristic cars charged":
+				cars_charged_ch = line_list[1].strip()
+				param = line_list[1].strip()
+				result[run - 1][2] = obj_val_ch
+				result[run - 1][3] = cars_charged_ch
+				result[run - 1][4] = time_ch
+				result[run - 1][5] = obj_val
+				result[run - 1][6] = cars_charged_ch
+				result[run - 1][7] = time_obj
+				result[run - 1][8] = cars_in_need_of_charging
 
-			avg_row = np.array([filename, "Average"])
-			relevant_cols = np.array(result[:, 2:], dtype=np.float64)
-			avg_obj_val = np.mean(relevant_cols[:, ::2], axis=0)
-			avg_time_val = np.mean(relevant_cols[:, 1::2], axis=0)
+		"""
+		avg_row = np.array([filename, "Average"])
+		relevant_cols = np.array(result[:, 2:], dtype=np.float64)
+		avg_obj_val = np.mean(relevant_cols[:, ::2], axis=0)
+		avg_time_val = np.mean(relevant_cols[:, 1::2], axis=0)
 
-			avg_row = np.concatenate((avg_row, np.ravel([avg_obj_val, avg_time_val], 'F')), axis=0)
+		avg_row = np.concatenate((avg_row, np.ravel([avg_obj_val, avg_time_val], 'F')), axis=0)
 
-			result = np.vstack([result, avg_row])
-			gap_row = np.array([filename, "Gap (%)"])
-			max_val_obj = np.amax(relevant_cols[:, ::2])
-			max_val_time = np.mean(relevant_cols[:, 1::2])
-			obj_val_gaps = np.abs(np.divide(max_val_obj-avg_obj_val, max_val_obj))
-			time_val_gaps = np.abs(np.divide(max_val_time-avg_time_val, max_val_time))
-			gap_row = np.concatenate((gap_row, np.ravel([obj_val_gaps, time_val_gaps],'F')), axis=0)
+		result = np.vstack([result, avg_row])
+		gap_row = np.array([filename, "Gap (%)"])
+		max_val_obj = np.amax(relevant_cols[:, ::2])
+		max_val_time = np.mean(relevant_cols[:, 1::2])
+		obj_val_gaps = np.abs(safe_zero_division(max_val_obj-avg_obj_val, max_val_obj))
+		time_val_gaps = np.abs(safe_zero_division(max_val_time-avg_time_val, max_val_time))
+		gap_row = np.concatenate((gap_row, np.ravel([obj_val_gaps, time_val_gaps],'F')), axis=0)
 
-			result = np.vstack([result, gap_row])
-			result_df = pd.DataFrame(result)
-			work_sheet.set_dataframe(result_df, (start_row, 0), copy_head=False)
-			start_row += 7
+		result = np.vstack([result, gap_row])
+		"""
+		result_df = pd.DataFrame(result)
+		work_sheet.set_dataframe(result_df, (start_row, 0), copy_head=False)
+		start_row += 10
