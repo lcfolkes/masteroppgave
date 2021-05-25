@@ -537,7 +537,7 @@ if __name__ == "__main__":
     try:
         #profiler = Profiler()
         #profiler.start()
-        alns = ALNS(filename + ".pkl", 0.5)
+        alns = ALNS(filename + ".pkl")
         alns.run(verbose=True)
 
         #profiler.stop()

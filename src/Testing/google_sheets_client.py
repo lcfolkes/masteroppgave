@@ -54,12 +54,14 @@ if __name__ == "__main__":
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/determinism_greedy_insertion/"
+	test_dir = "./Testing/Results/"
 param_dict = {"9": 2}
 header = np.array([["", "",
-					"Construction Heuristic Obj. Val.", "Construction Heuristic Time found (s)", "Calibrated ALNS Obj. Val.", "Calibrated ALNS Time found (s)"],
+					"Construction Heuristic Obj. Val.", "Construction Heuristic Cars Charged",
+					"Construction Heuristic Time found (s)",
+					"Calibrated ALNS Obj. Val.", "Calibrated ALNS Cars Charged", "Calibrated ALNS Time found (s)", "Cars in Need of Charging"],
 				   ["Instance", "Run",
-					"Obj. Val.", "Time found (s)", "Obj. Val.", "Time found (s)"]])
+					"Obj. Val.", "Cars Charged", "Time found (s)", "Obj. Val.", "Cars Charged", "Time found (s)", "Cars in Need of Charging"]])
 
 header_df = pd.DataFrame(header)
 work_sheet.set_dataframe(header_df, (1, 0), copy_head=False)
@@ -70,10 +72,10 @@ for dir in os.listdir(test_dir):
 	for file in os.listdir(sub_dir):
 		filepath = sub_dir + "/" + file
 		f = open(filepath, "r")
-		result = m = np.zeros(shape=[5, 6]).astype(str)
+		result = m = np.zeros(shape=[10, 9]).astype(str)
 		filename = file.split(".")[0][:-8]
 		result[:, 0] = filename
-		result[:, 1] = [x+1 for x in range(5)]
+		result[:, 1] = [x+1 for x in range(10)]
 		for x in f:
 			line_list = x.split(':')
 			if line_list[0] == "Run":
@@ -82,15 +84,26 @@ for dir in os.listdir(test_dir):
 				time_obj = round(float(line_list[1].strip()), 2)
 			elif line_list[0] == "Objective value":
 				obj_val = line_list[1].strip()
+			elif line_list[0] == "Cars charged":
+				cars_charged = line_list[1].strip()
+			elif line_list[0] == "Cars in need of charging":
+				cars_in_need_of_charging = line_list[1].strip()
 			elif line_list[0] == "Construction heuristic time (s)":
 				time_ch = round(float(line_list[1].strip()), 2)
-
 			elif line_list[0] == "Construction heuristic, true objective value":
 				obj_val_ch = line_list[1].strip()
+			elif line_list[0] == "Construction heuristic cars charged":
+				cars_charged_ch = line_list[1].strip()
 				param = line_list[1].strip()
-		result[run - 1][param_dict[param]] = obj_val
-		result[run - 1][param_dict[param]+1] = time
+				result[run - 1][2] = obj_val_ch
+				result[run - 1][3] = cars_charged_ch
+				result[run - 1][4] = time_ch
+				result[run - 1][5] = obj_val
+				result[run - 1][6] = cars_charged_ch
+				result[run - 1][7] = time_obj
+				result[run - 1][8] = cars_in_need_of_charging
 
+		"""
 		avg_row = np.array([filename, "Average"])
 		relevant_cols = np.array(result[:, 2:], dtype=np.float64)
 		avg_obj_val = np.mean(relevant_cols[:, ::2], axis=0)
@@ -107,6 +120,7 @@ for dir in os.listdir(test_dir):
 		gap_row = np.concatenate((gap_row, np.ravel([obj_val_gaps, time_val_gaps],'F')), axis=0)
 
 		result = np.vstack([result, gap_row])
+		"""
 		result_df = pd.DataFrame(result)
 		work_sheet.set_dataframe(result_df, (start_row, 0), copy_head=False)
-		start_row += 7
+		start_row += 10

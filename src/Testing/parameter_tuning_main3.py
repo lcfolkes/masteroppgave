@@ -51,13 +51,12 @@ def run_sequential(filename, n, verbose):
 if __name__ == "__main__":
 
     files = []
-    for n in [20, 30]:  # , 25, 30, 40, 50]:
+    for n in [25, 30]:  # , 25, 30, 40, 50]:
         directory = f"./InstanceGenerator/InstanceFiles/{n}nodes/"
         for filename in os.listdir(directory):
             filename_list = filename.split(".")
             if filename_list[-1] == "pkl":
-                if filename_list[0] not in ["20-25-2-1_a", "20-25-2-1_b"]:
-                    files.append(os.path.join(directory, filename_list[0]))
+                files.append(os.path.join(directory, filename_list[0]))
 
     # for f in files:
     #    print(f)
