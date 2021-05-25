@@ -75,6 +75,7 @@ class ALNS():
 
         true_obj_val_checkpoints = [None for _ in range(10)]
         heur_obj_val_checkpoints = [None for _ in range(10)]
+        best_obj_val_record = [] #(iteration, obj_val, time)
 
         construction_true_obj_val = None
         construction_heur_obj_val = None
@@ -99,6 +100,8 @@ class ALNS():
         heuristic_obj_vals = [best_obj_val]
         iterations = [0]
         best_solution = (copy_solution_dict(self.solution.assigned_car_moves), true_obj_val, self.solution.num_charging_moves)
+        best_obj_val_record.append((0, best_solution[1], best_obj_val_found_time))
+
         if verbose:
             self.solution.print_solution()
             print(f"Construction heuristic true obj. val {true_obj_val}")
@@ -179,10 +182,13 @@ class ALNS():
 
 
                     true_obj_val, candidate_obj_val = self.solution.get_obj_val(both=True)
+                    current_time = time.perf_counter() - start
+                    best_obj_val_record.append((0, true_obj_val, best_obj_val_found_time))
+
                     true_obj_vals.append(true_obj_val)
                     heuristic_obj_vals.append(candidate_obj_val)
-
-                    iterations.append((i_segment + 1) + (i_alns * iterations_segment))
+                    iteration = (i_segment + 1) + (i_alns * iterations_segment)
+                    iterations.append(iteration)
 
                     if self._accept(candidate_obj_val, current_obj_val, temperature):
 
@@ -192,7 +198,6 @@ class ALNS():
                             # print("candidate_obj_val: ", candidate_obj_val)
                             # NEW GLOBAL BEST
                             if round(candidate_obj_val, 2) > round(best_obj_val, 2):
-                                current_time = time.perf_counter() - start
                                 best_obj_val_found_time = current_time
                                 best_obj_val = candidate_obj_val
 
@@ -237,6 +242,7 @@ class ALNS():
                         counter += 1
                         MODE = "LNS"
 
+                    best_obj_val_record.append((iteration, best_solution[1], current_time))
                     current_time = time.perf_counter() - start
                     if current_time > time_limit:
                         print("Time limit reached!")
@@ -328,6 +334,8 @@ class ALNS():
             time_spent_txt = f"Time used: {finish}\n"
             finish_times_segments_txt = f"Finish time segments:\n{finish_times_segments}\n"
             iterations_done_txt = f"Iterations completed: {i_alns*iterations_segment + i_segment} iterations in {i_alns+1} segments\n"
+            best_obj_val_record_txt = f"Best true objectives record: {best_obj_val_record}\n\n"
+            '''
             parameter_tuning_txt = f"Acceptance percentage: {self.solution.acceptance_percentage}\n" \
                                    f"Travel time threshold: {self.solution.travel_time_threshold}\n" \
                                    f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}\n" \
@@ -336,6 +344,7 @@ class ALNS():
                                    f"Determinism Related: {HeuristicsConstants.DETERMINISM_PARAMETER_RELATED}\n" \
                                    f"Determinism Greedy: {HeuristicsConstants.DETERMINISM_PARAMETER_GREEDY}\n" \
                                    f"Adaptive Weight Rewards (Best, Better, Accepted): ({_IS_BEST}, {_IS_BETTER}, {_IS_ACCEPTED})\n\n"
+            '''
 
             # Write to file
             test_dir = "./Testing/Results/" + self.filename.split('/')[-2] + "/"
@@ -346,7 +355,7 @@ class ALNS():
             f = open(filepath + "_results.txt", "a")
             f.writelines([run_txt, date_time_txt, obj_val_found_txt, obj_val_txt, heur_val_txt, charging_txt,
                           construction_heur_time_txt, construction_heur_txt, charging_construction_txt, time_spent_txt,
-                          iterations_done_txt, parameter_tuning_txt])
+                          iterations_done_txt, best_obj_val_record_txt])
             f.close()
 
             if verbose:
@@ -532,11 +541,14 @@ class ALNS():
 
 
 if __name__ == "__main__":
-    filename = "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_b"
+    from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
+    from Gurobi.Model.run_model import run_model
+    filename = "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_b"
 
     try:
         #profiler = Profiler()
         #profiler.start()
+
         alns = ALNS(filename + ".pkl")
         alns.run(verbose=True)
 
@@ -545,26 +557,27 @@ if __name__ == "__main__":
         #alns.solution.print_solution()
         #print(profiler.output_text(unicode=True, color=True))
 
-        '''
+
         print("\n############## Evaluate solution ##############")
-        gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees)
+        gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=False)
         run_model(gi)
 
+        print("\n############## Reoptimized solution ##############")
+        gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=True)
+        run_model(gi)
 
         print("\n############## Optimal solution ##############")
         gi = GurobiInstance(filename + ".yaml")
         run_model(gi)
+        '''
         print("\n############## Evaluate solution ##############")
         gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees)
-        run_model(gi)
-        
-        print("\n############## Reoptimized solution ##############")
-        gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=True)
         run_model(gi)
         
         print("\n############## Optimal solution ##############")
         gi2 = GurobiInstance(filename + ".yaml")
         run_model(gi2, time_limit=300)
+
         '''
     except KeyboardInterrupt:
         print('Interrupted')

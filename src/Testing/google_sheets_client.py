@@ -37,7 +37,8 @@ class GoogleSheetClient():
 
 
 if __name__ == "__main__":
-	spreadsheet_url = "https://docs.google.com/spreadsheets/d/1xK9FoZhR_-J2ni06U7EBVq40Wno-QA5iIKeSh45H7-k/edit"
+	#parameter_tuning_spreadsheet_url = "https://docs.google.com/spreadsheets/d/1xK9FoZhR_-J2ni06U7EBVq40Wno-QA5iIKeSh45H7-k/edit"
+	spreadsheet_url = "https://docs.google.com/spreadsheets/d/1hikl4VcCQedeiH3j0tS9QvXm6WbG2EPxNYEh_0VK12Q/edit"
 	gcs = GoogleSheetClient(url=spreadsheet_url)
 	sheet = gcs.get_sheet()
 
@@ -54,8 +55,8 @@ if __name__ == "__main__":
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/Results/"
-param_dict = {"9": 2}
+	test_dir = "./Testing/ComputationalTests/construction_vs_alns"
+#param_dict = {"9": 2}
 header = np.array([["", "",
 					"Construction Heuristic Obj. Val.", "Construction Heuristic Cars Charged",
 					"Construction Heuristic Time found (s)",
@@ -99,28 +100,31 @@ for dir in os.listdir(test_dir):
 				result[run - 1][3] = cars_charged_ch
 				result[run - 1][4] = time_ch
 				result[run - 1][5] = obj_val
-				result[run - 1][6] = cars_charged_ch
+				result[run - 1][6] = cars_charged
 				result[run - 1][7] = time_obj
 				result[run - 1][8] = cars_in_need_of_charging
 
-		"""
+
 		avg_row = np.array([filename, "Average"])
-		relevant_cols = np.array(result[:, 2:], dtype=np.float64)
-		avg_obj_val = np.mean(relevant_cols[:, ::2], axis=0)
-		avg_time_val = np.mean(relevant_cols[:, 1::2], axis=0)
-
-		avg_row = np.concatenate((avg_row, np.ravel([avg_obj_val, avg_time_val], 'F')), axis=0)
-
+		#relevant_cols = np.array(result[:, 2:], dtype=np.float64)
+		avg_obj_val = np.mean(np.array(result[:, [2, 5]], dtype=np.float64), axis=0)
+		avg_charge_val = np.mean(np.array(result[:, [3, 6]], dtype=np.float64), axis=0)
+		avg_time_val = np.mean(np.array(result[:, [4, 7]], dtype=np.float64), axis=0)
+		avg_row = np.concatenate((avg_row, np.ravel([avg_obj_val, avg_charge_val, avg_time_val], 'F')), axis=0)
+		avg_need_charging = np.mean(np.array(result[:, [8]], dtype=np.float64), axis=0)
+		avg_row = np.concatenate((avg_row, avg_need_charging), axis=0)
 		result = np.vstack([result, avg_row])
-		gap_row = np.array([filename, "Gap (%)"])
-		max_val_obj = np.amax(relevant_cols[:, ::2])
-		max_val_time = np.mean(relevant_cols[:, 1::2])
-		obj_val_gaps = np.abs(safe_zero_division(max_val_obj-avg_obj_val, max_val_obj))
-		time_val_gaps = np.abs(safe_zero_division(max_val_time-avg_time_val, max_val_time))
-		gap_row = np.concatenate((gap_row, np.ravel([obj_val_gaps, time_val_gaps],'F')), axis=0)
 
+		gap_row = np.array([filename, "Gap (%)"])
+		max_val_obj = np.amax(np.array(result[:, [2, 5]], dtype=np.float64))
+		max_val_time = np.amax(np.array(result[:, [4, 7]], dtype=np.float64))
+		obj_val_gaps = np.abs(safe_zero_division(max_val_obj-avg_obj_val, max_val_obj))
+		charg_gaps = np.abs(safe_zero_division(avg_need_charging-avg_charge_val, avg_need_charging))
+		time_val_gaps = np.abs(safe_zero_division(max_val_time-avg_time_val, max_val_time))
+		gap_row = np.concatenate((gap_row, np.ravel([obj_val_gaps, charg_gaps, time_val_gaps],'F')), axis=0)
+		gap_row = np.concatenate((gap_row, avg_need_charging), axis=0)
 		result = np.vstack([result, gap_row])
-		"""
+
 		result_df = pd.DataFrame(result)
 		work_sheet.set_dataframe(result_df, (start_row, 0), copy_head=False)
-		start_row += 10
+		start_row += 12

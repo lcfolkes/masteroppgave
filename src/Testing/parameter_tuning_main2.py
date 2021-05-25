@@ -52,7 +52,7 @@ def run_sequential(filename, n, verbose):
 if __name__ == "__main__":
 
 	files = []
-	for n in [10, 15]:  # , 25, 30, 40, 50]:
+	for n in [8]:  # , 25, 30, 40, 50]:
 		directory = f"./InstanceGenerator/InstanceFiles/{n}nodes/"
 		for filename in os.listdir(directory):
 			filename_list = filename.split(".")
