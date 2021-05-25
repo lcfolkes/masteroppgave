@@ -50,7 +50,7 @@ class ALNS():
         self.operator_pairs = self._initialize_operators()
         self.operators_record = self._initialize_operator_records()
         self.operators_temporal_weights = {k: [1] for k in self.operator_pairs.keys()}
-
+        self.results_dir = param
 
 
     def _initialize_new_iteration(self, current_unused_car_moves, current_solution):
@@ -350,7 +350,7 @@ class ALNS():
             '''
 
             # Write to file
-            test_dir = "./Testing/Results/" + self.filename.split('/')[-2] + "/"
+            test_dir = f"./Testing/{self.results_dir}/" + self.filename.split('/')[-2] + "/"
             if not os.path.exists(test_dir):
                 os.makedirs(test_dir)
             filename = self.filename.split('/')[-1].split('.')[0]
@@ -371,24 +371,24 @@ class ALNS():
     def _initialize_operators(self):
         if self._num_employees < 3:
             operators = OrderedDict(
-                {'random_greedy': 1.0,  'random_regret2': 1.0, 'random_charge': 2.0,
-                 'worst_greedy': 1.0,  'worst_regret2': 1.0, 'worst_charge': 2.0,
-                 'shaw_greedy': 1.0,      'shaw_regret2': 1.0, 'shaw_charge': 2.0,
-                 'charge_greedy': 1.0,  'charge_regret2': 1.0, 'charge_charge': 2.0})
+                {'random_greedy': 1.0,  'random_regret2': 1.0, 'random_charge': 1.0,
+                 'worst_greedy': 1.0,  'worst_regret2': 1.0, 'worst_charge': 1.0,
+                 'shaw_greedy': 1.0,      'shaw_regret2': 1.0, 'shaw_charge': 1.0,
+                 'charge_greedy': 1.0,  'charge_regret2': 1.0, 'charge_charge': 1.0})
 
         elif self._num_employees < 4:
             operators = OrderedDict(
-                {'random_greedy': 1.0,  'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': 2.0,
-                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_charge': 2.0,
-                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 2.0,
-                 'charge_greedy': 1.0, 'charge_regret2': 1.0, 'charge_regret3': 1.0, 'charge_charge': 2.0})
+                {'random_greedy': 1.0,  'random_regret2': 1.0, 'random_regret3': 1.0, 'random_charge': 1.0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_charge': 1.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_charge': 1.0,
+                 'charge_greedy': 1.0, 'charge_regret2': 1.0, 'charge_regret3': 1.0, 'charge_charge': 1.0})
 
         else:
             operators = OrderedDict(
-                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0, 'random_charge': 2.0,
-                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0, 'worst_charge': 2.0,
-                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0, 'shaw_charge': 2.0,
-                 'charge_greedy': 1.0, 'charge_regret2': 1.0, 'charge_regret3': 1.0, 'charge_regret4': 1.0, 'charge_charge': 2.0})
+                {'random_greedy': 1.0, 'random_regret2': 1.0, 'random_regret3': 1.0, 'random_regret4': 1.0, 'random_charge': 1.0,
+                 'worst_greedy': 1.0, 'worst_regret2': 1.0, 'worst_regret3': 1.0, 'worst_regret4': 1.0, 'worst_charge': 1.0,
+                 'shaw_greedy': 1.0, 'shaw_regret2': 1.0, 'shaw_regret3': 1.0, 'shaw_regret4': 1.0, 'shaw_charge': 1.0,
+                 'charge_greedy': 1.0, 'charge_regret2': 1.0, 'charge_regret3': 1.0, 'charge_regret4': 1.0, 'charge_charge': 1.0})
 
         return operators
 

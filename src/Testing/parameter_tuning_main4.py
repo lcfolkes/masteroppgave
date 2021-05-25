@@ -59,8 +59,10 @@ if __name__ == "__main__":
 
     # for f in files:
     #    print(f)
-    files = ["./InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_a",
-             "./InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_b"]
+    files = ["./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_b",
+             "./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_c",
+             "./InstanceGenerator/InstanceFiles/40nodes/40-25-2-1_a",
+             "./InstanceGenerator/InstanceFiles/40nodes/40-25-2-1_b"]
     try:
         n = 10
         for filename in files:

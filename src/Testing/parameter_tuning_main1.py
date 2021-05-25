@@ -46,7 +46,7 @@ def run_sequential(filename, n, verbose):
 
 if __name__ == "__main__":
     files = []
-    for n in [30]: #, 25, 30, 40, 50]:
+    for n in [6, 8, 10]: #, 25, 30, 40, 50]:
         directory = f"./InstanceGenerator/InstanceFiles/{n}nodes/"
         for filename in os.listdir(directory):
             filename_list = filename.split(".")
@@ -55,8 +55,15 @@ if __name__ == "__main__":
 
     #for f in files:
     #    print(f)
-    files = ["./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_a",
-             "./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_b"]
+    files = ["./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a",
+             "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_b",
+             "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_c",
+             "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_a",
+             "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_b",
+             "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_c",
+             "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_a",
+             "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_b",
+             "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_c"]
     try:
         n = 10
         for filename in files:
