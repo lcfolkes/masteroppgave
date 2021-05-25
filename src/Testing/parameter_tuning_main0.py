@@ -50,7 +50,7 @@ def run_sequential(filename, n, verbose):
 if __name__ == "__main__":
 	try:
 		n = 10
-		filename = "./InstanceGenerator/InstanceFiles/40nodes/40-25-2-1_b.pkl"
+		filename = "./InstanceGenerator/InstanceFiles/40nodes/40-25-2-1_b"
 		run_parallel(filename, n)
 
 		'''
