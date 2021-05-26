@@ -55,7 +55,7 @@ if __name__ == "__main__":
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/ComputationalTests/construction_vs_alns"
+	test_dir = "./Testing/ComputationalTests/three_hour_run_no_weight_update"
 	#param_dict = {"9": 2}
 	header = np.array([["", "",
 						"Construction Heuristic Obj. Val.", "Construction Heuristic Cars Charged",
@@ -114,6 +114,7 @@ if __name__ == "__main__":
 			avg_need_charging = np.mean(np.array(result[:, [8]], dtype=np.float64), axis=0)
 			avg_row = np.concatenate((avg_row, avg_need_charging), axis=0)
 			result = np.vstack([result, avg_row])
+
 
 			gap_row = np.array([filename, "Gap (%)"])
 			max_val_obj = np.amax(np.array(result[:, [2, 5]], dtype=np.float64))

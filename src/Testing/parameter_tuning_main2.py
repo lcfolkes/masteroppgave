@@ -52,8 +52,11 @@ if __name__ == "__main__":
 
 	# for f in files:
 	#    print(f)
+	"""
 	files = [["./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_c","./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_a"],
 			["./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_b", "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_c"]]
+	"""
+	files = [["./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_b"]]
 	try:
 		n = 10
 		for filenames in files:
