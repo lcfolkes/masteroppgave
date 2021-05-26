@@ -536,9 +536,8 @@ class ALNS():
             new_weights = self.operator_pairs[k] * (1.0 - HeuristicsConstants.REWARD_DECAY_PARAMETER) + \
                                      safe_zero_division(HeuristicsConstants.REWARD_DECAY_PARAMETER, self.operators_record[k][1]) * \
                                      self.operators_record[k][0]
-
+            self.operator_pairs[k] = new_weights
             self.operators_temporal_weights[k].append(new_weights)
-
             if self.operator_pairs[k] < HeuristicsConstants.LOWER_THRESHOLD:
                 self.operator_pairs[k] = HeuristicsConstants.LOWER_THRESHOLD
             self.operators_record[k][0] = self.operator_pairs[k]

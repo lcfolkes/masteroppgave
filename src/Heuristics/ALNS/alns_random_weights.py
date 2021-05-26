@@ -541,12 +541,13 @@ class ALNS():
 
 	def _update_score_adjustment_parameters(self):
 		for k, v in self.operator_pairs.items():
-			new_weights = self.operator_pairs[k] * (1.0 - HeuristicsConstants.REWARD_DECAY_PARAMETER) + \
+			'''new_weights = self.operator_pairs[k] * (1.0 - HeuristicsConstants.REWARD_DECAY_PARAMETER) + \
 						  safe_zero_division(HeuristicsConstants.REWARD_DECAY_PARAMETER, self.operators_record[k][1]) * \
 						  self.operators_record[k][0]
-
+			'''
+			new_weights = 1
+			self.operator_pairs[k] = new_weights
 			self.operators_temporal_weights[k].append(new_weights)
-
 			if self.operator_pairs[k] < HeuristicsConstants.LOWER_THRESHOLD:
 				self.operator_pairs[k] = HeuristicsConstants.LOWER_THRESHOLD
 			self.operators_record[k][0] = self.operator_pairs[k]
@@ -570,7 +571,7 @@ if __name__ == "__main__":
 		# alns.solution.rebuild(alns.best_solution[0], "second_stage")
 		# alns.solution.print_solution()
 		# print(profiler.output_text(unicode=True, color=True))
-
+		'''
 		print("\n############## Evaluate solution ##############")
 		gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=False)
 		run_model(gi)
@@ -582,7 +583,7 @@ if __name__ == "__main__":
 		print("\n############## Optimal solution ##############")
 		gi = GurobiInstance(filename + ".yaml")
 		run_model(gi)
-		'''
+		
 		print("\n############## Evaluate solution ##############")
 		gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees)
 		run_model(gi)
