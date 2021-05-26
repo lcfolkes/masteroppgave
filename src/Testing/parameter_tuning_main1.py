@@ -1,5 +1,4 @@
-#from Heuristics.ALNS.alns import ALNS
-from Heuristics.ALNS.alns_random_weights import ALNS
+from Heuristics.ALNS.alns_no_local import ALNS
 from path_manager import path_to_src
 import os
 import time
@@ -7,21 +6,12 @@ import sys
 os.chdir(path_to_src)
 import multiprocessing as mp
 
-def run_parallel(filename, n, param=None):
-    try:
-        num_processes = n * len(param)
-        params = len(param)
-    except:
-        num_processes = n
-        params = 1
+def run_parallel(filenames, n):
+    num_processes = n * len(filenames)
     args = []
-
-    for x in range(params):
+    for filename in filenames:
         for i in range(n):
-            if param is not None:
-                args.append((filename + ".pkl", i + 1, param[x]))
-            else:
-                args.append((filename + ".pkl", i + 1))
+            args.append((filename + ".pkl", i + 1))
     with mp.Pool(processes=num_processes) as pool:
         pool.starmap(run_process, args)
 
@@ -29,6 +19,7 @@ def run_parallel(filename, n, param=None):
 def run_process(filename, process_num, param=None):
     alns = ALNS(filename, param)
     alns.run(process_num)
+
 
 def run_sequential(filename, n, verbose):
     print(f"Running {n} processes in sequence\n")
@@ -56,20 +47,18 @@ if __name__ == "__main__":
 
     #for f in files:
     #    print(f)
-    files = ["./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a",
-             "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_b",
-             "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_c",
-             "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_a",
-             "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_b",
-             "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_c",
-             "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_a",
-             "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_b",
-             "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_c"]
+    files = [["./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a", "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_b"],
+            ["./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_c", "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_a"],
+            ["./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_b", "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_c"],
+            ["./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_a","./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_b"],
+            ["./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_c", "./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_a"],
+            ["./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_b", "./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_c"],
+            ["./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_a","./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_b"]]
     try:
         n = 10
-        for filename in files:
+        for filenames in files:
             ### PARALLEL
-            run_parallel(filename, n)
+            run_parallel(filenames, n)
 
         '''
         ### SEQUENTIAL

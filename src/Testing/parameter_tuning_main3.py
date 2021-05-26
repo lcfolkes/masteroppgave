@@ -1,5 +1,4 @@
-#from Heuristics.ALNS.alns import ALNS
-from Heuristics.ALNS.alns_random_weights import ALNS
+from Heuristics.ALNS.alns_no_local import ALNS
 from path_manager import path_to_src
 import os
 import time
@@ -9,24 +8,14 @@ os.chdir(path_to_src)
 import multiprocessing as mp
 
 
-def run_parallel(filename, n, param=None):
-    try:
-        num_processes = n * len(param)
-        params = len(param)
-    except:
-        num_processes = n
-        params = 1
+def run_parallel(filenames, n):
+    num_processes = n * len(filenames)
     args = []
-
-    for x in range(params):
+    for filename in filenames:
         for i in range(n):
-            if param is not None:
-                args.append((filename + ".pkl", i + 1, param[x]))
-            else:
-                args.append((filename + ".pkl", i + 1))
+            args.append((filename + ".pkl", i + 1))
     with mp.Pool(processes=num_processes) as pool:
         pool.starmap(run_process, args)
-
 
 
 def run_process(filename, process_num, param=None):
@@ -61,15 +50,13 @@ if __name__ == "__main__":
 
     # for f in files:
     #    print(f)
-    files = ["./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_a",
-             "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_b",
-             "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_c",
-             "./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_a"]
+    files = [["./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_a", "./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_b"],
+             ["./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_c"]]
     try:
         n = 10
-        for filename in files:
+        for filenames in files:
             ### PARALLEL
-            run_parallel(filename, n)
+            run_parallel(filenames, n)
         '''
         ### SEQUENTIAL
         #alns = run_sequential(filename, 1, True)

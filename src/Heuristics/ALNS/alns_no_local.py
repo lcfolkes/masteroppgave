@@ -547,7 +547,7 @@ class ALNS():
 						  self.operators_record[k][0]
 
 			self.operators_temporal_weights[k].append(new_weights)
-
+			self.operator_pairs[k] = new_weights
 			if self.operator_pairs[k] < HeuristicsConstants.LOWER_THRESHOLD:
 				self.operator_pairs[k] = HeuristicsConstants.LOWER_THRESHOLD
 			self.operators_record[k][0] = self.operator_pairs[k]
