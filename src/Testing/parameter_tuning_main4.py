@@ -1,4 +1,4 @@
-from Heuristics.ALNS.alns import ALNS
+from Heuristics.ALNS.alns_no_local import ALNS
 from path_manager import path_to_src
 import os
 import time
@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     # for f in files:
     #    print(f)
-    files = [["./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_c", "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_a"]]
+    files = [["./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_c"]]#, "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_a"]]
     try:
         n = 10
         for filenames in files:

@@ -1,4 +1,4 @@
-from Heuristics.ALNS.alns import ALNS
+from Heuristics.ALNS.alns_no_local import ALNS
 from path_manager import path_to_src
 import os
 import time
