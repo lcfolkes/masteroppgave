@@ -1,0 +1,170 @@
+
+Run: 6
+DateTime: 26-May-2021 (12:41:39)
+Best objective value found after (s): 231.42377309687436
+Objective value: 142.66680000000883
+Heuristic value: 142.666800000009
+Cars charged: 5
+Cars in need of charging: 5
+Construction heuristic time (s): 39.86771447211504
+Construction heuristic, true objective value: 133.714559999978
+Construction heuristic, heuristic objective value: 133.7145599999695
+Construction heuristic cars charged: 5
+Time used: 600.9841656377539
+Iterations completed: 13 iterations in 1 segments
+Best true objectives record: [(0, 133.714559999978, 5, 39.86771447211504), (1, 133.714559999978, 5, 75.14153770450503), (2, 133.714559999978, 5, 115.7997627435252), (3, 133.714559999978, 5, 151.2851494308561), (4, 133.714559999978, 5, 195.2201123489067), (5, 142.66680000000883, 5, 231.42377309687436), (6, 142.66680000000883, 5, 284.48054357618093), (7, 142.66680000000883, 5, 319.3675959156826), (8, 142.66680000000883, 5, 359.54450596962124), (9, 142.66680000000883, 5, 406.59382595308125), (10, 142.66680000000883, 5, 447.0186655074358), (11, 142.66680000000883, 5, 488.6348619302735), (12, 142.66680000000883, 5, 523.2558597177267), (13, 142.66680000000883, 5, 560.5671003600582), (14, 142.66680000000883, 5, 600.9839464658871)]
+Operator weights: {'random_greedy': [1], 'random_regret2': [1], 'random_regret3': [1], 'random_regret4': [1], 'random_charge': [1], 'worst_greedy': [1], 'worst_regret2': [1], 'worst_regret3': [1], 'worst_regret4': [1], 'worst_charge': [1], 'shaw_greedy': [1], 'shaw_regret2': [1], 'shaw_regret3': [1], 'shaw_regret4': [1], 'shaw_charge': [1], 'charge_greedy': [1], 'charge_regret2': [1], 'charge_regret3': [1], 'charge_regret4': [1], 'charge_charge': [1]}
+
+
+Run: 3
+DateTime: 26-May-2021 (12:41:39)
+Best objective value found after (s): 40.64358621183783
+Objective value: 133.714559999978
+Heuristic value: 133.7145599999695
+Cars charged: 5
+Cars in need of charging: 5
+Construction heuristic time (s): 40.64358621183783
+Construction heuristic, true objective value: 133.714559999978
+Construction heuristic, heuristic objective value: 133.7145599999695
+Construction heuristic cars charged: 5
+Time used: 601.3304334525019
+Iterations completed: 11 iterations in 1 segments
+Best true objectives record: [(0, 133.714559999978, 5, 40.64358621183783), (1, 133.714559999978, 5, 76.71126031782478), (2, 133.714559999978, 5, 136.81602232158184), (3, 133.714559999978, 5, 186.76978437509388), (4, 133.714559999978, 5, 232.38188531808555), (5, 133.714559999978, 5, 288.8047040840611), (6, 133.714559999978, 5, 333.1698708748445), (7, 133.714559999978, 5, 379.3382289148867), (8, 133.714559999978, 5, 432.35126688238233), (9, 133.714559999978, 5, 468.4355464503169), (10, 133.714559999978, 5, 506.96159495040774), (11, 133.714559999978, 5, 555.3617829000577), (12, 133.714559999978, 5, 601.3302079392597)]
+Operator weights: {'random_greedy': [1], 'random_regret2': [1], 'random_regret3': [1], 'random_regret4': [1], 'random_charge': [1], 'worst_greedy': [1], 'worst_regret2': [1], 'worst_regret3': [1], 'worst_regret4': [1], 'worst_charge': [1], 'shaw_greedy': [1], 'shaw_regret2': [1], 'shaw_regret3': [1], 'shaw_regret4': [1], 'shaw_charge': [1], 'charge_greedy': [1], 'charge_regret2': [1], 'charge_regret3': [1], 'charge_regret4': [1], 'charge_charge': [1]}
+
+
+Run: 8
+DateTime: 26-May-2021 (12:41:39)
+Best objective value found after (s): 39.83474372141063
+Objective value: 133.714559999978
+Heuristic value: 133.7145599999695
+Cars charged: 5
+Cars in need of charging: 5
+Construction heuristic time (s): 39.83474372141063
+Construction heuristic, true objective value: 133.714559999978
+Construction heuristic, heuristic objective value: 133.7145599999695
+Construction heuristic cars charged: 5
+Time used: 601.7284792792052
+Iterations completed: 13 iterations in 1 segments
+Best true objectives record: [(0, 133.714559999978, 5, 39.83474372141063), (1, 133.714559999978, 5, 74.45608048513532), (2, 133.714559999978, 5, 110.14884349796921), (3, 133.714559999978, 5, 147.07435043994337), (4, 133.714559999978, 5, 184.66497609205544), (5, 133.714559999978, 5, 238.3392817871645), (6, 133.714559999978, 5, 279.35733175929636), (7, 133.714559999978, 5, 326.8331336444244), (8, 133.714559999978, 5, 374.04324620589614), (9, 133.714559999978, 5, 417.13035974651575), (10, 133.714559999978, 5, 456.31300657615066), (11, 133.714559999978, 5, 494.48787009343505), (12, 133.714559999978, 5, 534.896163970232), (13, 133.714559999978, 5, 569.1947818715125), (14, 133.714559999978, 5, 601.7282720115036)]
+Operator weights: {'random_greedy': [1], 'random_regret2': [1], 'random_regret3': [1], 'random_regret4': [1], 'random_charge': [1], 'worst_greedy': [1], 'worst_regret2': [1], 'worst_regret3': [1], 'worst_regret4': [1], 'worst_charge': [1], 'shaw_greedy': [1], 'shaw_regret2': [1], 'shaw_regret3': [1], 'shaw_regret4': [1], 'shaw_charge': [1], 'charge_greedy': [1], 'charge_regret2': [1], 'charge_regret3': [1], 'charge_regret4': [1], 'charge_charge': [1]}
+
+
+Run: 4
+DateTime: 26-May-2021 (12:41:42)
+Best objective value found after (s): 40.36152808740735
+Objective value: 133.714559999978
+Heuristic value: 133.7145599999695
+Cars charged: 5
+Cars in need of charging: 5
+Construction heuristic time (s): 40.36152808740735
+Construction heuristic, true objective value: 133.714559999978
+Construction heuristic, heuristic objective value: 133.7145599999695
+Construction heuristic cars charged: 5
+Time used: 604.0289873415604
+Iterations completed: 12 iterations in 1 segments
+Best true objectives record: [(0, 133.714559999978, 5, 40.36152808740735), (1, 133.714559999978, 5, 77.79104685224593), (2, 133.714559999978, 5, 114.3109886078164), (3, 133.714559999978, 5, 176.35716432146728), (4, 133.714559999978, 5, 211.4721987619996), (5, 133.714559999978, 5, 269.2697752043605), (6, 133.714559999978, 5, 308.3390446919948), (7, 133.714559999978, 5, 345.8403018936515), (8, 133.714559999978, 5, 389.149680307135), (9, 133.714559999978, 5, 433.13620039913803), (10, 133.714559999978, 5, 472.7981767868623), (11, 133.714559999978, 5, 529.2874457910657), (12, 133.714559999978, 5, 567.1325015481561), (13, 133.714559999978, 5, 604.0285995639861)]
+Operator weights: {'random_greedy': [1], 'random_regret2': [1], 'random_regret3': [1], 'random_regret4': [1], 'random_charge': [1], 'worst_greedy': [1], 'worst_regret2': [1], 'worst_regret3': [1], 'worst_regret4': [1], 'worst_charge': [1], 'shaw_greedy': [1], 'shaw_regret2': [1], 'shaw_regret3': [1], 'shaw_regret4': [1], 'shaw_charge': [1], 'charge_greedy': [1], 'charge_regret2': [1], 'charge_regret3': [1], 'charge_regret4': [1], 'charge_charge': [1]}
+
+
+Run: 2
+DateTime: 26-May-2021 (12:41:44)
+Best objective value found after (s): 40.493002923205495
+Objective value: 133.714559999978
+Heuristic value: 133.7145599999695
+Cars charged: 5
+Cars in need of charging: 5
+Construction heuristic time (s): 40.493002923205495
+Construction heuristic, true objective value: 133.714559999978
+Construction heuristic, heuristic objective value: 133.7145599999695
+Construction heuristic cars charged: 5
+Time used: 606.4638513503596
+Iterations completed: 12 iterations in 1 segments
+Best true objectives record: [(0, 133.714559999978, 5, 40.493002923205495), (1, 133.714559999978, 5, 82.58792716264725), (2, 133.714559999978, 5, 135.25254722684622), (3, 133.714559999978, 5, 174.75799623131752), (4, 133.714559999978, 5, 217.45725553948432), (5, 133.714559999978, 5, 268.6467072023079), (6, 133.714559999978, 5, 309.2427951041609), (7, 133.714559999978, 5, 354.65469074528664), (8, 133.714559999978, 5, 390.55323697440326), (9, 133.714559999978, 5, 419.57865629624575), (10, 133.714559999978, 5, 470.4624026743695), (11, 133.714559999978, 5, 511.25393295660615), (12, 133.714559999978, 5, 556.5978682329878), (13, 133.714559999978, 5, 606.4636513506994)]
+Operator weights: {'random_greedy': [1], 'random_regret2': [1], 'random_regret3': [1], 'random_regret4': [1], 'random_charge': [1], 'worst_greedy': [1], 'worst_regret2': [1], 'worst_regret3': [1], 'worst_regret4': [1], 'worst_charge': [1], 'shaw_greedy': [1], 'shaw_regret2': [1], 'shaw_regret3': [1], 'shaw_regret4': [1], 'shaw_charge': [1], 'charge_greedy': [1], 'charge_regret2': [1], 'charge_regret3': [1], 'charge_regret4': [1], 'charge_charge': [1]}
+
+
+Run: 9
+DateTime: 26-May-2021 (12:41:46)
+Best objective value found after (s): 460.4367682673037
+Objective value: 142.66680000000883
+Heuristic value: 142.666800000009
+Cars charged: 5
+Cars in need of charging: 5
+Construction heuristic time (s): 40.65227490197867
+Construction heuristic, true objective value: 133.714559999978
+Construction heuristic, heuristic objective value: 133.7145599999695
+Construction heuristic cars charged: 5
+Time used: 608.5086043439806
+Iterations completed: 12 iterations in 1 segments
+Best true objectives record: [(0, 133.714559999978, 5, 40.65227490197867), (1, 133.714559999978, 5, 78.69527230411768), (2, 133.714559999978, 5, 120.25767075177282), (3, 133.714559999978, 5, 164.7386608440429), (4, 133.714559999978, 5, 210.50099811144173), (5, 133.714559999978, 5, 252.7398242847994), (6, 133.714559999978, 5, 294.2141148298979), (7, 133.714559999978, 5, 328.96642192453146), (8, 133.714559999978, 5, 374.991981446743), (9, 133.714559999978, 5, 424.203214016743), (10, 142.66680000000883, 5, 460.4367682673037), (11, 142.66680000000883, 5, 510.39347707945853), (12, 142.66680000000883, 5, 562.8557194545865), (13, 142.66680000000883, 5, 608.5084238136187)]
+Operator weights: {'random_greedy': [1], 'random_regret2': [1], 'random_regret3': [1], 'random_regret4': [1], 'random_charge': [1], 'worst_greedy': [1], 'worst_regret2': [1], 'worst_regret3': [1], 'worst_regret4': [1], 'worst_charge': [1], 'shaw_greedy': [1], 'shaw_regret2': [1], 'shaw_regret3': [1], 'shaw_regret4': [1], 'shaw_charge': [1], 'charge_greedy': [1], 'charge_regret2': [1], 'charge_regret3': [1], 'charge_regret4': [1], 'charge_charge': [1]}
+
+
+Run: 1
+DateTime: 26-May-2021 (12:41:48)
+Best objective value found after (s): 304.289711067453
+Objective value: 142.66680000000883
+Heuristic value: 142.666800000009
+Cars charged: 5
+Cars in need of charging: 5
+Construction heuristic time (s): 39.701069007627666
+Construction heuristic, true objective value: 133.714559999978
+Construction heuristic, heuristic objective value: 133.7145599999695
+Construction heuristic cars charged: 5
+Time used: 610.0956357615069
+Iterations completed: 12 iterations in 1 segments
+Best true objectives record: [(0, 133.714559999978, 5, 39.701069007627666), (1, 133.714559999978, 5, 90.8780452022329), (2, 133.714559999978, 5, 141.9054348776117), (3, 133.714559999978, 5, 176.8280697837472), (4, 133.714559999978, 5, 220.6308003347367), (5, 133.714559999978, 5, 266.9035390522331), (6, 142.66680000000883, 5, 304.289711067453), (7, 142.66680000000883, 5, 349.6163727482781), (8, 142.66680000000883, 5, 385.37011059746146), (9, 142.66680000000883, 5, 415.82995780557394), (10, 142.66680000000883, 5, 468.5738280508667), (11, 142.66680000000883, 5, 519.48189244885), (12, 142.66680000000883, 5, 558.1778359897435), (13, 142.66680000000883, 5, 610.095462538302)]
+Operator weights: {'random_greedy': [1], 'random_regret2': [1], 'random_regret3': [1], 'random_regret4': [1], 'random_charge': [1], 'worst_greedy': [1], 'worst_regret2': [1], 'worst_regret3': [1], 'worst_regret4': [1], 'worst_charge': [1], 'shaw_greedy': [1], 'shaw_regret2': [1], 'shaw_regret3': [1], 'shaw_regret4': [1], 'shaw_charge': [1], 'charge_greedy': [1], 'charge_regret2': [1], 'charge_regret3': [1], 'charge_regret4': [1], 'charge_charge': [1]}
+
+
+Run: 7
+DateTime: 26-May-2021 (12:41:51)
+Best objective value found after (s): 39.816242824308574
+Objective value: 133.714559999978
+Heuristic value: 133.7145599999695
+Cars charged: 5
+Cars in need of charging: 5
+Construction heuristic time (s): 39.816242824308574
+Construction heuristic, true objective value: 133.714559999978
+Construction heuristic, heuristic objective value: 133.7145599999695
+Construction heuristic cars charged: 5
+Time used: 613.2486598500982
+Iterations completed: 12 iterations in 1 segments
+Best true objectives record: [(0, 133.714559999978, 5, 39.816242824308574), (1, 133.714559999978, 5, 81.48231534287333), (2, 133.714559999978, 5, 125.10010833665729), (3, 133.714559999978, 5, 177.69498435035348), (4, 133.714559999978, 5, 226.19683599472046), (5, 133.714559999978, 5, 269.9125456660986), (6, 133.714559999978, 5, 314.35478513129056), (7, 133.714559999978, 5, 351.56700915656984), (8, 133.714559999978, 5, 394.9093549512327), (9, 133.714559999978, 5, 436.424096041359), (10, 133.714559999978, 5, 482.25079063978046), (11, 133.714559999978, 5, 527.7687726980075), (12, 133.714559999978, 5, 568.6339478893206), (13, 133.714559999978, 5, 613.2484901314601)]
+Operator weights: {'random_greedy': [1], 'random_regret2': [1], 'random_regret3': [1], 'random_regret4': [1], 'random_charge': [1], 'worst_greedy': [1], 'worst_regret2': [1], 'worst_regret3': [1], 'worst_regret4': [1], 'worst_charge': [1], 'shaw_greedy': [1], 'shaw_regret2': [1], 'shaw_regret3': [1], 'shaw_regret4': [1], 'shaw_charge': [1], 'charge_greedy': [1], 'charge_regret2': [1], 'charge_regret3': [1], 'charge_regret4': [1], 'charge_charge': [1]}
+
+
+Run: 5
+DateTime: 26-May-2021 (12:41:56)
+Best objective value found after (s): 40.57534397765994
+Objective value: 133.714559999978
+Heuristic value: 133.7145599999695
+Cars charged: 5
+Cars in need of charging: 5
+Construction heuristic time (s): 40.57534397765994
+Construction heuristic, true objective value: 133.714559999978
+Construction heuristic, heuristic objective value: 133.7145599999695
+Construction heuristic cars charged: 5
+Time used: 618.6877597467974
+Iterations completed: 11 iterations in 1 segments
+Best true objectives record: [(0, 133.714559999978, 5, 40.57534397765994), (1, 133.714559999978, 5, 96.95936006680131), (2, 133.714559999978, 5, 147.6262044897303), (3, 133.714559999978, 5, 190.13222508877516), (4, 133.714559999978, 5, 242.4415699597448), (5, 133.714559999978, 5, 281.21018804609776), (6, 133.714559999978, 5, 334.6256422130391), (7, 133.714559999978, 5, 378.1923283934593), (8, 133.714559999978, 5, 421.66470584087074), (9, 133.714559999978, 5, 470.79077968746424), (10, 133.714559999978, 5, 519.1756951557472), (11, 133.714559999978, 5, 577.5603527361527), (12, 133.714559999978, 5, 618.6875715050846)]
+Operator weights: {'random_greedy': [1], 'random_regret2': [1], 'random_regret3': [1], 'random_regret4': [1], 'random_charge': [1], 'worst_greedy': [1], 'worst_regret2': [1], 'worst_regret3': [1], 'worst_regret4': [1], 'worst_charge': [1], 'shaw_greedy': [1], 'shaw_regret2': [1], 'shaw_regret3': [1], 'shaw_regret4': [1], 'shaw_charge': [1], 'charge_greedy': [1], 'charge_regret2': [1], 'charge_regret3': [1], 'charge_regret4': [1], 'charge_charge': [1]}
+
+
+Run: 10
+DateTime: 26-May-2021 (12:42:18)
+Best objective value found after (s): 40.51909719686955
+Objective value: 133.714559999978
+Heuristic value: 133.7145599999695
+Cars charged: 5
+Cars in need of charging: 5
+Construction heuristic time (s): 40.51909719686955
+Construction heuristic, true objective value: 133.714559999978
+Construction heuristic, heuristic objective value: 133.7145599999695
+Construction heuristic cars charged: 5
+Time used: 640.2025304380804
+Iterations completed: 12 iterations in 1 segments
+Best true objectives record: [(0, 133.714559999978, 5, 40.51909719686955), (1, 133.714559999978, 5, 78.58288398105651), (2, 133.714559999978, 5, 135.5957792615518), (3, 133.714559999978, 5, 173.8167899362743), (4, 133.714559999978, 5, 212.3109333012253), (5, 133.714559999978, 5, 257.45365403033793), (6, 133.714559999978, 5, 300.8086198847741), (7, 133.714559999978, 5, 336.13441885169595), (8, 133.714559999978, 5, 397.23432027641684), (9, 133.714559999978, 5, 441.95178285986185), (10, 133.714559999978, 5, 492.75561861507595), (11, 133.714559999978, 5, 544.8245792677626), (12, 133.714559999978, 5, 593.1121322000399), (13, 133.714559999978, 5, 640.2023235177621)]
+Operator weights: {'random_greedy': [1], 'random_regret2': [1], 'random_regret3': [1], 'random_regret4': [1], 'random_charge': [1], 'worst_greedy': [1], 'worst_regret2': [1], 'worst_regret3': [1], 'worst_regret4': [1], 'worst_charge': [1], 'shaw_greedy': [1], 'shaw_regret2': [1], 'shaw_regret3': [1], 'shaw_regret4': [1], 'shaw_charge': [1], 'charge_greedy': [1], 'charge_regret2': [1], 'charge_regret3': [1], 'charge_regret4': [1], 'charge_charge': [1]}
+
