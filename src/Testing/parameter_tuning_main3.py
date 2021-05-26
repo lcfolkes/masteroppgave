@@ -54,7 +54,7 @@ if __name__ == "__main__":
     files = [["./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_a", "./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_b"],
              ["./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_c"]]
     """
-    files = [["./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_c"]]
+    files = [["./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_a", "./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_b"]]
     try:
         n = 10
         for filenames in files:
