@@ -23,9 +23,8 @@ def run_process(filename, process_num, param=None):
 
 def run_gurobi_parallel(filenames):
     num_processes = len(filenames)
-    args = [f+".yaml" for f in filenames]
     with mp.Pool(processes=num_processes) as pool:
-        pool.map(run_gurobi_process, args)
+        pool.map(run_gurobi_process, filenames)
 
 def run_gurobi_process(filename):
     gi = GurobiInstance(filename + ".yaml")
