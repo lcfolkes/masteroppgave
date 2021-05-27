@@ -28,7 +28,7 @@ def run_gurobi_parallel(filenames):
 
 def run_gurobi_process(filename):
     gi = GurobiInstance(filename + ".yaml")
-    run_model(gi, time_limit=100)
+    run_model(gi, time_limit=3600)
 
 def run_sequential(filename, n, verbose):
     print(f"Running {n} processes in sequence\n")
@@ -56,18 +56,17 @@ if __name__ == "__main__":
 
     #for f in files:
     #    print(f)
-    files = [["./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a", "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_b"],
-            ["./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_c", "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_a"],
-            ["./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_b", "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_c"],
-            ["./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_a","./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_b"],
-            ["./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_c", "./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_a"]]
+    files = [["./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a", "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_b",
+            "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_c", "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_a",
+            "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_b", "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_c",
+            "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_a", "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_b",
+            "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_c", "./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_a"]]
 
     try:
         n = 10
         for filenames in files:
             ### PARALLEL
             run_gurobi_parallel(filenames)
-            exit()
 
         '''
         ### SEQUENTIAL

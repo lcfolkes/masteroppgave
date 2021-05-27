@@ -1,12 +1,12 @@
-from Heuristics.ALNS.alns import ALNS
+from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
+from Gurobi.Model.run_model import run_model
+from Heuristics.ALNS.alns_no_local import ALNS
 from path_manager import path_to_src
 import os
 import time
 import sys
-
 os.chdir(path_to_src)
 import multiprocessing as mp
-
 
 def run_parallel(filenames, n):
     num_processes = n * len(filenames)
@@ -17,11 +17,18 @@ def run_parallel(filenames, n):
     with mp.Pool(processes=num_processes) as pool:
         pool.starmap(run_process, args)
 
-
 def run_process(filename, process_num, param=None):
     alns = ALNS(filename, param)
     alns.run(process_num)
 
+def run_gurobi_parallel(filenames):
+    num_processes = len(filenames)
+    with mp.Pool(processes=num_processes) as pool:
+        pool.map(run_gurobi_process, filenames)
+
+def run_gurobi_process(filename):
+    gi = GurobiInstance(filename + ".yaml")
+    run_model(gi, time_limit=3600)
 
 def run_sequential(filename, n, verbose):
     print(f"Running {n} processes in sequence\n")
@@ -37,7 +44,6 @@ def run_sequential(filename, n, verbose):
     print(obj_vals)
     return alns
 
-
 if __name__ == "__main__":
 
     files = []
@@ -50,12 +56,14 @@ if __name__ == "__main__":
 
     # for f in files:
     #    print(f)
-    files = [["./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_b", "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_c"]]
+    files = [["./InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_a", "./InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_b",
+              "./InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_c"]]
     try:
         n = 10
         for filenames in files:
             ### PARALLEL
-            run_parallel(filenames, n)
+            run_gurobi_parallel(filenames)
+
         '''
         ### SEQUENTIAL
         #alns = run_sequential(filename, 1, True)
