@@ -20,7 +20,7 @@ class GurobiInstance:
         :param optimize: if true, further optimize constructed solution. if false, evaluate constructed solution
         :return: returns a gurobi instance
         """
-
+        self.filepath = filepath
         self.cf = read_config(filepath)
         # print("SCENARIOS: ", SCENARIOS)
         self.NODES = np.arange(1, self.cf['num_parking_nodes'] + self.cf['num_charging_nodes'] + 1)  # N, set of nodes

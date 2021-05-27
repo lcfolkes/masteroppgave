@@ -5,7 +5,7 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 os.chdir(path_to_src)
-test_dir = "./Testing/ComputationalTests/medium_large_one_hour"
+test_dir = "./Testing/ComputationalTests/three_hour_run"
 
 
 #%%
@@ -27,13 +27,13 @@ for directory in os.listdir(test_dir):
 		instance_dict[instance_name] = weights_list
 
 new_instance_dict = {}
-for instance in instance_dict.keys():
+for instance in sorted(instance_dict.keys()):
+	instance = "15-25-2-1_c"
 	for count, run in enumerate(instance_dict[instance]):
 		if count == 0:
 			new_instance_dict = {k: [] for k in run.keys()}
 		for k, v in run.items():
 			new_instance_dict[k].append(v)
-
 	new_average_instance_dict = {}
 	for k, v in new_instance_dict.items():
 		n_segments = max([len(l) for l in v])
@@ -43,19 +43,19 @@ for instance in instance_dict.keys():
 				segments[i].append(float(x))
 		segment_avgs = [round(np.mean(s), 2) for s in segments]
 		new_average_instance_dict[k] = segment_avgs
-
 	x_axis = [50*n for n in range(n_segments)]
 	keys_list = sorted(list(new_average_instance_dict.keys()))
 
-	print(keys_list)
 	for i, k in enumerate(keys_list):
-		plt.plot(x_axis, new_average_instance_dict[k], label=k)
+		plt.plot(x_axis[:11], new_average_instance_dict[k][:11], label=k)
 		if i % 5 == 4:
 			plt.title(f'Adaptive weights development for instance {instance}')
 			plt.ylabel('Weight')
 			plt.xlabel('Iterations')
 			plt.legend()
 			plt.show()
+
+	break
 
 
 

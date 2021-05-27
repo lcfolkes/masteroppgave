@@ -55,7 +55,7 @@ if __name__ == "__main__":
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/ComputationalTests/ten_minutes"
+	test_dir = "./Testing/ComputationalTests/one_hour"
 	#param_dict = {"9": 2}
 	header = np.array([["", "",
 						"Construction Heuristic Obj. Val.", "Construction Heuristic Cars Charged",

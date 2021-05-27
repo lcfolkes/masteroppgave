@@ -138,13 +138,11 @@ def append_df_to_excel(filename, df, sheet_name='Sheet1', startrow=None,
 
 
 def write_gurobi_results_to_file(filename: str, out_str: str):
-	new_path = filename.split('/')[-2:]
-	new_path[-1] = new_path[-1].split('.')[0]
-	results_dir = os.path.join('../results', new_path[0])
-	results_file = os.path.join(results_dir, new_path[-1] + "_results.txt")
-
+	results_dir = f"./Testing/GurobiResults/" + filename.split('/')[-2] + "/"
 	if not os.path.exists(results_dir):
 		os.makedirs(results_dir)
 
-	with open(results_file, "a+") as f:
+	filename = filename.split('/')[-1].split('.')[0]
+	filepath = results_dir + filename
+	with open(filepath + "_results.txt", "a") as f:
 		f.write(out_str)

@@ -1,3 +1,5 @@
+from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
+from Gurobi.Model.run_model import run_model
 from Heuristics.ALNS.alns_no_local import ALNS
 from path_manager import path_to_src
 import os
@@ -15,11 +17,19 @@ def run_parallel(filenames, n):
     with mp.Pool(processes=num_processes) as pool:
         pool.starmap(run_process, args)
 
-
 def run_process(filename, process_num, param=None):
     alns = ALNS(filename, param)
     alns.run(process_num)
 
+def run_gurobi_parallel(filenames):
+    num_processes = len(filenames)
+    args = [f+".yaml" for f in filenames]
+    with mp.Pool(processes=num_processes) as pool:
+        pool.map(run_gurobi_process, args)
+
+def run_gurobi_process(filename):
+    gi = GurobiInstance(filename + ".yaml")
+    run_model(gi, time_limit=100)
 
 def run_sequential(filename, n, verbose):
     print(f"Running {n} processes in sequence\n")
@@ -57,7 +67,8 @@ if __name__ == "__main__":
         n = 10
         for filenames in files:
             ### PARALLEL
-            run_parallel(filenames, n)
+            run_gurobi_parallel(filenames)
+            exit()
 
         '''
         ### SEQUENTIAL
