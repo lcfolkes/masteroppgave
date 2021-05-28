@@ -48,12 +48,14 @@ def run_vss_process(filename, process_num):
 	alns_deterministic.run(process_num)
 
 	print(f"\n############## RP process {process_num} ##############")
-	rp = GurobiInstance(filename + ".yaml", solution_dict=alns_stochastic.best_solution[0], first_stage_only=True, optimize=True)
-	run_model(rp)
+	rp = GurobiInstance(filename + ".yaml", solution_dict=alns_stochastic.best_solution[0], first_stage_only=True,
+						optimize=True)
+	run_model(rp, mode="rp", run=process_num)
 
 	print(f"\n############## EEV process {process_num} ##############")
-	rp = GurobiInstance(filename + ".yaml", solution_dict=alns_deterministic.best_solution[0], first_stage_only=True, optimize=True)
-	run_model(rp)
+	eev = GurobiInstance(filename + ".yaml", solution_dict=alns_deterministic.best_solution[0], first_stage_only=True,
+						 optimize=True)
+	run_model(eev, mode="eev", run=process_num)
 
 
 def run_gurobi_parallel(filenames):
