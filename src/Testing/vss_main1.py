@@ -26,18 +26,25 @@ def run_process(filename, process_num, param=None):
 
 def run_vss_process(filename, process_num):
 	print(f"\n############## ALNS - Stochastic process {process_num} ##############")
-	alns_stochastic = ALNS(filename)
+	alns_stochastic = ALNS(filename + ".pkl")
 	alns_stochastic.run(process_num)
 
 	print(f"\n############## ALNS - Deterministic process {process_num} ##############")
-	deterministic_filename = get_deterministic_filename(filename)
-	alns_deterministic = ALNS(filename)
+	filename_list = filename.split("-")
+	filename_list[1] = '1'
+	deterministic_filename = "-".join(filename_list)
+	alns_deterministic = ALNS(deterministic_filename)
 	alns_deterministic.run(process_num)
 
 	# TODO: get first_stage_solution dict
-	print(f"\n############## Recourse Problem process {process_num} ##############")
-	rp = GurobiInstance(filename + ".yaml", employees=alns_stochastic.solution.employees, optimize=True)
+	print(f"\n############## RP process {process_num} ##############")
+	rp = GurobiInstance(filename + ".yaml", employees=alns_stochastic.solution.employees, first_stage_only=True, optimize=True)
 	run_model(rp)
+
+	print(f"\n############## EEV process {process_num} ##############")
+	rp = GurobiInstance(filename + ".yaml", employees=alns_stochastic.solution.employees, first_stage_only=True, optimize=True)
+	run_model(rp)
+
 
 def run_gurobi_parallel(filenames):
 	num_processes = len(filenames)
@@ -104,10 +111,36 @@ if __name__ == "__main__":
 	]
 
 	try:
-		n = 10
+		'''n = 10
 		for filenames in files:
 			### PARALLEL
 			run_gurobi_parallel(filenames)
+		'''
+		process_num = 0
+		filename = "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_a"
+
+		print(f"\n############## ALNS - Stochastic process {process_num} ##############")
+		alns_stochastic = ALNS(filename + ".pkl")
+		alns_stochastic.run(process_num)
+
+		print(f"\n############## ALNS - Deterministic process {process_num} ##############")
+		filename_list = filename.split("-")
+		filename_list[1] = '1'
+		deterministic_filename = "-".join(filename_list)
+		alns_deterministic = ALNS(deterministic_filename + ".pkl")
+		alns_deterministic.run(process_num)
+		print(f"\n############## RP process {process_num} ##############")
+		rp = GurobiInstance(filename + ".yaml", solution_dict=alns_stochastic.best_solution[0], first_stage_only=True,
+							optimize=True)
+		run_model(rp, mode="_rp", run=process_num)
+
+		print(f"\n############## EEV process {process_num} ##############")
+		eev = GurobiInstance(filename + ".yaml", solution_dict=alns_deterministic.best_solution[0], first_stage_only=True,
+							optimize=True)
+		run_model(eev, mode="_eev", run=process_num)
+		alns_deterministic.solution.rebuild(alns_deterministic.best_solution[0], "second_stage")
+
+		alns_deterministic.solution.print_solution()
 
 		'''
 		### SEQUENTIAL

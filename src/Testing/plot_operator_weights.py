@@ -28,7 +28,7 @@ for directory in os.listdir(test_dir):
 
 new_instance_dict = {}
 for instance in sorted(instance_dict.keys()):
-	instance = "15-25-2-1_c"
+	instance = "20-25-2-1_c"
 	for count, run in enumerate(instance_dict[instance]):
 		if count == 0:
 			new_instance_dict = {k: [] for k in run.keys()}
@@ -47,7 +47,7 @@ for instance in sorted(instance_dict.keys()):
 	keys_list = sorted(list(new_average_instance_dict.keys()))
 
 	for i, k in enumerate(keys_list):
-		plt.plot(x_axis[:11], new_average_instance_dict[k][:11], label=k)
+		plt.plot(x_axis, new_average_instance_dict[k], label=k)
 		if i % 5 == 4:
 			plt.title(f'Adaptive weights development for instance {instance}')
 			plt.ylabel('Weight')

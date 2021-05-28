@@ -63,8 +63,7 @@ if __name__ == "__main__":
      "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_a", "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_b",
      "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_c", "./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_a"],
     '''
-    files = [
-              ["./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_b", "./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_c",
+    files = [["./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_b", "./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_c",
               "./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_a", "./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_b",
               "./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_c", "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_a",
               "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_b", "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_c",
