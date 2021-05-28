@@ -58,8 +58,10 @@ if __name__ == "__main__":
 
     # for f in files:
     #    print(f)
+
     files = [["./InstanceGenerator/InstanceFiles/40nodes/40-25-2-1_a"], ["./InstanceGenerator/InstanceFiles/40nodes/40-25-2-1_b"],
               ["./InstanceGenerator/InstanceFiles/40nodes/40-25-2-1_c"]]
+
 
     try:
         n = 10

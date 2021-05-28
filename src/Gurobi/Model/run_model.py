@@ -8,7 +8,7 @@ from path_manager import path_to_src
 
 os.chdir(path_to_src)
 
-def run_model(model, stochastic=True, time_limit=None, reset=False, write_to_file=False):
+def run_model(model, stochastic=True, time_limit=None, reset=False, mode="", run=0, write_to_file=False):
 	m = model.m
 	if time_limit:
 		m.Params.timeLimit = time_limit
@@ -23,7 +23,9 @@ def run_model(model, stochastic=True, time_limit=None, reset=False, write_to_fil
 		if not os.path.exists(results_dir):
 			os.makedirs(results_dir)
 		filename = model.filepath.split('/')[-1].split('.')[0]
-		filename = results_dir + filename
+		filename = results_dir + filename + mode
+		with open(filename, "a") as f:
+			f.write(f"Run {run}")
 		m.Params.LogFile = filename
 		m.optimize()
 		print("Runtime: ", m.Runtime)

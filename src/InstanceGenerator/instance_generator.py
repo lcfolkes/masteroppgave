@@ -1,5 +1,7 @@
+import os
+
 from InstanceGenerator.file_writer import write_to_file_yaml
-from HelperFiles.helper_functions import read_config
+from HelperFiles.helper_functions import read_config, load_object_from_file
 from InstanceGenerator.world import World, create_parking_nodes, \
     create_charging_nodes, create_employees, create_cars, create_car_moves, set_distances, set_demands
 import copy
@@ -63,6 +65,21 @@ def create_instance_from_world(world: World, num_scenarios: int, num_tasks: int,
     print("Finished")
     return new_world
 
+def create_deterministic_instances_from_existing():
+    files = []
+    for n in [6, 8, 10, 20, 25, 30, 40, 50]:
+        directory = f"./InstanceGenerator/InstanceFiles/{n}nodes/"
+        for filename in os.listdir(directory):
+            filename_list = filename.split(".")
+            if filename_list[-1] == "pkl":
+                files.append([os.path.join(directory, filename_list[0]), n])
+
+    for file in files:
+        world = load_object_from_file(file[0] + ".pkl")
+        cf = read_config(f"./InstanceGenerator/InstanceConfigs/instance_config{file[1]}.yaml")
+        create_instance_from_world(world, num_scenarios=1, num_tasks=cf['tasks']['num_all'],
+                                   num_first_stage_tasks=cf['tasks']['num_first_stage'], version=1,
+                                   time_of_day=cf['time_of_day'], planning_period=cf['planning_period'])
 
 def main():
     cf = read_config('./InstanceGenerator/InstanceConfigs/instance_config50.yaml')
@@ -78,5 +95,5 @@ def main():
         #                       num_first_stage_tasks=cf['tasks']['num_first_stage'], version=i+1)
         worlds.append(world)
 
-
-main()
+#main()
+#create_deterministic_instances_from_existing()
