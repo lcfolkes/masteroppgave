@@ -1,0 +1,15 @@
+
+Gurobi 9.1.2 (linux64) logging started Fri May 28 12:34:28 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/50nodes/50-25-2-1_a
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 2976801 rows, 1200153 columns and 1772399599 nonzeros
+Model fingerprint: 0xd49aaa74
+Variable types: 603 continuous, 1199550 integer (1197000 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 8e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
