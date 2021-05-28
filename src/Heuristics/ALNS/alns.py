@@ -547,7 +547,7 @@ class ALNS():
 if __name__ == "__main__":
     from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
     from Gurobi.Model.run_model import run_model
-    filename = "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_a"
+    filename = "./InstanceGenerator/InstanceFiles/6nodes/6-1-2-1_a"
 
     try:
         #profiler = Profiler()
@@ -563,11 +563,11 @@ if __name__ == "__main__":
 
 
         print("\n############## Evaluate solution ##############")
-        gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=False)
+        gi = GurobiInstance(filename + ".yaml", solution_dict=alns.best_solution[0], optimize=False)
         run_model(gi)
 
         print("\n############## Reoptimized solution ##############")
-        gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees, optimize=True)
+        gi = GurobiInstance(filename + ".yaml", solution_dict=alns.best_solution[0], optimize=True)
         run_model(gi)
 
         print("\n############## Optimal solution ##############")

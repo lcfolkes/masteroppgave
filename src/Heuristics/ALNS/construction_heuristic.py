@@ -472,13 +472,13 @@ class ConstructionHeuristic:
 if __name__ == "__main__":
     from Heuristics.LocalSearch.local_search import LocalSearch
 
-    filename = "InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_a"
+    filename = "InstanceGenerator/InstanceFiles/6nodes/6-1-2-1_a"
     ch = ConstructionHeuristic(filename + ".pkl", acceptance_percentage=2)
 
 
     #ch.construct()
 
-
+    '''
     emp1 = ch.employees_dict[1]
     emp2 = ch.employees_dict[2]
     emp3 = ch.employees_dict[3]
@@ -525,14 +525,15 @@ if __name__ == "__main__":
 
     #first_solution_dict = {emp1: [cm15, cm26],
     #                 emp2: [cm4, cm12]}
-
+    '''
     ch.construct()
     ch.print_solution()
 
-    local_search = LocalSearch(ch.assigned_car_moves,
-                               2, ch.feasibility_checker)
-    local_search.search("best_first")
-    print(local_search.solution)
+    #local_search = LocalSearch(ch.assigned_car_moves,
+    #                           2, ch.feasibility_checker)
+    #local_search.search("best_first")
+    #print(local_search.solution)
+    '''
     for emp, cms in local_search.solution.items():
         print(emp.employee_id)
         for s in cms:
@@ -541,11 +542,11 @@ if __name__ == "__main__":
                 print([cm.car_move_id for cm in s])
             else:
                 print("[]")
-
+    '''
     #print(ch.car_moves_dict)
     #print(local_search.solution)
-    ch.rebuild(local_search.solution, stage="second", optimize=True)
-    ch.print_solution()
+    #ch.rebuild(local_search.solution, stage="second", optimize=True)
+    #ch.print_solution()
     #ch.print_solution()
     #ch.rebuild(local_search.solution, stage="second")
     #ch.print_solution()
