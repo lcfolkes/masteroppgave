@@ -1,0 +1,330 @@
+Run 8
+Gurobi 9.1.2 (linux64) logging started Fri May 28 20:33:13 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/20nodes/20-25-2-1_ceev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 311340 rows, 125423 columns and 29190527 nonzeros
+Model fingerprint: 0xe92924eb
+Variable types: 403 continuous, 125020 integer (124000 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 8e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Run 5
+Gurobi 9.1.2 (linux64) logging started Fri May 28 20:33:15 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/20nodes/20-25-2-1_ceev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 311340 rows, 125423 columns and 29190527 nonzeros
+Model fingerprint: 0xe92924eb
+Variable types: 403 continuous, 125020 integer (124000 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 8e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 124168 rows and 175 columns
+Presolve time: 2.74s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 3.15 seconds
+Model is infeasible
+
+Run 2
+Gurobi 9.1.2 (linux64) logging started Fri May 28 20:33:17 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/20nodes/20-25-2-1_ceev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 311340 rows, 125423 columns and 29190527 nonzeros
+Model fingerprint: 0xe92924eb
+Variable types: 403 continuous, 125020 integer (124000 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 8e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+Run 6
+Gurobi 9.1.2 (linux64) logging started Fri May 28 20:33:17 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/20nodes/20-25-2-1_ceev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 311340 rows, 125423 columns and 29190527 nonzeros
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Model fingerprint: 0xe92924eb
+Variable types: 403 continuous, 125020 integer (124000 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 8e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+Run 7
+Gurobi 9.1.2 (linux64) logging started Fri May 28 20:33:18 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/20nodes/20-25-2-1_ceev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 311340 rows, 125423 columns and 29190527 nonzeros
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Model fingerprint: 0xe92924eb
+Variable types: 403 continuous, 125020 integer (124000 binary)
+
+IIS computed: 1 constraints, 2 bounds
+IIS runtime: 1.30 seconds
+Coefficient statistics:
+  Matrix range     [1e-01, 8e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 124168 rows and 175 columns
+Presolve time: 2.86s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 3.26 seconds
+Model is infeasible
+
+Run 4
+Gurobi 9.1.2 (linux64) logging started Fri May 28 20:33:19 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/20nodes/20-25-2-1_ceev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 311340 rows, 125423 columns and 29190527 nonzeros
+Model fingerprint: 0xe92924eb
+Variable types: 403 continuous, 125020 integer (124000 binary)
+Run 1
+Gurobi 9.1.2 (linux64) logging started Fri May 28 20:33:19 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/20nodes/20-25-2-1_ceev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 311340 rows, 125423 columns and 29190527 nonzeros
+Coefficient statistics:
+  Matrix range     [1e-01, 8e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+Model fingerprint: 0xe92924eb
+Variable types: 403 continuous, 125020 integer (124000 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 8e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Run 9
+Gurobi 9.1.2 (linux64) logging started Fri May 28 20:33:19 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/20nodes/20-25-2-1_ceev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 311340 rows, 125423 columns and 29190527 nonzeros
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Model fingerprint: 0xe92924eb
+Variable types: 403 continuous, 125020 integer (124000 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 8e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+
+IIS computed: 1 constraints, 2 bounds
+IIS runtime: 1.42 seconds
+Presolve removed 124168 rows and 175 columns
+Presolve time: 3.05s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 3.45 seconds
+Model is infeasible
+
+Presolve removed 124168 rows and 175 columns
+Presolve time: 3.03s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 3.46 seconds
+Model is infeasible
+
+Presolve removed 124168 rows and 175 columns
+Presolve time: 2.82s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 3.26 seconds
+Model is infeasible
+
+
+IIS computed: 1 constraints, 2 bounds
+IIS runtime: 1.26 seconds
+Run 3
+Gurobi 9.1.2 (linux64) logging started Fri May 28 20:33:22 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/20nodes/20-25-2-1_ceev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 311340 rows, 125423 columns and 29190527 nonzeros
+Model fingerprint: 0xe92924eb
+Variable types: 403 continuous, 125020 integer (124000 binary)
+Run 10
+Gurobi 9.1.2 (linux64) logging started Fri May 28 20:33:22 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/20nodes/20-25-2-1_ceev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 311340 rows, 125423 columns and 29190527 nonzeros
+Coefficient statistics:
+  Matrix range     [1e-01, 8e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+Model fingerprint: 0xe92924eb
+Variable types: 403 continuous, 125020 integer (124000 binary)
+
+IIS computed: 1 constraints, 2 bounds
+IIS runtime: 1.30 seconds
+Coefficient statistics:
+  Matrix range     [1e-01, 8e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+Presolve removed 124168 rows and 175 columns
+Presolve time: 2.87s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 3.32 seconds
+Model is infeasible
+
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+
+IIS computed: 1 constraints, 2 bounds
+IIS runtime: 1.46 seconds
+Presolve removed 124168 rows and 175 columns
+Presolve time: 2.99s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 3.48 seconds
+Model is infeasible
+
+Presolve removed 124168 rows and 175 columns
+Presolve time: 3.25s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 3.69 seconds
+Model is infeasible
+
+
+IIS computed: 1 constraints, 2 bounds
+IIS runtime: 1.28 seconds
+
+IIS computed: 1 constraints, 2 bounds
+IIS runtime: 1.32 seconds
+
+IIS computed: 1 constraints, 2 bounds
+IIS runtime: 1.34 seconds
+Presolve removed 124168 rows and 175 columns
+Presolve time: 2.77s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 3.21 seconds
+Model is infeasible
+
+Presolve removed 124168 rows and 175 columns
+Presolve time: 2.77s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 3.18 seconds
+Model is infeasible
+
+
+IIS computed: 1 constraints, 2 bounds
+IIS runtime: 1.21 seconds
+
+IIS computed: 1 constraints, 2 bounds
+IIS runtime: 1.22 seconds

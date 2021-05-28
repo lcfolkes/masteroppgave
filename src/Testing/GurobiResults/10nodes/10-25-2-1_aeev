@@ -1,0 +1,410 @@
+Run 2
+Gurobi 9.1.2 (linux64) logging started Fri May 28 19:52:19 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/10nodes/10-25-2-1_aeev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 38107 rows, 15313 columns and 924611 nonzeros
+Model fingerprint: 0x60b38234
+Variable types: 203 continuous, 15110 integer (14600 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 26089 rows and 11381 columns
+Presolve time: 0.25s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.27 seconds
+Model is infeasible
+
+
+Computing Irreducible Inconsistent Subsystem (IIS)...
+
+           Constraints          |            Bounds           |  Runtime
+      Min       Max     Guess   |   Min       Max     Guess   |
+--------------------------------------------------------------------------
+        0     38107         -         0       788         -           0s
+        5         5         -         2         2         -           1s
+
+IIS computed: 5 constraints, 2 bounds
+IIS runtime: 0.59 seconds
+Run 3
+Gurobi 9.1.2 (linux64) logging started Fri May 28 19:52:21 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/10nodes/10-25-2-1_aeev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 38107 rows, 15313 columns and 924611 nonzeros
+Model fingerprint: 0x60b38234
+Variable types: 203 continuous, 15110 integer (14600 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 26089 rows and 11381 columns
+Presolve time: 0.22s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.24 seconds
+Model is infeasible
+
+
+Computing Irreducible Inconsistent Subsystem (IIS)...
+
+           Constraints          |            Bounds           |  Runtime
+      Min       Max     Guess   |   Min       Max     Guess   |
+--------------------------------------------------------------------------
+        0     38107         -         0       788         -           0s
+        5         5         -         2         2         -           1s
+
+IIS computed: 5 constraints, 2 bounds
+IIS runtime: 0.58 seconds
+Run 5
+Gurobi 9.1.2 (linux64) logging started Fri May 28 19:52:22 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/10nodes/10-25-2-1_aeev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 38107 rows, 15313 columns and 924611 nonzeros
+Model fingerprint: 0x60b38234
+Variable types: 203 continuous, 15110 integer (14600 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 26089 rows and 11381 columns
+Presolve time: 0.23s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.25 seconds
+Model is infeasible
+
+
+Computing Irreducible Inconsistent Subsystem (IIS)...
+
+           Constraints          |            Bounds           |  Runtime
+      Min       Max     Guess   |   Min       Max     Guess   |
+--------------------------------------------------------------------------
+        0     38107         -         0       788         -           0s
+        5         5         -         2         2         -           1s
+
+IIS computed: 5 constraints, 2 bounds
+IIS runtime: 0.59 seconds
+Run 10
+Gurobi 9.1.2 (linux64) logging started Fri May 28 19:52:23 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/10nodes/10-25-2-1_aeev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 38107 rows, 15313 columns and 924611 nonzeros
+Model fingerprint: 0x60b38234
+Variable types: 203 continuous, 15110 integer (14600 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 26089 rows and 11381 columns
+Presolve time: 0.18s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.21 seconds
+Model is infeasible
+
+
+Computing Irreducible Inconsistent Subsystem (IIS)...
+
+           Constraints          |            Bounds           |  Runtime
+      Min       Max     Guess   |   Min       Max     Guess   |
+--------------------------------------------------------------------------
+        0     38107         -         0       788         -           0s
+Run 4
+Gurobi 9.1.2 (linux64) logging started Fri May 28 19:52:24 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/10nodes/10-25-2-1_aeev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 38107 rows, 15313 columns and 924611 nonzeros
+Model fingerprint: 0x60b38234
+Variable types: 203 continuous, 15110 integer (14600 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+        5         5         -         2         2         -           1s
+
+IIS computed: 5 constraints, 2 bounds
+IIS runtime: 0.58 seconds
+Presolve removed 26089 rows and 11381 columns
+Presolve time: 0.20s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.22 seconds
+Model is infeasible
+
+
+Computing Irreducible Inconsistent Subsystem (IIS)...
+
+           Constraints          |            Bounds           |  Runtime
+      Min       Max     Guess   |   Min       Max     Guess   |
+--------------------------------------------------------------------------
+        0     38107         -         0       788         -           0s
+Run 1
+Gurobi 9.1.2 (linux64) logging started Fri May 28 19:52:25 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/10nodes/10-25-2-1_aeev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 38107 rows, 15313 columns and 924611 nonzeros
+Model fingerprint: 0x60b38234
+Variable types: 203 continuous, 15110 integer (14600 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+        5         5         -         2         2         -           1s
+
+IIS computed: 5 constraints, 2 bounds
+IIS runtime: 0.54 seconds
+Presolve removed 26089 rows and 11381 columns
+Presolve time: 0.19s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.21 seconds
+Model is infeasible
+
+
+Computing Irreducible Inconsistent Subsystem (IIS)...
+
+           Constraints          |            Bounds           |  Runtime
+      Min       Max     Guess   |   Min       Max     Guess   |
+--------------------------------------------------------------------------
+        0     38107         -         0       788         -           0s
+        5         5         -         2         2         -           1s
+
+IIS computed: 5 constraints, 2 bounds
+IIS runtime: 0.54 seconds
+Run 9
+Gurobi 9.1.2 (linux64) logging started Fri May 28 19:52:26 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/10nodes/10-25-2-1_aeev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 38107 rows, 15313 columns and 924611 nonzeros
+Model fingerprint: 0x60b38234
+Variable types: 203 continuous, 15110 integer (14600 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 26089 rows and 11381 columns
+Presolve time: 0.20s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.22 seconds
+Model is infeasible
+
+
+Computing Irreducible Inconsistent Subsystem (IIS)...
+
+           Constraints          |            Bounds           |  Runtime
+      Min       Max     Guess   |   Min       Max     Guess   |
+--------------------------------------------------------------------------
+        0     38107         -         0       788         -           0s
+        5         5         -         2         2         -           1s
+
+IIS computed: 5 constraints, 2 bounds
+IIS runtime: 0.53 seconds
+Run 6
+Gurobi 9.1.2 (linux64) logging started Fri May 28 19:52:28 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/10nodes/10-25-2-1_aeev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 38107 rows, 15313 columns and 924611 nonzeros
+Model fingerprint: 0x60b38234
+Variable types: 203 continuous, 15110 integer (14600 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 26089 rows and 11381 columns
+Presolve time: 0.17s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.19 seconds
+Model is infeasible
+
+
+Computing Irreducible Inconsistent Subsystem (IIS)...
+
+           Constraints          |            Bounds           |  Runtime
+      Min       Max     Guess   |   Min       Max     Guess   |
+--------------------------------------------------------------------------
+        0     38107         -         0       788         -           0s
+        5         5         -         2         2         -           1s
+
+IIS computed: 5 constraints, 2 bounds
+IIS runtime: 0.54 seconds
+Run 8
+Gurobi 9.1.2 (linux64) logging started Fri May 28 19:52:28 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/10nodes/10-25-2-1_aeev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 38107 rows, 15313 columns and 924611 nonzeros
+Model fingerprint: 0x60b38234
+Variable types: 203 continuous, 15110 integer (14600 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 26089 rows and 11381 columns
+Presolve time: 0.17s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.19 seconds
+Model is infeasible
+
+
+Computing Irreducible Inconsistent Subsystem (IIS)...
+
+           Constraints          |            Bounds           |  Runtime
+      Min       Max     Guess   |   Min       Max     Guess   |
+--------------------------------------------------------------------------
+        0     38107         -         0       788         -           0s
+        5         5         -         2         2         -           1s
+
+IIS computed: 5 constraints, 2 bounds
+IIS runtime: 0.51 seconds
+Run 7
+Gurobi 9.1.2 (linux64) logging started Fri May 28 19:52:32 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/10nodes/10-25-2-1_aeev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 38107 rows, 15313 columns and 924611 nonzeros
+Model fingerprint: 0x60b38234
+Variable types: 203 continuous, 15110 integer (14600 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 26089 rows and 11381 columns
+Presolve time: 0.11s
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.13 seconds
+Model is infeasible
+
+
+Computing Irreducible Inconsistent Subsystem (IIS)...
+
+           Constraints          |            Bounds           |  Runtime
+      Min       Max     Guess   |   Min       Max     Guess   |
+--------------------------------------------------------------------------
+        0     38107         -         0       788         -           0s
+        5         5         -         2         2         -           1s
+
+IIS computed: 5 constraints, 2 bounds
+IIS runtime: 0.50 seconds
