@@ -40,7 +40,7 @@ def run_vss_process(filename, process_num):
 	filename_list = filename.split("-")
 	filename_list[1] = '1'
 	deterministic_filename = "-".join(filename_list)
-	alns_deterministic = ALNS(deterministic_filename)
+	alns_deterministic = ALNS(deterministic_filename + ".pkl")
 	alns_deterministic.run(process_num)
 
 	print(f"\n############## RP process {process_num} ##############")
