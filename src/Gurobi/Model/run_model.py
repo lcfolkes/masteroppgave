@@ -72,8 +72,15 @@ def run_model(model, stochastic=True, time_limit=None, reset=False, mode="", run
 				print('%s %g' % (v.varName, v.x))
 		'''
 		#nObjectives = m.NumObj
+		with open(filename, "a") as f:
+			m.params.ObjNumber = 0
+			f.write('Charging moves: %g\n' % m.ObjNVal)
+			m.params.ObjNumber = 1
+			f.write('Profit obj. val: %g\n' % m.ObjNVal)
+
 		m.params.ObjNumber = 0
 		print('Charging moves: %g' % m.ObjNVal)
+
 		m.params.ObjNumber = 1
 		print('Profit obj. val: %g' % m.ObjNVal)
 
@@ -154,13 +161,7 @@ def run_model(model, stochastic=True, time_limit=None, reset=False, mode="", run
 		print(df_firststage_routes)
 		print("\n-------------- Second stage routes --------------")
 		print(df_secondstage_routes)
-		with open(filename, "a") as f:
-			m.params.ObjNumber = 0
-			f.write('Charging moves: %g\n' % m.ObjNVal)
-			m.params.ObjNumber = 1
-			f.write('Profit obj. val: %g\n' % m.ObjNVal)
-			f.write(f"-------------- First stage routes --------------\n{df_firststage_routes}\n")
-			f.write(f"-------------- Second stage routes --------------\n{df_secondstage_routes}\n")
+
 
 		if write_to_file:
 			write_gurobi_results_to_file()
