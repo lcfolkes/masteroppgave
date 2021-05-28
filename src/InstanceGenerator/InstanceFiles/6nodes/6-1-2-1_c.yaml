@@ -14,9 +14,9 @@ car_move_start_time: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 car_returns:
 - [0]
 - [0]
-- [1]
 - [0]
-- [1]
+- [0]
+- [0]
 - [0]
 cars_available_in_node: [0, 0, 3, 1, 0, 1]
 cars_in_need_of_charging_at_nodes: [1]
@@ -26,9 +26,9 @@ cost_deviation: 28.35
 cost_relocation: 0.42
 customer_requests:
 - [0]
-- [1]
-- [1]
-- [2]
+- [0]
+- [0]
+- [0]
 - [0]
 - [0]
 handling_time_charging: 5
