@@ -9,6 +9,7 @@ import sys
 os.chdir(path_to_src)
 import multiprocessing as mp
 
+
 def run_parallel(filenames, n):
 	num_processes = n * len(filenames)
 	args = []
@@ -18,9 +19,11 @@ def run_parallel(filenames, n):
 	with mp.Pool(processes=num_processes) as pool:
 		pool.starmap(run_process, args)
 
+
 def run_process(filename, process_num, param=None):
 	alns = ALNS(filename, param)
 	alns.run(process_num)
+
 
 def run_vss_parallel(filenames, n):
 	num_processes = n * len(filenames)
@@ -30,6 +33,7 @@ def run_vss_parallel(filenames, n):
 			args.append((filename, i + 1))
 	with mp.Pool(processes=num_processes) as pool:
 		pool.starmap(run_vss_process, args)
+
 
 def run_vss_process(filename, process_num):
 	print(f"\n############## ALNS - Stochastic process {process_num} ##############")
@@ -44,11 +48,13 @@ def run_vss_process(filename, process_num):
 	alns_deterministic.run(process_num)
 
 	print(f"\n############## RP process {process_num} ##############")
-	rp = GurobiInstance(filename + ".yaml", employees=alns_stochastic.solution.employees, first_stage_only=True, optimize=True)
+	rp = GurobiInstance(filename + ".yaml", employees=alns_stochastic.solution.employees, first_stage_only=True,
+						optimize=True)
 	run_model(rp)
 
 	print(f"\n############## EEV process {process_num} ##############")
-	rp = GurobiInstance(filename + ".yaml", employees=alns_stochastic.solution.employees, first_stage_only=True, optimize=True)
+	rp = GurobiInstance(filename + ".yaml", employees=alns_stochastic.solution.employees, first_stage_only=True,
+						optimize=True)
 	run_model(rp)
 
 
@@ -89,12 +95,8 @@ if __name__ == "__main__":
 
 	# for f in files:
 	#    print(f)
-	files = [["./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a", "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_b"],
-	        ["./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_c", "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_a"],
-	        ["./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_b", "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_c"],
-	        ["./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_a", "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_b"],
-	        ["./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_c", "./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_a"]]
-
+	files = [["./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_a", "./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_b"],
+			["./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_c"]]
 	try:
 		n = 10
 		for filenames in files:
