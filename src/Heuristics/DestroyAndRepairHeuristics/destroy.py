@@ -178,8 +178,10 @@ class ShawRemoval(Destroy):
         solution_list = get_first_stage_solution_list_from_dict(solution_dict)
         # first_stage_solution_dict = copy.deepcopy(self.first_stage_solution)
         removed_list = []
-        rand_index = random.randrange(0, len(solution_list), 1)
-
+        try:
+            rand_index = random.randrange(0, len(solution_list), 1)
+        except:
+            return solution_dict
         # Charging node states are updated and employees are removed
         solution_list[rand_index].reset()
         removed_list.append(solution_list[rand_index])

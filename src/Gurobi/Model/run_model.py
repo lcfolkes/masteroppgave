@@ -2,11 +2,13 @@ import os
 import sys
 import gurobipy as gp
 import pandas as pd
-from Gurobi.Model.gurobi_instance import GurobiInstance
+from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from HelperFiles.helper_functions import write_gurobi_results_to_file
+from path_manager import path_to_src
 
+os.chdir(path_to_src)
 
-def run_model(model, stochastic=True, time_limit=None, reset=False):
+def run_model(model, stochastic=True, time_limit=None, reset=False, mode="", run=0, write_to_file=False):
 	m = model.m
 	if time_limit:
 		m.Params.timeLimit = time_limit
@@ -16,6 +18,15 @@ def run_model(model, stochastic=True, time_limit=None, reset=False):
 		if reset:
 			# disable warm start
 			m.reset(0)
+
+		results_dir = f"./Testing/GurobiResults/" + model.filepath.split('/')[-2] + "/"
+		if not os.path.exists(results_dir):
+			os.makedirs(results_dir)
+		filename = model.filepath.split('/')[-1].split('.')[0]
+		filename = results_dir + filename + mode
+		with open(filename, "a") as f:
+			f.write(f"Run {run}")
+		m.Params.LogFile = filename
 		m.optimize()
 		print("Runtime: ", m.Runtime)
 
@@ -144,6 +155,8 @@ def run_model(model, stochastic=True, time_limit=None, reset=False):
 		print("\n-------------- Second stage routes --------------")
 		print(df_secondstage_routes)
 
+		if write_to_file:
+			write_gurobi_results_to_file()
 
 		return m, df_firststage_routes, df_secondstage_routes, model.PLANNING_PERIOD
 
@@ -195,9 +208,8 @@ def run_test_instance(file: str):
 	
 	append_df_to_excel(filename=file, df=df_results)'''
 
-def main():
-	print(sys.path)  # os.getcwd())
-
+if __name__ == "__main__":
+	'''
 	directory = "../../InstanceGenerator/InstanceFiles/6nodes/"
 	files = []
 	for filename in os.listdir(directory):
@@ -206,6 +218,10 @@ def main():
 	for file in files:
 		print(file)
 		run_test_instance(file)
-
+    '''
+	filename = "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_a"
+	print("\n############## Optimal solution ##############")
+	gi = GurobiInstance(filename + ".yaml")
+	run_model(gi, time_limit=3600)
 
 #main()

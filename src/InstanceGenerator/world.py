@@ -138,7 +138,7 @@ class World:
         :return:
         '''
 
-        if travel_time_threshold == 1:
+        if travel_time_threshold == 1 or len(self.parking_nodes) < 15:
             return
         else:
             max_handling_time = max(cm.handling_time for cm in self.car_moves)

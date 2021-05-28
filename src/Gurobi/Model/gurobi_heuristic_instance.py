@@ -6,13 +6,14 @@ from itertools import product
 
 import Heuristics.ALNS.heuristics_constants
 from HelperFiles.helper_functions import read_config, read_2d_array_to_dict, create_dict_of_indices, create_car_moves_origin_destination
+from Heuristics.helper_functions_heuristics import get_first_and_second_stage_solution
 from path_manager import path_to_src
 import os
 
 os.chdir(path_to_src)
 
 class GurobiInstance:
-    def __init__(self, filepath: str, employees=None, optimize=True):
+    def __init__(self, filepath: str, solution_dict=None, first_stage_only=False, optimize=True):
         """
         Construct a new 'GurobiInstance' object.
         :param filepath: .yaml file of instance
@@ -20,7 +21,7 @@ class GurobiInstance:
         :param optimize: if true, further optimize constructed solution. if false, evaluate constructed solution
         :return: returns a gurobi instance
         """
-
+        self.filepath = filepath
         self.cf = read_config(filepath)
         # print("SCENARIOS: ", SCENARIOS)
         self.NODES = np.arange(1, self.cf['num_parking_nodes'] + self.cf['num_charging_nodes'] + 1)  # N, set of nodes
@@ -93,9 +94,10 @@ class GurobiInstance:
         self.CUSTOMER_REQUESTS = read_2d_array_to_dict(self.cf['customer_requests'])  # R_(is), number of customer requests in second stage in parking node i in scenario s in second stage
         self.CUSTOMER_DELIVERIES = read_2d_array_to_dict(self.cf['car_returns'])  # D_(is), number of vehicles delivered by customers in node i and scenario s in second stage
 
-        if employees is not None:
-            self.first_stage_car_moves, self.second_stage_car_moves = self._get_car_moves_from_employees(employees)
-            initial_solution = self._get_initial_solution()
+        if solution_dict is not None:
+            self.first_stage_solution, self.second_stage_solution = get_first_and_second_stage_solution(
+                solution_dict, self.cf['num_first_stage_tasks'])
+            initial_solution = self._get_initial_solution(first_stage_only)
             self.m = self.create_model(initial_solution, optimize)
 
         else:
@@ -112,31 +114,30 @@ class GurobiInstance:
         return first_stage_car_moves, second_stage_car_moves
     # Model type
 
-    def _get_initial_solution(self):
+    def _get_initial_solution(self, first_stage_only):
         initial_solution = []
         task_employee = {}
         task = 0
-        for employee_id, car_moves in self.first_stage_car_moves.items():
-            for i in range(len(car_moves)):
+        for employee, car_moves in self.first_stage_solution.items():
+            for i, car_move in enumerate(car_moves):
                 task = i+1
-                car_move_id = car_moves[i].car_move_id
                 for scenario in self.SCENARIOS:
-                    krms = (employee_id, car_move_id, task, scenario)
+                    krms = (employee.employee_id, car_move.car_move_id, task, scenario)
                     #print(f"x[{krms}] ({car_moves[i].start_node.node_id} --> {car_moves[i].end_node.node_id})")
                     # x_krms, employee, car_move, task, scenario
                     initial_solution.append(krms)
-            task_employee[employee_id] = task
+            task_employee[employee.employee_id] = task
 
-        for employee_id, car_moves in self.second_stage_car_moves.items():
-            for s in range(len(car_moves)):
-                task = task_employee[employee_id]
-                for car_move in car_moves[s]:
-                    task += 1
-                    car_move_id = car_move.car_move_id
-                    krms = (employee_id, car_move_id, task, s+1)
-                    #print(f"x[{krms}] ({car_move.start_node.node_id} --> {car_move.end_node.node_id})")
-                    # x_krms, employee, car_move, task, scenario
-                    initial_solution.append(krms)
+        if not first_stage_only:
+            for employee, car_moves in self.second_stage_solution.items():
+                for s in range(len(car_moves)):
+                    task = task_employee[employee.employee_id]
+                    for car_move in car_moves[s]:
+                        task += 1
+                        krms = (employee.employee_id, car_move.car_move_id, task, s+1)
+                        #print(f"x[{krms}] ({car_move.start_node.node_id} --> {car_move.end_node.node_id})")
+                        # x_krms, employee, car_move, task, scenario
+                        initial_solution.append(krms)
         #print(initial_solution)
         return initial_solution
 
