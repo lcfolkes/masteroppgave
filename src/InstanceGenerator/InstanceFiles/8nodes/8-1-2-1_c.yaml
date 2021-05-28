@@ -18,11 +18,11 @@ car_returns:
 - [0]
 - [0]
 - [0]
-- [1]
 - [0]
 - [0]
 - [0]
-- [1]
+- [0]
+- [0]
 cars_available_in_node: [2, 1, 1, 0, 0, 2, 0, 0]
 cars_in_need_of_charging_at_nodes: [1]
 charging_slots_available: [2]
@@ -30,14 +30,14 @@ charging_state: [0, 1, 0, 0, 0, 0, 0, 0]
 cost_deviation: 28.35
 cost_relocation: 0.42
 customer_requests:
-- [1]
 - [0]
 - [0]
 - [0]
-- [1]
 - [0]
 - [0]
-- [1]
+- [0]
+- [0]
+- [0]
 handling_time_charging: 5
 handling_time_parking: 4
 ideal_state: [2, 1, 1, 1, 1, 2, 0, 0]

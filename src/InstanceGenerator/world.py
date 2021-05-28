@@ -28,7 +28,7 @@ class World:
     # PLANNING_PERIOD = cf['time_constants']['planning_period']
 
     # NODE STATES
-    #CHARGING_STATE = cf['charging_probs']
+    # CHARGING_STATE = cf['charging_probs']
 
     '''
     # COST CONSTANTS #
@@ -125,7 +125,8 @@ class World:
             irrelevant_end_nodes = self._irrelevant_end_nodes(self.parking_nodes, acceptance_percentage)
             irrelevant_start_nodes = self._irrelevant_start_nodes(self.parking_nodes, acceptance_percentage)
             for cm in self.car_moves:
-                if (cm.end_node not in irrelevant_end_nodes and cm.start_node not in irrelevant_start_nodes) or cm.is_charging_move:
+                if (
+                        cm.end_node not in irrelevant_end_nodes and cm.start_node not in irrelevant_start_nodes) or cm.is_charging_move:
                     relevant_car_moves.append(cm)
         self.relevant_car_moves = relevant_car_moves
 
@@ -144,12 +145,11 @@ class World:
             max_handling_time = max(cm.handling_time for cm in self.car_moves)
             relevant_car_moves = []
             for cm in self.relevant_car_moves:
-                cm_handling_time_frac = cm.handling_time/max_handling_time
+                cm_handling_time_frac = cm.handling_time / max_handling_time
                 if cm_handling_time_frac <= travel_time_threshold or cm.is_charging_move:
                     relevant_car_moves.append(cm)
 
             self.relevant_car_moves = relevant_car_moves
-
 
     def add_car_move_to_employee(self, car_move: CarMove, employee: Employee, scenario: int = None):
 
@@ -318,9 +318,39 @@ def set_demands(world: World, time_of_day: int):
             np.random.choice(customer_returns, size=world.num_scenarios, p=delivery_distribution_as_list_scaled))
 
 
+def set_deterministic_demands(world: World, time_of_day: int):
+    distributions_df = pd.read_csv('../data/pickup_delivery_distributions_every_hour.csv', index_col=0)
+    distributions_current_time = distributions_df.loc[distributions_df.Period == time_of_day]
+
+    for i in range(len(world.parking_nodes)):
+        node_id = world.parking_nodes[i].get_id()
+
+        # Requests
+        pickup_distribution = distributions_current_time.loc[
+            distributions_current_time.Zone == node_id, 'Pickup distribution']
+        pickup_distribution_as_list = [np.round(float(i), 2) for i in
+                                       pickup_distribution.item()[1:-1].split(', ')]
+        pickup_distribution_as_list_scaled = scale_up_distribution(pickup_distribution_as_list, 0.2)
+        customer_requests = [i for i in range(len(pickup_distribution_as_list_scaled))]
+
+        world.parking_nodes[i].set_customer_requests(
+            np.array([int(np.round(np.average(customer_requests, weights=pickup_distribution_as_list_scaled), 0))]))
+
+        # Returns
+        delivery_distribution = distributions_current_time.loc[
+            distributions_current_time.Zone == node_id, 'Delivery distribution']
+        delivery_distribution_as_list = [np.round(float(i), 2) for i in
+                                         delivery_distribution.item()[1:-1].split(', ')]
+        delivery_distribution_as_list_scaled = scale_up_distribution(delivery_distribution_as_list, 0.2)
+
+        customer_returns = [i for i in range(len(delivery_distribution_as_list_scaled))]
+        world.parking_nodes[i].set_car_returns(
+            np.array([int(np.round(np.average(customer_returns, weights=delivery_distribution_as_list_scaled), 0))]))
+
+
 def create_parking_nodes(world: World, num_parking_nodes: int, time_of_day: int, num_cars: int):
-    #possible_charging_states = [s for s in world.CHARGING_STATE]
-    #charging_state_probs = [world.CHARGING_STATE[s] for s in world.CHARGING_STATE]
+    # possible_charging_states = [s for s in world.CHARGING_STATE]
+    # charging_state_probs = [world.CHARGING_STATE[s] for s in world.CHARGING_STATE]
 
     distributions_df = pd.read_csv('../data/pickup_delivery_distributions_every_hour.csv', index_col=0)
     distributions_next_time_step = distributions_df.loc[distributions_df.Period == time_of_day + 1]
@@ -343,7 +373,7 @@ def create_parking_nodes(world: World, num_parking_nodes: int, time_of_day: int,
         chosen_nrs.append(node_nr)
 
         # CHARGING STATE
-        #charging_states.append(int(np.random.choice(possible_charging_states, p=charging_state_probs)))
+        # charging_states.append(int(np.random.choice(possible_charging_states, p=charging_state_probs)))
 
         # IDEAL STATE
         # Ideal state should be the index of the element which crosses a given percentile, such as 0.9. This means that
