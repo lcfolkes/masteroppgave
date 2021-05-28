@@ -56,29 +56,32 @@ if __name__ == "__main__":
 
     #for f in files:
     #    print(f)
+
+    files = [["./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a", "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_b"]]
     '''
-    ["./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a", "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_b",
-     "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_c", "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_a",
-     "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_b", "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_c",
-     "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_a", "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_b",
-     "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_c", "./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_a"],
+        "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_c", "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_a",
+        "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_b", "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_c",
+        "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_a", "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_b",
+        "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_c", "./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_a"],
+    '''
     '''
     files = [["./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_b", "./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_c",
-              "./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_a", "./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_b",
-              "./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_c", "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_a",
-              "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_b", "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_c",
-              "./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_a"], ["./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_b",
-              "./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_c", "./InstanceGenerator/InstanceFiles/40nodes/40-25-2-1_a",
-              "./InstanceGenerator/InstanceFiles/40nodes/50-25-2-1_b", "./InstanceGenerator/InstanceFiles/40nodes/40-25-2-1_c",
-              "./InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_a", "./InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_b",
-              "./InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_c"]
+      "./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_a", "./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_b",
+      "./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_c", "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_a",
+      "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_b", "./InstanceGenerator/InstanceFiles/25nodes/25-25-2-1_c",
+      "./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_a"], ["./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_b",
+      "./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_c", "./InstanceGenerator/InstanceFiles/40nodes/40-25-2-1_a",
+      "./InstanceGenerator/InstanceFiles/40nodes/50-25-2-1_b", "./InstanceGenerator/InstanceFiles/40nodes/40-25-2-1_c",
+      "./InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_a", "./InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_b",
+      "./InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_c"]
              ]
+    '''
 
     try:
         n = 10
         for filenames in files:
             ### PARALLEL
-            run_gurobi_parallel(filenames)
+            run_parallel(filenames, n)
 
         '''
         ### SEQUENTIAL
