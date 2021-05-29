@@ -111,11 +111,10 @@ if __name__ == "__main__":
 	        ["./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_c", "./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_a"]]
 
 	try:
-		n = 1
+		n = 10
 		for filenames in files:
 			### PARALLEL
 			run_vss_parallel(filenames, n)
-			exit()
 
 	except KeyboardInterrupt:
 		print('Interrupted')

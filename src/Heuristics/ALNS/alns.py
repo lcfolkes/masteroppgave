@@ -8,7 +8,7 @@ from Heuristics.DestroyAndRepairHeuristics.repair import Repair, RegretInsertion
     GreedyRandomInsertion
 from Heuristics.LocalSearch.local_search import LocalSearch
 from Heuristics.helper_functions_heuristics import safe_zero_division, copy_solution_dict, \
-    copy_unused_car_moves_2d_list
+    copy_unused_car_moves_2d_list, get_car_moves_duration_dict
 from Heuristics.ALNS.construction_heuristic import ConstructionHeuristic
 from Heuristics.ALNS.heuristics_constants import HeuristicsConstants
 from path_manager import path_to_src
@@ -329,6 +329,7 @@ class ALNS():
             construction_heur_txt = f"Construction heuristic, true objective value: {str(construction_true_obj_val)}\n"
             construction_heur_txt += f"Construction heuristic, heuristic objective value: {str(construction_heur_obj_val)}\n"
             check_points_txt = ""
+            car_move_duration_dict_txt = f"Car-moves duration: {get_car_moves_duration_dict(best_solution[0])}"
             for t in range(len(time_checkpoints)):
                 check_points_txt += f"Objective value after {time_checkpoints[t]} s: {true_obj_val_checkpoints[t]}\n"
                 check_points_txt += f"Heuristic value after {time_checkpoints[t]} s: {heur_obj_val_checkpoints[t]}\n"
@@ -338,6 +339,7 @@ class ALNS():
             iterations_done_txt = f"Iterations completed: {i_alns*iterations_segment + i_segment} iterations in {i_alns+1} segments\n"
             best_obj_val_record_txt = f"Best true objectives record: {best_obj_val_record}\n"
             operators_temporal_weights_txt = f"Operator weights: {self.operators_temporal_weights}\n"
+
             '''
             parameter_tuning_txt = f"Acceptance percentage: {self.solution.acceptance_percentage}\n" \
                                    f"Travel time threshold: {self.solution.travel_time_threshold}\n" \
@@ -358,7 +360,7 @@ class ALNS():
             f = open(filepath + "_results.txt", "a")
             f.writelines([run_txt, date_time_txt, obj_val_found_txt, obj_val_txt, heur_val_txt, charging_txt,
                           construction_heur_time_txt, construction_heur_txt, charging_construction_txt, time_spent_txt,
-                          iterations_done_txt, best_obj_val_record_txt, operators_temporal_weights_txt, "\n"])
+                          iterations_done_txt, best_obj_val_record_txt, car_move_duration_dict_txt, "\n"])
             f.close()
 
             if verbose:
@@ -561,7 +563,7 @@ if __name__ == "__main__":
         #alns.solution.print_solution()
         #print(profiler.output_text(unicode=True, color=True))
 
-
+        '''
         print("\n############## Evaluate solution ##############")
         gi = GurobiInstance(filename + ".yaml", solution_dict=alns.best_solution[0], optimize=False)
         run_model(gi)
@@ -573,6 +575,7 @@ if __name__ == "__main__":
         print("\n############## Optimal solution ##############")
         gi = GurobiInstance(filename + ".yaml")
         run_model(gi)
+        '''
         '''
         print("\n############## Evaluate solution ##############")
         gi = GurobiInstance(filename + ".yaml", employees=alns.solution.employees)
