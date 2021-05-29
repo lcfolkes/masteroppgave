@@ -32,6 +32,33 @@ def run_vss_parallel(filenames, n):
 	with mp.Pool(processes=num_processes) as pool:
 		pool.starmap(run_vss_process, args)
 
+def run_vss_gurobi_parallel(filenames, n):
+	num_processes = n * len(filenames)
+	args = []
+	for filename in filenames:
+		for i in range(n):
+			args.append((filename, i + 1))
+	with mp.Pool(processes=num_processes) as pool:
+		pool.starmap(run_vss_process_gurobi, args)
+
+def run_vss_process_gurobi(filename, process_num):
+	filename_list = filename.split("-")
+	filename_list[1] = '1'
+	deterministic_filename = "-".join(filename_list)
+
+	print(f"\n############## GUROBI - Deterministic process {process_num} ##############")
+	deterministic = GurobiInstance(deterministic_filename + ".yaml")
+	run_model(deterministic, time_limit=10800, mode="_det", run=process_num)
+
+	print(f"\n############## GUROBI - EEV process {process_num} ##############")
+	eev = GurobiInstance(filename + ".yaml", input_model=deterministic)
+	run_model(eev, time_limit=10800, mode="_eev", run=process_num)
+
+	print(f"\n############## GUROBI - RP process {process_num} ##############")
+	rp = GurobiInstance(filename + ".yaml")
+	run_model(rp, time_limit=10800, mode="_rp", run=process_num)
+
+
 def run_vss_process(filename, process_num):
 	print(f"\n############## ALNS - Stochastic process {process_num} ##############")
 	alns_stochastic = ALNS(filename + ".pkl")
@@ -104,17 +131,17 @@ if __name__ == "__main__":
 
 	# for f in files:
 	#    print(f)
-	files = [["./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a", "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_b"],
-                 ["./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_c", "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_a"],
-	         ["./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_b", "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_c"],
-	         ["./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_a", "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_b"],
-	         ["./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_c", "./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_a"]]
+	files = [["./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a", "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_b",
+        	"./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_c", "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_a",
+	        "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_b", "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_c"],
+	        ["./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_a", "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_b",
+	        "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_c", "./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_a"]]
 
 	try:
-		n = 10
+		n = 1
 		for filenames in files:
 			### PARALLEL
-			run_vss_parallel(filenames, n)
+			run_vss_gurobi_parallel(filenames, n)
 
 	except KeyboardInterrupt:
 		print('Interrupted')

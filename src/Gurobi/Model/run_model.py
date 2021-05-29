@@ -72,11 +72,7 @@ def run_model(model, stochastic=True, time_limit=None, reset=False, mode="", run
 				print('%s %g' % (v.varName, v.x))
 		'''
 		#nObjectives = m.NumObj
-		with open(filename, "a") as f:
-			m.params.ObjNumber = 0
-			f.write('Charging moves: %g\n' % m.ObjNVal)
-			m.params.ObjNumber = 1
-			f.write('Profit obj. val: %g\n' % m.ObjNVal)
+
 
 		m.params.ObjNumber = 0
 		print('Charging moves: %g' % m.ObjNVal)
@@ -153,6 +149,16 @@ def run_model(model, stochastic=True, time_limit=None, reset=False, mode="", run
 
 				# Update last visited  node in scenario s
 				destination_node[x[2]] = model.CARMOVE_DESTINATION[x[0]]
+
+		with open(filename, "a") as f:
+			m.params.ObjNumber = 0
+			f.write('Charging moves: %g\n' % m.ObjNVal)
+			m.params.ObjNumber = 1
+			f.write('Profit obj. val: %g\n' % m.ObjNVal)
+			f.write("-------------- First stage routes --------------\n")
+			f.write(f"{df_firststage_routes}")
+			f.write("\n-------------- Second stage routes --------------\n")
+			f.write(f"{df_secondstage_routes}")
 
 		# TODO: sort dataframe with ascending endtime in addition to Employee and, Task and scenario
 		pd.set_option('display.width', 320)

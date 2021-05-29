@@ -60,11 +60,11 @@ def run_vss_process(filename, process_num):
 
 	print(f"\n############## GUROBI - RP process {process_num} ##############")
 	rp = GurobiInstance(filename + ".yaml", solution_dict=alns_stochastic.best_solution[0], first_stage_only=True, optimize=True)
-	run_model(rp, mode="_rp", run=process_num)
+	run_model(rp, time_limit=10800, mode="_rp", run=process_num)
 
 	print(f"\n############## GUROBI - EEV process {process_num} ##############")
 	eev = GurobiInstance(filename + ".yaml", solution_dict=alns_deterministic.best_solution[0], first_stage_only=True, optimize=True)
-	run_model(eev, mode="_eev", run=process_num)
+	run_model(eev, time_limit=10800, mode="_eev", run=process_num)
 
 
 def run_gurobi_parallel(filenames):
@@ -104,8 +104,9 @@ if __name__ == "__main__":
 
 	# for f in files:
 	#    print(f)
-	files = [["./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_a", "./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_b"],
-			["./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_c"]]
+	files = [["./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_a"],
+			 ["./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_b"],
+		     ["./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_c"]]
 	try:
 		n = 10
 		for filenames in files:
