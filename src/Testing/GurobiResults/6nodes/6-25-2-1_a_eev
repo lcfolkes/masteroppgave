@@ -1,12 +1,12 @@
-Run 1
-Gurobi 9.1.2 (linux64) logging started Sat May 29 12:16:08 2021
+Run 8
+Gurobi 9.1.2 (linux64) logging started Sat May 29 14:21:51 2021
 
 Changed value of parameter LogFile to ./Testing/GurobiResults/6nodes/6-25-2-1_a_eev
    Prev:   Default: 
 Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
 Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
 Optimize a model with 14320 rows, 5709 columns and 158787 nonzeros
-Model fingerprint: 0x11ddd04f
+Model fingerprint: 0x49edf458
 Variable types: 203 continuous, 5506 integer (5200 binary)
 Coefficient statistics:
   Matrix range     [2e-01, 6e+01]
@@ -61,6 +61,600 @@ Best objective -3.393000000000e+01, best bound -3.393000000000e+01, gap 0.0000%
 
 ---------------------------------------------------------------------------
 Multi-objectives: solved in 0.05 seconds, solution count 2
+
+Charging moves: 1
+Profit obj. val: -33.93
+Run 5
+Gurobi 9.1.2 (linux64) logging started Sat May 29 14:21:51 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/6nodes/6-25-2-1_a_eev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 14320 rows, 5709 columns and 158787 nonzeros
+Model fingerprint: 0x11ddd04f
+Variable types: 203 continuous, 5506 integer (5200 binary)
+Coefficient statistics:
+  Matrix range     [2e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 14206 rows and 5428 columns
+Presolve time: 0.04s
+Presolved: 114 rows and 281 columns
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 1 (charging_moves) ...
+---------------------------------------------------------------------------
+
+Found heuristic solution: objective 1.0000000
+
+Explored 0 nodes (0 simplex iterations) in 0.04 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 1: 1 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.000000000000e+00, best bound 1.000000000000e+00, gap 0.0000%
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 2 (profit) ...
+---------------------------------------------------------------------------
+
+
+Loaded user MIP start with objective -67.788
+
+Presolve removed 115 rows and 281 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.05 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 2: -33.93 -67.788 
+No other solutions better than -33.93
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.393000000000e+01, best bound -3.393000000000e+01, gap 0.0000%
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.05 seconds, solution count 2
+
+Charging moves: 1
+Profit obj. val: -33.93
+Run 3
+Gurobi 9.1.2 (linux64) logging started Sat May 29 14:21:52 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/6nodes/6-25-2-1_a_eev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 14320 rows, 5709 columns and 158787 nonzeros
+Model fingerprint: 0x11ddd04f
+Variable types: 203 continuous, 5506 integer (5200 binary)
+Coefficient statistics:
+  Matrix range     [2e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 14206 rows and 5428 columns
+Presolve time: 0.04s
+Presolved: 114 rows and 281 columns
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 1 (charging_moves) ...
+---------------------------------------------------------------------------
+
+Found heuristic solution: objective 1.0000000
+
+Explored 0 nodes (0 simplex iterations) in 0.05 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 1: 1 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.000000000000e+00, best bound 1.000000000000e+00, gap 0.0000%
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 2 (profit) ...
+---------------------------------------------------------------------------
+
+
+Loaded user MIP start with objective -67.788
+
+Presolve removed 115 rows and 281 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.05 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 2: -33.93 -67.788 
+No other solutions better than -33.93
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.393000000000e+01, best bound -3.393000000000e+01, gap 0.0000%
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.05 seconds, solution count 2
+
+Charging moves: 1
+Profit obj. val: -33.93
+Run 4
+Gurobi 9.1.2 (linux64) logging started Sat May 29 14:21:52 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/6nodes/6-25-2-1_a_eev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 14320 rows, 5709 columns and 158787 nonzeros
+Model fingerprint: 0x11ddd04f
+Variable types: 203 continuous, 5506 integer (5200 binary)
+Coefficient statistics:
+  Matrix range     [2e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 14206 rows and 5428 columns
+Presolve time: 0.04s
+Presolved: 114 rows and 281 columns
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 1 (charging_moves) ...
+---------------------------------------------------------------------------
+
+Found heuristic solution: objective 1.0000000
+
+Explored 0 nodes (0 simplex iterations) in 0.05 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 1: 1 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.000000000000e+00, best bound 1.000000000000e+00, gap 0.0000%
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 2 (profit) ...
+---------------------------------------------------------------------------
+
+
+Loaded user MIP start with objective -67.788
+
+Presolve removed 115 rows and 281 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.05 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 2: -33.93 -67.788 
+No other solutions better than -33.93
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.393000000000e+01, best bound -3.393000000000e+01, gap 0.0000%
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.05 seconds, solution count 2
+
+Charging moves: 1
+Profit obj. val: -33.93
+Run 7
+Gurobi 9.1.2 (linux64) logging started Sat May 29 14:21:52 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/6nodes/6-25-2-1_a_eev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 14320 rows, 5709 columns and 158787 nonzeros
+Model fingerprint: 0x11ddd04f
+Variable types: 203 continuous, 5506 integer (5200 binary)
+Coefficient statistics:
+  Matrix range     [2e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 14206 rows and 5428 columns
+Presolve time: 0.04s
+Presolved: 114 rows and 281 columns
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 1 (charging_moves) ...
+---------------------------------------------------------------------------
+
+Found heuristic solution: objective 1.0000000
+
+Explored 0 nodes (0 simplex iterations) in 0.05 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 1: 1 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.000000000000e+00, best bound 1.000000000000e+00, gap 0.0000%
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 2 (profit) ...
+---------------------------------------------------------------------------
+
+
+Loaded user MIP start with objective -67.788
+
+Presolve removed 115 rows and 281 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.05 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 2: -33.93 -67.788 
+No other solutions better than -33.93
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.393000000000e+01, best bound -3.393000000000e+01, gap 0.0000%
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.05 seconds, solution count 2
+
+Charging moves: 1
+Profit obj. val: -33.93
+Run 9
+Gurobi 9.1.2 (linux64) logging started Sat May 29 14:21:52 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/6nodes/6-25-2-1_a_eev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 14320 rows, 5709 columns and 158787 nonzeros
+Model fingerprint: 0xcbd41aa5
+Variable types: 203 continuous, 5506 integer (5200 binary)
+Coefficient statistics:
+  Matrix range     [2e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 14206 rows and 5428 columns
+Presolve time: 0.04s
+Presolved: 114 rows and 281 columns
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 1 (charging_moves) ...
+---------------------------------------------------------------------------
+
+Found heuristic solution: objective 1.0000000
+
+Explored 0 nodes (0 simplex iterations) in 0.04 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 1: 1 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.000000000000e+00, best bound 1.000000000000e+00, gap 0.0000%
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 2 (profit) ...
+---------------------------------------------------------------------------
+
+
+Loaded user MIP start with objective -67.788
+
+Presolve removed 115 rows and 281 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.05 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 2: -33.93 -67.788 
+No other solutions better than -33.93
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.393000000000e+01, best bound -3.393000000000e+01, gap 0.0000%
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.05 seconds, solution count 2
+
+Charging moves: 1
+Profit obj. val: -33.93
+Run 2
+Gurobi 9.1.2 (linux64) logging started Sat May 29 14:21:53 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/6nodes/6-25-2-1_a_eev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 14320 rows, 5709 columns and 158787 nonzeros
+Model fingerprint: 0x11ddd04f
+Variable types: 203 continuous, 5506 integer (5200 binary)
+Coefficient statistics:
+  Matrix range     [2e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 14206 rows and 5428 columns
+Presolve time: 0.03s
+Presolved: 114 rows and 281 columns
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 1 (charging_moves) ...
+---------------------------------------------------------------------------
+
+Found heuristic solution: objective 1.0000000
+
+Explored 0 nodes (0 simplex iterations) in 0.04 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 1: 1 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.000000000000e+00, best bound 1.000000000000e+00, gap 0.0000%
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 2 (profit) ...
+---------------------------------------------------------------------------
+
+
+Loaded user MIP start with objective -67.788
+
+Presolve removed 115 rows and 281 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.05 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 2: -33.93 -67.788 
+No other solutions better than -33.93
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.393000000000e+01, best bound -3.393000000000e+01, gap 0.0000%
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.05 seconds, solution count 2
+
+Charging moves: 1
+Profit obj. val: -33.93
+Run 1
+Gurobi 9.1.2 (linux64) logging started Sat May 29 14:21:53 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/6nodes/6-25-2-1_a_eev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 14320 rows, 5709 columns and 158787 nonzeros
+Model fingerprint: 0x49edf458
+Variable types: 203 continuous, 5506 integer (5200 binary)
+Coefficient statistics:
+  Matrix range     [2e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 14206 rows and 5428 columns
+Presolve time: 0.03s
+Presolved: 114 rows and 281 columns
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 1 (charging_moves) ...
+---------------------------------------------------------------------------
+
+Found heuristic solution: objective 1.0000000
+
+Explored 0 nodes (0 simplex iterations) in 0.04 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 1: 1 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.000000000000e+00, best bound 1.000000000000e+00, gap 0.0000%
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 2 (profit) ...
+---------------------------------------------------------------------------
+
+
+Loaded user MIP start with objective -67.788
+
+Presolve removed 115 rows and 281 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.05 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 2: -33.93 -67.788 
+No other solutions better than -33.93
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.393000000000e+01, best bound -3.393000000000e+01, gap 0.0000%
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.05 seconds, solution count 2
+
+Charging moves: 1
+Profit obj. val: -33.93
+Run 10
+Gurobi 9.1.2 (linux64) logging started Sat May 29 14:21:53 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/6nodes/6-25-2-1_a_eev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 14320 rows, 5709 columns and 158787 nonzeros
+Model fingerprint: 0xcbd41aa5
+Variable types: 203 continuous, 5506 integer (5200 binary)
+Coefficient statistics:
+  Matrix range     [2e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 14206 rows and 5428 columns
+Presolve time: 0.03s
+Presolved: 114 rows and 281 columns
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 1 (charging_moves) ...
+---------------------------------------------------------------------------
+
+Found heuristic solution: objective 1.0000000
+
+Explored 0 nodes (0 simplex iterations) in 0.04 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 1: 1 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.000000000000e+00, best bound 1.000000000000e+00, gap 0.0000%
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 2 (profit) ...
+---------------------------------------------------------------------------
+
+
+Loaded user MIP start with objective -67.788
+
+Presolve removed 115 rows and 281 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.04 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 2: -33.93 -67.788 
+No other solutions better than -33.93
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.393000000000e+01, best bound -3.393000000000e+01, gap 0.0000%
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.05 seconds, solution count 2
+
+Charging moves: 1
+Profit obj. val: -33.93
+Run 6
+Gurobi 9.1.2 (linux64) logging started Sat May 29 14:21:54 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/6nodes/6-25-2-1_a_eev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 14320 rows, 5709 columns and 158787 nonzeros
+Model fingerprint: 0x49edf458
+Variable types: 203 continuous, 5506 integer (5200 binary)
+Coefficient statistics:
+  Matrix range     [2e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 14206 rows and 5428 columns
+Presolve time: 0.04s
+Presolved: 114 rows and 281 columns
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 1 (charging_moves) ...
+---------------------------------------------------------------------------
+
+Found heuristic solution: objective 1.0000000
+
+Explored 0 nodes (0 simplex iterations) in 0.05 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 1: 1 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.000000000000e+00, best bound 1.000000000000e+00, gap 0.0000%
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 2 (profit) ...
+---------------------------------------------------------------------------
+
+
+Loaded user MIP start with objective -67.788
+
+Presolve removed 115 rows and 281 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.05 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 2: -33.93 -67.788 
+No other solutions better than -33.93
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.393000000000e+01, best bound -3.393000000000e+01, gap 0.0000%
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.06 seconds, solution count 2
 
 Charging moves: 1
 Profit obj. val: -33.93
