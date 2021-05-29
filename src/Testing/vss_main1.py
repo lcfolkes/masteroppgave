@@ -1,6 +1,7 @@
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from Heuristics.ALNS.alns_no_local import ALNS
+from Heuristics.helper_functions_heuristics import get_first_stage_solution
 from path_manager import path_to_src
 import os
 import time
@@ -34,20 +35,34 @@ def run_vss_parallel(filenames, n):
 def run_vss_process(filename, process_num):
 	print(f"\n############## ALNS - Stochastic process {process_num} ##############")
 	alns_stochastic = ALNS(filename + ".pkl")
-	alns_stochastic.run(process_num)
+	alns_stochastic.run(f"{process_num}\nProblem type: RP")
 
 	print(f"\n############## ALNS - Deterministic process {process_num} ##############")
 	filename_list = filename.split("-")
 	filename_list[1] = '1'
 	deterministic_filename = "-".join(filename_list)
 	alns_deterministic = ALNS(deterministic_filename + ".pkl")
-	alns_deterministic.run(process_num)
+	alns_deterministic.run(f"{process_num}\nProblem type: Deterministic")
 
-	print(f"\n############## RP process {process_num} ##############")
+	print(f"\n############## ALNS - EEV process {process_num} ##############")
+	alns_stochastic.solution.rebuild(get_first_stage_solution(
+		alns_deterministic.best_solution[0], alns_stochastic.solution.num_first_stage_tasks), stage="first")
+	results_str = f"Run: {process_num}\nProblem type: EEV \n"
+	results_str += f"Objective value: {str(alns_stochastic.solution.get_obj_val(true_objective=True, both=False))}\n"
+	results_str += f"Cars charged: {str(alns_stochastic.solution.num_charging_moves)}\n" \
+				   f"Cars in need of charging: {str(alns_stochastic.solution.num_cars_in_need)}\n\n"
+	test_dir = f"./Testing/Results/" + filename.split('/')[-2] + "/"
+	if not os.path.exists(test_dir):
+		os.makedirs(test_dir)
+	filepath = test_dir + filename.split('/')[-1].split('.')[0]
+	with open(filepath + "_results.txt", "a") as f:
+		f.write(results_str)
+
+	print(f"\n############## GUROBI - RP process {process_num} ##############")
 	rp = GurobiInstance(filename + ".yaml", solution_dict=alns_stochastic.best_solution[0], first_stage_only=True, optimize=True)
 	run_model(rp, mode="_rp", run=process_num)
 
-	print(f"\n############## EEV process {process_num} ##############")
+	print(f"\n############## GUROBI - EEV process {process_num} ##############")
 	eev = GurobiInstance(filename + ".yaml", solution_dict=alns_deterministic.best_solution[0], first_stage_only=True, optimize=True)
 	run_model(eev, mode="_eev", run=process_num)
 
@@ -96,10 +111,11 @@ if __name__ == "__main__":
 	        ["./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_c", "./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_a"]]
 
 	try:
-		n = 10
+		n = 1
 		for filenames in files:
 			### PARALLEL
 			run_vss_parallel(filenames, n)
+			exit()
 
 	except KeyboardInterrupt:
 		print('Interrupted')
