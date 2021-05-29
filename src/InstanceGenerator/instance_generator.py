@@ -101,12 +101,14 @@ def create_deterministic_instance_from_existing_world(world: World, num_tasks: i
     return new_world
 
 def create_deterministic_instances_from_existing():
-    '''
-    world = load_object_from_file("./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a.pkl")
-    cf = read_config("./InstanceGenerator/InstanceConfigs/instance_config6.yaml")
+
+    world = load_object_from_file("./InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_c.pkl")
+    print([n.parking_state for n in world.parking_nodes])
+    cf = read_config("./InstanceGenerator/InstanceConfigs/instance_config50.yaml")
     create_deterministic_instance_from_existing_world(world, num_tasks=cf['tasks']['num_all'],
                                                       num_first_stage_tasks=cf['tasks']['num_first_stage'], version=1,
                                                       time_of_day=cf['time_of_day'], planning_period=cf['planning_period'])
+
     '''
     files = []
     for n in [15]:
@@ -122,6 +124,7 @@ def create_deterministic_instances_from_existing():
         create_deterministic_instance_from_existing_world(world, num_tasks=cf['tasks']['num_all'],
                                    num_first_stage_tasks=cf['tasks']['num_first_stage'], version=1,
                                    time_of_day=cf['time_of_day'], planning_period=cf['planning_period'])
+    '''
 
 
 def main():

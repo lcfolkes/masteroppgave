@@ -351,7 +351,6 @@ def set_deterministic_demands(world: World, time_of_day: int):
 def create_parking_nodes(world: World, num_parking_nodes: int, time_of_day: int, num_cars: int):
     # possible_charging_states = [s for s in world.CHARGING_STATE]
     # charging_state_probs = [world.CHARGING_STATE[s] for s in world.CHARGING_STATE]
-
     distributions_df = pd.read_csv('../data/pickup_delivery_distributions_every_hour.csv', index_col=0)
     distributions_next_time_step = distributions_df.loc[distributions_df.Period == time_of_day + 1]
     distributions_former_time_step = distributions_df.loc[distributions_df.Period == time_of_day - 1]
