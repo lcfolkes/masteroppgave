@@ -1,6 +1,6 @@
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
-from Heuristics.ALNS.alns_no_local import ALNS
+from Heuristics.ALNS.alns import ALNS
 from path_manager import path_to_src
 import os
 import time
@@ -57,8 +57,8 @@ if __name__ == "__main__":
     #for f in files:
     #    print(f)
 
-    files = [["./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_a", "./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_b"],
-             ["./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_c", "./InstanceGenerator/InstanceFiles/40nodes/40-25-2-1_a"]]
+    files = [["./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_a", "./InstanceGenerator/InstanceFiles/30nodes/30-25-2-1_b"]]
+
 
     try:
         n = 10
