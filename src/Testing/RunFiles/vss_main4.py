@@ -142,7 +142,7 @@ if __name__ == "__main__":
 			  "./InstanceGenerator/InstanceFiles/40nodes/40-25-2-1_c"]]
 
 	try:
-		n = 1
+		n = 10
 		for filenames in files:
 			### PARALLEL
 			run_vss_parallel(filenames, n)
