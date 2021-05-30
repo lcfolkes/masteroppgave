@@ -351,7 +351,7 @@ class ALNS():
             '''
 
             # Write to file
-            test_dir = f"./Testing/TravelTimeResults/" + self.filename.split('/')[-2] + "/"
+            test_dir = f"./Testing/EEV_Results/" + self.filename.split('/')[-2] + "/"
             if not os.path.exists(test_dir):
                 os.makedirs(test_dir)
             filename = self.filename.split('/')[-1].split('.')[0]
@@ -359,8 +359,7 @@ class ALNS():
             f = open(filepath + "_results.txt", "a")
             f.writelines([run_txt, date_time_txt, obj_val_found_txt, obj_val_txt, heur_val_txt, charging_txt,
                           construction_heur_time_txt, construction_heur_txt, charging_construction_txt, time_spent_txt,
-                          iterations_done_txt, best_obj_val_record_txt, car_move_duration_dict_txt, parameter_tuning_txt,
-                          "\n"])
+                          iterations_done_txt, best_obj_val_record_txt, "\n"])
             f.close()
 
             if verbose:

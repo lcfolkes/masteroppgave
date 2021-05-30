@@ -1,6 +1,7 @@
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from Heuristics.ALNS.alns_no_local import ALNS
+from Heuristics.ALNS.construction_heuristic import ConstructionHeuristic
 from Heuristics.helper_functions_heuristics import get_first_stage_solution
 from path_manager import path_to_src
 import os
@@ -60,9 +61,11 @@ def run_vss_process_gurobi(filename, process_num):
 
 
 def run_vss_process(filename, process_num):
+	'''
 	print(f"\n############## ALNS - Stochastic process {process_num} ##############")
 	alns_stochastic = ALNS(filename + ".pkl")
 	alns_stochastic.run(f"Run {process_num}\nProblem type: RP")
+	'''
 
 	print(f"\n############## ALNS - Deterministic process {process_num} ##############")
 	filename_list = filename.split("-")
@@ -72,12 +75,13 @@ def run_vss_process(filename, process_num):
 	alns_deterministic.run(f"Run {process_num}\nProblem type: Deterministic")
 
 	print(f"\n############## ALNS - EEV process {process_num} ##############")
-	alns_stochastic.solution.rebuild(get_first_stage_solution(
-		alns_deterministic.best_solution[0], alns_stochastic.solution.num_first_stage_tasks), stage="first")
+	stochastic_ch = ConstructionHeuristic(filename + ".pkl")
+	stochastic_ch.rebuild(get_first_stage_solution(
+		alns_deterministic.best_solution[0], stochastic_ch.num_first_stage_tasks), stage="first")
 	results_str = f"Run: {process_num}\nProblem type: EEV \n"
-	results_str += f"Objective value: {str(alns_stochastic.solution.get_obj_val(true_objective=True, both=False))}\n"
-	results_str += f"Cars charged: {str(alns_stochastic.solution.num_charging_moves)}\n" \
-				   f"Cars in need of charging: {str(alns_stochastic.solution.num_cars_in_need)}\n\n"
+	results_str += f"Objective value: {str(stochastic_ch.get_obj_val(true_objective=True, both=False))}\n"
+	results_str += f"Cars charged: {str(stochastic_ch.num_charging_moves)}\n" \
+				   f"Cars in need of charging: {str(stochastic_ch.num_cars_in_need)}\n\n"
 	test_dir = f"./Testing/Results/" + filename.split('/')[-2] + "/"
 	if not os.path.exists(test_dir):
 		os.makedirs(test_dir)
@@ -85,6 +89,7 @@ def run_vss_process(filename, process_num):
 	with open(filepath + "_results.txt", "a") as f:
 		f.write(results_str)
 
+	'''
 	print(f"\n############## GUROBI - RP process {process_num} ##############")
 	rp = GurobiInstance(filename + ".yaml", solution_dict=alns_stochastic.best_solution[0], first_stage_only=True, optimize=True)
 	run_model(rp, mode="_rp", run=process_num)
@@ -92,7 +97,7 @@ def run_vss_process(filename, process_num):
 	print(f"\n############## GUROBI - EEV process {process_num} ##############")
 	eev = GurobiInstance(filename + ".yaml", solution_dict=alns_deterministic.best_solution[0], first_stage_only=True, optimize=True)
 	run_model(eev, mode="_eev", run=process_num)
-
+	'''
 
 def run_gurobi_parallel(filenames):
 	num_processes = len(filenames)
@@ -131,17 +136,15 @@ if __name__ == "__main__":
 
 	# for f in files:
 	#    print(f)
-	files = [["./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_a", "./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_b",
-        	"./InstanceGenerator/InstanceFiles/6nodes/6-25-2-1_c", "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_a",
-	        "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_b", "./InstanceGenerator/InstanceFiles/8nodes/8-25-2-1_c"],
-	        ["./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_a", "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_b",
-	        "./InstanceGenerator/InstanceFiles/10nodes/10-25-2-1_c", "./InstanceGenerator/InstanceFiles/15nodes/15-25-2-1_a"]]
+	files = [["./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_a",
+			  "./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_b",
+			  "./InstanceGenerator/InstanceFiles/20nodes/20-25-2-1_c"]]
 
 	try:
-		n = 1
+		n = 10
 		for filenames in files:
 			### PARALLEL
-			run_vss_gurobi_parallel(filenames, n)
+			run_vss_parallel(filenames, n)
 
 	except KeyboardInterrupt:
 		print('Interrupted')
