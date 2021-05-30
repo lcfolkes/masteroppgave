@@ -1,0 +1,136 @@
+Run 1
+Gurobi 9.1.2 (linux64) logging started Sat May 29 19:06:35 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/8nodes/8-25-2-1_c_rp
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 22977 rows, 9211 columns and 362251 nonzeros
+Model fingerprint: 0xe78e8096
+Variable types: 203 continuous, 9008 integer (8600 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 17426 rows and 3916 columns
+Presolve time: 0.73s
+Presolved: 5551 rows and 5295 columns
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 1 (charging_moves) ...
+---------------------------------------------------------------------------
+
+Found heuristic solution: objective -0.0000000
+Presolve removed 484 rows and 2605 columns
+Presolve time: 0.24s
+Presolved: 5067 rows, 2690 columns, 35841 nonzeros
+Variable types: 0 continuous, 2690 integer (2632 binary)
+
+Root relaxation: objective 1.000000e+00, 263 iterations, 0.02 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+H    0     0                       1.0000000    8.00000   700%     -    1s
+     0     0          -    0         1.00000    1.00000  0.00%     -    1s
+
+Explored 0 nodes (450 simplex iterations) in 1.06 seconds
+Thread count was 24 (of 48 available processors)
+
+Solution count 2: 1 -0 
+No other solutions better than 1
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.000000000000e+00, best bound 1.000000000000e+00, gap 0.0000%
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 2 (profit) ...
+---------------------------------------------------------------------------
+
+
+Loaded user MIP start with objective -9.954
+
+Presolve removed 50 rows and 1156 columns
+Presolve time: 0.29s
+Presolved: 5502 rows, 4139 columns, 54753 nonzeros
+Found heuristic solution: objective 29.8980000
+Variable types: 0 continuous, 4139 integer (3926 binary)
+
+Root relaxation: objective 4.887456e+01, 963 iterations, 0.12 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0   48.87456    0  108   29.89800   48.87456  63.5%     -    1s
+H    0     0                      30.3840000   48.87456  60.9%     -    1s
+     0     0   48.87456    0  150   30.38400   48.87456  60.9%     -    1s
+H    0     0                      37.0860000   48.87456  31.8%     -    2s
+     0     0   48.87456    0  143   37.08600   48.87456  31.8%     -    2s
+     0     0   47.19769    0  116   37.08600   47.19769  27.3%     -    2s
+     0     0   47.19769    0  110   37.08600   47.19769  27.3%     -    2s
+     0     0   46.61952    0  115   37.08600   46.61952  25.7%     -    2s
+     0     0   46.58976    0  115   37.08600   46.58976  25.6%     -    3s
+     0     2   46.58976    0  115   37.08600   46.58976  25.6%     -    4s
+     7    11   46.58976    3  168   37.08600   46.58976  25.6%   177    5s
+H   43    58                      37.1040000   46.58976  25.6%   125    8s
+H   65    58                      39.5625600   46.58976  17.8%   131    8s
+   114    92   46.58976    9  132   39.56256   46.58976  17.8%   103   10s
+  1088   250   40.39186    9  238   39.56256   46.58976  17.8%  75.6   15s
+* 1174   250              14      39.6549600   46.58976  17.5%  73.8   15s
+* 1296   263              22      39.9856800   46.58976  16.5%  70.7   15s
+H 1345   312                      40.8676800   46.51267  13.8%  71.0   15s
+
+Cutting planes:
+  Gomory: 11
+  Cover: 52
+  Implied bound: 183
+  Clique: 30
+  MIR: 55
+  GUB cover: 1
+  Inf proof: 3
+  Zero half: 27
+  RLT: 40
+  Relax-and-lift: 6
+
+Explored 3663 nodes (149396 simplex iterations) in 18.97 seconds
+Thread count was 24 (of 48 available processors)
+
+Solution count 9: 40.8677 39.9857 39.655 ... -9.954
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 4.086768000000e+01, best bound 4.086768000000e+01, gap 0.0000%
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 19.26 seconds, solution count 9
+
+Charging moves: 1
+Profit obj. val: 40.8677
+-------------- First stage routes --------------
+  Employee Task Car-move   Route  Travel Time to Task  Start time  Relocation Time  End time
+0        1    1       23  (4, 2)                  9.0        18.0              8.2      26.2
+1        1    2        3  (2, 4)                  0.0        26.2              8.6      34.8
+2        2    1        8  (2, 1)                  0.0         7.0             12.2      19.2
+3        2    2       29  (6, 9)                 14.4        33.6             23.7      57.3
+-------------- Second stage routes --------------
+   Employee Task Scenario Car-move   Route  Travel Time to Task  Start time  Relocation Time  End time
+0         1    3        1       36  (7, 8)                  8.5        43.3             15.0      58.3
+1         1    3        4       33  (7, 4)                  8.5        43.3             11.4      54.7
+2         1    3        5       36  (7, 8)                  8.5        43.3             15.0      58.3
+3         1    3        6       36  (7, 8)                  8.5        43.3             15.0      58.3
+4         1    3        7       21  (4, 8)                  0.0        34.8             15.0      49.8
+5         1    3       12       21  (4, 8)                  0.0        34.8             15.0      49.8
+6         1    3       13       33  (7, 4)                  8.5        43.3             11.4      54.7
+7         1    3       16       36  (7, 8)                  8.5        43.3             15.0      58.3
+8         1    3       21       36  (7, 8)                  8.5        43.3             15.0      58.3
+9         1    3       22       31  (7, 2)                  8.5        43.3             10.7      54.0
+10        1    3       24       36  (7, 8)                  8.5        43.3             15.0      58.3
+11        1    3       25       33  (7, 4)                  8.5        43.3             11.4      54.7
