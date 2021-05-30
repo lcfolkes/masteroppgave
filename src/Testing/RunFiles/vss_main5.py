@@ -35,14 +35,14 @@ def run_vss_parallel(filenames, n):
 def run_vss_process(filename, process_num):
 	print(f"\n############## ALNS - Stochastic process {process_num} ##############")
 	alns_stochastic = ALNS(filename + ".pkl")
-	alns_stochastic.run(f"{process_num}\nProblem type: RP")
+	alns_stochastic.run(f"Run: {process_num}\nProblem type: RP")
 
 	print(f"\n############## ALNS - Deterministic process {process_num} ##############")
 	filename_list = filename.split("-")
 	filename_list[1] = '1'
 	deterministic_filename = "-".join(filename_list)
 	alns_deterministic = ALNS(deterministic_filename + ".pkl")
-	alns_deterministic.run(f"{process_num}\nProblem type: Deterministic")
+	alns_deterministic.run(f"Run: {process_num}\nProblem type: Deterministic")
 
 	print(f"\n############## ALNS - EEV process {process_num} ##############")
 	alns_stochastic.solution.rebuild(get_first_stage_solution(

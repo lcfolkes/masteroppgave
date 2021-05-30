@@ -42,12 +42,12 @@ def run_vss_process(filename, process_num):
 	filename_list[1] = '1'
 	deterministic_filename = "-".join(filename_list)
 	alns_deterministic = ALNS(deterministic_filename + ".pkl")
-	alns_deterministic.run(f"{process_num}\nProblem type: Deterministic")
+	alns_deterministic.run(f"Run: {process_num}\nProblem type: Deterministic")
 
 	print(f"\n############## ALNS - EEV process {process_num} ##############")
 	alns_stochastic.solution.rebuild(get_first_stage_solution(
 		alns_deterministic.best_solution[0], alns_stochastic.solution.num_first_stage_tasks), stage="first")
-	results_str = f"{process_num}\nProblem type: EEV \n"
+	results_str = f"Run: {process_num}\nProblem type: EEV \n"
 	results_str += f"Objective value: {str(alns_stochastic.solution.get_obj_val(true_objective=True, both=False))}\n"
 	results_str += f"Cars charged: {str(alns_stochastic.solution.num_charging_moves)}\n" \
 				   f"Cars in need of charging: {str(alns_stochastic.solution.num_cars_in_need)}\n\n"
