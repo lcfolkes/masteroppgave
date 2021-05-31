@@ -281,3 +281,14 @@ def probabilities(sample, freqs):
     for k,v in freqs.items():
         probs.append(round(v/len(sample),1))
     return probs
+
+def get_car_moves_duration_dict(solution):
+    duration_dict = {}
+    for employee, scenarios in solution.items():
+        for car_moves in scenarios:
+            for car_move in car_moves:
+                try:
+                    duration_dict[car_move.car_move_id][0] += 1
+                except:
+                    duration_dict[car_move.car_move_id] = [1, car_move.handling_time, car_move.is_charging_move]
+    return duration_dict

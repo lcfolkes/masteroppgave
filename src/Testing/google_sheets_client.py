@@ -38,7 +38,8 @@ class GoogleSheetClient():
 
 if __name__ == "__main__":
 	#parameter_tuning_spreadsheet_url = "https://docs.google.com/spreadsheets/d/1xK9FoZhR_-J2ni06U7EBVq40Wno-QA5iIKeSh45H7-k/edit"
-	spreadsheet_url = "https://docs.google.com/spreadsheets/d/1hikl4VcCQedeiH3j0tS9QvXm6WbG2EPxNYEh_0VK12Q/edit"
+	#comp_study_spreadsheet_url = "https://docs.google.com/spreadsheets/d/1hikl4VcCQedeiH3j0tS9QvXm6WbG2EPxNYEh_0VK12Q/edit"
+	spreadsheet_url = "https://docs.google.com/spreadsheets/d/1TY_zqaURu1tJwqZnEnUQjJyPlZZKu-jtkoQFeluHxvA/edit"
 	gcs = GoogleSheetClient(url=spreadsheet_url)
 	sheet = gcs.get_sheet()
 
@@ -55,34 +56,57 @@ if __name__ == "__main__":
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/ComputationalTests/one_hour"
+	test_dir = "./Testing/ComputationalTests/vss"
 	#param_dict = {"9": 2}
-	header = np.array([["", "",
-						"Construction Heuristic Obj. Val.", "Construction Heuristic Cars Charged",
-						"Construction Heuristic Time found (s)",
-						"Calibrated ALNS Obj. Val.", "Calibrated ALNS Cars Charged", "Calibrated ALNS Time found (s)", "Cars in Need of Charging"],
-					   ["Instance", "Run",
-						"Obj. Val.", "Cars Charged", "Time found (s)", "Obj. Val.", "Cars Charged", "Time found (s)", "Cars in Need of Charging"]])
+	header = np.array([["", "", "EEV", "EEV", "RP", "RP"],
+					   ["Instance", "Run", "Charging moves", "Profit", "Charging moves", "Profit"]])
 
-	header_df = pd.DataFrame(header)
-	work_sheet.set_dataframe(header_df, (1, 0), copy_head=False)
-	start_row = 3
+	#header_df = pd.DataFrame(header)
+	#work_sheet.set_dataframe(header_df, (1, 0), copy_head=False)
+	start_row = 0
 
+	result_df = pd.DataFrame(header)
 	for dir in os.listdir(test_dir):
 		sub_dir = test_dir + "/" + dir
 		for file in os.listdir(sub_dir):
 			filepath = sub_dir + "/" + file
 			f = open(filepath, "r")
-			result = m = np.zeros(shape=[10, 9]).astype(str)
-			filename = file.split(".")[0][:-8]
+			filename_list = file.split(".")[0].split("_")
+			filename = "-".join(filename_list[:2])
+			instance_mode = filename_list[-1]
+			if filename_list[0].split("-")[1] == "1":
+				continue
+			if filename_list[0].split("-")[0] not in ["30", "40", "40", "50"]:
+				continue
+			result = np.zeros(shape=[10, 6]).astype(str)
 			result[:, 0] = filename
-			result[:, 1] = [x+1 for x in range(10)]
 			for x in f:
 				line_list = x.split(':')
+				line_list_space = x.split(' ')
 				if line_list[0] == "Run":
-					run = int(line_list[1].split(',')[0].strip())
-				elif line_list[0] == "Best objective value found after (s)":
-					time_obj = round(float(line_list[1].strip()), 2)
+					run = int(line_list[1].strip())
+				elif line_list[0].strip() in ["1","2","3","4","5","6","7","8","9","10"]:
+					run = int(line_list[0].strip())
+				elif line_list[0] == "Problem type":
+					problem_type = line_list[1].strip()
+				elif line_list[0] == "Objective value":
+					profit = round(float(line_list[1].strip()), 2)
+				elif line_list[0] == "Cars charged":
+					charging_moves = int(line_list[1].split(',')[0].strip())
+					result[run - 1][1] = run
+					print(problem_type)
+					print(charging_moves)
+					print(profit)
+					print(run)
+					if problem_type == "EEV":
+						result[run - 1][2] = charging_moves
+						result[run - 1][3] = profit
+
+					else:
+						result[run - 1][4] = charging_moves
+						result[run - 1][5] = profit
+
+				'''
 				elif line_list[0] == "Objective value":
 					obj_val = line_list[1].strip()
 				elif line_list[0] == "Cars charged":
@@ -103,8 +127,11 @@ if __name__ == "__main__":
 					result[run - 1][6] = cars_charged
 					result[run - 1][7] = time_obj
 					result[run - 1][8] = cars_in_need_of_charging
+				'''
+			result_df = result_df.append(pd.DataFrame(result, columns=result_df.columns), ignore_index=True)
 
 
+			'''
 			avg_row = np.array([filename, "Average"])
 			#relevant_cols = np.array(result[:, 2:], dtype=np.float64)
 			avg_obj_val = np.mean(np.array(result[:, [2, 5]], dtype=np.float64), axis=0)
@@ -129,3 +156,5 @@ if __name__ == "__main__":
 			result_df = pd.DataFrame(result)
 			work_sheet.set_dataframe(result_df, (start_row, 0), copy_head=False)
 			start_row += 12
+			'''
+		work_sheet.set_dataframe(result_df, (start_row, 0), copy_head=False)

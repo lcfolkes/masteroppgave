@@ -1,0 +1,76 @@
+Run 1
+Gurobi 9.1.2 (linux64) logging started Sat May 29 19:06:32 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/6nodes/6-25-2-1_a_eev
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 14320 rows, 5709 columns and 158787 nonzeros
+Model fingerprint: 0x4182eec4
+Variable types: 203 continuous, 5506 integer (5200 binary)
+Coefficient statistics:
+  Matrix range     [2e-01, 6e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 14195 rows and 5424 columns
+Presolve time: 0.03s
+Presolved: 125 rows and 285 columns
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 1 (charging_moves) ...
+---------------------------------------------------------------------------
+
+Found heuristic solution: objective 1.0000000
+
+Explored 0 nodes (0 simplex iterations) in 0.04 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 1: 1 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.000000000000e+00, best bound 1.000000000000e+00, gap 0.0000%
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 2 (profit) ...
+---------------------------------------------------------------------------
+
+
+Loaded user MIP start with objective -54.6
+
+Presolve removed 126 rows and 285 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.04 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 2: -28.356 -54.6 
+No other solutions better than -28.356
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -2.835600000000e+01, best bound -2.835600000000e+01, gap 0.0000%
+
+---------------------------------------------------------------------------
+Multi-objectives: solved in 0.04 seconds, solution count 2
+
+Charging moves: 1
+Profit obj. val: -28.356
+-------------- First stage routes --------------
+  Employee Task Car-move   Route  Travel Time to Task  Start time  Relocation Time  End time
+0        1    1        9  (4, 3)                  0.0         2.0             16.3      18.3
+1        1    2        6  (2, 6)                 21.6        39.9             15.6      55.5
+2        2    1       17  (4, 1)                 10.8        15.8             19.9      35.7
+3        2    2        1  (1, 7)                  0.0        35.7             21.5      57.2
+-------------- Second stage routes --------------
+Empty DataFrame
+Columns: [Employee, Task, Scenario, Car-move, Route, Travel Time to Task, Start time, Relocation Time, End time]
+Index: []

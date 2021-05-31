@@ -1,12 +1,12 @@
-Run 0
-Gurobi 9.1.1 (mac64) logging started Fri May 28 15:41:35 2021
+Run 1
+Gurobi 9.1.2 (linux64) logging started Sat May 29 19:06:33 2021
 
 Changed value of parameter LogFile to ./Testing/GurobiResults/8nodes/8-25-2-1_a_eev
    Prev:   Default: 
-Gurobi Optimizer version 9.1.1 build v9.1.1rc0 (mac64)
-Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
 Optimize a model with 22977 rows, 9211 columns and 362401 nonzeros
-Model fingerprint: 0x800f9336
+Model fingerprint: 0xeda5da2f
 Variable types: 203 continuous, 9008 integer (8600 binary)
 Coefficient statistics:
   Matrix range     [2e-01, 7e+01]
@@ -21,21 +21,53 @@ Multi-objectives: starting optimization with 2 objectives ...
 Multi-objectives: applying initial presolve ...
 ---------------------------------------------------------------------------
 
-Presolve removed 15641 rows and 7161 columns
-Presolve time: 0.05s
+Presolve removed 22848 rows and 8865 columns
+Presolve time: 0.07s
+Presolved: 129 rows and 346 columns
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 1 (charging_moves) ...
+---------------------------------------------------------------------------
+
+Found heuristic solution: objective 1.0000000
+
+Explored 0 nodes (0 simplex iterations) in 0.08 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 1: 1 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.000000000000e+00, best bound 1.000000000000e+00, gap 0.0000%
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 2 (profit) ...
+---------------------------------------------------------------------------
+
+
+Loaded user MIP start with objective -52.416
+
+Presolve removed 130 rows and 346 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.08 seconds
+Thread count was 1 (of 48 available processors)
+
+Solution count 2: -9.162 -52.416 
+No other solutions better than -9.162
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -9.162000000000e+00, best bound -9.162000000000e+00, gap 0.0000%
 
 ---------------------------------------------------------------------------
-Multi-objectives: solved in 0.06 seconds
-Model is infeasible
+Multi-objectives: solved in 0.09 seconds, solution count 2
 
-
-Computing Irreducible Inconsistent Subsystem (IIS)...
-
-           Constraints          |            Bounds           |  Runtime
-      Min       Max     Guess   |   Min       Max     Guess   |
---------------------------------------------------------------------------
-        0     22977         -         0       686         -           0s
-        5         5         -         2         2         -           0s
-
-IIS computed: 5 constraints, 2 bounds
-IIS runtime: 0.21 seconds
+Charging moves: 1
+Profit obj. val: -9.162
+-------------- First stage routes --------------
+  Employee Task Car-move   Route  Travel Time to Task  Start time  Relocation Time  End time
+0        2    1       22  (2, 9)                 39.9        41.9             16.8      58.7
+-------------- Second stage routes --------------
+Empty DataFrame
+Columns: [Employee, Task, Scenario, Car-move, Route, Travel Time to Task, Start time, Relocation Time, End time]
+Index: []

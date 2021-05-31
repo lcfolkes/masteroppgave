@@ -13,7 +13,7 @@ import os
 os.chdir(path_to_src)
 
 class GurobiInstance:
-    def __init__(self, filepath: str, solution_dict=None, first_stage_only=False, optimize=True):
+    def __init__(self, filepath: str, solution_dict=None, first_stage_only=False, input_model=None, optimize=True):
         """
         Construct a new 'GurobiInstance' object.
         :param filepath: .yaml file of instance
@@ -98,10 +98,10 @@ class GurobiInstance:
             self.first_stage_solution, self.second_stage_solution = get_first_and_second_stage_solution(
                 solution_dict, self.cf['num_first_stage_tasks'])
             initial_solution = self._get_initial_solution(first_stage_only)
-            self.m = self.create_model(initial_solution, optimize)
+            self.m = self.create_model(initial_solution=initial_solution, optimize=optimize)
 
         else:
-            self.m = self.create_model()
+            self.m = self.create_model(input_model=input_model)
 
     def _get_car_moves_from_employees(self, employees):
         first_stage_car_moves = {}
@@ -141,7 +141,7 @@ class GurobiInstance:
         #print(initial_solution)
         return initial_solution
 
-    def create_model(self, initial_solution=None, optimize=True):
+    def create_model(self, initial_solution=None, input_model=None, optimize=True):
 
         # Create a new Model
         m: gp.Model = gp.Model("mip1")
@@ -158,6 +158,18 @@ class GurobiInstance:
             for krms in initial_solution:
                 x[krms].lb = 1
                 x[krms].ub = 1
+
+        if input_model is not None:
+            for v in input_model.m.getVars():
+                # x[krms], m < tasksfirsstage
+                # t[kms], m < tasksfirststage
+                if v.varName[0] == 'x':
+                    var_indices = list(map(int, (v.varName[2:-1].split(','))))
+                    if var_indices[2] < len(self.TASKS_FIRST_STAGE) + 1:
+                        for s in self.SCENARIOS:
+                            var_indices[-1] = s
+                            x[tuple(var_indices)].lb = v.x
+                            x[tuple(var_indices)].ub = v.x
 
         y = m.addVars(self.PARKING_NODES, lb=0, vtype=GRB.INTEGER,
                       name="y")  # y_i, Number of cars in node i by the beginning of the second stage
