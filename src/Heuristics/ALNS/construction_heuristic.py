@@ -44,7 +44,6 @@ class ConstructionHeuristic:
         self._initialize_car_moves()
         self.first_stage = True
 
-
     def get_obj_val(self, true_objective=True, both=False):
         if both:
             return self.objective_function.true_objective_value, self.objective_function.heuristic_objective_value

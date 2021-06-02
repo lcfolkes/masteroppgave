@@ -125,7 +125,7 @@ class ALNS():
                 loop = tqdm(range(iterations_segment), total=iterations_segment, leave=True, ascii=True)
                 loop.set_description(f"Segment[{i_alns}/{iterations_alns}]")
                 loop.set_postfix(current_obj_val=current_obj_val, best_obj_val=best_obj_val,
-                             best_true_obj_val=best_solution[1])
+                             best_true_obj_val=best_solution[1], charging_moves=best_solution[2])
 
                 output_text = "\n"
                 counter = 1
@@ -351,7 +351,7 @@ class ALNS():
             '''
 
             # Write to file
-            test_dir = f"./Testing/EEV_Results/" + self.filename.split('/')[-2] + "/"
+            test_dir = f"./Testing/Results/" + self.filename.split('/')[-2] + "/"
             if not os.path.exists(test_dir):
                 os.makedirs(test_dir)
             filename = self.filename.split('/')[-1].split('.')[0]
@@ -548,7 +548,7 @@ class ALNS():
 if __name__ == "__main__":
     from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
     from Gurobi.Model.run_model import run_model
-    filename = "./InstanceGenerator/InstanceFiles/6nodes/6-1-2-1_a"
+    filename = "./InstanceGenerator/InstanceFiles/40nodes/40-1-2-1_b"
 
     try:
         #profiler = Profiler()

@@ -1,6 +1,6 @@
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
-from Heuristics.ALNS.alns_no_local import ALNS
+from Heuristics.ALNS.alns import ALNS
 from Heuristics.ALNS.construction_heuristic import ConstructionHeuristic
 from Heuristics.helper_functions_heuristics import get_first_stage_solution
 from path_manager import path_to_src
