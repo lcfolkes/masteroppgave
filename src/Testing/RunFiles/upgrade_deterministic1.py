@@ -53,7 +53,7 @@ if __name__ == "__main__":
 		files.append(instance_type_list)
 
 	try:
-		n = 10
+		n = 1
 		for filenames in files:
 			### PARALLEL
 			run_upgrade_parallel(filenames, n)

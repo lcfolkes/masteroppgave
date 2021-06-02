@@ -371,7 +371,7 @@ class ALNS():
 			# Write to file
 			test_dir = f"./Testing/Results/" + self.filename.split('/')[-2] + "/"
 			if not os.path.exists(test_dir):
-				os.makedirs(test_dir)
+				os.makedirs(test_dir, exist_ok=True)
 			filename = self.filename.split('/')[-1].split('.')[0]
 			filepath = test_dir + filename
 			f = open(filepath + "_results.txt", "a")
