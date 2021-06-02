@@ -56,7 +56,7 @@ if __name__ == "__main__":
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/ComputationalTests/upgrade_deterministic_ten_minutes2"
+	test_dir = "./Testing/ComputationalTests/upgrade_deterministic_ten_minutes_three"
 	#param_dict = {"9": 2}
 	header = np.array([["", "", "Upgrade Deterministic", "Upgrade Deterministic", "Upgrade Deterministic"],
 					   ["Instance", "Run", "Charging moves", "Profit", "Time"]])
