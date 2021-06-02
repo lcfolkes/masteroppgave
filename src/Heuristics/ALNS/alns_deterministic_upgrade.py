@@ -266,7 +266,7 @@ class ALNS():
 					if self.is_deterministic and self.solution.num_charging_moves == self.solution.num_cars_in_need:
 						print("All charging moves found!")
 						finish = current_time
-						self.finish_time=current_time
+						self.finish_time = current_time
 						return
 
 					for i in range(len(time_checkpoints)):
@@ -290,9 +290,9 @@ class ALNS():
 
 				self._update_score_adjustment_parameters()
 
-			finish = time.perf_counter()
+			finish = time.perf_counter() - start
 			if verbose:
-				print(f"Finished in {round(finish - start, 2)} seconds(s)")
+				print(f"Finished in {round(finish, 2)} seconds(s)")
 
 		except KeyboardInterrupt:
 			print("Keyboard Interrupt")
@@ -302,7 +302,7 @@ class ALNS():
 			raise
 		finally:
 			if finish is None:
-				finish = time.perf_counter()
+				finish = time.perf_counter() - start
 			self.best_solution = best_solution
 			self.best_obj_val = best_obj_val
 			'''
