@@ -56,7 +56,7 @@ if __name__ == "__main__":
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/ComputationalTests/upgrade_deterministic_ten_minutes"
+	test_dir = "./Testing/ComputationalTests/upgrade_deterministic_ten_minutes2"
 	#param_dict = {"9": 2}
 	header = np.array([["", "", "Upgrade Deterministic", "Upgrade Deterministic", "Upgrade Deterministic"],
 					   ["Instance", "Run", "Charging moves", "Profit", "Time"]])
@@ -83,7 +83,7 @@ if __name__ == "__main__":
 				line_list = x.split(':')
 				line_list_space = x.split(' ')
 				if line_list[0] == "Run":
-					run = int(line_list[1].strip())
+					run = int(line_list_space[-1].strip())
 				elif line_list[0].strip() in [str(i+1) for i in range(10)]:
 					run = int(line_list[0].strip())
 				elif line_list[0] == "Problem type":
@@ -92,9 +92,12 @@ if __name__ == "__main__":
 					profit = round(float(line_list[1].strip()), 2)
 				elif line_list[0] == "Cars charged":
 					charging_moves = int(line_list[1].split(',')[0].strip())
+				elif line_list[0] == "Time used":
+					time_used = round(float(line_list[1]), 2)
 					result[run - 1][1] = run
 					result[run - 1][2] = charging_moves
 					result[run - 1][3] = profit
+					result[run - 1][4] = time_used
 
 				'''
 				elif line_list[0] == "Objective value":
