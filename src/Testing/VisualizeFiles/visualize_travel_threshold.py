@@ -12,7 +12,7 @@ os.chdir(path_to_src)
 def get_files(node_list): #[30,40,50]
 	files = []
 	for n in node_list:
-		directory = f"./InstanceGenerator/InstanceFiles/{n}nodes/"
+		directory = f"./InstanceGenerator/InstanceFilesCompStudy/{n}nodes/"
 		for filename in os.listdir(directory):
 			filename_list = filename.split(".")
 			if filename_list[-1] == "yaml":
@@ -55,11 +55,16 @@ def get_parking_handling_times(files):
 		num_parking = cf['num_parking_nodes']
 		parking_indices = [i for i, x in enumerate(cf['car_move_destination']) if x <= num_parking]
 		instance_vals = [x for i, x in enumerate(cf['car_move_handling_time']) if i in parking_indices]
+
 		max_val = max(instance_vals)
 		instance_max_vals[instance_name] = max_val
 		instance_num_carmoves[instance_name] = len(instance_vals)
 		fractional_values = list(np.divide(instance_vals, max_val))
 		handling_times += fractional_values
+		print(f)
+		print(f"Num car-moves: {len(cf['car_move_destination'])}")
+		print(f"Remove car-moves: {sum(1 for x in fractional_values if x > 0.7)}")
+		print(f"Car-moves considered: {len(cf['car_move_destination'])-sum(1 for x in fractional_values if x > 0.7)}")
 	return handling_times, instance_max_vals, instance_num_carmoves
 
 def plot_values(handling_times, parking_values, charging_values):
@@ -171,13 +176,13 @@ def plot_travel_time_threshold():
 		"legend.fancybox": False
 	})
 	x = np.array([0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
-	#gap = np.array([157, 36.98, 7.93, 5.90, 4.91, 5.22, 5.06, 4.67])
-	#time = np.array([2.5, 90, 166.5, 162.3, 137.0, 151.5, 189.9, 219.2])
-	gap = np.array([123.03, 18.63, 2.96, 5.26, 5.88, 6.25, 6.25, 5.52])
-	time = np.array([3.3, 68.1, 102.9, 162.6, 166.3, 212.6, 250.4, 277.0])
+	gap = np.array([157, 36.98, 7.93, 5.90, 4.91, 5.22, 5.06, 4.67])
+	time = np.array([2.5, 90, 166.5, 162.3, 137.0, 151.5, 189.9, 219.2])
+	#gap = np.array([123.03, 18.63, 2.96, 5.26, 5.88, 6.25, 6.25, 5.52])
+	#time = np.array([3.3, 68.1, 102.9, 162.6, 166.3, 212.6, 250.4, 277.0])
 	fig, ax1 = plt.subplots()
 
-	ax1.set_xlabel('Travel time threshold factor')
+	ax1.set_xlabel('Relocation time threshold factor')
 	ax1.set_ylabel('Gap (\%) from best-known solution')
 	ax1.plot(x, gap, label="Gap (\%)",  color="#228b21")
 	ax1.tick_params(axis='y')
@@ -209,11 +214,16 @@ def plot_construction_heuristic_run_time():
 											[15.06, 9.71, 14.53], [66.21, 52.35, 40.75], [123.58, 138.90, 179.51]])
 
 
-	instance_car_moves = np.array([[26, 26, 26], [43, 43, 43], [73,73,73], [int(172*0.7), int(172*0.7), int(172*0.7)],
-								   [int(310*0.7), int(310*0.7), int(310*0.7)], [int(489*0.7), int(489*0.7), int(489*0.7)],
-								   [int(708*0.7), int(705*0.7), int(708*0.7)], [int(1272*0.7), int(1268*0.7), int(1268*0.7)],
-								   [int(1995*0.7), int(1990*0.7), int(1990*0.7)]])
+	instance_car_moves = np.array([[26, 26, 26], [43, 43, 43], [73,73,73], [int(172), int(172), int(172)],
+								   [int(310), int(310), int(310)], [int(489), 489, int(489)],
+								   [int(708), int(705), int(708)], [int(1272), int(1268), int(1272)],
+								   [int(1995), int(1990), int(1990)]])
 
+	'''instance_car_moves = np.array(
+		[[26, 26, 26], [43, 43, 43], [73, 73, 73], [73, 105, 120],
+		 [229, 212, 192], [255, 268, 319], [560, 478, 453], [993, 958, 970],
+		 [1465, 1275, 1490]])
+	'''
 	df = pd.DataFrame(columns=["No. of Nodes", "Computational Time (s)", "No. of Car-moves"])
 	for i, n in enumerate(x):
 		for j, t in enumerate(construction_heuristic_time_all[i]):
@@ -242,16 +252,14 @@ def plot_construction_heuristic_run_time():
 
 if __name__ == "__main__":
 	'''
-	files = get_files([30, 40, 50])
-	handling_times, instance_max_vals = get_handling_times(files)
-	plot_travel_time_threshold()
-	fraction_list_parking, fraction_list_charging = get_fractional_results()
-	plot_values(handling_times, fraction_list_parking, fraction_list_charging)
-	'''
 	#plot_construction_heuristic_run_time()
 	files = get_files([30, 40, 50])
 	handling_times, instance_max_vals, instance_num_carmoves = get_parking_handling_times(files)
 	fraction_list_parking, fraction_list_charging = get_fractional_results()
 	plot_values_std(handling_times, fraction_list_parking, fraction_list_charging)
-
+	'''
+	#plot_travel_time_threshold()
+	#files = get_files([6, 8, 10, 15, 20, 25, 30, 40, 50])
+	#_,_,_ = get_parking_handling_times(files)
+	plot_construction_heuristic_run_time()
 #print(num_car_moves)

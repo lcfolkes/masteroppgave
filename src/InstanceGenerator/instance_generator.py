@@ -144,5 +144,5 @@ def main():
         #                       num_first_stage_tasks=cf['tasks']['num_first_stage'], version=i+1)
         worlds.append(world)
 
-main()
-#create_deterministic_instances_from_existing()
+#main()
+create_deterministic_instances_from_existing()
