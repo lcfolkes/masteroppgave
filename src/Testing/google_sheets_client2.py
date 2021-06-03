@@ -56,10 +56,11 @@ if __name__ == "__main__":
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/ComputationalTests/upgrade_deterministic_ten_minutes_three"
+	test_dir = "./Testing/ComputationalTests/upgrade_deterministic_new_ten_minutes_two"
 	#param_dict = {"9": 2}
-	header = np.array([["", "", "Upgrade Deterministic", "Upgrade Deterministic", "Upgrade Deterministic"],
-					   ["Instance", "Run", "Charging moves", "Profit", "Time"]])
+	header = np.array([["", "", "Upgrade Deterministic", "Upgrade Deterministic", "Upgrade Deterministic",
+						"Stochastic", "Stochastic", "Stochastic", "Both"],
+					   ["Instance", "Run", "Charging moves", "Profit", "Time", "Charging moves", "Profit", "Time", "Cars In Need Of Charging"]])
 
 	#header_df = pd.DataFrame(header)
 	#work_sheet.set_dataframe(header_df, (1, 0), copy_head=False)
@@ -77,27 +78,34 @@ if __name__ == "__main__":
 			if filename_list[0].split("-")[1] == "1":
 				continue
 
-			result = np.zeros(shape=[10, 5]).astype(str)
+			result = np.zeros(shape=[10, 9]).astype(str)
 			result[:, 0] = filename
 			for x in f:
 				line_list = x.split(':')
 				line_list_space = x.split(' ')
 				if line_list[0] == "Run":
-					run = int(line_list_space[-1].strip())
-				elif line_list[0].strip() in [str(i+1) for i in range(10)]:
-					run = int(line_list[0].strip())
+					run = int(line_list[1].strip())
 				elif line_list[0] == "Problem type":
 					problem_type = line_list[1].strip()
 				elif line_list[0] == "Objective value":
 					profit = round(float(line_list[1].strip()), 2)
+				elif line_list[0] == "Best objective value found after (s)":
+					time_used = round(float(line_list[1]), 2)
 				elif line_list[0] == "Cars charged":
 					charging_moves = int(line_list[1].split(',')[0].strip())
-				elif line_list[0] == "Time used":
-					time_used = round(float(line_list[1]), 2)
-					result[run - 1][1] = run
-					result[run - 1][2] = charging_moves
-					result[run - 1][3] = profit
-					result[run - 1][4] = time_used
+				elif line_list[0] == "Cars in need of charging":
+					cars_in_need = int(line_list[1].split(',')[0].strip())
+					if problem_type == "Stochastic":
+						result[run - 1][1] = run
+						result[run - 1][5] = charging_moves
+						result[run - 1][6] = profit
+						result[run - 1][7] = time_used
+						result[run - 1][8] = cars_in_need
+					elif problem_type == "Upgrade":
+						#result[run - 1][1] = run
+						result[run - 1][2] = charging_moves
+						result[run - 1][3] = profit
+						result[run - 1][4] = time_used
 
 				'''
 				elif line_list[0] == "Objective value":
