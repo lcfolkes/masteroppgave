@@ -318,7 +318,7 @@ class ALNS():
             # Strings to save to file
             dateTimeObj = datetime.now()
             timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S)")
-            run_txt = f"\nRun: {str(run)}\n"
+            run_txt = f"\n{str(run)}\n"
             date_time_txt = f"DateTime: {timestampStr}\n"
             obj_val_found_txt = f"Best objective value found after (s): {best_obj_val_found_time}\n"
             obj_val_txt = f"Objective value: {str(best_solution[1])}\n"

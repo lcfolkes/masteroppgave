@@ -23,12 +23,16 @@ def run_upgrade_parallel(filenames, n):
 
 
 def run_upgrade_process(filename, process_num):
+	print(f"\n############## ALNS - Stochastic process {process_num} ##############")
+	alns = ALNS(filename + ".pkl")
+	alns.run(f"Run: {process_num}\nProblem type: Stochastic")
+
 	print(f"\n############## ALNS - Deterministic process {process_num} ##############")
 	filename_list = filename.split("-")
 	filename_list[1] = '1'
 	deterministic_filename = "-".join(filename_list)
 	alns_deterministic = ALNS(deterministic_filename + ".pkl")
-	alns_deterministic.run(f"Run {process_num}\nProblem type: Deterministic")
+	alns_deterministic.run(f"Run: {process_num}\nProblem type: Deterministic")
 
 	print(f"\n############## ALNS - EEV process {process_num} ##############")
 	stochastic_ch = ConstructionHeuristic(filename + ".pkl")
@@ -40,12 +44,12 @@ def run_upgrade_process(filename, process_num):
 	time_used = alns_deterministic.finish_time + time_ch
 	print(f"\n############## ALNS - Upgrade process {process_num} ##############")
 	alns_stochastic = ALNS(filename + ".pkl", construction_heuristic=stochastic_ch, start_time=time_used)
-	alns_stochastic.run(f"Run {process_num}\nProblem type: Upgrade")
+	alns_stochastic.run(f"Run: {process_num}\nProblem type: Upgrade")
 
 
 if __name__ == "__main__":
 	files = []
-	for n in [25, 30]:  # , 25, 30, 40, 50]:
+	for n in [30]:  # , 25, 30, 40, 50]:
 		directory = f"./InstanceGenerator/InstanceFiles/{n}nodes/"
 		instance_type_list = []
 		for filename in os.listdir(directory):
