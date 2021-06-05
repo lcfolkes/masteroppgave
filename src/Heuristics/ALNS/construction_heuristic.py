@@ -16,13 +16,14 @@ class ConstructionHeuristic:
     # instance_file = "InstanceFiles/6nodes/6-3-1-1_d.pkl"
     # filename = "InstanceFiles/6nodes/6-3-1-1_b.yaml"
 
-    def __init__(self, instance_file):
+    def __init__(self, instance_file, num_cars, num_employees):
         self.acceptance_percentage = HeuristicsConstants.ACCEPTANCE_PERCENTAGE
         self.travel_time_threshold = HeuristicsConstants.TRAVEL_TIME_THRESHOLD
         self.instance_file = instance_file
         self.world_instance = load_object_from_file(instance_file)
         self.world_instance.initialize_relevant_car_moves(self.acceptance_percentage)
         self.world_instance.initialize_relevant_car_moves_distance(self.travel_time_threshold)
+        self.world_instance.initialize_sensitivity_analysis(num_cars=num_cars, num_employees=num_employees)
         self.objective_function = ObjectiveFunction(self.world_instance)
         self.world_instance.planning_period = HeuristicsConstants.PLANNING_PERIOD
         self.feasibility_checker = FeasibilityChecker(self.world_instance)
@@ -471,103 +472,5 @@ class ConstructionHeuristic:
 if __name__ == "__main__":
     from Heuristics.LocalSearch.local_search import LocalSearch
 
-    filename = "InstanceGenerator/InstanceFiles/6nodes/6-1-2-1_a"
-    ch = ConstructionHeuristic(filename + ".pkl", acceptance_percentage=2)
-
-
-    #ch.construct()
-
-    '''
-    emp1 = ch.employees_dict[1]
-    emp2 = ch.employees_dict[2]
-    emp3 = ch.employees_dict[3]
-    emp4 = ch.employees_dict[4]
-    cm2 = ch.car_moves_dict[2]
-    cm300 = ch.car_moves_dict[300]
-    cm6 = ch.car_moves_dict[6]
-    cm242 = ch.car_moves_dict[242]
-    cm207 = ch.car_moves_dict[207]
-    cm157 = ch.car_moves_dict[157]
-    cm112 = ch.car_moves_dict[112]
-    cm137 = ch.car_moves_dict[137]
-    cm141 = ch.car_moves_dict[141]
-    cm248 = ch.car_moves_dict[248]
-    cm193 = ch.car_moves_dict[193]
-    cm47 = ch.car_moves_dict[47]
-    cm184 = ch.car_moves_dict[184]
-    cm204 = ch.car_moves_dict[204]
-    cm159 = ch.car_moves_dict[159]
-    cm155 = ch.car_moves_dict[155]
-    cm60 = ch.car_moves_dict[60]
-    cm216 = ch.car_moves_dict[216]
-    cm80 = ch.car_moves_dict[80]
-    cm93 = ch.car_moves_dict[93]
-    cm273 = ch.car_moves_dict[273]
-    cm122 = ch.car_moves_dict[122]
-
-
-
-    second_solution_dict = {emp1: [[cm273, cm122]]*25,
-                     emp2: [[cm2, cm300], [cm2, cm300, cm6], [cm2, cm300], [cm2, cm300, cm242], [cm2, cm300, cm207, cm157],
-                           [cm2, cm300, cm112], [cm2, cm300, cm242], [cm2, cm300, cm157], [cm2, cm300, cm137], [cm2, cm300, cm141],
-                           [cm2, cm300, cm248], [cm2, cm300, cm193], [cm2, cm300, cm242], [cm2, cm300, cm242], [cm2, cm300, cm47],
-                           [cm2, cm300, cm242], [cm2, cm300, cm242], [cm2, cm300, cm47], [cm2, cm300, cm242], [cm2, cm300, cm242],
-                           [cm2, cm300, cm204], [cm2, cm300, cm207], [cm2, cm300, cm242], [cm2, cm300, cm184], [cm2, cm300, cm159]],
-                    emp3: [[]]*25,
-                    emp4: [[cm155, cm60], [cm155, cm60, cm216]]+[[cm155, cm60]]*3+[[cm155, cm60, cm80]]+
-                          [[cm155, cm60]]*11+[[cm155, cm60, cm216]]+[[cm155, cm60]]+[[cm155, cm60, cm80]]
-                          +[[cm155, cm60]]*3+[[cm155, cm60, cm93]]+[[cm155, cm60]]}
-
-
-    #first_solution_dict = {emp1: [cm60, cm10], emp2: [cm55, cm40]}
-    first_solution_dict = {emp1: [], emp2: []}
-
-    #first_solution_dict = {emp1: [cm15, cm26],
-    #                 emp2: [cm4, cm12]}
-    '''
-    ch.construct()
-    ch.print_solution()
-
-    #local_search = LocalSearch(ch.assigned_car_moves,
-    #                           2, ch.feasibility_checker)
-    #local_search.search("best_first")
-    #print(local_search.solution)
-    '''
-    for emp, cms in local_search.solution.items():
-        print(emp.employee_id)
-        for s in cms:
-            print("scenario", cms.index(s))
-            if s:
-                print([cm.car_move_id for cm in s])
-            else:
-                print("[]")
-    '''
-    #print(ch.car_moves_dict)
-    #print(local_search.solution)
-    #ch.rebuild(local_search.solution, stage="second", optimize=True)
-    #ch.print_solution()
-    #ch.print_solution()
-    #ch.rebuild(local_search.solution, stage="second")
-    #ch.print_solution()
-
-
-
-
-    #profiler = Profiler()
-    #profiler.start()
-
-    #ch.construct()
-
-
-    #profiler.stop()
-
-
-    '''
-    print("\n############## Evaluate solution ##############")
-    gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=False)#, optimize=False)
-    run_model(gi)
-
-    print("\n############## Reoptimized solution ##############")
-    gi = GurobiInstance(filename + ".yaml", employees=ch.employees, optimize=True)
-    run_model(gi)
-    '''
+    filename = "InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_a"
+    ch = ConstructionHeuristic(filename + ".pkl", num_cars=30, num_employees=4)

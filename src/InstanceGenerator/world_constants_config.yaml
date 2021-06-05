@@ -28,3 +28,5 @@ objective_function:
   profit_rental: 40.5
   cost_relocation: 0.42
   cost_deviation: 28.35
+
+charging_ratio: [0.1,0.15] #[12.5, 18.75]

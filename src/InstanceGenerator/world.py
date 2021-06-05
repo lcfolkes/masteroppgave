@@ -25,6 +25,7 @@ class World:
     # TIME CONSTANTS #
     HANDLING_TIME_PARKING = cf['time_constants']['handling_parking']
     HANDLING_TIME_CHARGING = cf['time_constants']['handling_charging']
+    CHARGING_RATIO = cf['charging_ratio']
     # PLANNING_PERIOD = cf['time_constants']['planning_period']
 
     # NODE STATES
@@ -150,6 +151,24 @@ class World:
                     relevant_car_moves.append(cm)
 
             self.relevant_car_moves = relevant_car_moves
+
+    def initialize_sensitivity_analysis(self, num_cars, num_employees):
+        # Remove car-moves
+        car_list = [c for c in self.cars if not c.needs_charging]
+        random.seed(10)
+        car_removal_list = random.sample(car_list, len(car_list)-num_cars)
+        car_move_removal_list = []
+        for c in car_removal_list:
+            c.parking_node.parking_state -= 1
+            car_move_removal_list += c.car_moves
+        self.cars = [c for c in self.cars if c not in car_removal_list]
+        self.relevant_car_moves = [cm for cm in self.relevant_car_moves if cm not in car_move_removal_list]
+        # Remove employees
+        random.seed(10)
+        removal_list = random.sample(self.employees, len(self.employees)-num_employees)
+        self.employees = [e for e in self.employees if e not in removal_list]
+
+
 
     def add_car_move_to_employee(self, car_move: CarMove, employee: Employee, scenario: int = None):
 
@@ -415,7 +434,7 @@ def create_parking_nodes(world: World, num_parking_nodes: int, time_of_day: int,
     charging_states = [0 for i in range(len(chosen_nrs))]
     # ratio of cars in need of charging to number of charged cars, a random number between 0.1 and 0.2
     #ratio_charging = random.uniform(0.125, 0.1875)
-    ratio_charging = random.uniform(0.1875, 0.28125)
+    ratio_charging = random.uniform(World.CHARGING_RATIO[0], World.CHARGING_RATIO[1])
 
 
     # Fill the parking nodes with cars in need of charging until the desired number of cars in need of charging have
