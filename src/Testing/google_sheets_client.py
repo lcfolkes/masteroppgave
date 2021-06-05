@@ -56,7 +56,7 @@ if __name__ == "__main__":
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/ComputationalTests/vss"
+	test_dir = "./Testing/ComputationalTests/eev_ten_minutes"
 	#param_dict = {"9": 2}
 	header = np.array([["", "", "EEV", "EEV", "RP", "RP"],
 					   ["Instance", "Run", "Charging moves", "Profit", "Charging moves", "Profit"]])
@@ -76,7 +76,7 @@ if __name__ == "__main__":
 			instance_mode = filename_list[-1]
 			if filename_list[0].split("-")[1] == "1":
 				continue
-			if filename_list[0].split("-")[0] not in ["30", "40", "40", "50"]:
+			if filename_list[0].split("-")[0] not in ["20", "25", "30", "40", "40", "50"]:
 				continue
 			result = np.zeros(shape=[10, 6]).astype(str)
 			result[:, 0] = filename

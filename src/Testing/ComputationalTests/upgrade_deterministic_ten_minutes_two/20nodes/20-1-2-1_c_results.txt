@@ -1,0 +1,510 @@
+
+Run: Run 1
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 0.26927528803935274
+Objective value: -120.37200000000327
+Heuristic value: -120.3720000000031
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.11961297004017979
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 0.26952444500057027
+Iterations completed: 1 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.11961297004017979), (1, -84.12600000000158, 2, 0.19457592203980312), (2, -120.37200000000327, 3, 0.26927528803935274)]
+
+
+Run: Run 4
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 0.3806356319691986
+Objective value: -96.64200000000149
+Heuristic value: -96.64200000000126
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.19728655996732414
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 0.3808570620021783
+Iterations completed: 2 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.19728655996732414), (1, -84.12600000000158, 2, 0.2502390089794062), (2, -84.12600000000158, 2, 0.336515333969146), (3, -96.64200000000149, 3, 0.3806356319691986)]
+
+
+Run: Run 1
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 0.40013724099844694
+Objective value: -95.97000000000124
+Heuristic value: -95.97000000000101
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.19773171696579084
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 0.40039416996296495
+Iterations completed: 1 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.19773171696579084), (1, -84.12600000000158, 2, 0.25657437299378216), (2, -95.97000000000124, 3, 0.40013724099844694)]
+
+
+Run: Run 4
+Problem type: Upgrade
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 6.550108082592487e-07
+Objective value: -96.64200000000126
+Heuristic value: -96.64200000000149
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 6.550108082592487e-07
+Construction heuristic, true objective value: -96.64200000000126
+Construction heuristic, heuristic objective value: -96.64200000000149
+Construction heuristic cars charged: 3
+Time used: 0.03504732297733426
+Iterations completed: 0 iterations in 1 segments
+Best true objectives record: [(0, -96.64200000000126, 3, 6.550108082592487e-07), (1, -96.64200000000126, 3, 0.03483101102756336)]
+
+
+Run: Run 1
+Problem type: Upgrade
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 6.00004568696022e-07
+Objective value: -95.97000000000124
+Heuristic value: -95.97000000000101
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 6.00004568696022e-07
+Construction heuristic, true objective value: -95.97000000000124
+Construction heuristic, heuristic objective value: -95.97000000000101
+Construction heuristic cars charged: 3
+Time used: 0.03314441500697285
+Iterations completed: 0 iterations in 1 segments
+Best true objectives record: [(0, -95.97000000000124, 3, 6.00004568696022e-07), (1, -95.97000000000124, 3, 0.032924623985309154)]
+
+
+Run: Run 7
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 0.5661504009622149
+Objective value: -96.6420000000012
+Heuristic value: -96.64200000000149
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.17719896900234744
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 0.566386264981702
+Iterations completed: 2 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.17719896900234744), (1, -84.12600000000158, 2, 0.23004602699074894), (2, -84.12600000000158, 2, 0.41992632899200544), (3, -96.6420000000012, 3, 0.5661504009622149)]
+
+
+Run: Run 8
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 0.6014802689896896
+Objective value: -95.97000000000124
+Heuristic value: -95.97000000000101
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.17295593197923154
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 0.6016864660196006
+Iterations completed: 4 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.17295593197923154), (1, -84.12600000000158, 2, 0.22613917500711977), (2, -84.12600000000158, 2, 0.34237470699008554), (3, -84.12600000000158, 2, 0.3902795009780675), (4, -84.12600000000158, 2, 0.43832188501255587), (5, -95.97000000000124, 3, 0.6014802689896896)]
+
+
+Run: Run 8
+Problem type: Upgrade
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 4.239846020936966e-07
+Objective value: -95.97000000000124
+Heuristic value: -95.97000000000101
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 4.239846020936966e-07
+Construction heuristic, true objective value: -95.97000000000124
+Construction heuristic, heuristic objective value: -95.97000000000101
+Construction heuristic cars charged: 3
+Time used: 0.016768644971307367
+Iterations completed: 0 iterations in 1 segments
+Best true objectives record: [(0, -95.97000000000124, 3, 4.239846020936966e-07), (1, -95.97000000000124, 3, 0.01664748095208779)]
+
+
+Run: Run 5
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 0.6988642130163498
+Objective value: -95.97000000000124
+Heuristic value: -95.97000000000101
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.21929757698671892
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 0.6990681170136668
+Iterations completed: 4 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.21929757698671892), (1, -84.12600000000158, 2, 0.3032260600011796), (2, -84.12600000000158, 2, 0.47190114500699565), (3, -84.12600000000158, 2, 0.5172227839939296), (4, -84.12600000000158, 2, 0.5619114409782924), (5, -95.97000000000124, 3, 0.6988642130163498)]
+
+
+Run: Run 3
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 0.7061210000538267
+Objective value: -126.37800000000321
+Heuristic value: -126.37800000000315
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.21644293802091852
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 0.706338752002921
+Iterations completed: 6 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.21644293802091852), (1, -84.12600000000158, 2, 0.3056444430258125), (2, -84.12600000000158, 2, 0.35063698305748403), (3, -84.12600000000158, 2, 0.3984456720063463), (4, -84.12600000000158, 2, 0.4759784210473299), (5, -84.12600000000158, 2, 0.5549191240570508), (6, -84.12600000000158, 2, 0.6023865610477515), (7, -126.37800000000321, 3, 0.7061210000538267)]
+
+
+Run: Run 9
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 0.7228550339932553
+Objective value: -130.5780000000001
+Heuristic value: -130.5779999999998
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.23488163796719164
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 0.7229675069684163
+Iterations completed: 5 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.23488163796719164), (1, -84.12600000000158, 2, 0.30016571399755776), (2, -84.12600000000158, 2, 0.4537467699847184), (3, -84.12600000000158, 2, 0.5014845990226604), (4, -84.12600000000158, 2, 0.56071388698183), (5, -84.12600000000158, 2, 0.6081135270069353), (6, -130.5780000000001, 3, 0.7228550339932553)]
+
+
+Run: Run 10
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 0.7455916400067508
+Objective value: -131.45999999999998
+Heuristic value: -131.45999999999998
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.1707002850016579
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 0.7458255540113896
+Iterations completed: 5 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.1707002850016579), (1, -84.12600000000158, 2, 0.2817036409978755), (2, -84.12600000000158, 2, 0.3912564049824141), (3, -84.12600000000158, 2, 0.4400457669980824), (4, -84.12600000000158, 2, 0.49978696496691555), (5, -84.12600000000158, 2, 0.5472652270109393), (6, -131.45999999999998, 3, 0.7455916400067508)]
+
+
+Run: Run 6
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 0.856901164050214
+Objective value: -131.45999999999998
+Heuristic value: -131.45999999999998
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.11915548500837758
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 0.8571181860170327
+Iterations completed: 4 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.11915548500837758), (1, -84.12600000000158, 2, 0.21007738000480458), (2, -84.12600000000158, 2, 0.3878839750541374), (3, -84.12600000000158, 2, 0.48809371003881097), (4, -84.12600000000158, 2, 0.6540495590306818), (5, -131.45999999999998, 3, 0.856901164050214)]
+
+
+Run: Run 3
+Problem type: Upgrade
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 7.800408639013767e-07
+Objective value: -126.37800000000315
+Heuristic value: -126.37800000000304
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 7.800408639013767e-07
+Construction heuristic, true objective value: -126.37800000000315
+Construction heuristic, heuristic objective value: -126.37800000000304
+Construction heuristic cars charged: 3
+Time used: 0.06858548504533246
+Iterations completed: 0 iterations in 1 segments
+Best true objectives record: [(0, -126.37800000000315, 3, 7.800408639013767e-07), (1, -126.37800000000315, 3, 0.0683571370318532)]
+
+
+Run: Run 6
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 0.8557704520062543
+Objective value: -126.37800000000321
+Heuristic value: -126.37800000000315
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.18527773796813563
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 0.8559006609721109
+Iterations completed: 5 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.18527773796813563), (1, -84.12600000000158, 2, 0.24148236401379108), (2, -84.12600000000158, 2, 0.3643546819803305), (3, -84.12600000000158, 2, 0.41644051496405154), (4, -84.12600000000158, 2, 0.46720506896963343), (5, -84.12600000000158, 2, 0.6745988999609835), (6, -126.37800000000321, 3, 0.8557704520062543)]
+
+
+Run: Run 10
+Problem type: Upgrade
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 5.820184014737606e-07
+Objective value: -131.45999999999998
+Heuristic value: -131.4599999999998
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 5.820184014737606e-07
+Construction heuristic, true objective value: -131.45999999999998
+Construction heuristic, heuristic objective value: -131.4599999999998
+Construction heuristic cars charged: 3
+Time used: 0.05522134399507195
+Iterations completed: 0 iterations in 1 segments
+Best true objectives record: [(0, -131.45999999999998, 3, 5.820184014737606e-07), (1, -131.45999999999998, 3, 0.05500081100035459)]
+
+
+Run: Run 2
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 0.9198617999791168
+Objective value: -95.97000000000124
+Heuristic value: -95.97000000000101
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.2269056019722484
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 0.9200082079623826
+Iterations completed: 5 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.2269056019722484), (1, -84.12600000000158, 2, 0.27959597995504737), (2, -84.12600000000158, 2, 0.35407632897840813), (3, -84.12600000000158, 2, 0.40143788896966726), (4, -84.12600000000158, 2, 0.6286824329872616), (5, -84.12600000000158, 2, 0.8126853239955381), (6, -95.97000000000124, 3, 0.9198617999791168)]
+
+
+Run: Run 9
+Problem type: Upgrade
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 6.509944796562195e-07
+Objective value: -130.57800000000003
+Heuristic value: -130.57799999999975
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 6.509944796562195e-07
+Construction heuristic, true objective value: -130.57800000000003
+Construction heuristic, heuristic objective value: -130.57799999999975
+Construction heuristic cars charged: 3
+Time used: 0.07573557901196182
+Iterations completed: 0 iterations in 1 segments
+Best true objectives record: [(0, -130.57800000000003, 3, 6.509944796562195e-07), (1, -130.57800000000003, 3, 0.075509486021474)]
+
+
+Run: Run 6
+Problem type: Upgrade
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 4.200264811515808e-07
+Objective value: -126.37800000000315
+Heuristic value: -126.37800000000304
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 4.200264811515808e-07
+Construction heuristic, true objective value: -126.37800000000315
+Construction heuristic, heuristic objective value: -126.37800000000304
+Construction heuristic cars charged: 3
+Time used: 0.039042988035362214
+Iterations completed: 0 iterations in 1 segments
+Best true objectives record: [(0, -126.37800000000315, 3, 4.200264811515808e-07), (1, -126.37800000000315, 3, 0.03883938898798078)]
+
+
+Run: Run 3
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:37)
+Best objective value found after (s): 1.2163901419844478
+Objective value: -131.20800000000048
+Heuristic value: -131.20799999999963
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.18730988400056958
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 1.2166206439724192
+Iterations completed: 9 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.18730988400056958), (1, -84.12600000000158, 2, 0.29210269899340346), (2, -84.12600000000158, 2, 0.45201176701812074), (3, -84.12600000000158, 2, 0.5249757209676318), (4, -84.12600000000158, 2, 0.6689623849815689), (5, -84.12600000000158, 2, 0.7177950839977711), (6, -84.12600000000158, 2, 0.8473170649958774), (7, -84.12600000000158, 2, 0.892862326989416), (8, -84.12600000000158, 2, 1.0175099599873647), (10, -131.20800000000048, 3, 1.2163901419844478)]
+
+
+Run: Run 5
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:38)
+Best objective value found after (s): 1.2169931459939107
+Objective value: -95.97000000000124
+Heuristic value: -95.97000000000101
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.17102585401153192
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 1.2172171270358376
+Iterations completed: 8 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.17102585401153192), (1, -84.12600000000158, 2, 0.22355243103811517), (2, -84.12600000000158, 2, 0.30011454300256446), (3, -84.12600000000158, 2, 0.34856919501908123), (4, -84.12600000000158, 2, 0.5441931280074641), (5, -84.12600000000158, 2, 0.6732519210199825), (6, -84.12600000000158, 2, 0.720286327006761), (7, -84.12600000000158, 2, 0.9110931120230816), (8, -84.12600000000158, 2, 1.0770554170012474), (9, -95.97000000000124, 3, 1.2169931459939107)]
+
+
+Run: Run 5
+Problem type: Upgrade
+DateTime: 02-Jun-2021 (23:23:38)
+Best objective value found after (s): 5.789916031062603e-07
+Objective value: -95.97000000000124
+Heuristic value: -95.97000000000101
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 5.789916031062603e-07
+Construction heuristic, true objective value: -95.97000000000124
+Construction heuristic, heuristic objective value: -95.97000000000101
+Construction heuristic cars charged: 3
+Time used: 0.032847063965164125
+Iterations completed: 0 iterations in 1 segments
+Best true objectives record: [(0, -95.97000000000124, 3, 5.789916031062603e-07), (1, -95.97000000000124, 3, 0.0326435620081611)]
+
+
+Run: Run 7
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:38)
+Best objective value found after (s): 1.2924365879734978
+Objective value: -95.97000000000124
+Heuristic value: -95.97000000000101
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.20751726400339976
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 1.2926465999917127
+Iterations completed: 8 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.20751726400339976), (1, -84.12600000000158, 2, 0.27338723599677905), (2, -84.12600000000158, 2, 0.37494787195464596), (3, -84.12600000000158, 2, 0.41996798996115103), (4, -84.12600000000158, 2, 0.4643821449717507), (5, -84.12600000000158, 2, 0.760750871966593), (6, -84.12600000000158, 2, 0.9134421109920368), (7, -84.12600000000158, 2, 1.0969211870105937), (8, -84.12600000000158, 2, 1.1552651450037956), (9, -95.97000000000124, 3, 1.2924365879734978)]
+
+
+Run: Run 7
+Problem type: Upgrade
+DateTime: 02-Jun-2021 (23:23:38)
+Best objective value found after (s): 5.119945853948593e-07
+Objective value: -95.97000000000124
+Heuristic value: -95.97000000000101
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 5.119945853948593e-07
+Construction heuristic, true objective value: -95.97000000000124
+Construction heuristic, heuristic objective value: -95.97000000000101
+Construction heuristic cars charged: 3
+Time used: 0.01634823897620663
+Iterations completed: 0 iterations in 1 segments
+Best true objectives record: [(0, -95.97000000000124, 3, 5.119945853948593e-07), (1, -95.97000000000124, 3, 0.01623147097416222)]
+
+
+Run: Run 9
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:38)
+Best objective value found after (s): 1.4194358949898742
+Objective value: -95.97000000000124
+Heuristic value: -95.97000000000101
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.24246280797524378
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 1.4195755039690994
+Iterations completed: 7 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.24246280797524378), (1, -84.12600000000158, 2, 0.35145963495597243), (2, -84.12600000000158, 2, 0.6782018399680965), (3, -84.12600000000158, 2, 0.8168638849747367), (4, -84.12600000000158, 2, 1.0056621529511176), (5, -84.12600000000158, 2, 1.0793825049768202), (6, -84.12600000000158, 2, 1.1245894419844262), (7, -84.12600000000158, 2, 1.325000298966188), (8, -95.97000000000124, 3, 1.4194358949898742)]
+
+
+Run: Run 2
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:38)
+Best objective value found after (s): 1.7653641640208662
+Objective value: -131.8800000000008
+Heuristic value: -131.88000000000056
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.208004531043116
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 1.7654714790405706
+Iterations completed: 20 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.208004531043116), (1, -84.12600000000158, 2, 0.26107987703289837), (2, -84.12600000000158, 2, 0.31074756203452125), (3, -84.12600000000158, 2, 0.3555350730312057), (4, -84.12600000000158, 2, 0.4938100180006586), (5, -84.12600000000158, 2, 0.5667795390472747), (6, -84.12600000000158, 2, 0.6115345350117423), (7, -84.12600000000158, 2, 0.7847534340107813), (8, -84.12600000000158, 2, 0.9615915880422108), (9, -84.12600000000158, 2, 1.0309307440184057), (10, -84.12600000000158, 2, 1.15229832904879), (11, -84.12600000000158, 2, 1.267109174048528), (12, -67.158, 2, 1.3650592080084607), (13, -67.158, 2, 1.3891733540222049), (14, -67.158, 2, 1.4846885880106129), (15, -67.158, 2, 1.593655303993728), (16, -67.158, 2, 1.6197340540238656), (17, -67.158, 2, 1.6475256830453873), (18, -67.158, 2, 1.6797268000082113), (21, -131.8800000000008, 3, 1.7653641640208662)]
+
+
+Run: Run 2
+Problem type: Upgrade
+DateTime: 02-Jun-2021 (23:23:38)
+Best objective value found after (s): 7.309718057513237e-07
+Objective value: -131.88
+Heuristic value: -131.8800000000001
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 7.309718057513237e-07
+Construction heuristic, true objective value: -131.88
+Construction heuristic, heuristic objective value: -131.8800000000001
+Construction heuristic cars charged: 3
+Time used: 0.05406071397010237
+Iterations completed: 0 iterations in 1 segments
+Best true objectives record: [(0, -131.88, 3, 7.309718057513237e-07), (1, -131.88, 3, 0.05393372697290033)]
+
+
+Run: Run 10
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:38)
+Best objective value found after (s): 1.9530809790012427
+Objective value: -95.97000000000124
+Heuristic value: -95.97000000000101
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.14852082694415003
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 1.953312338970136
+Iterations completed: 18 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.14852082694415003), (1, -84.12600000000158, 2, 0.20113369094906375), (2, -84.12600000000158, 2, 0.3549728639773093), (3, -84.12600000000158, 2, 0.4538951559807174), (4, -84.12600000000158, 2, 0.5014628709759563), (5, -84.12600000000158, 2, 0.5610165909747593), (6, -84.12600000000158, 2, 0.6085958809708245), (7, -84.12600000000158, 2, 0.8200651679653674), (8, -84.12600000000158, 2, 0.961832016997505), (9, -84.12600000000158, 2, 1.0071412939578295), (10, -84.12600000000158, 2, 1.1957967009511776), (11, -84.12600000000158, 2, 1.3614164249738678), (12, -84.12600000000158, 2, 1.4731709439656697), (13, -84.12600000000158, 2, 1.5073715799953789), (14, -84.12600000000158, 2, 1.5290957179968245), (15, -84.12600000000158, 2, 1.5906296449829824), (16, -84.12600000000158, 2, 1.6808302689460106), (17, -84.12600000000158, 2, 1.8242413259577006), (19, -95.97000000000124, 3, 1.9530809790012427)]
+
+
+Run: Run 8
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:39)
+Best objective value found after (s): 3.0362017049919814
+Objective value: -96.64200000000189
+Heuristic value: -96.64200000000194
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.22589507402153686
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 3.036330577044282
+Iterations completed: 32 iterations in 1 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.22589507402153686), (1, -84.12600000000158, 2, 0.3307932440075092), (2, -84.12600000000158, 2, 0.5449987589963712), (3, -84.12600000000158, 2, 0.5953812150401063), (4, -84.12600000000158, 2, 0.643058326037135), (5, -84.12600000000158, 2, 0.7770606119884178), (6, -84.12600000000158, 2, 0.8900489620282315), (7, -84.12600000000158, 2, 1.1077120280242525), (8, -84.12600000000158, 2, 1.1851899290340953), (9, -84.12600000000158, 2, 1.2152845960226841), (10, -84.12600000000158, 2, 1.2371900010039099), (11, -84.12600000000158, 2, 1.3897947150398977), (12, -84.12600000000158, 2, 1.467061945993919), (13, -84.12600000000158, 2, 1.6012682190048508), (14, -84.12600000000158, 2, 1.624968882999383), (15, -84.12600000000158, 2, 1.709483374026604), (16, -84.12600000000158, 2, 1.803943109989632), (17, -84.12600000000158, 2, 1.829969207989052), (18, -84.12600000000158, 2, 1.851917396998033), (19, -84.12600000000158, 2, 2.066756866988726), (20, -84.12600000000158, 2, 2.132191047014203), (21, -84.12600000000158, 2, 2.1579412090359256), (22, -84.12600000000158, 2, 2.197188408987131), (23, -84.12600000000158, 2, 2.259419408044778), (24, -84.12600000000158, 2, 2.3163307530339807), (25, -84.12600000000158, 2, 2.3439260810264386), (26, -84.12600000000158, 2, 2.446498362987768), (28, -84.12600000000158, 2, 2.6015384630300105), (29, -84.12600000000158, 2, 2.6409119850140996), (30, -84.12600000000158, 2, 2.8269463360193186), (31, -84.12600000000158, 2, 2.861692471022252), (32, -84.12600000000158, 2, 2.9545827580150217), (33, -96.64200000000189, 3, 3.0362017049919814)]
+
+
+Run: Run 4
+Problem type: Deterministic
+DateTime: 02-Jun-2021 (23:23:43)
+Best objective value found after (s): 6.462003637978341
+Objective value: -96.64200000000177
+Heuristic value: -96.64200000000177
+Cars charged: 3
+Cars in need of charging: 3
+Construction heuristic time (s): 0.21221491799224168
+Construction heuristic, true objective value: -84.12600000000158
+Construction heuristic, heuristic objective value: -1084.1260000000004
+Construction heuristic cars charged: 2
+Time used: 6.46211147797294
+Iterations completed: 75 iterations in 2 segments
+Best true objectives record: [(0, -84.12600000000158, 2, 0.21221491799224168), (1, -84.12600000000158, 2, 0.2783258199924603), (2, -84.12600000000158, 2, 0.3742553129559383), (3, -84.12600000000158, 2, 0.5473202439607121), (4, -84.12600000000158, 2, 0.7324138879776001), (6, -84.12600000000158, 2, 0.9355195699608885), (7, -84.12600000000158, 2, 1.1014738059602678), (8, -84.12600000000158, 2, 1.2551665129722096), (9, -84.12600000000158, 2, 1.3088254549656995), (11, -84.12600000000158, 2, 1.55125280295033), (12, -84.12600000000158, 2, 1.6008411530056037), (13, -84.12600000000158, 2, 1.72422066697618), (14, -84.12600000000158, 2, 1.8088841389981098), (15, -84.12600000000158, 2, 1.850394487963058), (16, -84.12600000000158, 2, 1.895729499985464), (17, -84.12600000000158, 2, 1.9504798279958777), (21, -84.12600000000158, 2, 2.2364009869634174), (22, -84.12600000000158, 2, 2.547879406949505), (25, -84.12600000000158, 2, 2.7802571499487385), (26, -84.12600000000158, 2, 2.8537881869706325), (28, -84.12600000000158, 2, 3.0038513769977726), (29, -84.12600000000158, 2, 3.346680498973001), (33, -84.12600000000158, 2, 3.651720599969849), (34, -84.12600000000158, 2, 3.7052880629780702), (35, -84.12600000000158, 2, 3.7889710929594003), (37, -84.12600000000158, 2, 3.8743422519764863), (38, -84.12600000000158, 2, 3.9242965019657277), (39, -84.12600000000158, 2, 3.9791466189781204), (40, -84.12600000000158, 2, 4.014364514965564), (43, -84.12600000000158, 2, 4.222098303958774), (45, -67.78799999999991, 2, 4.414870904991403), (46, -67.78799999999991, 2, 4.437064807978459), (48, -67.78799999999991, 2, 4.59454849496251), (49, -67.78799999999991, 2, 4.728327271994203), (50, -67.78799999999991, 2, 4.837418854003772), (52, -67.78799999999991, 2, 4.984994378988631), (53, -67.78799999999991, 2, 5.048062292975374), (54, -67.78799999999991, 2, 5.106615679978859), (56, -67.78799999999991, 2, 5.264769951987546), (58, -67.78799999999991, 2, 5.411563558969647), (60, -67.78799999999991, 2, 5.560588058957364), (61, -67.78799999999991, 2, 5.653810071991757), (62, -67.78799999999991, 2, 5.714794714003801), (66, -67.78799999999991, 2, 5.923421279992908), (70, -67.78799999999991, 2, 6.13852798496373), (71, -67.78799999999991, 2, 6.194187482004054), (72, -67.78799999999991, 2, 6.268868405953981), (73, -67.78799999999991, 2, 6.3534351689741015), (74, -67.78799999999991, 2, 6.401546242996119), (76, -96.64200000000177, 3, 6.462003637978341)]
+

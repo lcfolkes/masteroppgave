@@ -1,0 +1,327 @@
+
+Gurobi 9.1.2 (linux64) logging started Thu May 27 20:47:31 2021
+
+Changed value of parameter LogFile to ./Testing/GurobiResults/30nodes/30-25-2-1_c
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 1054731 rows, 425133 columns and 222123034 nonzeros
+Model fingerprint: 0x8d9fc220
+Variable types: 603 continuous, 424530 integer (423000 binary)
+Coefficient statistics:
+  Matrix range     [9e-02, 9e+01]
+  Objective range  [4e-02, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 6e+01]
+
+---------------------------------------------------------------------------
+Multi-objectives: starting optimization with 2 objectives ... 
+---------------------------------------------------------------------------
+
+Multi-objectives: applying initial presolve ...
+---------------------------------------------------------------------------
+
+Presolve removed 0 rows and 0 columns (presolve time = 22s) ...
+Presolve removed 424475 rows and 0 columns (presolve time = 27s) ...
+Presolve removed 627803 rows and 203328 columns (presolve time = 47s) ...
+Presolve removed 628222 rows and 203883 columns (presolve time = 53s) ...
+Presolve removed 628222 rows and 203883 columns (presolve time = 59s) ...
+Presolve removed 628222 rows and 203883 columns (presolve time = 65s) ...
+Presolve removed 628222 rows and 203883 columns (presolve time = 72s) ...
+Presolve removed 628222 rows and 203883 columns (presolve time = 76s) ...
+Presolve removed 832046 rows and 204005 columns (presolve time = 90s) ...
+Presolve removed 832046 rows and 204005 columns (presolve time = 92s) ...
+Presolve removed 832046 rows and 204005 columns (presolve time = 96s) ...
+Presolve removed 832046 rows and 204005 columns (presolve time = 101s) ...
+Presolve removed 832049 rows and 204008 columns (presolve time = 125s) ...
+Presolve removed 832049 rows and 204008 columns (presolve time = 125s) ...
+Presolve removed 832049 rows and 204008 columns (presolve time = 130s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 135s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 147s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 150s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 155s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 160s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 165s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 170s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 175s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 180s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 185s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 190s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 195s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 200s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 205s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 210s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 215s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 220s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 225s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 230s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 235s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 240s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 245s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 250s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 255s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 260s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 265s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 270s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 275s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 284s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 314s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 315s) ...
+Presolve removed 832179 rows and 204008 columns (presolve time = 320s) ...
+Presolve removed 836252 rows and 204008 columns (presolve time = 329s) ...
+Presolve removed 836564 rows and 204008 columns (presolve time = 359s) ...
+Presolve removed 836564 rows and 204008 columns (presolve time = 361s) ...
+Presolve removed 836564 rows and 204559 columns (presolve time = 382s) ...
+Presolve removed 841459 rows and 204559 columns (presolve time = 386s) ...
+Presolve removed 841926 rows and 204559 columns (presolve time = 390s) ...
+Presolve removed 842076 rows and 204709 columns (presolve time = 397s) ...
+Presolve removed 842076 rows and 204709 columns (presolve time = 400s) ...
+Presolve removed 831671 rows and 194300 columns
+Presolve time: 402.70s
+Presolved: 223060 rows and 230833 columns
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 1 (charging_moves) ...
+---------------------------------------------------------------------------
+
+Found heuristic solution: objective -0.0000000
+Presolve removed 613 rows and 112803 columns (presolve time = 6s) ...
+Presolve removed 633 rows and 112803 columns (presolve time = 10s) ...
+Presolve removed 3240 rows and 112803 columns (presolve time = 15s) ...
+Presolve removed 3246 rows and 112931 columns (presolve time = 22s) ...
+Presolve removed 3246 rows and 112931 columns (presolve time = 25s) ...
+Presolve removed 3346 rows and 113095 columns (presolve time = 30s) ...
+Presolve removed 3322 rows and 113071 columns
+Presolve time: 30.13s
+Presolved: 219738 rows, 117762 columns, 4512609 nonzeros
+Variable types: 0 continuous, 117762 integer (117433 binary)
+
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Elapsed ordering time = 5s
+Ordering time: 5.52s
+
+Barrier performed 0 iterations in 451.33 seconds
+Barrier solve interrupted - model solved by another algorithm
+
+Concurrent spin time: 1.42s (can be avoided by choosing Method=3)
+
+Solved with primal simplex
+
+Root relaxation: objective 3.000000e+00, 1760 iterations, 12.62 seconds
+Total elapsed time = 455.54s
+Total elapsed time = 461.09s
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    3.00000    0   33   -0.00000    3.00000      -     -  462s
+     0     0    3.00000    0  148   -0.00000    3.00000      -     -  470s
+H    0     0                       3.0000000    3.00000  0.00%     -  478s
+     0     0    3.00000    0  148    3.00000    3.00000  0.00%     -  478s
+
+Cutting planes:
+  Gomory: 1
+  Cover: 11
+  Implied bound: 3
+  MIR: 6
+  StrongCG: 3
+  GUB cover: 3
+  RLT: 5
+  Relax-and-lift: 5
+
+Explored 1 nodes (18352 simplex iterations) in 478.51 seconds
+Thread count was 24 (of 48 available processors)
+
+Solution count 2: 3 -0 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 3.000000000000e+00, best bound 3.000000000000e+00, gap 0.0000%
+---------------------------------------------------------------------------
+
+Multi-objectives: optimize objective 2 (profit) ...
+---------------------------------------------------------------------------
+
+
+Loaded user MIP start with objective -186.27
+
+Presolve removed 0 rows and 33514 columns (presolve time = 6s) ...
+Presolve removed 0 rows and 33514 columns (presolve time = 10s) ...
+Presolve removed 57 rows and 33514 columns (presolve time = 16s) ...
+Presolve removed 63 rows and 33642 columns (presolve time = 21s) ...
+Presolve removed 63 rows and 33642 columns (presolve time = 27s) ...
+Presolve removed 63 rows and 33642 columns (presolve time = 30s) ...
+Presolve removed 50 rows and 33629 columns
+Presolve time: 30.49s
+Presolved: 223011 rows, 197204 columns, 6689747 nonzeros
+Found heuristic solution: objective -4.3140000
+Variable types: 0 continuous, 197204 integer (196380 binary)
+
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Elapsed ordering time = 5s
+Elapsed ordering time = 10s
+Elapsed ordering time = 15s
+Elapsed ordering time = 20s
+Elapsed ordering time = 25s
+Elapsed ordering time = 30s
+Elapsed ordering time = 35s
+Elapsed ordering time = 40s
+Elapsed ordering time = 45s
+Elapsed ordering time = 50s
+Elapsed ordering time = 55s
+Elapsed ordering time = 60s
+Elapsed ordering time = 65s
+Elapsed ordering time = 70s
+Elapsed ordering time = 75s
+Elapsed ordering time = 80s
+Elapsed ordering time = 85s
+Elapsed ordering time = 90s
+Elapsed ordering time = 95s
+Elapsed ordering time = 100s
+Elapsed ordering time = 105s
+Elapsed ordering time = 110s
+Elapsed ordering time = 115s
+Elapsed ordering time = 120s
+Ordering time: 122.43s
+
+Barrier statistics:
+ Dense cols : 8250
+ AA' NZ     : 9.099e+06
+ Factor NZ  : 1.175e+08 (roughly 1.1 GBytes of memory)
+ Factor Ops : 2.843e+11 (roughly 1 second per iteration)
+ Threads    : 22
+
+                  Objective                Residual
+Iter       Primal          Dual         Primal    Dual     Compl     Time
+   0  -4.39521177e+05  2.51539335e+07  3.30e+04 2.19e-01  6.37e+02   648s
+   1  -3.08652411e+05  1.86223937e+07  2.17e+04 2.63e+00  3.39e+02   649s
+   2  -9.91042335e+04  1.20379156e+07  6.54e+03 5.69e-01  9.78e+01   651s
+   3  -4.05715243e+04  4.12039840e+06  2.55e+03 2.37e-02  3.05e+01   652s
+   4  -6.70545175e+03  7.17475492e+05  2.87e+02 4.99e-12  3.50e+00   654s
+   5  -4.94203701e+03  4.41877800e+05  1.91e+02 3.13e-12  2.15e+00   656s
+   6  -2.38870054e+03  2.58519291e+05  7.42e+01 3.31e-12  9.50e-01   658s
+   7  -1.73402542e+03  1.64603961e+05  5.43e+01 1.91e-12  6.20e-01   659s
+   8  -1.18836132e+03  1.54624719e+05  3.69e+01 2.08e-12  4.85e-01   661s
+   9  -7.77928430e+02  1.34665755e+05  2.25e+01 7.03e-12  3.55e-01   662s
+  10  -5.66707815e+02  9.79509323e+04  1.54e+01 1.08e-10  2.36e-01   664s
+  11  -5.01140262e+02  9.30090449e+04  1.32e+01 1.02e-10  2.15e-01   665s
+  12  -2.55858984e+02  8.33331514e+04  5.35e+00 8.69e-11  1.60e-01   667s
+  13  -1.39664981e+02  2.43225047e+04  1.51e+00 3.23e-11  4.21e-02   668s
+  14  -9.10400539e+01  1.05644826e+04  5.95e-01 6.91e-12  1.78e-02   670s
+  15  -5.28946762e+01  5.12747252e+03  2.29e-01 3.37e-12  8.54e-03   671s
+  16  -2.94280952e+01  3.51438134e+03  1.29e-01 2.27e-12  5.82e-03   673s
+  17  -2.00466063e+01  3.26102340e+03  1.11e-01 2.08e-12  5.38e-03   674s
+  18  -1.23307970e+01  2.88778635e+03  9.67e-02 1.83e-12  4.76e-03   675s
+  19   2.61708322e+00  1.52528488e+03  6.88e-02 1.41e-12  2.50e-03   676s
+  20   3.18654933e+01  1.21625176e+03  3.80e-02 2.92e-12  1.94e-03   678s
+  21   4.96020264e+01  9.62538249e+02  3.02e-02 1.24e-11  1.49e-03   680s
+  22   6.93449885e+01  7.15184344e+02  2.37e-02 3.29e-11  1.06e-03   681s
+  23   8.22167514e+01  5.61636328e+02  1.97e-02 3.63e-11  7.84e-04   683s
+  24   9.84002342e+01  4.61296488e+02  1.59e-02 4.51e-11  5.94e-04   684s
+  25   1.14348891e+02  4.16550138e+02  1.22e-02 7.15e-11  4.94e-04   686s
+  26   1.19963542e+02  4.05114812e+02  1.11e-02 6.89e-11  4.66e-04   687s
+  27   1.32794261e+02  3.75027652e+02  8.61e-03 7.72e-11  3.96e-04   689s
+  28   1.49555157e+02  3.63238820e+02  6.08e-03 7.49e-11  3.49e-04   691s
+  29   1.50147398e+02  3.51952340e+02  5.91e-03 8.35e-11  3.30e-04   692s
+  30   1.51900876e+02  3.44075232e+02  5.70e-03 8.68e-11  3.14e-04   694s
+  31   1.58677837e+02  3.12281830e+02  4.67e-03 1.25e-10  2.51e-04   695s
+  32   1.65765620e+02  2.91256281e+02  3.72e-03 8.29e-11  2.05e-04   697s
+  33   1.68075278e+02  2.71074832e+02  3.44e-03 1.33e-10  1.68e-04   699s
+  34   1.73093169e+02  2.68338530e+02  2.91e-03 1.51e-10  1.56e-04   700s
+  35   1.76426594e+02  2.50001369e+02  2.59e-03 2.79e-10  1.20e-04   702s
+  36   1.88724950e+02  2.45857361e+02  1.38e-03 2.43e-10  9.34e-05   703s
+  37   1.94704242e+02  2.22445992e+02  8.96e-04 5.54e-10  4.54e-05   705s
+  38   2.00125210e+02  2.16431207e+02  4.85e-04 9.18e-10  2.67e-05   706s
+  39   2.03064652e+02  2.14180951e+02  2.87e-04 2.38e-09  1.82e-05   708s
+  40   2.05061441e+02  2.08523764e+02  1.54e-04 3.16e-09  5.66e-06   709s
+  41   2.07334216e+02  2.07755100e+02  1.58e-05 5.27e-09  6.88e-07   710s
+  42   2.07622016e+02  2.07675067e+02  1.10e-07 1.02e-06  8.67e-08   712s
+  43   2.07624239e+02  2.07624242e+02  4.76e-11 3.76e-11  4.52e-12   713s
+  44   2.07624239e+02  2.07624242e+02  4.76e-11 3.76e-11  4.52e-12   714s
+  45   2.07624239e+02  2.07624242e+02  4.76e-11 3.76e-11  4.52e-12   716s
+  46   2.07624239e+02  2.07624242e+02  4.76e-11 3.76e-11  4.52e-12   718s
+
+Barrier solved model in 46 iterations and 717.51 seconds
+Optimal objective 2.07624239e+02
+
+
+Root crossover log...
+
+    4509 DPushes remaining with DInf 0.0000000e+00               718s
+       0 DPushes remaining with DInf 0.0000000e+00               719s
+
+    2997 PPushes remaining with PInf 0.0000000e+00               719s
+     272 PPushes remaining with PInf 0.0000000e+00               720s
+       0 PPushes remaining with PInf 0.0000000e+00               721s
+
+  Push phase complete: Pinf 0.0000000e+00, Dinf 1.4740216e-12    721s
+
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+    7372    2.0762424e+02   0.000000e+00   0.000000e+00    721s
+    7372    2.0762424e+02   0.000000e+00   0.000000e+00    722s
+
+Solved with barrier
+
+Root relaxation: objective 2.076242e+02, 7372 iterations, 210.76 seconds
+Total elapsed time = 751.83s
+Total elapsed time = 762.44s
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0  207.62424    0  804   -4.31400  207.62424  4913%     -  776s
+H    0     0                      -3.3420000  207.62424  6313%     -  780s
+     0     0  207.62424    0 1060   -3.34200  207.62424  6313%     -  856s
+H    0     0                      94.3120800  207.62424   120%     - 1293s
+     0     0  207.62424    0  906   94.31208  207.62424   120%     - 1301s
+     0     0  207.62424    0  375   94.31208  207.62424   120%     - 1414s
+     0     0  207.62424    0  593   94.31208  207.62424   120%     - 1487s
+     0     0  207.62424    0  355   94.31208  207.62424   120%     - 1595s
+     0     0  207.62424    0  585   94.31208  207.62424   120%     - 1618s
+     0     0  207.62424    0  477   94.31208  207.62424   120%     - 1708s
+H    0     0                      95.2881609  207.62424   118%     - 1763s
+     0     0  207.62424    0  872   95.28816  207.62424   118%     - 1776s
+     0     0  207.62424    0  663   95.28816  207.62424   118%     - 1860s
+     0     0  207.62424    0  839   95.28816  207.62424   118%     - 1880s
+     0     0  207.62424    0  514   95.28816  207.62424   118%     - 1966s
+     0     0  207.62424    0  509   95.28816  207.62424   118%     - 2035s
+     0     2  207.56208    0  363   95.28816  207.56208   118%     - 2602s
+     1     4  207.56208    1  353   95.28816  207.56208   118% 18901 2852s
+     3     8  207.56208    2  613   95.28816  207.56208   118%  7582 3216s
+     7    14  207.56208    3  711   95.28816  207.56208   118%  5144 3564s
+    15    20  207.56208    4  898   95.28816  207.56208   118%  4409 3604s
+
+Cutting planes:
+  Gomory: 3
+  Cover: 112
+  Implied bound: 166
+  Clique: 72
+  MIR: 3821
+  StrongCG: 1182
+  GUB cover: 515
+  Zero half: 2
+  RLT: 132
+  Relax-and-lift: 50
+
+Explored 27 nodes (261881 simplex iterations) in 3605.45 seconds
+Thread count was 24 (of 48 available processors)
+
+Solution count 5: 95.2882 94.3121 -3.342 ... -186.27
+
+Time limit reached
+Best objective 9.528816094469e+01, best bound 2.075620810000e+02, gap 117.8257%
+
+---------------------------------------------------------------------------
+Multi-objectives: stopped in 3613.36 seconds, solution count 5
+Time Limit reached
+

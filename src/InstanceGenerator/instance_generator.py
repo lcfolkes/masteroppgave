@@ -100,6 +100,9 @@ def create_deterministic_instance_from_existing_world(world: World, num_tasks: i
     print("Finished")
     return new_world
 
+
+
+
 def create_deterministic_instances_from_existing():
 
     world = load_object_from_file("./InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_c.pkl")
@@ -141,5 +144,5 @@ def main():
         #                       num_first_stage_tasks=cf['tasks']['num_first_stage'], version=i+1)
         worlds.append(world)
 
-#main():
+#main()
 create_deterministic_instances_from_existing()
