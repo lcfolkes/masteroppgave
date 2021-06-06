@@ -26,6 +26,7 @@ def run_process(filename, process_num, param=None):
 
 def build_world_process(cf, process_num):
     print("\nWELCOME TO THE EXAMPLE CREATOR \n")
+    print(f"\nProcess: {process_num}")
     world = build_world(instance_config=cf)
     create_instance_from_world(world, num_scenarios=cf['num_scenarios'], num_tasks=cf['tasks']['num_all'],
                                num_first_stage_tasks=cf['tasks']['num_first_stage'], version=process_num,
@@ -58,10 +59,10 @@ if __name__ == "__main__":
         cf2 = read_config('./InstanceGenerator/InstanceConfigs/instance_config150.yaml')
         cf3 = read_config('./InstanceGenerator/InstanceConfigs/instance_config200.yaml')
 
-        args = ((cf1, 1), (cf1, 2), (cf1, 3),
+        args = [(cf1, 1), (cf1, 2), (cf1, 3),
                 (cf2, 1), (cf2, 2), (cf2, 3),
-                (cf3, 1), (cf3, 2), (cf3, 3))
-        with mp.Pool(processes=3) as pool:
+                (cf3, 1), (cf3, 2), (cf3, 3)]
+        with mp.Pool(processes=len(args)) as pool:
             pool.starmap(build_world_process, args)
 
 
