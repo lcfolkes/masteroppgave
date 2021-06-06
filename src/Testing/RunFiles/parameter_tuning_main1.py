@@ -10,7 +10,7 @@ import sys
 os.chdir(path_to_src)
 import multiprocessing as mp
 
-def run_parallel(filenames, n, params):
+def run_parallel(filenames, n):
     #num_processes = n * len(filenames)
     args = []
     for filename in filenames:
