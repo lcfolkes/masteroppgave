@@ -54,8 +54,13 @@ if __name__ == "__main__":
             ### PARALLEL
             run_parallel(file, n, param)
         '''
-        cf = read_config('./InstanceGenerator/InstanceConfigs/instance_config100.yaml')
-        args = ((cf, 1), (cf, 2), (cf, 3))
+        cf1 = read_config('./InstanceGenerator/InstanceConfigs/instance_config100.yaml')
+        cf2 = read_config('./InstanceGenerator/InstanceConfigs/instance_config150.yaml')
+        cf3 = read_config('./InstanceGenerator/InstanceConfigs/instance_config200.yaml')
+
+        args = ((cf1, 1), (cf1, 2), (cf1, 3),
+                (cf2, 1), (cf2, 2), (cf2, 3),
+                (cf3, 1), (cf3, 2), (cf3, 3))
         with mp.Pool(processes=3) as pool:
             pool.starmap(build_world_process, args)
 
