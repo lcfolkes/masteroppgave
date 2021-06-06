@@ -35,14 +35,13 @@ if __name__ == "__main__":
 
 
 
-    file = ["InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_b"]
+    file = ["InstanceGenerator/InstanceFilesCompStudy/50nodes/50-25-2-1_a"]
 
     try:
         #[[10, 0], [20, 0], [30, 0], [40, 0]],
         #[[50, 0], [60, 0], [70, 0],
         n = 10
-        params = [[[10, 2], [20, 2], [30, 2], [40, 2]],
-                  [[50, 2], [60, 2], [70, 2], [10, 4]]]
+        params = [[30, 45, 60], [75, 90]]
         for param in params:
             ### PARALLEL
             run_parallel(file, n, param)

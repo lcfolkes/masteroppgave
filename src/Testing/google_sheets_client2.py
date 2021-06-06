@@ -56,18 +56,23 @@ if __name__ == "__main__":
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/ComputationalTests/sensitivity_one_hour"
-	param_dict = {"36-4": 2, "46-4": 4, "56-4": 6,
-				  "36-6": 8, "46-6": 10, "56-6": 12,
-				  "36-8": 14, "46-8": 16, "56-8": 18}
-	header = np.array([["", "",
-						"30-4", "30-4", "40-4", "40-4", "50-4", "50-4",
-						"30-6", "30-6", "40-6", "40-6", "50-6", "50-6",
-						"30-8", "30-8", "40-8", "40-8", "50-8", "50-8", "Cars In Need Of Charging"],
-					   ["Instance", "Run",
-						"Charging moves", "Profit", "Charging moves", "Profit", "Charging moves", "Profit",
-						"Charging moves", "Profit", "Charging moves", "Profit", "Charging moves", "Profit",
-						"Charging moves", "Profit", "Charging moves", "Profit", "Charging moves", "Profit", "Cars In Need Of Charging"]])
+	test_dir = "./Testing/Results"
+	cars = ["16", "26", "36", "46", "56", "66", "76"]
+	employees = ["2", "4", "6", "8", "10", "12"]
+	start_idx = 0
+	param_dict = {}
+	header0 = ["", ""]
+	header1 = ["Instance", "Run"]
+	for e in employees:
+		for c in cars:
+			start_idx += 2
+			k = c + "-" + e
+			param_dict[k] = start_idx
+			header0 += [k, k]
+			header1 += ["Charging moves", "Profit"]
+	header0.append("Cars In Need Of Charging")
+	header1.append("Cars In Need Of Charging")
+	header = np.array([header0, header1])
 
 	#header_df = pd.DataFrame(header)
 	#work_sheet.set_dataframe(header_df, (1, 0), copy_head=False)
@@ -85,15 +90,15 @@ if __name__ == "__main__":
 			if filename_list[0].split("-")[1] == "1":
 				continue
 
-			result = np.zeros(shape=[10, 21]).astype(str)
+			result = np.zeros(shape=[10, len(header0)]).astype(str)
 			result[:, 0] = filename
 			for x in f:
 				line_list = x.split(':')
 				line_list_space = x.split(' ')
-				#if line_list[0] == "Run":
-				#	run = int(line_list[1].strip())
-				if line_list_space[0].strip().isnumeric():
-					run = int(line_list_space[0].strip())
+				if line_list[0] == "Run":
+					run = int(line_list[1].strip())
+				#if line_list_space[0].strip().isnumeric():
+				#	run = int(line_list_space[0].strip())
 				#elif line_list[0] == "Problem type":
 				#	problem_type = line_list[1].strip()
 				elif line_list[0] == "Best objective value found after (s)":

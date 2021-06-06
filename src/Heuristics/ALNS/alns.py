@@ -42,7 +42,7 @@ class ALNS():
         self.best_solution = None
         self.best_solutions = None
         self.best_obj_val = 0
-        self.solution = ConstructionHeuristic(self.filename, num_cars=param[0], num_employees=param[1])
+        self.solution = ConstructionHeuristic(self.filename, planning_period=param)
         self._num_employees = len(self.solution.employees)
         self._num_cars = len(self.solution.cars)
         self._num_first_stage_tasks = self.solution.num_first_stage_tasks
@@ -342,6 +342,9 @@ class ALNS():
             operators_temporal_weights_txt = f"Operator weights: {self.operators_temporal_weights}\n"
             employees_txt = f"Number of employees: {self._num_employees}\n"
             cars_txt = f"Number of cars: {self._num_cars}\n"
+            planning_period_txt = f"Planning period: {self._world_instance.planning_period}\n"
+            self.solution.rebuild(best_solution[0], stage="full", optimize=False)
+            solution_str = self.solution.print_solution()
 
             parameter_tuning_txt = f"Travel time threshold: {self.solution.travel_time_threshold}\n"
             '''                    f"Acceptance percentage: {self.solution.acceptance_percentage}\n"
@@ -362,7 +365,7 @@ class ALNS():
             f = open(filepath + "_results.txt", "a")
             f.writelines([run_txt, date_time_txt, obj_val_found_txt, obj_val_txt, heur_val_txt, charging_txt,
                           construction_heur_time_txt, construction_heur_txt, charging_construction_txt, time_spent_txt,
-                          iterations_done_txt, cars_txt, employees_txt, "\n"])
+                          iterations_done_txt, cars_txt, employees_txt, planning_period_txt, solution_str, "\n"])
             f.close()
 
             if verbose:

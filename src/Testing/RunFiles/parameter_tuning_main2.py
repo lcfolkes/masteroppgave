@@ -11,7 +11,7 @@ import multiprocessing as mp
 
 
 def run_parallel(filenames, n, params):
-	#num_processes = n * len(filenames)
+	# num_processes = n * len(filenames)
 	args = []
 	for filename in filenames:
 		for param in params:
@@ -25,21 +25,23 @@ def run_process(filename, process_num, param=None):
 	alns = ALNS(filename, param)
 	alns.run(f"Run: {process_num}")
 
+
 if __name__ == "__main__":
-	'''files = []
-	for n in [6, 8, 10]:  # , 25, 30, 40, 50]:
+	'''    files = []
+	for n in [6, 8, 10]: #, 25, 30, 40, 50]:
 		directory = f"./InstanceGenerator/InstanceFiles/{n}nodes/"
 		for filename in os.listdir(directory):
 			filename_list = filename.split(".")
 			if filename_list[-1] == "pkl":
 				files.append(os.path.join(directory, filename_list[0]))'''
 
-	file = ["InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_b"]
+	file = ["InstanceGenerator/InstanceFilesCompStudy/50nodes/50-25-2-1_b"]
 
 	try:
+		# [[10, 0], [20, 0], [30, 0], [40, 0]],
+		# [[50, 0], [60, 0], [70, 0],
 		n = 10
-		params = [[[20, 4], [30, 4], [40, 4], [50, 4]],
-				  [[60, 4], [70, 4], [10, 6], [20, 6]]]
+		params = [[30, 45, 60], [75, 90]]
 		for param in params:
 			### PARALLEL
 			run_parallel(file, n, param)

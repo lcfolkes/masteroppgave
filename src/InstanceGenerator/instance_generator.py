@@ -131,7 +131,7 @@ def create_deterministic_instances_from_existing():
 
 
 def main():
-    cf = read_config('./InstanceGenerator/InstanceConfigs/instance_config50sensitivity.yaml')
+    cf = read_config('./InstanceGenerator/InstanceConfigs/instance_config200.yaml')
     print("\nWELCOME TO THE EXAMPLE CREATOR \n")
     worlds = []
     for i in range(cf['examples']):

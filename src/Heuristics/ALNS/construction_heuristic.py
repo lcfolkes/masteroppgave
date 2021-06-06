@@ -16,16 +16,16 @@ class ConstructionHeuristic:
     # instance_file = "InstanceFiles/6nodes/6-3-1-1_d.pkl"
     # filename = "InstanceFiles/6nodes/6-3-1-1_b.yaml"
 
-    def __init__(self, instance_file, num_cars, num_employees):
+    def __init__(self, instance_file, planning_period):
         self.acceptance_percentage = HeuristicsConstants.ACCEPTANCE_PERCENTAGE
         self.travel_time_threshold = HeuristicsConstants.TRAVEL_TIME_THRESHOLD
         self.instance_file = instance_file
         self.world_instance = load_object_from_file(instance_file)
         self.world_instance.initialize_relevant_car_moves(self.acceptance_percentage)
         self.world_instance.initialize_relevant_car_moves_distance(self.travel_time_threshold)
-        self.world_instance.initialize_sensitivity_analysis(num_cars=num_cars, num_employees=num_employees)
+        #self.world_instance.initialize_sensitivity_analysis(num_cars=num_cars, num_employees=num_employees)
         self.objective_function = ObjectiveFunction(self.world_instance)
-        self.world_instance.planning_period = HeuristicsConstants.PLANNING_PERIOD
+        self.world_instance.planning_period = planning_period #HeuristicsConstants.PLANNING_PERIOD
         self.feasibility_checker = FeasibilityChecker(self.world_instance)
         self.num_scenarios = self.world_instance.num_scenarios
         #self.num_first_stage_tasks = Heuristics.heuristics_constants.HeuristicsConstants.NUM_FIRST_STAGE_TASKS
@@ -460,17 +460,19 @@ class ConstructionHeuristic:
 
         pd.set_option('display.width', 500)
         pd.set_option('display.max_columns', 15)
-
-        print(
-            "--------------------------------------------------------------- FIRST STAGE ROUTES --------------------------------------------------------------")
-        print(df_firststage_routes.to_string(index=False))
-        print(
-            "\n-------------------------------------------------------------- SECOND STAGE ROUTES --------------------------------------------------------------")
-        print(df_secondstage_routes.to_string(index=False))
+        out_str = ""
+        out_str += "--------------------------------------------------------------- FIRST STAGE ROUTES --------------------------------------------------------------\n"
+        out_str += df_firststage_routes.to_string(index=False)
+        out_str += "\n-------------------------------------------------------------- SECOND STAGE ROUTES --------------------------------------------------------------\n"
+        out_str += df_secondstage_routes.to_string(index=False)
+        print(out_str)
+        return out_str
 
 
 if __name__ == "__main__":
     from Heuristics.LocalSearch.local_search import LocalSearch
 
-    filename = "InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_a"
-    ch = ConstructionHeuristic(filename + ".pkl", num_cars=30, num_employees=4)
+    filename = "InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_b"
+    for x in [10,20,30,40,50,60,70]:
+        ch = ConstructionHeuristic(filename + ".pkl", num_cars=x, num_employees=0)
+        print(f"Cars: {x}, Employees: {0}, Profit: {round(ch.get_obj_val(),2)}, Charged cars: {ch.num_charging_moves}")
