@@ -1,6 +1,8 @@
 from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
+from HelperFiles.helper_functions import read_config
 from Heuristics.ALNS.alns import ALNS
+from InstanceGenerator.instance_generator import build_world, create_instance_from_world
 from path_manager import path_to_src
 import os
 import time
@@ -22,6 +24,12 @@ def run_process(filename, process_num, param=None):
     alns = ALNS(filename, param)
     alns.run(f"Run: {process_num}")
 
+def build_world_process(cf, process_num):
+    print("\nWELCOME TO THE EXAMPLE CREATOR \n")
+    world = build_world(instance_config=cf)
+    create_instance_from_world(world, num_scenarios=cf['num_scenarios'], num_tasks=cf['tasks']['num_all'],
+                               num_first_stage_tasks=cf['tasks']['num_first_stage'], version=process_num,
+                               time_of_day=cf['time_of_day'], planning_period=cf['planning_period'])
 
 
 if __name__ == "__main__":
@@ -40,11 +48,17 @@ if __name__ == "__main__":
     try:
         #[[10, 0], [20, 0], [30, 0], [40, 0]],
         #[[50, 0], [60, 0], [70, 0],
-        n = 10
+        '''n = 10
         params = [[30, 45, 60], [75, 90]]
         for param in params:
             ### PARALLEL
             run_parallel(file, n, param)
+        '''
+        cf = read_config('./InstanceGenerator/InstanceConfigs/instance_config100.yaml')
+        args = ((cf, 1), (cf, 2), (cf, 3))
+        with mp.Pool(processes=3) as pool:
+            pool.starmap(build_world_process, args)
+
 
         '''
         ### SEQUENTIAL
