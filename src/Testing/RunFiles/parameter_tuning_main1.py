@@ -20,7 +20,7 @@ def run_parallel(filenames, n, params):
 
 def run_process(filename, process_num, param=None):
     alns = ALNS(filename, param)
-    alns.run(process_num)
+    alns.run(f"Run: {process_num}")
 
 
 
@@ -35,14 +35,16 @@ if __name__ == "__main__":
 
 
 
-    files = [["InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_a"]]
+    file = ["InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_b"]
 
     try:
         n = 10
-        params = [[30, 4], [40, 4]]
-        for filenames in files:
+        params = [[[10, 0], [20, 0], [30, 0], [40, 0]],
+                  [[50, 0], [60, 0], [70, 0], [10, 2]],
+                  [[20, 2],  [30, 2], [40, 2], [50, 2]]]
+        for param in params:
             ### PARALLEL
-            run_parallel(filenames, n, params)
+            run_parallel(file, n, param)
 
         '''
         ### SEQUENTIAL

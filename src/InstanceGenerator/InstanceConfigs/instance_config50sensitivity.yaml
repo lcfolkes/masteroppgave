@@ -18,7 +18,7 @@ tasks:
 num_parking_nodes: 50
 
 # NUMBER OF AVAILABLE/CHARGED CARS IN INSTANCE
-num_charged_cars: 50 #40
+num_charged_cars: 70 #40
 
 #CHARGING NODES
 charging_nodes:
@@ -28,9 +28,9 @@ charging_nodes:
 
 #EMPLOYEES
 employees:
-  num_employees: 8
-  start_time: [4, 2, 8, 6, 8, 8, 6, 0] # 9, 3, 7, 10], [1, 4, 10, 9, 5, 7]
-  handling: [0,0,0,0,0,0,0,0]
+  num_employees: 12
+  start_time: [4, 2, 8, 6, 8, 8, 6, 0, 9, 3, 7, 10] #, [1, 4, 10, 9, 5, 7]
+  handling: [0,0,0,0,0,0,0,0,0,0,0,0]
 
 planning_period: 60
 
