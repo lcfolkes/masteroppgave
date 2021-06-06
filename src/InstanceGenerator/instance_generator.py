@@ -16,7 +16,8 @@ def build_world(instance_config: str) -> World:
     create_cars(world=world)
     create_car_moves(world=world)
     print("World Created")
-    world.calculate_bigM()
+    # TODO: Obs! Big M is commented out
+    #world.calculate_bigM()
     return world
 
 
