@@ -42,7 +42,7 @@ class ALNS():
         self.best_solution = None
         self.best_solutions = None
         self.best_obj_val = 0
-        self.solution = ConstructionHeuristic(self.filename, planning_period=param)
+        self.solution = ConstructionHeuristic(self.filename)
         self._num_employees = len(self.solution.employees)
         self._num_cars = len(self.solution.cars)
         self._num_first_stage_tasks = self.solution.num_first_stage_tasks

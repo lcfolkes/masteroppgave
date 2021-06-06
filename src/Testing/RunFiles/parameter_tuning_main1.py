@@ -14,23 +14,14 @@ def run_parallel(filenames, n, params):
     #num_processes = n * len(filenames)
     args = []
     for filename in filenames:
-        for param in params:
-            for i in range(n):
-                args.append((filename + ".pkl", i + 1, param))
+        for i in range(n):
+            args.append((filename + ".pkl", i + 1))
     with mp.Pool(processes=len(args)) as pool:
         pool.starmap(run_process, args)
 
 def run_process(filename, process_num, param=None):
     alns = ALNS(filename, param)
     alns.run(f"Run: {process_num}")
-
-def build_world_process(cf, process_num):
-    print("\nWELCOME TO THE EXAMPLE CREATOR \n")
-    print(f"\nProcess: {process_num}")
-    world = build_world(instance_config=cf)
-    create_instance_from_world(world, num_scenarios=cf['num_scenarios'], num_tasks=cf['tasks']['num_all'],
-                               num_first_stage_tasks=cf['tasks']['num_first_stage'], version=process_num,
-                               time_of_day=cf['time_of_day'], planning_period=cf['planning_period'])
 
 
 if __name__ == "__main__":
@@ -44,27 +35,17 @@ if __name__ == "__main__":
 
 
 
-    file = ["InstanceGenerator/InstanceFilesCompStudy/50nodes/50-25-2-1_a"]
+    files = [["InstanceGenerator/InstanceFiles/100nodes/100-25-2-1_a",
+             "InstanceGenerator/InstanceFiles/100nodes/100-25-2-1_b",
+             "InstanceGenerator/InstanceFiles/100nodes/100-25-2-1_c"]]
 
     try:
         #[[10, 0], [20, 0], [30, 0], [40, 0]],
         #[[50, 0], [60, 0], [70, 0],
-        '''n = 10
-        params = [[30, 45, 60], [75, 90]]
-        for param in params:
+        n = 10
+        for file in files:
             ### PARALLEL
-            run_parallel(file, n, param)
-        '''
-        cf1 = read_config('./InstanceGenerator/InstanceConfigs/instance_config100.yaml')
-        cf2 = read_config('./InstanceGenerator/InstanceConfigs/instance_config150.yaml')
-        cf3 = read_config('./InstanceGenerator/InstanceConfigs/instance_config200.yaml')
-
-        args = [(cf1, 1), (cf1, 2), (cf1, 3),
-                (cf2, 1), (cf2, 2), (cf2, 3),
-                (cf3, 1), (cf3, 2), (cf3, 3)]
-        with mp.Pool(processes=len(args)) as pool:
-            pool.starmap(build_world_process, args)
-
+            run_parallel(file, n)
 
         '''
         ### SEQUENTIAL
