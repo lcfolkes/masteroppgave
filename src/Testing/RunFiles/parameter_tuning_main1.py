@@ -9,13 +9,13 @@ os.chdir(path_to_src)
 import multiprocessing as mp
 
 def run_parallel(filenames, n, params):
-    num_processes = n * len(filenames)
+    #num_processes = n * len(filenames)
     args = []
     for filename in filenames:
         for param in params:
             for i in range(n):
                 args.append((filename + ".pkl", i + 1, param))
-    with mp.Pool(processes=num_processes) as pool:
+    with mp.Pool(processes=len(args)) as pool:
         pool.starmap(run_process, args)
 
 def run_process(filename, process_num, param=None):
