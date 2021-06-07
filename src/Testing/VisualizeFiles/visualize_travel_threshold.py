@@ -8,11 +8,12 @@ import json
 from path_manager import path_to_src
 os.chdir(path_to_src)
 
+relocation_time_threshold_factor = 0.4
 
 def get_files(node_list): #[30,40,50]
 	files = []
 	for n in node_list:
-		directory = f"./InstanceGenerator/InstanceFilesCompStudy/{n}nodes/"
+		directory = f"./InstanceGenerator/InstanceFiles/{n}nodes/"
 		for filename in os.listdir(directory):
 			filename_list = filename.split(".")
 			if filename_list[-1] == "yaml":
@@ -63,8 +64,8 @@ def get_parking_handling_times(files):
 		handling_times += fractional_values
 		print(f)
 		print(f"Num car-moves: {len(cf['car_move_destination'])}")
-		print(f"Remove car-moves: {sum(1 for x in fractional_values if x > 0.7)}")
-		print(f"Car-moves considered: {len(cf['car_move_destination'])-sum(1 for x in fractional_values if x > 0.7)}")
+		print(f"Remove car-moves: {sum(1 for x in fractional_values if x > relocation_time_threshold_factor)}")
+		print(f"Car-moves considered: {len(cf['car_move_destination'])-sum(1 for x in fractional_values if x > relocation_time_threshold_factor)}")
 	return handling_times, instance_max_vals, instance_num_carmoves
 
 def plot_values(handling_times, parking_values, charging_values):
@@ -90,7 +91,7 @@ def plot_values(handling_times, parking_values, charging_values):
 	plt.ylabel("")
 	plt.show()
 
-def plot_values_std(handling_times, parking_values, charging_values):
+def plot_values_std(handling_times, parking_values=[], charging_values=[]):
 	plt.rcParams.update({
 		"text.usetex": True,
 		"font.family": "serif",
@@ -99,10 +100,12 @@ def plot_values_std(handling_times, parking_values, charging_values):
 
 	})
 
-	data = [handling_times, parking_values] #, , charging_values]
+	#data = [handling_times, parking_values] #, , charging_values]
+	data = [handling_times]
 	colors = ['darkorange', '#228b21']
-
-	g = sns.displot(data=[parking_values, handling_times], color=['#228b21', 'darkorange'], kind="kde", bw_adjust=1.75,
+	#g = sns.displot(data=[parking_values, handling_times], color=['#228b21', 'darkorange'], kind="kde", bw_adjust=1.75,
+	#				label='All available parking-moves')
+	g = sns.displot(data=[handling_times], color=['#228b21'], kind="kde", bw_adjust=1.75,
 					label='All available parking-moves')
 	for ax in g.axes.flat:
 		for i, line in enumerate(ax.lines):
@@ -110,19 +113,18 @@ def plot_values_std(handling_times, parking_values, charging_values):
 			xs = line.get_xdata()
 			ys = line.get_ydata()
 			left = 0
-			right = 0.7
+			right = relocation_time_threshold_factor
 			if i == 0:
 				#middle = np.mean(x)
-
-				percentage = str(round(100*len([i for i in x if i > 0.7])/len(x), 1)) + "\%"
-				ax.text(0.715, 0.03, percentage, **dict(size=8))
+				percentage = str(round(100*len([i for i in x if i > relocation_time_threshold_factor])/len(x), 1)) + "\%"
+				ax.text(relocation_time_threshold_factor + 0.015, 0.03, percentage, **dict(size=8))
 				ax.fill_between(xs, 0, ys, facecolor=colors[i], alpha=0.1)
 				ax.fill_between(xs, 0, ys, where=(left <= xs) & (xs <= right), interpolate=True, facecolor=colors[i], alpha=0.1)
-				ax.vlines(0.7, 0, np.interp(0.7, xs, ys), color="black", ls=':')
+				ax.vlines(relocation_time_threshold_factor, 0, np.interp(relocation_time_threshold_factor, xs, ys), color="black", ls=':')
 
 			else:
-				percentage = str(round(100*len([i for i in x if i > 0.7])/len(x), 1)) + "\%"
-				ax.text(0.715, 0.45, percentage, **dict(size=8))
+				percentage = str(round(100*len([i for i in x if i > 0.5])/len(x), 1)) + "\%"
+				ax.text(relocation_time_threshold_factor + 0.015, 0.45, percentage, **dict(size=8))
 				ax.fill_between(xs, 0, ys, facecolor=colors[i], alpha=0.1)
 				ax.fill_between(xs, 0, ys, where=(left <= xs) & (xs <= right), interpolate=True, facecolor=colors[i],
 								alpha=0.15)
@@ -250,15 +252,15 @@ def plot_construction_heuristic_run_time():
 
 
 if __name__ == "__main__":
-	'''
+
 	#plot_construction_heuristic_run_time()
-	files = get_files([30, 40, 50])
+	files = get_files([100, 150, 200])
 	handling_times, instance_max_vals, instance_num_carmoves = get_parking_handling_times(files)
-	fraction_list_parking, fraction_list_charging = get_fractional_results()
-	plot_values_std(handling_times, fraction_list_parking, fraction_list_charging)
-	'''
+	#fraction_list_parking, fraction_list_charging = get_fractional_results()
+	plot_values_std(handling_times)#, fraction_list_parking, fraction_list_charging)
+
 	#plot_travel_time_threshold()
 	#files = get_files([6, 8, 10, 15, 20, 25, 30, 40, 50])
 	#_,_,_ = get_parking_handling_times(files)
-	plot_construction_heuristic_run_time()
+	#plot_construction_heuristic_run_time()
 #print(num_car_moves)
