@@ -41,7 +41,7 @@ if __name__ == "__main__":
     try:
         #[[10, 0], [20, 0], [30, 0], [40, 0]],
         #[[50, 0], [60, 0], [70, 0],
-        n = 1
+        n = 10
         for file in files:
             ### PARALLEL
             run_parallel(file, n)
