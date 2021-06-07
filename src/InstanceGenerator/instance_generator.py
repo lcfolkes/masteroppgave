@@ -106,7 +106,7 @@ def create_deterministic_instance_from_existing_world(world: World, num_tasks: i
 
 def create_deterministic_instances_from_existing():
 
-    world = load_object_from_file("./InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_c.pkl")
+    world = load_object_from_file("./InstanceGenerator/InstanceFiles/200nodes/200-25-2-1_c.pkl")
     print([n.parking_state for n in world.parking_nodes])
     cf = read_config("./InstanceGenerator/InstanceConfigs/instance_config50.yaml")
     create_deterministic_instance_from_existing_world(world, num_tasks=cf['tasks']['num_all'],
@@ -132,7 +132,7 @@ def create_deterministic_instances_from_existing():
 
 
 if __name__ == "__main__":
-    cf = read_config('./InstanceGenerator/InstanceConfigs/instance_config200.yaml')
+    '''cf = read_config('./InstanceGenerator/InstanceConfigs/instance_config200.yaml')
     print("\nWELCOME TO THE EXAMPLE CREATOR \n")
     worlds = []
     for i in range(cf['examples']):
@@ -144,5 +144,5 @@ if __name__ == "__main__":
         # create_instance_from_world(world, num_scenarios=1, num_tasks=cf['tasks']['num_all'],
         #                       num_first_stage_tasks=cf['tasks']['num_first_stage'], version=i+1)
         worlds.append(world)
-
-    #create_deterministic_instances_from_existing()
+    '''
+    create_deterministic_instances_from_existing()

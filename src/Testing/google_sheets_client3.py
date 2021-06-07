@@ -44,19 +44,11 @@ if __name__ == "__main__":
 	sheet = gcs.get_sheet()
 
 	# open the google spreadsheet (where 'PY to Gsheet Test' is the name of my sheet)
-
-
-
-	test_dir = "./Testing/ComputationalTests/very_large_ten_minutes2"
-
 	# select the first sheet
-	try:
-		sheet.add_worksheet(test_dir.split("/")[-1], index=0)  # Please set the new sheet name.
-	except:
-		print("sheet exists!")
-		raise
 	work_sheet = sheet[0]
+
 	# update the first sheet with df, starting at cell B2.
+	test_dir = "./Testing/ComputationalTests/very_large_ten_minutes3"
 	test_results = pd.DataFrame()
 
 	#param_dict = {"9": 2}
