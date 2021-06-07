@@ -132,7 +132,9 @@ class World:
                         cm.end_node not in irrelevant_end_nodes and cm.start_node not in irrelevant_start_nodes) or cm.is_charging_move:
                     relevant_car_moves.append(cm)
         self.relevant_car_moves = relevant_car_moves
-        print(f"world/initialize_relevant_car_moves/ number of relevant car_moves: {len(relevant_car_moves)}")
+        print(f"world/initialize_relevant_car_moves/ "
+              f"\nNet demand acceptance percentage: {acceptance_percentage}"
+              f"\nnumber of relevant car_moves: {len(relevant_car_moves)}")
 
     def initialize_relevant_car_moves_distance(self, travel_time_threshold: float):
         '''
@@ -154,7 +156,9 @@ class World:
                     relevant_car_moves.append(cm)
 
             self.relevant_car_moves = relevant_car_moves
-            print(f"world/initialize_relevant_car_moves_distance/ number of relevant car_moves: {len(relevant_car_moves)}")
+            print(f"world/initialize_relevant_car_moves_distance/ "
+                  f"\nRelocation time threshold factor: {travel_time_threshold}"
+                  f"\n Number of relevant car_moves: {len(relevant_car_moves)}")
 
     def initialize_sensitivity_analysis(self, num_cars, num_employees):
         # Remove car-moves
