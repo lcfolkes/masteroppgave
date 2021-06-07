@@ -43,23 +43,27 @@ if __name__ == "__main__":
 	gcs = GoogleSheetClient(url=spreadsheet_url)
 	sheet = gcs.get_sheet()
 
-	# Create empty dataframe
-	#df = pd.DataFrame()
-
-	# Create a column
-
 	# open the google spreadsheet (where 'PY to Gsheet Test' is the name of my sheet)
 
-	# select the first sheet
-	work_sheet = sheet[0]
-	#print(work_sheet)
-	# update the first sheet with df, starting at cell B2.
 
+
+	test_dir = "./Testing/ComputationalTests/very_large_ten_minutes2"
+
+	# select the first sheet
+	try:
+		sheet.add_worksheet(test_dir.split("/")[-1], index=0)  # Please set the new sheet name.
+	except:
+		print("sheet exists!")
+		raise
+	work_sheet = sheet[0]
+	# update the first sheet with df, starting at cell B2.
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/ComputationalTests/very_large_ten_minutes1"
+
 	#param_dict = {"9": 2}
-	header = np.array([["", "", "EEV", "EEV", "RP", "RP"],
-					   ["Instance", "Run", "Charging moves", "Profit", "Charging moves", "Profit"]])
+	header = np.array([["", "", "Construction Heuristic", "Construction Heuristic", "Construction Heuristic",
+						"ALNS", "ALNS", "ALNS", "Both"],
+					   ["Instance", "Run", "Charging moves", "Profit", "Time", "Charging moves", "Profit", "Time",
+						"Cars in Need Of Charging"]])
 
 	#header_df = pd.DataFrame(header)
 	#work_sheet.set_dataframe(header_df, (1, 0), copy_head=False)
@@ -76,36 +80,35 @@ if __name__ == "__main__":
 			instance_mode = filename_list[-1]
 			if filename_list[0].split("-")[1] == "1":
 				continue
-			if filename_list[0].split("-")[0] not in ["20", "25", "30", "40", "40", "50"]:
-				continue
-			result = np.zeros(shape=[10, 6]).astype(str)
+			result = np.zeros(shape=[10, 9]).astype(str)
 			result[:, 0] = filename
 			for x in f:
 				line_list = x.split(':')
 				line_list_space = x.split(' ')
 				if line_list[0] == "Run":
 					run = int(line_list[1].strip())
-				elif line_list[0].strip() in ["1","2","3","4","5","6","7","8","9","10"]:
-					run = int(line_list[0].strip())
-				elif line_list[0] == "Problem type":
-					problem_type = line_list[1].strip()
+				elif line_list[0] == "Best objective value found after (s)":
+					time_alns = round(float(line_list[1].strip()), 2)
 				elif line_list[0] == "Objective value":
-					profit = round(float(line_list[1].strip()), 2)
+					profit_alns = round(float(line_list[1].strip()), 2)
 				elif line_list[0] == "Cars charged":
-					charging_moves = int(line_list[1].split(',')[0].strip())
+					charging_moves_alns = int(line_list[1].strip())
+				elif line_list[0] == "Cars in need of charging":
+					cars_in_need = int(line_list[1].strip())
+				elif line_list[0] == "Construction heuristic time (s)":
+					time_ch = round(float(line_list[1].strip()), 2)
+				elif line_list[0] == "Construction heuristic, true objective value":
+					profit_ch = round(float(line_list[1].strip()), 2)
+				elif line_list[0] == "Construction heuristic cars charged":
+					charging_moves_ch = int(line_list[1].strip())
 					result[run - 1][1] = run
-					print(problem_type)
-					print(charging_moves)
-					print(profit)
-					print(run)
-					if problem_type == "EEV":
-						result[run - 1][2] = charging_moves
-						result[run - 1][3] = profit
-
-					else:
-						result[run - 1][4] = charging_moves
-						result[run - 1][5] = profit
-
+					result[run - 1][2] = charging_moves_ch
+					result[run - 1][3] = profit_ch
+					result[run - 1][4] = time_ch
+					result[run - 1][5] = charging_moves_alns
+					result[run - 1][6] = profit_alns
+					result[run - 1][7] = time_alns
+					result[run - 1][8] = cars_in_need
 				'''
 				elif line_list[0] == "Objective value":
 					obj_val = line_list[1].strip()
