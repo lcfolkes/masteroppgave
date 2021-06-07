@@ -343,6 +343,8 @@ class ALNS():
             employees_txt = f"Number of employees: {self._num_employees}\n"
             cars_txt = f"Number of cars: {self._num_cars}\n"
             planning_period_txt = f"Planning period: {self._world_instance.planning_period}\n"
+            num_car_moves_txt = f"Num total car moves: {len(self._world_instance.car_moves)}\n" \
+                                f"Num relevant car moves: {len(self._world_instance.relevant_car_moves)}\n"
             #self.solution.rebuild(best_solution[0], stage="full", optimize=False)
             #solution_str = self.solution.print_solution()
 
@@ -365,7 +367,7 @@ class ALNS():
             f = open(filepath + "_results.txt", "a")
             f.writelines([run_txt, date_time_txt, obj_val_found_txt, obj_val_txt, heur_val_txt, charging_txt,
                           construction_heur_time_txt, construction_heur_txt, charging_construction_txt, time_spent_txt,
-                          iterations_done_txt, cars_txt, employees_txt, planning_period_txt, "\n"])
+                          iterations_done_txt, cars_txt, employees_txt, planning_period_txt, num_car_moves_txt, "\n"])
             f.close()
 
             if verbose:
