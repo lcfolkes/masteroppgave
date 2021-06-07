@@ -42,7 +42,7 @@ class ALNS():
         self.best_solution = None
         self.best_solutions = None
         self.best_obj_val = 0
-        self.solution = ConstructionHeuristic(self.filename)
+        self.solution = ConstructionHeuristic(self.filename, param)
         self._num_employees = len(self.solution.employees)
         self._num_cars = len(self.solution.cars)
         self._num_first_stage_tasks = self.solution.num_first_stage_tasks
@@ -348,9 +348,9 @@ class ALNS():
             #self.solution.rebuild(best_solution[0], stage="full", optimize=False)
             #solution_str = self.solution.print_solution()
 
-            parameter_tuning_txt = f"Travel time threshold: {self.solution.travel_time_threshold}\n"
-            '''                    f"Acceptance percentage: {self.solution.acceptance_percentage}\n"
-                                   f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}\n" \
+            parameter_tuning_txt = f"Relocation time threshold factor: {self.solution.travel_time_threshold}\n"\
+                                   f"Net demand acceptance percentage: {self.solution.acceptance_percentage}\n"
+            '''                    f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}\n" \
                                    f"Reward decay parameter: {HeuristicsConstants.REWARD_DECAY_PARAMETER}\n" \
                                    f"Determinism Worst: {HeuristicsConstants.DETERMINISM_PARAMETER_WORST}\n" \
                                    f"Determinism Related: {HeuristicsConstants.DETERMINISM_PARAMETER_RELATED}\n" \
@@ -367,7 +367,7 @@ class ALNS():
             f = open(filepath + "_results.txt", "a")
             f.writelines([run_txt, date_time_txt, obj_val_found_txt, obj_val_txt, heur_val_txt, charging_txt,
                           construction_heur_time_txt, construction_heur_txt, charging_construction_txt, time_spent_txt,
-                          iterations_done_txt, cars_txt, employees_txt, planning_period_txt, num_car_moves_txt, "\n"])
+                          iterations_done_txt, cars_txt, employees_txt, planning_period_txt, num_car_moves_txt, parameter_tuning_txt, "\n"])
             f.close()
 
             if verbose:

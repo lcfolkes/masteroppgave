@@ -11,12 +11,13 @@ os.chdir(path_to_src)
 import multiprocessing as mp
 
 
-def run_parallel(filenames, n):
+def run_parallel(filenames, n, params):
 	# num_processes = n * len(filenames)
 	args = []
 	for filename in filenames:
-		for i in range(n):
-			args.append((filename + ".pkl", i + 1))
+		for p in params:
+			for i in range(n):
+				args.append((filename + ".pkl", i + 1, p))
 	with mp.Pool(processes=len(args)) as pool:
 		pool.starmap(run_process, args)
 
@@ -42,10 +43,10 @@ if __name__ == "__main__":
 	try:
 		# [[10, 0], [20, 0], [30, 0], [40, 0]],
 		# [[50, 0], [60, 0], [70, 0],
-		n = 10
+		n = 1
 		for file in files:
 			### PARALLEL
-			run_parallel(file, n)
+			run_parallel(file, n, [0.5, 0.6, 0.7, 0.8, 0.9])
 
 		'''
 		### SEQUENTIAL

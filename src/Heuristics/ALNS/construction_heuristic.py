@@ -16,8 +16,10 @@ class ConstructionHeuristic:
     # instance_file = "InstanceFiles/6nodes/6-3-1-1_d.pkl"
     # filename = "InstanceFiles/6nodes/6-3-1-1_b.yaml"
 
-    def __init__(self, instance_file):
+    def __init__(self, instance_file, param=None):
         self.acceptance_percentage = HeuristicsConstants.ACCEPTANCE_PERCENTAGE
+        if param is not None:
+            self.acceptance_percentage = param
         self.travel_time_threshold = HeuristicsConstants.TRAVEL_TIME_THRESHOLD
         self.instance_file = instance_file
         self.world_instance = load_object_from_file(instance_file)
