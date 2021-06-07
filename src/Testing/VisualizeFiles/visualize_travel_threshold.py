@@ -8,7 +8,7 @@ import json
 from path_manager import path_to_src
 os.chdir(path_to_src)
 
-relocation_time_threshold_factor = 0.4
+relocation_time_threshold_factor = 0.3
 
 def get_files(node_list): #[30,40,50]
 	files = []
