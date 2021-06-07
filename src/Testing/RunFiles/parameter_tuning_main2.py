@@ -43,15 +43,10 @@ if __name__ == "__main__":
 	try:
 		# [[10, 0], [20, 0], [30, 0], [40, 0]],
 		# [[50, 0], [60, 0], [70, 0],
-		n = 1
-		args = []
-		for acceptance in [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]:
-			for travel_time in [0.2, 0.25, 0.3, 0.35, 0.4]:
-				args.append((acceptance, travel_time))
+		n = 10
 		for file in files:
 			### PARALLEL
-			run_parallel(file, n, args)
-			exit()
+			run_parallel(file, n, [(0.3, 0.8)])
 
 		'''
 		### SEQUENTIAL
