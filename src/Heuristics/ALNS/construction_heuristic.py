@@ -20,8 +20,8 @@ class ConstructionHeuristic:
         self.acceptance_percentage = HeuristicsConstants.ACCEPTANCE_PERCENTAGE
         self.travel_time_threshold = HeuristicsConstants.TRAVEL_TIME_THRESHOLD
         if param is not None:
-            self.acceptance_percentage = param[0]
-            self.travel_time_threshold = param[1]
+            self.travel_time_threshold = param[0]
+            self.acceptance_percentage = param[1]
         self.instance_file = instance_file
         self.world_instance = load_object_from_file(instance_file)
         self.world_instance.initialize_relevant_car_moves(self.acceptance_percentage)
