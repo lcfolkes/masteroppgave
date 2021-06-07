@@ -131,7 +131,7 @@ def create_deterministic_instances_from_existing():
     '''
 
 
-def main():
+if __name__ == "__main__":
     cf = read_config('./InstanceGenerator/InstanceConfigs/instance_config200.yaml')
     print("\nWELCOME TO THE EXAMPLE CREATOR \n")
     worlds = []
@@ -145,5 +145,4 @@ def main():
         #                       num_first_stage_tasks=cf['tasks']['num_first_stage'], version=i+1)
         worlds.append(world)
 
-main()
-#create_deterministic_instances_from_existing()
+    #create_deterministic_instances_from_existing()

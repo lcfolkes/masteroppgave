@@ -2,7 +2,6 @@ from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from HelperFiles.helper_functions import read_config
 from Heuristics.ALNS.alns import ALNS
-from InstanceGenerator.instance_generator import build_world, create_instance_from_world
 from path_manager import path_to_src
 import os
 import time
@@ -42,7 +41,7 @@ if __name__ == "__main__":
     try:
         #[[10, 0], [20, 0], [30, 0], [40, 0]],
         #[[50, 0], [60, 0], [70, 0],
-        n = 10
+        n = 1
         for file in files:
             ### PARALLEL
             run_parallel(file, n)

@@ -2,7 +2,6 @@ from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
 from Gurobi.Model.run_model import run_model
 from HelperFiles.helper_functions import read_config
 from Heuristics.ALNS.alns import ALNS
-from InstanceGenerator.instance_generator import build_world, create_instance_from_world
 from path_manager import path_to_src
 import os
 import time
