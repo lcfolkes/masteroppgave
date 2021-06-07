@@ -437,3 +437,47 @@ Num relevant car moves: 848
 Relocation time threshold factor: 0.25
 Net demand acceptance percentage: 1.0
 
+
+Run: 1
+DateTime: 07-Jun-2021 (14:24:03)
+Best objective value found after (s): 1011.1734408399789
+Objective value: 1397.2190400000038
+Heuristic value: 1397.219040000002
+Cars charged: 20
+Cars in need of charging: 20
+Construction heuristic time (s): 344.1715673649451
+Construction heuristic, true objective value: 1320.130560000009
+Construction heuristic, heuristic objective value: 1320.1305599999994
+Construction heuristic cars charged: 20
+Time used: 1011.1750907968963
+Iterations completed: 0 iterations in 1 segments
+Number of cars: 180
+Number of employees: 14
+Planning period: 60
+Num total car moves: 32240
+Num relevant car moves: 1104
+Relocation time threshold factor: 0.35
+Net demand acceptance percentage: 0.6
+
+
+Run: 1
+DateTime: 07-Jun-2021 (14:25:12)
+Best objective value found after (s): 1080.087013698998
+Objective value: 1432.034400000002
+Heuristic value: 1432.0344000000011
+Cars charged: 20
+Cars in need of charging: 20
+Construction heuristic time (s): 377.29377721599303
+Construction heuristic, true objective value: 1337.490720000021
+Construction heuristic, heuristic objective value: 1337.4907200000023
+Construction heuristic cars charged: 20
+Time used: 1080.0884850610746
+Iterations completed: 0 iterations in 1 segments
+Number of cars: 180
+Number of employees: 14
+Planning period: 60
+Num total car moves: 32240
+Num relevant car moves: 1264
+Relocation time threshold factor: 0.3
+Net demand acceptance percentage: 0.9
+
