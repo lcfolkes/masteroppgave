@@ -75,7 +75,7 @@ def run_vss_process(filename, process_num, param=None):
 	alns_deterministic.run(f"Run {process_num}\nProblem type: Deterministic")
 
 	print(f"\n############## ALNS - EEV process {process_num} ##############")
-	stochastic_ch = ConstructionHeuristic(filename + ".pkl")
+	stochastic_ch = ConstructionHeuristic(filename + ".pkl", param=param)
 	stochastic_ch.rebuild(get_first_stage_solution(
 		alns_deterministic.best_solution[0], stochastic_ch.num_first_stage_tasks), stage="first")
 	results_str = f"Run: {process_num}\nProblem type: EEV \n"
