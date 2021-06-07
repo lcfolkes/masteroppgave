@@ -126,13 +126,13 @@ def run_sequential(filename, n, verbose):
 
 
 if __name__ == "__main__":
-	files = []
+	'''files = []
 	for n in [6, 8, 10]:  # , 25, 30, 40, 50]:
 		directory = f"./InstanceGenerator/InstanceFiles/{n}nodes/"
 		for filename in os.listdir(directory):
 			filename_list = filename.split(".")
 			if filename_list[-1] == "pkl":
-				files.append(os.path.join(directory, filename_list[0]))
+				files.append(os.path.join(directory, filename_list[0]))'''
 
 	# for f in files:
 	#    print(f)
