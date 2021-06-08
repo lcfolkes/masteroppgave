@@ -52,6 +52,7 @@ class ALNS():
 		else:
 			self.solution = ConstructionHeuristic(self.filename, param)
 			self.received_ch = False
+		self._num_cars = len(self.solution.cars)
 		self._num_employees = len(self.solution.employees)
 		self._num_first_stage_tasks = self.solution.num_first_stage_tasks
 		self._feasibility_checker = self.solution.feasibility_checker
