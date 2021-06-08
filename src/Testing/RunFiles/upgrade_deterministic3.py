@@ -17,7 +17,7 @@ def run_upgrade_parallel(filenames, n, params):
 	for filename in filenames:
 		for p in params:
 			for i in range(n):
-				args.append((filename, i + 1))
+				args.append((filename, i + 1, p))
 	with mp.Pool(processes=len(args)) as pool:
 		pool.starmap(run_upgrade_process, args)
 
