@@ -49,7 +49,8 @@ def run_upgrade_process(filename, process_num, param=None):
 
 
 if __name__ == "__main__":
-    files = []
+
+    '''files = []
     for n in [6, 8, 10]:  # , 25, 30, 40, 50]:
         directory = f"./InstanceGenerator/InstanceFiles/{n}nodes/"
         instance_type_list = []
@@ -57,7 +58,7 @@ if __name__ == "__main__":
             filename_list = filename.split(".")
             if filename_list[-1] == "pkl":
                 instance_type_list.append(os.path.join(directory, filename_list[0]))
-        files.append(instance_type_list)
+        files.append(instance_type_list)'''
 
     files = [["InstanceGenerator/InstanceFiles/100nodes/100-25-2-1_a",
               "InstanceGenerator/InstanceFiles/100nodes/100-25-2-1_b",
