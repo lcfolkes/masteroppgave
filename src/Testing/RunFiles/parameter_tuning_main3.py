@@ -36,9 +36,10 @@ if __name__ == "__main__":
 			if filename_list[-1] == "pkl":
 				files.append(os.path.join(directory, filename_list[0]))'''
 
-	files = [["InstanceGenerator/InstanceFiles/200nodes/200-25-2-1_a",
+	files = [["InstanceGenerator/InstanceFiles/200nodes/200-25-2-1_c"]]
+	'''[["InstanceGenerator/InstanceFiles/200nodes/200-25-2-1_a",
 			  "InstanceGenerator/InstanceFiles/200nodes/200-25-2-1_b",
-			  "InstanceGenerator/InstanceFiles/200nodes/200-25-2-1_c"]]
+			  "InstanceGenerator/InstanceFiles/200nodes/200-25-2-1_c"]]'''
 
 	try:
 		# [[10, 0], [20, 0], [30, 0], [40, 0]],
@@ -46,7 +47,7 @@ if __name__ == "__main__":
 		n = 10
 		for file in files:
 			### PARALLEL
-			run_parallel(file, n, [(0.3, 0.75)])
+			run_parallel(file, n, [(0.3, 0.8)])
 
 		'''
 		### SEQUENTIAL
