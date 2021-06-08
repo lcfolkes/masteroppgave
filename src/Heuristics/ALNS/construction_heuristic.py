@@ -16,7 +16,7 @@ class ConstructionHeuristic:
     # instance_file = "InstanceFiles/6nodes/6-3-1-1_d.pkl"
     # filename = "InstanceFiles/6nodes/6-3-1-1_b.yaml"
 
-    def __init__(self, instance_file, param=None):
+    def __init__(self, instance_file, param=None, num_cars=None, num_employees=None):
         self.acceptance_percentage = HeuristicsConstants.ACCEPTANCE_PERCENTAGE
         self.travel_time_threshold = HeuristicsConstants.TRAVEL_TIME_THRESHOLD
         if param is not None:
@@ -26,7 +26,7 @@ class ConstructionHeuristic:
         self.world_instance = load_object_from_file(instance_file)
         self.world_instance.initialize_relevant_car_moves(self.acceptance_percentage)
         self.world_instance.initialize_relevant_car_moves_distance(self.travel_time_threshold)
-        #self.world_instance.initialize_sensitivity_analysis(num_cars=num_cars, num_employees=num_employees)
+        self.world_instance.initialize_sensitivity_analysis(num_cars=num_cars, num_employees=num_employees)
         self.objective_function = ObjectiveFunction(self.world_instance)
         self.world_instance.planning_period = HeuristicsConstants.PLANNING_PERIOD
         self.feasibility_checker = FeasibilityChecker(self.world_instance)
@@ -475,7 +475,7 @@ class ConstructionHeuristic:
 if __name__ == "__main__":
     from Heuristics.LocalSearch.local_search import LocalSearch
 
-    filename = "InstanceGenerator/InstanceFiles/50nodes/50-25-2-1_b"
-    for x in [10,20,30,40,50,60,70]:
-        ch = ConstructionHeuristic(filename + ".pkl", num_cars=x, num_employees=0)
-        print(f"Cars: {x}, Employees: {0}, Profit: {round(ch.get_obj_val(),2)}, Charged cars: {ch.num_charging_moves}")
+    filename = "InstanceGenerator/InstanceFiles/200nodes/200-25-2-1_c"
+    #for x in [10,20,30,40,50,60,70]:
+    ch = ConstructionHeuristic(filename + ".pkl", num_employees=0)
+    print(f"Cars: , Employees: {0}, Profit: {round(ch.get_obj_val(),2)}, Charged cars: {ch.num_charging_moves}")

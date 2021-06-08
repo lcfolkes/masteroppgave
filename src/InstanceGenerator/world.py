@@ -160,21 +160,23 @@ class World:
                   f"\nRelocation time threshold factor: {travel_time_threshold}"
                   f"\n Number of relevant car_moves: {len(relevant_car_moves)}")
 
-    def initialize_sensitivity_analysis(self, num_cars, num_employees):
+    def initialize_sensitivity_analysis(self, num_cars=None, num_employees=None):
         # Remove car-moves
-        car_list = [c for c in self.cars if not c.needs_charging]
-        random.seed(10)
-        car_removal_list = random.sample(car_list, len(car_list)-num_cars)
-        car_move_removal_list = []
-        for c in car_removal_list:
-            c.parking_node.parking_state -= 1
-            car_move_removal_list += c.car_moves
-        self.cars = [c for c in self.cars if c not in car_removal_list]
-        self.relevant_car_moves = [cm for cm in self.relevant_car_moves if cm not in car_move_removal_list]
+        if num_cars is not None:
+            car_list = [c for c in self.cars if not c.needs_charging]
+            random.seed(10)
+            car_removal_list = random.sample(car_list, len(car_list)-num_cars)
+            car_move_removal_list = []
+            for c in car_removal_list:
+                c.parking_node.parking_state -= 1
+                car_move_removal_list += c.car_moves
+            self.cars = [c for c in self.cars if c not in car_removal_list]
+            self.relevant_car_moves = [cm for cm in self.relevant_car_moves if cm not in car_move_removal_list]
         # Remove employees
-        random.seed(10)
-        removal_list = random.sample(self.employees, len(self.employees)-num_employees)
-        self.employees = [e for e in self.employees if e not in removal_list]
+        if num_employees is not None:
+            random.seed(10)
+            removal_list = random.sample(self.employees, len(self.employees)-num_employees)
+            self.employees = [e for e in self.employees if e not in removal_list]
 
 
 
