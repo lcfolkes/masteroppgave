@@ -32,11 +32,11 @@ def run_upgrade_process(filename, process_num, param=None):
     filename_list = filename.split("-")
     filename_list[1] = '1'
     deterministic_filename = "-".join(filename_list)
-    alns_deterministic = ALNS(deterministic_filename + ".pkl", param)
+    alns_deterministic = ALNS(deterministic_filename + ".pkl", param=param)
     alns_deterministic.run(f"Run: {process_num}\nProblem type: Deterministic")
 
     print(f"\n############## ALNS - EEV process {process_num} ##############")
-    stochastic_ch = ConstructionHeuristic(filename + ".pkl", param)
+    stochastic_ch = ConstructionHeuristic(filename + ".pkl", param=param)
     start_ch = time.perf_counter()
     stochastic_ch.rebuild(get_first_stage_solution(
         alns_deterministic.best_solution[0], stochastic_ch.num_first_stage_tasks), stage="first")
@@ -44,7 +44,7 @@ def run_upgrade_process(filename, process_num, param=None):
 
     time_used = alns_deterministic.finish_time + time_ch
     print(f"\n############## ALNS - Upgrade process {process_num} ##############")
-    alns_stochastic = ALNS(filename + ".pkl", construction_heuristic=stochastic_ch, start_time=time_used)
+    alns_stochastic = ALNS(filename + ".pkl", param=param, construction_heuristic=stochastic_ch, start_time=time_used)
     alns_stochastic.run(f"Run: {process_num}\nProblem type: Upgrade")
 
 

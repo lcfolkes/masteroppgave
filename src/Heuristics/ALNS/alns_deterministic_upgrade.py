@@ -364,7 +364,7 @@ class ALNS():
 								f"Num relevant car moves: {len(self._world_instance.relevant_car_moves)}\n"
 			# self.solution.rebuild(best_solution[0], stage="full", optimize=False)
 			# solution_str = self.solution.print_solution()
-
+			deterministic_time_limit_txt = f"Deterministic time limit: {HeuristicsConstants.DETERMINISTIC_TIME_LIMIT}\n"
 			parameter_tuning_txt = f"Relocation time threshold factor: {self.solution.travel_time_threshold}\n" \
 								   f"Net demand acceptance percentage: {self.solution.acceptance_percentage}\n"
 			'''                    f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}\n" \
@@ -385,7 +385,7 @@ class ALNS():
 			f.writelines([run_txt, date_time_txt, obj_val_found_txt, obj_val_txt, heur_val_txt, charging_txt,
 						  construction_heur_time_txt, construction_heur_txt, charging_construction_txt, time_spent_txt,
 						  iterations_done_txt, cars_txt, employees_txt, planning_period_txt, num_car_moves_txt,
-						  parameter_tuning_txt, "\n"])
+						  parameter_tuning_txt, deterministic_time_limit_txt, "\n"])
 			f.close()
 
 			if verbose:
