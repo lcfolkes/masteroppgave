@@ -356,27 +356,35 @@ class ALNS():
 			iterations_done_txt = f"Iterations completed: {i_alns * iterations_segment + i_segment} iterations in {i_alns + 1} segments\n"
 			best_obj_val_record_txt = f"Best true objectives record: {best_obj_val_record}\n"
 			operators_temporal_weights_txt = f"Operator weights: {self.operators_temporal_weights}\n"
+			employees_txt = f"Number of employees: {self._num_employees}\n"
+			cars_txt = f"Number of cars: {self._num_cars}\n"
+			planning_period_txt = f"Planning period: {self._world_instance.planning_period}\n"
+			num_car_moves_txt = f"Num total car moves: {len(self._world_instance.car_moves)}\n" \
+								f"Num relevant car moves: {len(self._world_instance.relevant_car_moves)}\n"
+			# self.solution.rebuild(best_solution[0], stage="full", optimize=False)
+			# solution_str = self.solution.print_solution()
 
-			parameter_tuning_txt = f"Travel time threshold: {self.solution.travel_time_threshold}\n"
-			'''                    f"Acceptance percentage: {self.solution.acceptance_percentage}\n"
-								   f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}\n" \
-								   f"Reward decay parameter: {HeuristicsConstants.REWARD_DECAY_PARAMETER}\n" \
-								   f"Determinism Worst: {HeuristicsConstants.DETERMINISM_PARAMETER_WORST}\n" \
-								   f"Determinism Related: {HeuristicsConstants.DETERMINISM_PARAMETER_RELATED}\n" \
-								   f"Determinism Greedy: {HeuristicsConstants.DETERMINISM_PARAMETER_GREEDY}\n" \
-								   f"Adaptive Weight Rewards (Best, Better, Accepted): ({_IS_BEST}, {_IS_BETTER}, {_IS_ACCEPTED})\n\n"
+			parameter_tuning_txt = f"Relocation time threshold factor: {self.solution.travel_time_threshold}\n" \
+								   f"Net demand acceptance percentage: {self.solution.acceptance_percentage}\n"
+			'''                    f"Neighborhood Size: {HeuristicsConstants.DESTROY_REPAIR_FACTOR}\n" \
+			                       f"Reward decay parameter: {HeuristicsConstants.REWARD_DECAY_PARAMETER}\n" \
+			                       f"Determinism Worst: {HeuristicsConstants.DETERMINISM_PARAMETER_WORST}\n" \
+			                       f"Determinism Related: {HeuristicsConstants.DETERMINISM_PARAMETER_RELATED}\n" \
+			                       f"Determinism Greedy: {HeuristicsConstants.DETERMINISM_PARAMETER_GREEDY}\n" \
+			                       f"Adaptive Weight Rewards (Best, Better, Accepted): ({_IS_BEST}, {_IS_BETTER}, {_IS_ACCEPTED})\n\n"
 			'''
 
 			# Write to file
 			test_dir = f"./Testing/Results/" + self.filename.split('/')[-2] + "/"
 			if not os.path.exists(test_dir):
-				os.makedirs(test_dir, exist_ok=True)
+				os.makedirs(test_dir)
 			filename = self.filename.split('/')[-1].split('.')[0]
 			filepath = test_dir + filename
 			f = open(filepath + "_results.txt", "a")
 			f.writelines([run_txt, date_time_txt, obj_val_found_txt, obj_val_txt, heur_val_txt, charging_txt,
 						  construction_heur_time_txt, construction_heur_txt, charging_construction_txt, time_spent_txt,
-						  iterations_done_txt, best_obj_val_record_txt, "\n"])
+						  iterations_done_txt, cars_txt, employees_txt, planning_period_txt, num_car_moves_txt,
+						  parameter_tuning_txt, "\n"])
 			f.close()
 
 			if verbose:
