@@ -144,7 +144,7 @@ if __name__ == "__main__":
 		n = 10
 		for filenames in files:
 			### PARALLEL
-			run_vss_parallel(filenames, n, [(0.25, 0.7)])
+			run_vss_parallel(filenames, n, [(0.30, 0.8)])
 
 	except KeyboardInterrupt:
 		print('Interrupted')
