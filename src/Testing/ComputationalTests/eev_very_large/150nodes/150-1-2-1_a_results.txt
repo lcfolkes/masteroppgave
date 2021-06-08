@@ -1,18 +1,18 @@
 
-Run 1
+Run 7
 Problem type: Deterministic
-DateTime: 08-Jun-2021 (12:10:38)
-Best objective value found after (s): 3.5416818669982604
-Objective value: 825.3179999999995
-Heuristic value: 825.3179999999975
+DateTime: 08-Jun-2021 (16:03:00)
+Best objective value found after (s): 389.9658792590053
+Objective value: 825.4859999999999
+Heuristic value: 825.4859999999989
 Cars charged: 16
 Cars in need of charging: 16
-Construction heuristic time (s): 3.5416818669982604
+Construction heuristic time (s): 2.976603971008444
 Construction heuristic, true objective value: 825.3179999999995
 Construction heuristic, heuristic objective value: 825.3179999999975
 Construction heuristic cars charged: 16
-Time used: 600.5574983379993
-Iterations completed: 183 iterations in 4 segments
+Time used: 600.1727535070095
+Iterations completed: 190 iterations in 4 segments
 Number of cars: 136
 Number of employees: 12
 Planning period: 60
@@ -22,20 +22,20 @@ Relocation time threshold factor: 0.35
 Net demand acceptance percentage: 0.8
 
 
-Run 10
+Run 3
 Problem type: Deterministic
-DateTime: 08-Jun-2021 (12:10:38)
-Best objective value found after (s): 443.4605408300049
+DateTime: 08-Jun-2021 (16:03:00)
+Best objective value found after (s): 559.0589918369951
 Objective value: 825.4859999999999
-Heuristic value: 825.4859999999995
+Heuristic value: 825.486000000001
 Cars charged: 16
 Cars in need of charging: 16
-Construction heuristic time (s): 3.2760569419988315
+Construction heuristic time (s): 3.84220692999952
 Construction heuristic, true objective value: 825.3179999999995
 Construction heuristic, heuristic objective value: 825.3179999999975
 Construction heuristic cars charged: 16
-Time used: 600.7454277910001
-Iterations completed: 185 iterations in 4 segments
+Time used: 600.6864474339964
+Iterations completed: 180 iterations in 4 segments
 Number of cars: 136
 Number of employees: 12
 Planning period: 60
@@ -47,18 +47,18 @@ Net demand acceptance percentage: 0.8
 
 Run 6
 Problem type: Deterministic
-DateTime: 08-Jun-2021 (12:10:38)
-Best objective value found after (s): 481.96493600599933
+DateTime: 08-Jun-2021 (16:03:01)
+Best objective value found after (s): 32.14982310499181
 Objective value: 825.4859999999999
 Heuristic value: 825.4859999999995
 Cars charged: 16
 Cars in need of charging: 16
-Construction heuristic time (s): 2.693079074997513
+Construction heuristic time (s): 2.407984884994221
 Construction heuristic, true objective value: 825.3179999999995
 Construction heuristic, heuristic objective value: 825.3179999999975
 Construction heuristic cars charged: 16
-Time used: 600.8058413769977
-Iterations completed: 185 iterations in 4 segments
+Time used: 600.9417208239902
+Iterations completed: 188 iterations in 4 segments
 Number of cars: 136
 Number of employees: 12
 Planning period: 60
@@ -68,19 +68,19 @@ Relocation time threshold factor: 0.35
 Net demand acceptance percentage: 0.8
 
 
-Run 8
+Run 1
 Problem type: Deterministic
-DateTime: 08-Jun-2021 (12:10:38)
-Best objective value found after (s): 406.36533446999965
-Objective value: 825.6539999999999
-Heuristic value: 825.6539999999995
+DateTime: 08-Jun-2021 (16:03:01)
+Best objective value found after (s): 405.8577708170051
+Objective value: 825.5699999999998
+Heuristic value: 825.5700000000014
 Cars charged: 16
 Cars in need of charging: 16
-Construction heuristic time (s): 3.7601479980003205
+Construction heuristic time (s): 3.786323676002212
 Construction heuristic, true objective value: 825.3179999999995
 Construction heuristic, heuristic objective value: 825.3179999999975
 Construction heuristic cars charged: 16
-Time used: 600.943981770004
+Time used: 601.6287879400043
 Iterations completed: 175 iterations in 4 segments
 Number of cars: 136
 Number of employees: 12
@@ -93,87 +93,18 @@ Net demand acceptance percentage: 0.8
 
 Run 9
 Problem type: Deterministic
-DateTime: 08-Jun-2021 (12:10:39)
-Best objective value found after (s): 514.7908936999956
-Objective value: 825.4019999999998
-Heuristic value: 825.402
-Cars charged: 16
-Cars in need of charging: 16
-Construction heuristic time (s): 3.4322099880009773
-Construction heuristic, true objective value: 825.3179999999995
-Construction heuristic, heuristic objective value: 825.3179999999975
-Construction heuristic cars charged: 16
-Time used: 601.1467788099981
-Iterations completed: 182 iterations in 4 segments
-Number of cars: 136
-Number of employees: 12
-Planning period: 60
-Num total car moves: 18120
-Num relevant car moves: 674
-Relocation time threshold factor: 0.35
-Net demand acceptance percentage: 0.8
-
-
-Run 2
-Problem type: Deterministic
-DateTime: 08-Jun-2021 (12:10:39)
-Best objective value found after (s): 195.69201658500242
-Objective value: 825.5699999999998
-Heuristic value: 825.5700000000014
-Cars charged: 16
-Cars in need of charging: 16
-Construction heuristic time (s): 2.5753612379994593
-Construction heuristic, true objective value: 825.3179999999995
-Construction heuristic, heuristic objective value: 825.3179999999975
-Construction heuristic cars charged: 16
-Time used: 601.4103100110005
-Iterations completed: 180 iterations in 4 segments
-Number of cars: 136
-Number of employees: 12
-Planning period: 60
-Num total car moves: 18120
-Num relevant car moves: 674
-Relocation time threshold factor: 0.35
-Net demand acceptance percentage: 0.8
-
-
-Run 5
-Problem type: Deterministic
-DateTime: 08-Jun-2021 (12:10:39)
-Best objective value found after (s): 2.5621599799997057
+DateTime: 08-Jun-2021 (16:03:02)
+Best objective value found after (s): 3.846562102989992
 Objective value: 825.3179999999995
 Heuristic value: 825.3179999999975
 Cars charged: 16
 Cars in need of charging: 16
-Construction heuristic time (s): 2.5621599799997057
+Construction heuristic time (s): 3.846562102989992
 Construction heuristic, true objective value: 825.3179999999995
 Construction heuristic, heuristic objective value: 825.3179999999975
 Construction heuristic cars charged: 16
-Time used: 601.6264826080005
-Iterations completed: 189 iterations in 4 segments
-Number of cars: 136
-Number of employees: 12
-Planning period: 60
-Num total car moves: 18120
-Num relevant car moves: 674
-Relocation time threshold factor: 0.35
-Net demand acceptance percentage: 0.8
-
-
-Run 7
-Problem type: Deterministic
-DateTime: 08-Jun-2021 (12:10:39)
-Best objective value found after (s): 323.66919054999744
-Objective value: 825.4859999999999
-Heuristic value: 825.4859999999995
-Cars charged: 16
-Cars in need of charging: 16
-Construction heuristic time (s): 3.4851750919988262
-Construction heuristic, true objective value: 825.3179999999995
-Construction heuristic, heuristic objective value: 825.3179999999975
-Construction heuristic cars charged: 16
-Time used: 601.5981171329986
-Iterations completed: 187 iterations in 4 segments
+Time used: 601.8282128329884
+Iterations completed: 177 iterations in 4 segments
 Number of cars: 136
 Number of employees: 12
 Planning period: 60
@@ -185,17 +116,40 @@ Net demand acceptance percentage: 0.8
 
 Run 4
 Problem type: Deterministic
-DateTime: 08-Jun-2021 (12:10:40)
-Best objective value found after (s): 220.24236474499776
+DateTime: 08-Jun-2021 (16:03:02)
+Best objective value found after (s): 372.2945749729988
 Objective value: 825.4859999999999
-Heuristic value: 825.4859999999989
+Heuristic value: 825.4860000000004
 Cars charged: 16
 Cars in need of charging: 16
-Construction heuristic time (s): 3.3885686110006645
+Construction heuristic time (s): 4.017517540996778
 Construction heuristic, true objective value: 825.3179999999995
 Construction heuristic, heuristic objective value: 825.3179999999975
 Construction heuristic cars charged: 16
-Time used: 602.2693938730008
+Time used: 601.9401686310011
+Iterations completed: 182 iterations in 4 segments
+Number of cars: 136
+Number of employees: 12
+Planning period: 60
+Num total car moves: 18120
+Num relevant car moves: 674
+Relocation time threshold factor: 0.35
+Net demand acceptance percentage: 0.8
+
+
+Run 8
+Problem type: Deterministic
+DateTime: 08-Jun-2021 (16:03:02)
+Best objective value found after (s): 536.3622849009989
+Objective value: 825.4859999999999
+Heuristic value: 825.4859999999995
+Cars charged: 16
+Cars in need of charging: 16
+Construction heuristic time (s): 2.805860175998532
+Construction heuristic, true objective value: 825.3179999999995
+Construction heuristic, heuristic objective value: 825.3179999999975
+Construction heuristic cars charged: 16
+Time used: 602.138081608995
 Iterations completed: 191 iterations in 4 segments
 Number of cars: 136
 Number of employees: 12
@@ -206,20 +160,66 @@ Relocation time threshold factor: 0.35
 Net demand acceptance percentage: 0.8
 
 
-Run 3
+Run 2
 Problem type: Deterministic
-DateTime: 08-Jun-2021 (12:10:41)
-Best objective value found after (s): 128.15924270400137
+DateTime: 08-Jun-2021 (16:03:03)
+Best objective value found after (s): 235.3510956120008
 Objective value: 825.4859999999999
-Heuristic value: 825.4859999999996
+Heuristic value: 825.4859999999995
 Cars charged: 16
 Cars in need of charging: 16
-Construction heuristic time (s): 4.034003726999799
+Construction heuristic time (s): 3.6187380780029343
 Construction heuristic, true objective value: 825.3179999999995
 Construction heuristic, heuristic objective value: 825.3179999999975
 Construction heuristic cars charged: 16
-Time used: 603.4170721580012
-Iterations completed: 176 iterations in 4 segments
+Time used: 603.021906746013
+Iterations completed: 179 iterations in 4 segments
+Number of cars: 136
+Number of employees: 12
+Planning period: 60
+Num total car moves: 18120
+Num relevant car moves: 674
+Relocation time threshold factor: 0.35
+Net demand acceptance percentage: 0.8
+
+
+Run 5
+Problem type: Deterministic
+DateTime: 08-Jun-2021 (16:03:04)
+Best objective value found after (s): 4.032558967999648
+Objective value: 825.3179999999995
+Heuristic value: 825.3179999999975
+Cars charged: 16
+Cars in need of charging: 16
+Construction heuristic time (s): 4.032558967999648
+Construction heuristic, true objective value: 825.3179999999995
+Construction heuristic, heuristic objective value: 825.3179999999975
+Construction heuristic cars charged: 16
+Time used: 604.337326642999
+Iterations completed: 179 iterations in 4 segments
+Number of cars: 136
+Number of employees: 12
+Planning period: 60
+Num total car moves: 18120
+Num relevant car moves: 674
+Relocation time threshold factor: 0.35
+Net demand acceptance percentage: 0.8
+
+
+Run 10
+Problem type: Deterministic
+DateTime: 08-Jun-2021 (16:03:04)
+Best objective value found after (s): 310.9627123250102
+Objective value: 825.4859999999999
+Heuristic value: 825.4859999999995
+Cars charged: 16
+Cars in need of charging: 16
+Construction heuristic time (s): 3.5156687470007455
+Construction heuristic, true objective value: 825.3179999999995
+Construction heuristic, heuristic objective value: 825.3179999999975
+Construction heuristic cars charged: 16
+Time used: 604.7631589049997
+Iterations completed: 182 iterations in 4 segments
 Number of cars: 136
 Number of employees: 12
 Planning period: 60

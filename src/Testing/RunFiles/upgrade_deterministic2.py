@@ -11,29 +11,32 @@ import sys
 os.chdir(path_to_src)
 import multiprocessing as mp
 
-def run_upgrade_parallel(filenames, n):
-    num_processes = n * len(filenames)
+
+def run_upgrade_parallel(filenames, n, params):
     args = []
     for filename in filenames:
-        for i in range(n):
-            args.append((filename, i + 1))
-    with mp.Pool(processes=num_processes) as pool:
+        for p in params:
+            for i in range(n):
+                args.append((filename, i + 1))
+    with mp.Pool(processes=len(args)) as pool:
         pool.starmap(run_upgrade_process, args)
 
-def run_upgrade_process(filename, process_num):
+
+def run_upgrade_process(filename, process_num, param=None):
+    '''
     print(f"\n############## ALNS - Stochastic process {process_num} ##############")
     alns = ALNS(filename + ".pkl")
     alns.run(f"Run: {process_num}\nProblem type: Stochastic")
-
+    '''
     print(f"\n############## ALNS - Deterministic process {process_num} ##############")
     filename_list = filename.split("-")
     filename_list[1] = '1'
     deterministic_filename = "-".join(filename_list)
-    alns_deterministic = ALNS(deterministic_filename + ".pkl")
+    alns_deterministic = ALNS(deterministic_filename + ".pkl", param)
     alns_deterministic.run(f"Run: {process_num}\nProblem type: Deterministic")
 
     print(f"\n############## ALNS - EEV process {process_num} ##############")
-    stochastic_ch = ConstructionHeuristic(filename + ".pkl")
+    stochastic_ch = ConstructionHeuristic(filename + ".pkl", param)
     start_ch = time.perf_counter()
     stochastic_ch.rebuild(get_first_stage_solution(
         alns_deterministic.best_solution[0], stochastic_ch.num_first_stage_tasks), stage="first")
@@ -45,10 +48,9 @@ def run_upgrade_process(filename, process_num):
     alns_stochastic.run(f"Run: {process_num}\nProblem type: Upgrade")
 
 
-
 if __name__ == "__main__":
     files = []
-    for n in [15, 20, 25]:  # , 25, 30, 40, 50]:
+    for n in [6, 8, 10]:  # , 25, 30, 40, 50]:
         directory = f"./InstanceGenerator/InstanceFiles/{n}nodes/"
         instance_type_list = []
         for filename in os.listdir(directory):
@@ -57,11 +59,16 @@ if __name__ == "__main__":
                 instance_type_list.append(os.path.join(directory, filename_list[0]))
         files.append(instance_type_list)
 
+    files = [["InstanceGenerator/InstanceFiles/150nodes/150-25-2-1_a",
+          "InstanceGenerator/InstanceFiles/150nodes/150-25-2-1_b",
+          "InstanceGenerator/InstanceFiles/150nodes/150-25-2-1_c"]]
+
+
     try:
         n = 10
-        for filenames in files:
+        for file in files:
             ### PARALLEL
-            run_upgrade_parallel(filenames, n)
+            run_upgrade_parallel(file, n, [(0.35, 0.85)])
 
     except KeyboardInterrupt:
         print('Interrupted')

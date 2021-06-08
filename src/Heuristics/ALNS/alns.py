@@ -51,7 +51,6 @@ class ALNS():
         self.operator_pairs = self._initialize_operators()
         self.operators_record = self._initialize_operator_records()
         self.operators_temporal_weights = {k: [1] for k in self.operator_pairs.keys()}
-        self.results_dir = param
 
 
     def _initialize_new_iteration(self, current_unused_car_moves, current_solution):

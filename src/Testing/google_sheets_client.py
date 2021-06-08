@@ -56,7 +56,7 @@ if __name__ == "__main__":
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/ComputationalTests/very_large_ten_minutes1"
+	test_dir = "./Testing/ComputationalTests/eev_very_large"
 	#param_dict = {"9": 2}
 	header = np.array([["", "", "EEV", "EEV", "RP", "RP"],
 					   ["Instance", "Run", "Charging moves", "Profit", "Charging moves", "Profit"]])
@@ -76,8 +76,6 @@ if __name__ == "__main__":
 			instance_mode = filename_list[-1]
 			if filename_list[0].split("-")[1] == "1":
 				continue
-			if filename_list[0].split("-")[0] not in ["20", "25", "30", "40", "40", "50"]:
-				continue
 			result = np.zeros(shape=[10, 6]).astype(str)
 			result[:, 0] = filename
 			for x in f:
@@ -94,10 +92,6 @@ if __name__ == "__main__":
 				elif line_list[0] == "Cars charged":
 					charging_moves = int(line_list[1].split(',')[0].strip())
 					result[run - 1][1] = run
-					print(problem_type)
-					print(charging_moves)
-					print(profit)
-					print(run)
 					if problem_type == "EEV":
 						result[run - 1][2] = charging_moves
 						result[run - 1][3] = profit
