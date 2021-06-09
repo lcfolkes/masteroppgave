@@ -56,7 +56,7 @@ if __name__ == "__main__":
 	# update the first sheet with df, starting at cell B2.
 
 	test_results = pd.DataFrame()
-	test_dir = "./Testing/ComputationalTests/eev_very_large"
+	test_dir = "./Testing/UpgradeEEV180"
 	#param_dict = {"9": 2}
 	header = np.array([["", "", "EEV", "EEV", "RP", "RP"],
 					   ["Instance", "Run", "Charging moves", "Profit", "Charging moves", "Profit"]])
