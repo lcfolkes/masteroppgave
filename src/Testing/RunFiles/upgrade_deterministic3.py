@@ -1,6 +1,4 @@
-from Gurobi.Model.gurobi_heuristic_instance import GurobiInstance
-from Gurobi.Model.run_model import run_model
-from Heuristics.ALNS.alns_deterministic_upgrade import ALNS
+from Heuristics.ALNS.alns_variations.alns_deterministic_upgrade import ALNS
 from Heuristics.ALNS.construction_heuristic import ConstructionHeuristic
 from Heuristics.helper_functions_heuristics import get_first_stage_solution
 from path_manager import path_to_src
